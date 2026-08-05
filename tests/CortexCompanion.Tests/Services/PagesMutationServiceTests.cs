@@ -228,7 +228,7 @@ public sealed class PagesMutationServiceTests
 
         public Task<ConfluenceConfigSnapshot> WriteAsync(
             ConfluenceConfiguration configuration,
-            string expectedHash,
+            string? expectedHash,
             CancellationToken cancellationToken)
         {
             WriteCalls++;
@@ -239,7 +239,7 @@ public sealed class PagesMutationServiceTests
             }
 
             WrittenConfiguration = configuration;
-            return Task.FromResult(new ConfluenceConfigSnapshot([], expectedHash, configuration));
+            return Task.FromResult(new ConfluenceConfigSnapshot([], expectedHash ?? new string('0', 64), configuration));
         }
     }
 

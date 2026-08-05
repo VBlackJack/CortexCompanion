@@ -14,6 +14,6 @@ public interface IConfluenceConfigStore
     /// <summary>Writes a requested model only if the exact caller hash still matches.</summary>
     Task<ConfluenceConfigSnapshot> WriteAsync(
         ConfluenceConfiguration configuration,
-        string expectedHash,
+        string? expectedHash,
         CancellationToken cancellationToken);
 }

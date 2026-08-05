@@ -108,6 +108,45 @@ public sealed class ConfluenceConfigStoreTests
         Assert.HasCount(2, activeOverrides);
     }
 
+    [TestMethod]
+    public async Task AbsentSnapshotCreatesWithoutBackup()
+    {
+        using TemporaryDirectory temporary = new();
+        string path = Path.Combine(temporary.Path, "confluence.toml");
+        ConfluenceConfigStore store = new(path);
+        ConfluenceConfiguration configuration = ConfluenceConfigParser.Parse(V1Bytes(), "model.toml");
+
+        ConfluenceConfigSnapshot result = await store.WriteAsync(
+            configuration,
+            null,
+            CancellationToken.None);
+
+        Assert.IsTrue(File.Exists(path));
+        Assert.IsFalse(File.Exists(path + ".bak"));
+        Assert.IsTrue(result.Configuration.SemanticallyEquals(configuration));
+    }
+
+    [TestMethod]
+    public async Task AbsentSnapshotRefusesFileThatAppeared()
+    {
+        using TemporaryDirectory temporary = new();
+        string path = Path.Combine(temporary.Path, "confluence.toml");
+        byte[] appeared = V1Bytes();
+        await File.WriteAllBytesAsync(path, appeared);
+        ConfluenceConfigStore store = new(path);
+        ConfluenceConfiguration configuration = ConfluenceConfigParser.Parse(appeared, "model.toml");
+
+        ConfluenceConfigConflictException exception =
+            await Assert.ThrowsAsync<ConfluenceConfigConflictException>(() => store.WriteAsync(
+                configuration,
+                null,
+                CancellationToken.None));
+
+        Assert.AreEqual("Confluence configuration appeared after the caller snapshot.", exception.Message);
+        CollectionAssert.AreEqual(appeared, await File.ReadAllBytesAsync(path));
+        Assert.IsFalse(File.Exists(path + ".bak"));
+    }
+
     private static byte[] V1Bytes() => Encoding.UTF8.GetBytes("""
         schema_version = 1
         base_url = "https://raw.example.test"

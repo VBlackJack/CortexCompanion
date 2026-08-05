@@ -47,11 +47,11 @@ public sealed partial class ConfluenceConfigStore : IConfluenceConfigStore
     /// <inheritdoc />
     public async Task<ConfluenceConfigSnapshot> WriteAsync(
         ConfluenceConfiguration configuration,
-        string expectedHash,
+        string? expectedHash,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        if (!Sha256Pattern().IsMatch(expectedHash ?? string.Empty))
+        if (expectedHash is not null && !Sha256Pattern().IsMatch(expectedHash))
         {
             throw new ArgumentException("expectedHash must be a lowercase SHA-256 hexadecimal value.", nameof(expectedHash));
         }
@@ -64,19 +64,30 @@ public sealed partial class ConfluenceConfigStore : IConfluenceConfigStore
             RetryDelay,
             cancellationToken);
 
-        byte[] current;
+        byte[]? current;
         try
         {
             current = await File.ReadAllBytesAsync(_path, cancellationToken);
         }
-        catch (FileNotFoundException exception)
+        catch (FileNotFoundException)
         {
-            throw new ConfluenceConfigConflictException(
-                "Confluence configuration disappeared after the caller snapshot.",
-                exception);
+            current = null;
         }
 
-        if (!string.Equals(Hash(current), expectedHash, StringComparison.Ordinal))
+        if (expectedHash is null && current is not null)
+        {
+            throw new ConfluenceConfigConflictException(
+                "Confluence configuration appeared after the caller snapshot.");
+        }
+
+        if (expectedHash is not null && current is null)
+        {
+            throw new ConfluenceConfigConflictException(
+                "Confluence configuration disappeared after the caller snapshot.");
+        }
+
+        if (expectedHash is not null && current is not null &&
+            !string.Equals(Hash(current), expectedHash, StringComparison.Ordinal))
         {
             throw new ConfluenceConfigConflictException(
                 "Confluence configuration changed after the caller snapshot.");
@@ -96,9 +107,12 @@ public sealed partial class ConfluenceConfigStore : IConfluenceConfigStore
                     "Canonical Confluence TOML did not round-trip to the requested settings.");
             }
 
-            backupTemporary = await WriteTemporaryAsync(BackupPath, current, cancellationToken);
-            File.Move(backupTemporary, BackupPath, overwrite: true);
-            backupTemporary = null;
+            if (current is not null)
+            {
+                backupTemporary = await WriteTemporaryAsync(BackupPath, current, cancellationToken);
+                File.Move(backupTemporary, BackupPath, overwrite: true);
+                backupTemporary = null;
+            }
             File.Move(configTemporary, _path, overwrite: true);
             configTemporary = null;
             return validated;
