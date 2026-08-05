@@ -1,0 +1,72 @@
+<!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
+<Window x:Class="CortexCompanion.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localization="clr-namespace:CortexCompanion.Localization"
+        xmlns:models="clr-namespace:CortexCompanion.Models"
+        xmlns:views="clr-namespace:CortexCompanion.Views"
+        Title="{x:Static localization:UiStrings.AppTitle}"
+        Width="{StaticResource WindowWidth}"
+        Height="{StaticResource WindowHeight}"
+        MinWidth="{StaticResource WindowMinWidth}"
+        MinHeight="{StaticResource WindowMinHeight}"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="{StaticResource AppFontFamily}"
+        FontSize="{StaticResource FontSizeBody}"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="{StaticResource StatusBarHeight}" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource NavigationPaneWidth}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0"
+                Grid.Column="0"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="{StaticResource SpacingXs}"
+                Padding="{StaticResource PaddingNavigation}">
+            <StackPanel AutomationProperties.Name="{x:Static localization:UiStrings.NavigationLabel}">
+                <TextBlock Text="{x:Static localization:UiStrings.AppTitle}"
+                           FontSize="{StaticResource FontSizeTitle}"
+                           FontWeight="SemiBold"
+                           Margin="{StaticResource MarginSectionBottom}" />
+                <Button Content="{x:Static localization:UiStrings.PagesNavigation}"
+                        AutomationProperties.Name="{x:Static localization:UiStrings.PagesNavigation}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Static models:NavigationPage.Pages}"
+                        Style="{StaticResource NavigationButtonStyle}" />
+                <Button Content="{x:Static localization:UiStrings.SyncNavigation}"
+                        AutomationProperties.Name="{x:Static localization:UiStrings.SyncNavigation}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Static models:NavigationPage.Sync}"
+                        Style="{StaticResource NavigationButtonStyle}" />
+                <Button Content="{x:Static localization:UiStrings.SchedulingNavigation}"
+                        AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingNavigation}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Static models:NavigationPage.Scheduling}"
+                        Style="{StaticResource NavigationButtonStyle}" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="0" Grid.Column="1" Margin="{StaticResource SpacingXl}">
+            <views:PagesView Visibility="{Binding IsPagesVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:SyncView Visibility="{Binding IsSyncVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:SchedulingView Visibility="{Binding IsSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <Border Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource StatusBarStyle}">
+            <TextBlock Text="{Binding HandshakeStatusText}"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       TextTrimming="CharacterEllipsis" />
+        </Border>
+    </Grid>
+</Window>

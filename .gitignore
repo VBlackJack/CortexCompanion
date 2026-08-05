@@ -1,0 +1,16 @@
+bin/
+obj/
+local/
+
+# IDE and user state
+.vs/
+*.user
+*.suo
+
+# Local automation artifacts
+.claude/
+.codex/
+CLAUDE.md
+AGENTS.md
+codex_task.md
+

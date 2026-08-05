@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Cortex Companion</value>
+  </data>
+  <data name="FatalStartupError" xml:space="preserve">
+    <value>Cortex Companion n'a pas pu demarrer. Consultez les journaux locaux.</value>
+  </data>
+  <data name="NavigationLabel" xml:space="preserve">
+    <value>Navigation principale</value>
+  </data>
+  <data name="PagesNavigation" xml:space="preserve">
+    <value>Pages</value>
+  </data>
+  <data name="SyncNavigation" xml:space="preserve">
+    <value>Sync</value>
+  </data>
+  <data name="SchedulingNavigation" xml:space="preserve">
+    <value>Programmation</value>
+  </data>
+  <data name="PagesTitle" xml:space="preserve">
+    <value>Pages</value>
+  </data>
+  <data name="PagesPlaceholder" xml:space="preserve">
+    <value>La gestion des pages sera ajoutee dans un prochain palier.</value>
+  </data>
+  <data name="SyncTitle" xml:space="preserve">
+    <value>Sync</value>
+  </data>
+  <data name="SyncPlaceholder" xml:space="preserve">
+    <value>La synchronisation sera ajoutee dans un prochain palier.</value>
+  </data>
+  <data name="SchedulingTitle" xml:space="preserve">
+    <value>Programmation</value>
+  </data>
+  <data name="SchedulingPlaceholder" xml:space="preserve">
+    <value>La programmation sera ajoutee dans un prochain palier.</value>
+  </data>
+  <data name="HandshakePending" xml:space="preserve">
+    <value>CLI : verification en cours - lecture seule</value>
+  </data>
+  <data name="HandshakeNotConfigured" xml:space="preserve">
+    <value>CLI : non configure - lecture seule</value>
+  </data>
+  <data name="HandshakeLaunchFailed" xml:space="preserve">
+    <value>CLI : lancement impossible - lecture seule</value>
+  </data>
+  <data name="HandshakeTimedOut" xml:space="preserve">
+    <value>CLI : delai depasse - lecture seule</value>
+  </data>
+  <data name="HandshakeNonZeroExit" xml:space="preserve">
+    <value>CLI : commande en echec - lecture seule</value>
+  </data>
+  <data name="HandshakeUnparseable" xml:space="preserve">
+    <value>CLI : version non reconnue - lecture seule</value>
+  </data>
+  <data name="HandshakeIncompatible" xml:space="preserve">
+    <value>CLI : version {0} incompatible - lecture seule</value>
+  </data>
+  <data name="HandshakeCompatible" xml:space="preserve">
+    <value>CLI : version {0} compatible</value>
+  </data>
+</root>
+
