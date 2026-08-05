@@ -10,9 +10,22 @@ internal static class Program
 {
     private const int LockedExitCode = 2;
     private const int UsageExitCode = 64;
+    private const string CompatibleVersion = "2026.0805.00";
+    private const string SyncProbeDelayVariable = "CORTEX_COMPANION_SYNC_PROBE_DELAY_MS";
 
     private static async Task<int> Main(string[] arguments)
     {
+        if (arguments is ["--version"])
+        {
+            Console.WriteLine(CompatibleVersion);
+            return 0;
+        }
+
+        if (arguments is ["confluence", "--config", _, "sync"])
+        {
+            return await RunSyncProbeAsync();
+        }
+
         if (arguments.Length < 2)
         {
             Console.Error.WriteLine("Usage: CortexCompanion.LockProbe <hold|mutate> <config-path> [milliseconds]");
@@ -26,6 +39,25 @@ internal static class Program
             "render-golden" => await RenderGoldenAsync(arguments),
             _ => UsageExitCode,
         };
+    }
+
+    private static async Task<int> RunSyncProbeAsync()
+    {
+        string? rawDelay = Environment.GetEnvironmentVariable(SyncProbeDelayVariable);
+        if (!int.TryParse(rawDelay, out int milliseconds) || milliseconds is < 1 or > 120_000)
+        {
+            Console.Error.WriteLine($"{SyncProbeDelayVariable} must be an integer from 1 to 120000.");
+            return UsageExitCode;
+        }
+
+        Console.Error.WriteLine("SYNC PROBE STARTED");
+        await Console.Error.FlushAsync();
+        await Task.Delay(milliseconds);
+        Console.Error.WriteLine("SYNC PROBE FINISHED");
+        await Console.Error.FlushAsync();
+        Console.Out.WriteLine("{\"published\":true,\"probe\":true}");
+        await Console.Out.FlushAsync();
+        return 0;
     }
 
     private static async Task<int> HoldAsync(string[] arguments)

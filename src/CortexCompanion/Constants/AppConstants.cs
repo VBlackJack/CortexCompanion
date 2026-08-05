@@ -38,6 +38,24 @@ public static class AppConstants
     /// <summary>Gets the maximum diagnostic exception text retained in a log entry.</summary>
     public const int MaxExceptionDiagnosticCharacters = 8_192;
 
+    /// <summary>Gets the design-v1 PAT warning boundary.</summary>
+    public const int PatExpiryWarningDays = 30;
+
+    /// <summary>Gets the source kind owned by the current Companion release.</summary>
+    public const string IngestionSourceKind = "doc";
+
+    /// <summary>Gets the dedicated process-mode argument for detached sync workers.</summary>
+    public const string SyncWorkerArgument = "--sync-worker";
+
+    /// <summary>Gets the application-owned sync-runs directory name.</summary>
+    public const string SyncRunsDirectoryName = "sync-runs";
+
+    /// <summary>Gets the number of completed sync runs retained locally.</summary>
+    public const int SyncRunRetentionCount = 10;
+
+    /// <summary>Gets the UI polling interval for detached run files.</summary>
+    public static readonly TimeSpan SyncRunPollingInterval = TimeSpan.FromMilliseconds(250);
+
     /// <summary>Gets the background log flush period.</summary>
     public static readonly TimeSpan LogFlushInterval = TimeSpan.FromSeconds(2);
 }

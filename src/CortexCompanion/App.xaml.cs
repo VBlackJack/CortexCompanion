@@ -3,6 +3,7 @@
 
 using System.Windows;
 using System.Windows.Threading;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Logging;
@@ -29,6 +30,26 @@ public partial class App : Application, IDisposable
         FileLogger.Info("Cortex Companion starting");
         RegisterExceptionHandlers();
 
+        if (e.Args.Length > 0 &&
+            string.Equals(e.Args[0], AppConstants.SyncWorkerArgument, StringComparison.Ordinal))
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (!SyncWorkerArguments.TryParse(e.Args, out SyncWorkerArguments? workerArguments) ||
+                workerArguments is null ||
+                !SyncWorkerArguments.IsDirectChildOfRunsRoot(
+                    workerArguments.RunDirectory,
+                    paths.SyncRunsDirectory))
+            {
+                FileLogger.Warn("Detached sync worker arguments were invalid");
+                Shutdown(1);
+                return;
+            }
+
+            int workerExitCode = await SyncWorker.ExecuteAsync(workerArguments);
+            Shutdown(workerExitCode);
+            return;
+        }
+
         try
         {
             SettingsStore settingsStore = new(paths.SettingsPath);
@@ -39,9 +60,10 @@ public partial class App : Application, IDisposable
                 processRunner);
             CliPathValidationResult cliValidation = CliPathValidator.Validate(settingsResult.Settings.CliPath);
             PagesViewModel pagesViewModel;
+            ConfluenceConfigPathResolution? configPath = null;
             if (cliValidation.IsValid && cliValidation.AbsolutePath is not null)
             {
-                ConfluenceConfigPathResolution configPath = ConfluenceConfigPathResolver.Resolve(
+                configPath = ConfluenceConfigPathResolver.Resolve(
                     cliValidation.AbsolutePath);
                 IConfluenceCliClient cliClient = new ConfluenceCliClient(
                     processRunner,
@@ -65,7 +87,35 @@ public partial class App : Application, IDisposable
                     ConfluenceEnvironmentInspector.GetActiveOverrides());
             }
 
-            MainViewModel viewModel = new(handshakeService, pagesViewModel);
+            IngestionPathResolution? ingestionPath = null;
+            try
+            {
+                ingestionPath = IngestionPathResolver.Resolve(cliValidation.AbsolutePath);
+            }
+            catch (IngestionPathResolutionException exception)
+            {
+                FileLogger.Error("Ingestion source-health path could not be resolved", exception);
+            }
+
+            ISyncRunCoordinator? syncCoordinator = null;
+            IInteractiveProcessLauncher? interactiveLauncher = null;
+            if (cliValidation.IsValid &&
+                cliValidation.AbsolutePath is not null &&
+                configPath is not null &&
+                Environment.ProcessPath is not null)
+            {
+                syncCoordinator = new SyncRunCoordinator(paths.SyncRunsDirectory, Environment.ProcessPath);
+                interactiveLauncher = new InteractiveProcessLauncher();
+            }
+
+            SyncViewModel syncViewModel = new(
+                syncCoordinator,
+                interactiveLauncher,
+                cliValidation.AbsolutePath,
+                configPath?.AbsolutePath,
+                ingestionPath,
+                ConfluenceEnvironmentInspector.GetActiveOverrides());
+            MainViewModel viewModel = new(handshakeService, pagesViewModel, syncViewModel);
             await viewModel.InitializeAsync(settingsResult.Settings, _applicationCancellation.Token);
 
             MainWindow window = new(viewModel);

@@ -21,15 +21,22 @@ public sealed class MainViewModel : ViewModelBase
     private bool _isReadOnly = true;
 
     /// <summary>Initializes the shell view model.</summary>
-    public MainViewModel(CliHandshakeService handshakeService, PagesViewModel pages)
+    public MainViewModel(
+        CliHandshakeService handshakeService,
+        PagesViewModel pages,
+        SyncViewModel sync)
     {
         _handshakeService = handshakeService ?? throw new ArgumentNullException(nameof(handshakeService));
         Pages = pages ?? throw new ArgumentNullException(nameof(pages));
+        Sync = sync ?? throw new ArgumentNullException(nameof(sync));
         NavigateCommand = new RelayCommand<NavigationPage>(Navigate);
     }
 
     /// <summary>Gets the functional Pages screen projection.</summary>
     public PagesViewModel Pages { get; }
+
+    /// <summary>Gets the functional Sync screen projection.</summary>
+    public SyncViewModel Sync { get; }
 
     /// <summary>Gets the navigation command for the three scaffold destinations.</summary>
     public ICommand NavigateCommand { get; }
@@ -79,9 +86,17 @@ public sealed class MainViewModel : ViewModelBase
         IsReadOnly = result.IsReadOnly;
         HandshakeStatusText = FormatHandshakeStatus(result);
         await Pages.InitializeAsync(IsReadOnly);
+        await Sync.InitializeAsync(IsReadOnly, cancellationToken);
     }
 
-    private void Navigate(NavigationPage page) => CurrentPage = page;
+    private void Navigate(NavigationPage page)
+    {
+        CurrentPage = page;
+        if (page == NavigationPage.Sync && Sync.RefreshCommand.CanExecute(null))
+        {
+            Sync.RefreshCommand.Execute(null);
+        }
+    }
 
     private static string FormatHandshakeStatus(CliHandshakeResult result) => result.Status switch
     {

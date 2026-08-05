@@ -55,9 +55,12 @@
         </Border>
 
         <Grid Grid.Row="0" Grid.Column="1" Margin="{StaticResource SpacingXl}">
-            <views:PagesView DataContext="{Binding Pages}"
-                             Visibility="{Binding IsPagesVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
-            <views:SyncView Visibility="{Binding IsSyncVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <Grid Visibility="{Binding IsPagesVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:PagesView DataContext="{Binding Pages}" />
+            </Grid>
+            <Grid Visibility="{Binding IsSyncVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:SyncView DataContext="{Binding Sync}" />
+            </Grid>
             <views:SchedulingView Visibility="{Binding IsSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
 

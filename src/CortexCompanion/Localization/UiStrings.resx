@@ -125,4 +125,62 @@
   <data name="HandshakeCompatible" xml:space="preserve">
     <value>CLI : version {0} compatible</value>
   </data>
+  <data name="SyncRefresh" xml:space="preserve"><value>Recharger</value></data>
+  <data name="SyncReadOnly" xml:space="preserve"><value>Lecture seule : Sync maintenant et l'enregistrement du credential sont desactives. Le dernier etat local reste lisible.</value></data>
+  <data name="SyncNow" xml:space="preserve"><value>Sync maintenant</value></data>
+  <data name="StoreCredential" xml:space="preserve"><value>Enregistrer le credential</value></data>
+  <data name="SyncLoading" xml:space="preserve"><value>Lecture du dernier etat local...</value></data>
+  <data name="SyncStateReady" xml:space="preserve"><value>Dernier etat local recharge.</value></data>
+  <data name="SyncStateCancelled" xml:space="preserve"><value>Observation interrompue par la fermeture de l'application.</value></data>
+  <data name="SyncStarting" xml:space="preserve"><value>Demarrage du worker de synchronisation...</value></data>
+  <data name="SyncContinuesAfterClose" xml:space="preserve"><value>La synchronisation continue en dehors de l'application.</value></data>
+  <data name="SyncHealthPathTitle" xml:space="preserve"><value>Canal d'etat local</value></data>
+  <data name="SyncHealthPathLabel" xml:space="preserve"><value>Fichier source-health.json</value></data>
+  <data name="SyncHealthPathOriginLabel" xml:space="preserve"><value>Resolution</value></data>
+  <data name="HealthPathOrigin" xml:space="preserve"><value>data_root : {0} ; fichier de configuration : {1}</value></data>
+  <data name="SyncHealthTitle" xml:space="preserve"><value>Derniere tentative enregistree</value></data>
+  <data name="SyncHealthStatusLabel" xml:space="preserve"><value>Etat</value></data>
+  <data name="SyncLastAttemptLabel" xml:space="preserve"><value>Derniere tentative</value></data>
+  <data name="SyncLastSuccessLabel" xml:space="preserve"><value>Dernier succes</value></data>
+  <data name="SyncErrorCodeLabel" xml:space="preserve"><value>Code d'erreur</value></data>
+  <data name="SyncActionRequiredLabel" xml:space="preserve"><value>Action demandee</value></data>
+  <data name="SyncSeenLabel" xml:space="preserve"><value>Documents vus</value></data>
+  <data name="SyncConvertedLabel" xml:space="preserve"><value>Documents convertis (derniere tentative)</value></data>
+  <data name="SyncFailedLabel" xml:space="preserve"><value>Documents en echec</value></data>
+  <data name="SyncCarryForwardLabel" xml:space="preserve"><value>Documents conserves</value></data>
+  <data name="SyncTombstonesLabel" xml:space="preserve"><value>Tombstones</value></data>
+  <data name="SyncNeverRun" xml:space="preserve"><value>Jamais synchronise</value></data>
+  <data name="SyncHealthUnreadable" xml:space="preserve"><value>Etat local illisible</value></data>
+  <data name="SyncHealthLockedInformation" xml:space="preserve"><value>Information : un autre sync etait en cours lors de la derniere tentative.</value></data>
+  <data name="SyncHealthOk" xml:space="preserve"><value>OK</value></data>
+  <data name="SyncHealthDegraded" xml:space="preserve"><value>Degrade</value></data>
+  <data name="SyncHealthError" xml:space="preserve"><value>Erreur</value></data>
+  <data name="ValueUnknown" xml:space="preserve"><value>inconnu</value></data>
+  <data name="ValueNone" xml:space="preserve"><value>aucun</value></data>
+  <data name="PatTitle" xml:space="preserve"><value>Badge PAT</value></data>
+  <data name="PatStatusLabel" xml:space="preserve"><value>Echeance effective</value></data>
+  <data name="PatOriginLabel" xml:space="preserve"><value>Origine</value></data>
+  <data name="PatUnknown" xml:space="preserve"><value>Inconnue : aucune echeance configuree.</value></data>
+  <data name="PatInvalid" xml:space="preserve"><value>Invalide : l'echeance configuree ne peut pas etre lue.</value></data>
+  <data name="PatOk" xml:space="preserve"><value>OK - expire le {0}</value></data>
+  <data name="PatWarning" xml:space="preserve"><value>Alerte - expire le {0} (moins de 30 jours)</value></data>
+  <data name="PatExpired" xml:space="preserve"><value>Expire depuis le {0}</value></data>
+  <data name="SyncRunTitle" xml:space="preserve"><value>Dernier processus Sync</value></data>
+  <data name="SyncRunResultLabel" xml:space="preserve"><value>Resultat</value></data>
+  <data name="SyncDiagnosticsLabel" xml:space="preserve"><value>Diagnostics Cortex en direct (stderr)</value></data>
+  <data name="SyncFinalOutputLabel" xml:space="preserve"><value>Sortie finale Cortex (stdout)</value></data>
+  <data name="SyncNoRunResult" xml:space="preserve"><value>Aucun run Companion enregistre.</value></data>
+  <data name="SyncRunning" xml:space="preserve"><value>Synchronisation en cours.</value></data>
+  <data name="SyncRunUnknown" xml:space="preserve"><value>Resultat inconnu ; l'etat est relu depuis source-health.json.</value></data>
+  <data name="SyncLaunchFailed" xml:space="preserve"><value>Le worker de synchronisation n'a pas pu etre lance.</value></data>
+  <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminee avec succes (code 0).</value></data>
+  <data name="SyncLocked" xml:space="preserve"><value>Un sync est deja en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
+  <data name="SyncNotDue" xml:space="preserve"><value>La synchronisation n'etait pas due (code 3).</value></data>
+  <data name="SyncAuthFailed" xml:space="preserve"><value>Credential absent, expire ou refuse (code 4).</value></data>
+  <data name="SyncRemoteFailed" xml:space="preserve"><value>Le service distant est indisponible (code 5).</value></data>
+  <data name="SyncFailed" xml:space="preserve"><value>La synchronisation a echoue (code 1).</value></data>
+  <data name="SyncUnexpectedExit" xml:space="preserve"><value>Le CLI a retourne le code non nominal {0}.</value></data>
+  <data name="CredentialStored" xml:space="preserve"><value>Credential enregistre ; validite confirmee au prochain sync.</value></data>
+  <data name="CredentialLaunchFailed" xml:space="preserve"><value>La console d'enregistrement du credential n'a pas pu etre ouverte.</value></data>
+  <data name="CredentialFailed" xml:space="preserve"><value>L'enregistrement du credential a echoue (code {0}).</value></data>
 </root>
