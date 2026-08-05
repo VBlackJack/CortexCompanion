@@ -6,11 +6,11 @@ using System.Windows.Controls;
 namespace CortexCompanion.Views;
 
 /// <summary>
-/// Displays the Sync placeholder without launching synchronization.
+/// Displays direct ingestion state and explicit user-triggered process actions.
 /// </summary>
 public partial class SyncView : UserControl
 {
-    /// <summary>Initializes the placeholder view.</summary>
+    /// <summary>Initializes the functional Sync view.</summary>
     public SyncView() => InitializeComponent();
 }
 

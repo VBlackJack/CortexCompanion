@@ -37,4 +37,12 @@ public sealed class PagesPresentationTests
         Assert.IsTrue(space.IsEmptyPagesSelection);
         Assert.AreEqual(UiStrings.PagesModeDescription, space.SelectionDescription);
     }
+
+    [TestMethod]
+    public void EmptyEnvironmentOverridesAreHiddenByOneExplicitProjection()
+    {
+        PagesViewModel viewModel = new(null, null, null, []);
+
+        Assert.IsFalse(viewModel.HasOverrides);
+    }
 }

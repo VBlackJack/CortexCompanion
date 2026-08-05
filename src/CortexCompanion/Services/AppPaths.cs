@@ -23,6 +23,7 @@ public sealed class AppPaths
         ApplicationDataDirectory = Path.Combine(localApplicationDataRoot, AppConstants.AppName);
         SettingsPath = Path.Combine(ApplicationDataDirectory, AppConstants.SettingsFileName);
         LogsDirectory = Path.Combine(ApplicationDataDirectory, AppConstants.LogsDirectoryName);
+        SyncRunsDirectory = Path.Combine(ApplicationDataDirectory, AppConstants.SyncRunsDirectoryName);
     }
 
     /// <summary>Gets the application-owned data directory.</summary>
@@ -33,5 +34,8 @@ public sealed class AppPaths
 
     /// <summary>Gets the application log directory.</summary>
     public string LogsDirectory { get; }
+
+    /// <summary>Gets the application-owned detached sync-run directory.</summary>
+    public string SyncRunsDirectory { get; }
 }
 
