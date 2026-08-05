@@ -37,7 +37,35 @@ public partial class App : Application, IDisposable
             CliHandshakeService handshakeService = new(
                 new CliVersionPolicy(),
                 processRunner);
-            MainViewModel viewModel = new(handshakeService);
+            CliPathValidationResult cliValidation = CliPathValidator.Validate(settingsResult.Settings.CliPath);
+            PagesViewModel pagesViewModel;
+            if (cliValidation.IsValid && cliValidation.AbsolutePath is not null)
+            {
+                ConfluenceConfigPathResolution configPath = ConfluenceConfigPathResolver.Resolve(
+                    cliValidation.AbsolutePath);
+                IConfluenceCliClient cliClient = new ConfluenceCliClient(
+                    processRunner,
+                    cliValidation.AbsolutePath,
+                    configPath.AbsolutePath);
+                IConfluenceConfigStore configStore = new ConfluenceConfigStore(configPath.AbsolutePath);
+                IPageMutationConfirmationService confirmations = new PageMutationConfirmationService();
+                PagesMutationService mutations = new(cliClient, configStore, confirmations);
+                pagesViewModel = new PagesViewModel(
+                    cliClient,
+                    mutations,
+                    configPath,
+                    ConfluenceEnvironmentInspector.GetActiveOverrides());
+            }
+            else
+            {
+                pagesViewModel = new PagesViewModel(
+                    null,
+                    null,
+                    null,
+                    ConfluenceEnvironmentInspector.GetActiveOverrides());
+            }
+
+            MainViewModel viewModel = new(handshakeService, pagesViewModel);
             await viewModel.InitializeAsync(settingsResult.Settings, _applicationCancellation.Token);
 
             MainWindow window = new(viewModel);

@@ -37,6 +37,58 @@
   <data name="PagesPlaceholder" xml:space="preserve">
     <value>La gestion des pages sera ajoutee dans un prochain palier.</value>
   </data>
+  <data name="PagesRefresh" xml:space="preserve"><value>Recharger</value></data>
+  <data name="PagesAddReferenceLabel" xml:space="preserve"><value>URL ou ID de page</value></data>
+  <data name="PagesAddReferenceHint" xml:space="preserve"><value>Collez une URL Confluence ou un ID numerique</value></data>
+  <data name="PagesResolveAndAdd" xml:space="preserve"><value>Resoudre et ajouter</value></data>
+  <data name="PagesLoading" xml:space="preserve"><value>Chargement local des espaces...</value></data>
+  <data name="PagesReady" xml:space="preserve"><value>Configuration Pages chargee.</value></data>
+  <data name="PagesNotConfigured" xml:space="preserve"><value>CLI non configure : aucune configuration Pages ne peut etre lue.</value></data>
+  <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configure.</value></data>
+  <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectee.</value></data>
+  <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listees sont collectees.</value></data>
+  <data name="WholeSpaceModeDescription" xml:space="preserve"><value>L'espace entier est collecte ; aucune liste de pages n'est applicable.</value></data>
+  <data name="PagesSwitchMode" xml:space="preserve"><value>Changer de mode</value></data>
+  <data name="PagesRemove" xml:space="preserve"><value>Retirer</value></data>
+  <data name="PagesReadOnly" xml:space="preserve"><value>Lecture seule : les mutations sont desactivees.</value></data>
+  <data name="PagesMutationCommitted" xml:space="preserve"><value>Configuration mise a jour.</value></data>
+  <data name="PagesMutationCancelled" xml:space="preserve"><value>Operation annulee ; aucune ecriture.</value></data>
+  <data name="PagesCasConflict" xml:space="preserve"><value>La configuration a change. Elle a ete rechargee ; verifiez-la avant de recommencer.</value></data>
+  <data name="ConfigPathLabel" xml:space="preserve"><value>Configuration TOML</value></data>
+  <data name="ConfigOriginLabel" xml:space="preserve"><value>Origine</value></data>
+  <data name="ConfigPathUnavailable" xml:space="preserve"><value>indisponible</value></data>
+  <data name="ConfigOriginUnavailable" xml:space="preserve"><value>non configuree</value></data>
+  <data name="ConfigOrigin" xml:space="preserve"><value>{0}</value></data>
+  <data name="EnvironmentOverridesTitle" xml:space="preserve"><value>Champs verrouilles par l'environnement</value></data>
+  <data name="EnvironmentOverrideOrigin" xml:space="preserve"><value>Verrouille - origine : {0}</value></data>
+  <data name="SpaceTargetLabel" xml:space="preserve"><value>Cible</value></data>
+  <data name="SpaceClassificationLabel" xml:space="preserve"><value>Classification</value></data>
+  <data name="SpaceModeLabel" xml:space="preserve"><value>Mode</value></data>
+  <data name="PageIdLabel" xml:space="preserve"><value>ID</value></data>
+  <data name="PageTitleUnknown" xml:space="preserve"><value>Titre inconnu</value></data>
+  <data name="PageTitleUnknownUntilSync" xml:space="preserve"><value>Titre inconnu jusqu'au prochain sync.</value></data>
+  <data name="PageTitleLastSync" xml:space="preserve"><value>Titre au dernier sync du {0}</value></data>
+  <data name="PageTitleNeverSynced" xml:space="preserve"><value>Titre issu du dernier etat local ; aucune date de sync disponible.</value></data>
+  <data name="PagesCliError" xml:space="preserve"><value>Le CLI a refuse la lecture.</value></data>
+  <data name="PagesCliLocked" xml:space="preserve"><value>Le CLI signale un verrou actif.</value></data>
+  <data name="PagesCliNotDue" xml:space="preserve"><value>La commande n'est pas due.</value></data>
+  <data name="PagesCliAuth" xml:space="preserve"><value>L'authentification Confluence est indisponible.</value></data>
+  <data name="PagesCliRemote" xml:space="preserve"><value>Le service Confluence distant est indisponible.</value></data>
+  <data name="PagesCliInvalidInput" xml:space="preserve"><value>La reference de page est invalide.</value></data>
+  <data name="PagesCliNotFound" xml:space="preserve"><value>La page n'existe pas.</value></data>
+  <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>La page appartient a un espace hors allowlist.</value></data>
+  <data name="PagesCliTimedOut" xml:space="preserve"><value>Le CLI n'a pas repondu dans le delai imparti.</value></data>
+  <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu etre lance.</value></data>
+  <data name="ConfirmAddTitle" xml:space="preserve"><value>Confirmer l'ajout</value></data>
+  <data name="ConfirmAddMessage" xml:space="preserve"><value>Ajouter la page « {0} » (ID {1}) dans l'espace {2} ?</value></data>
+  <data name="ConfirmRemoveTitle" xml:space="preserve"><value>Confirmer le retrait</value></data>
+  <data name="ConfirmRemoveMessage" xml:space="preserve"><value>Retirer la page {0} de l'espace {1} ? Elle sera retiree de la generation suivante puis purgee de l'index.</value></data>
+  <data name="ConfirmModeTitle" xml:space="preserve"><value>Confirmation typee du mode</value></data>
+  <data name="ConfirmModeWholeSpace" xml:space="preserve"><value>L'espace {0} sera collecte en entier ; sa liste d'ID explicites sera retiree du fichier. Tapez exactement sa cle pour confirmer.</value></data>
+  <data name="ConfirmModePagesEmpty" xml:space="preserve"><value>L'espace {0} passera en mode pages avec une liste initiale vide : ZERO page sera collectee. Tapez exactement sa cle pour confirmer.</value></data>
+  <data name="ConfirmModeInputLabel" xml:space="preserve"><value>Cle d'espace a saisir</value></data>
+  <data name="ConfirmButton" xml:space="preserve"><value>Confirmer</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Annuler</value></data>
   <data name="SyncTitle" xml:space="preserve">
     <value>Sync</value>
   </data>
@@ -68,10 +120,9 @@
     <value>CLI : version non reconnue - lecture seule</value>
   </data>
   <data name="HandshakeIncompatible" xml:space="preserve">
-    <value>CLI : version {0} incompatible - lecture seule</value>
+    <value>CLI : version trop ancienne (detectee {0}, minimum {1}) - lecture seule</value>
   </data>
   <data name="HandshakeCompatible" xml:space="preserve">
     <value>CLI : version {0} compatible</value>
   </data>
 </root>
-

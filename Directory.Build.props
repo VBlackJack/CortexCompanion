@@ -7,9 +7,9 @@
     <Authors>Julien Bombled</Authors>
     <Copyright>Copyright 2026 Julien Bombled</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 </Project>
-

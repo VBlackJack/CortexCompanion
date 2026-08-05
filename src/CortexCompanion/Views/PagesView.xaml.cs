@@ -6,11 +6,11 @@ using System.Windows.Controls;
 namespace CortexCompanion.Views;
 
 /// <summary>
-/// Displays the Pages placeholder without reading Cortex configuration.
+/// Displays the local Pages projection and its explicit mutation commands.
 /// </summary>
 public partial class PagesView : UserControl
 {
-    /// <summary>Initializes the placeholder view.</summary>
+    /// <summary>Initializes the Pages view.</summary>
     public PagesView() => InitializeComponent();
 }
 

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Windows;
+using CortexCompanion.Services;
 using CortexCompanion.ViewModels;
 
 namespace CortexCompanion;
@@ -17,6 +18,7 @@ public partial class MainWindow : Window
         ArgumentNullException.ThrowIfNull(viewModel);
         InitializeComponent();
         DataContext = viewModel;
+        SourceInitialized += (_, _) => DarkTitleBarService.Apply(this);
     }
 }
 

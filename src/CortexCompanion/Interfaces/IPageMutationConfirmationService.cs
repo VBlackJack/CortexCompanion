@@ -1,0 +1,22 @@
+// Copyright 2026 Julien Bombled
+// Licensed under the Apache License, Version 2.0.
+
+using CortexCompanion.Models;
+
+namespace CortexCompanion.Interfaces;
+
+/// <summary>Abstracts the explicit confirmations required before every Pages mutation.</summary>
+public interface IPageMutationConfirmationService
+{
+    /// <summary>Confirms a resolved page identity before its numeric ID can be persisted.</summary>
+    bool ConfirmAdd(ResolvedPageContract page);
+
+    /// <summary>Confirms the tombstone consequence before removing a configured page.</summary>
+    bool ConfirmRemove(string spaceKey, string pageId, string? title);
+
+    /// <summary>Collects the typed space-key confirmation for an exact collection-mode consequence.</summary>
+    string? ConfirmModeChange(
+        string spaceKey,
+        ConfluenceSelection targetSelection,
+        IReadOnlyList<string> targetPageIds);
+}
