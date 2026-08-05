@@ -61,7 +61,9 @@
             <Grid Visibility="{Binding IsSyncVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <views:SyncView DataContext="{Binding Sync}" />
             </Grid>
-            <views:SchedulingView Visibility="{Binding IsSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <Grid Visibility="{Binding IsSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:SchedulingView DataContext="{Binding Scheduling}" />
+            </Grid>
         </Grid>
 
         <Border Grid.Row="1"

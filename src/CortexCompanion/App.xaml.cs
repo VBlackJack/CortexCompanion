@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
 using CortexCompanion.Constants;
@@ -50,12 +51,42 @@ public partial class App : Application, IDisposable
             return;
         }
 
+        if (e.Args.Length > 0 &&
+            string.Equals(e.Args[0], AppConstants.ScheduledWorkerArgument, StringComparison.Ordinal))
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (!ScheduledWorkerArguments.TryParse(
+                    e.Args,
+                    out ScheduledWorkerArguments? scheduledArguments) ||
+                scheduledArguments is null ||
+                !ScheduledWorkerArguments.IsExpectedRunsRoot(
+                    scheduledArguments.RunsRoot,
+                    paths.ScheduledRunsDirectory))
+            {
+                FileLogger.Warn("Scheduled worker arguments were invalid");
+                Shutdown(1);
+                return;
+            }
+
+            IProcessRunner scheduledHandshakeRunner = new ProcessRunner();
+            ICliHandshakeService scheduledHandshake = new CliHandshakeService(
+                new CliVersionPolicy(),
+                scheduledHandshakeRunner);
+            ScheduledWorker scheduledWorker = new(
+                scheduledHandshake,
+                new ScheduledProcessRunner(),
+                new ScheduledRunPersistence(paths.ScheduledRunsDirectory));
+            int scheduledExitCode = await scheduledWorker.ExecuteAsync(scheduledArguments);
+            Shutdown(scheduledExitCode);
+            return;
+        }
+
         try
         {
             SettingsStore settingsStore = new(paths.SettingsPath);
             SettingsLoadResult settingsResult = await settingsStore.LoadAsync(_applicationCancellation.Token);
             IProcessRunner processRunner = new ProcessRunner();
-            CliHandshakeService handshakeService = new(
+            ICliHandshakeService handshakeService = new CliHandshakeService(
                 new CliVersionPolicy(),
                 processRunner);
             CliPathValidationResult cliValidation = CliPathValidator.Validate(settingsResult.Settings.CliPath);
@@ -115,7 +146,35 @@ public partial class App : Application, IDisposable
                 configPath?.AbsolutePath,
                 ingestionPath,
                 ConfluenceEnvironmentInspector.GetActiveOverrides());
-            MainViewModel viewModel = new(handshakeService, pagesViewModel, syncViewModel);
+            ScheduledTaskContract? scheduledTaskContract = null;
+            if (cliValidation.IsValid &&
+                cliValidation.AbsolutePath is not null &&
+                configPath is not null &&
+                ingestionPath is not null &&
+                Environment.ProcessPath is not null &&
+                File.Exists(configPath.AbsolutePath))
+            {
+                scheduledTaskContract = new ScheduledTaskContract(
+                    Path.GetFullPath(Environment.ProcessPath),
+                    cliValidation.AbsolutePath,
+                    ingestionPath.ConfigPath,
+                    configPath.AbsolutePath,
+                    paths.ScheduledRunsDirectory,
+                    AppConstants.IngestionSourceKind,
+                    WindowsIdentity.GetCurrent().Name);
+            }
+
+            SchedulingViewModel schedulingViewModel = new(
+                new TaskSchedulerComAdapter(),
+                new SchedulingConfirmationService(),
+                new ScheduledRunPersistence(paths.ScheduledRunsDirectory),
+                scheduledTaskContract,
+                SchedulingEnvironmentInspector.GetActiveVariableNames());
+            MainViewModel viewModel = new(
+                handshakeService,
+                pagesViewModel,
+                syncViewModel,
+                schedulingViewModel);
             await viewModel.InitializeAsync(settingsResult.Settings, _applicationCancellation.Token);
 
             MainWindow window = new(viewModel);

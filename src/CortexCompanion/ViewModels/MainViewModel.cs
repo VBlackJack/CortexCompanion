@@ -4,6 +4,7 @@
 using System.Windows.Input;
 using CortexCompanion.Commands;
 using CortexCompanion.Constants;
+using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
@@ -15,20 +16,22 @@ namespace CortexCompanion.ViewModels;
 /// </summary>
 public sealed class MainViewModel : ViewModelBase
 {
-    private readonly CliHandshakeService _handshakeService;
+    private readonly ICliHandshakeService _handshakeService;
     private NavigationPage _currentPage = NavigationPage.Pages;
     private string _handshakeStatusText = UiStrings.HandshakePending;
     private bool _isReadOnly = true;
 
     /// <summary>Initializes the shell view model.</summary>
     public MainViewModel(
-        CliHandshakeService handshakeService,
+        ICliHandshakeService handshakeService,
         PagesViewModel pages,
-        SyncViewModel sync)
+        SyncViewModel sync,
+        SchedulingViewModel scheduling)
     {
         _handshakeService = handshakeService ?? throw new ArgumentNullException(nameof(handshakeService));
         Pages = pages ?? throw new ArgumentNullException(nameof(pages));
         Sync = sync ?? throw new ArgumentNullException(nameof(sync));
+        Scheduling = scheduling ?? throw new ArgumentNullException(nameof(scheduling));
         NavigateCommand = new RelayCommand<NavigationPage>(Navigate);
     }
 
@@ -37,6 +40,9 @@ public sealed class MainViewModel : ViewModelBase
 
     /// <summary>Gets the functional Sync screen projection.</summary>
     public SyncViewModel Sync { get; }
+
+    /// <summary>Gets the functional scheduling screen projection.</summary>
+    public SchedulingViewModel Scheduling { get; }
 
     /// <summary>Gets the navigation command for the three scaffold destinations.</summary>
     public ICommand NavigateCommand { get; }
@@ -87,6 +93,7 @@ public sealed class MainViewModel : ViewModelBase
         HandshakeStatusText = FormatHandshakeStatus(result);
         await Pages.InitializeAsync(IsReadOnly);
         await Sync.InitializeAsync(IsReadOnly, cancellationToken);
+        await Scheduling.InitializeAsync(IsReadOnly, cancellationToken);
     }
 
     private void Navigate(NavigationPage page)
@@ -95,6 +102,11 @@ public sealed class MainViewModel : ViewModelBase
         if (page == NavigationPage.Sync && Sync.RefreshCommand.CanExecute(null))
         {
             Sync.RefreshCommand.Execute(null);
+        }
+
+        if (page == NavigationPage.Scheduling && Scheduling.RefreshCommand.CanExecute(null))
+        {
+            Scheduling.RefreshCommand.Execute(null);
         }
     }
 

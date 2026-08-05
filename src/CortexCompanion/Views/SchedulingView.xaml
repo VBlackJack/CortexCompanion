@@ -3,13 +3,127 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:localization="clr-namespace:CortexCompanion.Localization">
-    <Border Style="{StaticResource PageCardStyle}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <TextBlock Text="{x:Static localization:UiStrings.SchedulingTitle}"
-                       Style="{StaticResource PageTitleStyle}" />
-            <TextBlock Text="{x:Static localization:UiStrings.SchedulingPlaceholder}"
-                       Style="{StaticResource PlaceholderTextStyle}" />
-        </StackPanel>
-    </Border>
-</UserControl>
+            <Grid Margin="{StaticResource MarginHeadingBottom}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Static localization:UiStrings.SchedulingTitle}"
+                           Style="{StaticResource PageTitleStyle}" />
+                <Button Grid.Column="1"
+                        Content="{x:Static localization:UiStrings.SchedulingRefresh}"
+                        AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingRefresh}"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+            </Grid>
 
+            <Border Background="{DynamicResource WarningBrush}"
+                    Padding="{StaticResource SpacingSm}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    Visibility="{Binding IsReadOnly, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{x:Static localization:UiStrings.SchedulingReadOnly}"
+                           Foreground="{DynamicResource BackgroundBrush}"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <Border Background="{DynamicResource WarningBrush}"
+                    Padding="{StaticResource SpacingSm}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    Visibility="{Binding HasEnvironmentBlock, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding EnvironmentBlockMessage}"
+                           Foreground="{DynamicResource BackgroundBrush}"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <Border Background="{DynamicResource HighlightBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    Padding="{StaticResource SpacingSm}"
+                    Margin="{StaticResource MarginSectionBottom}">
+                <TextBlock Text="{x:Static localization:UiStrings.SchedulingSessionRequired}"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <Border Background="{DynamicResource WarningBrush}"
+                    Padding="{StaticResource SpacingSm}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    Visibility="{Binding IsNotConfigured, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{x:Static localization:UiStrings.SchedulingNotConfigured}"
+                           Foreground="{DynamicResource BackgroundBrush}"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    Visibility="{Binding IsConfigured, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock Text="{x:Static localization:UiStrings.SchedulingPresetLabel}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <ComboBox ItemsSource="{Binding Presets}"
+                              SelectedItem="{Binding SelectedPreset}"
+                              DisplayMemberPath="DisplayName"
+                              Width="{StaticResource SchedulingInputWidth}"
+                              HorizontalAlignment="Left"
+                              AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingPresetLabel}"
+                              Margin="{StaticResource MarginSectionBottom}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SchedulingStartTimeLabel}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBox Text="{Binding StartTimeText, UpdateSourceTrigger=PropertyChanged}"
+                             Width="{StaticResource SchedulingInputWidth}"
+                             HorizontalAlignment="Left"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingStartTimeLabel}"
+                             Margin="{StaticResource MarginSectionBottom}" />
+                    <WrapPanel>
+                        <Button Content="{x:Static localization:UiStrings.SchedulingCreateOrUpdate}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingCreateOrUpdate}"
+                                Command="{Binding CreateOrUpdateCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}" />
+                        <Button Content="{x:Static localization:UiStrings.SchedulingDelete}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingDelete}"
+                                Command="{Binding DeleteCommand}"
+                                Margin="{StaticResource SpacingSm}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding OperationMessage}"
+                               Foreground="{DynamicResource WarningBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginSectionTop}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource PageCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{x:Static localization:UiStrings.SchedulingStateTitle}"
+                               FontSize="{StaticResource FontSizeTitle}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <UniformGrid Columns="2">
+                        <TextBlock Text="{x:Static localization:UiStrings.SchedulingStateLabel}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding StateText}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.SchedulingNextRunLabel}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding NextRunText}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.SchedulingLastRunLabel}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding LastRunText}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.SchedulingLastResultLabel}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding LastResultText}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.SchedulingExecutionLabel}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding ExecutionText}" TextWrapping="Wrap" />
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
