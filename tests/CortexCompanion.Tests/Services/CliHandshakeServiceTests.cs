@@ -14,7 +14,7 @@ public sealed class CliHandshakeServiceTests
     [TestMethod]
     public async Task EvaluateAsyncCliNotConfiguredFailsClosedWithoutProcessCall()
     {
-        StubProcessRunner runner = new(ProcessRunResult.Completed(0, AppConstants.MinSupportedCliVersion, string.Empty));
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0805.00", string.Empty));
         CliHandshakeService service = CreateService(runner);
 
         CliHandshakeResult result = await service.EvaluateAsync(AppSettings.Empty);
@@ -30,6 +30,33 @@ public sealed class CliHandshakeServiceTests
         await AssertStatusAsync(
             ProcessRunResult.Completed(0, "2026.0715.99\r\n", string.Empty),
             CliHandshakeStatus.IncompatibleVersion);
+    }
+
+    [TestMethod]
+    [DataRow("2026.0716.01", CliHandshakeStatus.IncompatibleVersion, true, 2026, 7, 16, 1)]
+    [DataRow("2026.0805.00", CliHandshakeStatus.Compatible, false, 2026, 8, 5, 0)]
+    [DataRow("2026.0805.01", CliHandshakeStatus.Compatible, false, 2026, 8, 5, 1)]
+    [DataRow("2026.0806.00", CliHandshakeStatus.Compatible, false, 2026, 8, 6, 0)]
+    public async Task EvaluateAsyncVersionGateRejectsPreA3AndAcceptsA3OrLater(
+        string version,
+        CliHandshakeStatus expectedStatus,
+        bool expectedReadOnly,
+        int year,
+        int month,
+        int day,
+        int revision)
+    {
+        using TemporaryDirectory temporaryDirectory = new();
+        string executablePath = temporaryDirectory.CreateFakeCli();
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0, version, string.Empty));
+        CliHandshakeService service = CreateService(runner);
+
+        CliHandshakeResult result = await service.EvaluateAsync(new AppSettings(executablePath));
+
+        Assert.AreEqual(expectedStatus, result.Status);
+        Assert.AreEqual(expectedReadOnly, result.IsReadOnly);
+        Assert.AreEqual(new CliVersion(year, month, day, revision), result.DetectedVersion);
+        Assert.AreEqual(1, runner.CallCount);
     }
 
     [TestMethod]
@@ -61,14 +88,14 @@ public sealed class CliHandshakeServiceTests
     {
         using TemporaryDirectory temporaryDirectory = new();
         string executablePath = temporaryDirectory.CreateFakeCli();
-        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0716.01\r\n", string.Empty));
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0805.00\r\n", string.Empty));
         CliHandshakeService service = CreateService(runner);
 
         CliHandshakeResult result = await service.EvaluateAsync(new AppSettings(executablePath));
 
         Assert.AreEqual(CliHandshakeStatus.Compatible, result.Status);
         Assert.IsFalse(result.IsReadOnly);
-        Assert.AreEqual(new CliVersion(2026, 7, 16, 1), result.DetectedVersion);
+        Assert.AreEqual(new CliVersion(2026, 8, 5, 0), result.DetectedVersion);
         Assert.IsNotNull(runner.LastRequest);
         CollectionAssert.AreEqual(
             new[] { AppConstants.CliVersionArgument },
