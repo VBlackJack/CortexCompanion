@@ -31,10 +31,11 @@
                         <Run Text=" : " />
                         <Run Text="{Binding ConfigOrigin, Mode=OneWay}" />
                     </TextBlock>
-                    <TextBlock Text="{x:Static localization:UiStrings.EnvironmentOverridesTitle}"
-                               FontWeight="SemiBold"
-                               Margin="0,16,0,8" />
-                    <ItemsControl ItemsSource="{Binding Overrides}">
+                    <StackPanel Visibility="{Binding HasOverrides, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{x:Static localization:UiStrings.EnvironmentOverridesTitle}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,16,0,8" />
+                        <ItemsControl ItemsSource="{Binding Overrides}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type viewModels:EnvironmentOverrideViewModel}">
                                 <Border Background="{DynamicResource HighlightBrush}"
@@ -58,7 +59,8 @@
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                        </ItemsControl>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 

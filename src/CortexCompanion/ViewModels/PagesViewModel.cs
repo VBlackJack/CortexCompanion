@@ -56,6 +56,9 @@ public sealed class PagesViewModel : ViewModelBase
     /// <summary>Gets active, supported root-field environment overrides.</summary>
     public IReadOnlyList<EnvironmentOverrideViewModel> Overrides { get; }
 
+    /// <summary>Gets whether the environment-lock section has content.</summary>
+    public bool HasOverrides => Overrides.Count > 0;
+
     /// <summary>Gets the absolute session TOML path.</summary>
     public string ConfigPath { get; }
 
