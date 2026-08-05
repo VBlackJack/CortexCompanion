@@ -8,7 +8,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>CortexCompanion</RootNamespace>
     <AssemblyName>CortexCompanion</AssemblyName>
+    <ApplicationIcon>Assets\cortex.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\cortex.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Tomlyn" Version="2.10.1" />

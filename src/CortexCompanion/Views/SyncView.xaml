@@ -174,7 +174,8 @@
                                Foreground="{DynamicResource TextSecondaryBrush}" />
                     <TextBox Text="{Binding StandardError, Mode=OneWay}"
                              IsReadOnly="True"
-                             TextWrapping="NoWrap"
+                             TextWrapping="Wrap"
+                             HorizontalScrollBarVisibility="Disabled"
                              AcceptsReturn="True"
                              MinHeight="{StaticResource ControlMinHeight}"
                              Margin="{StaticResource MarginStackItem}" />
@@ -182,7 +183,8 @@
                                Foreground="{DynamicResource TextSecondaryBrush}" />
                     <TextBox Text="{Binding StandardOutput, Mode=OneWay}"
                              IsReadOnly="True"
-                             TextWrapping="NoWrap"
+                             TextWrapping="Wrap"
+                             HorizontalScrollBarVisibility="Disabled"
                              AcceptsReturn="True"
                              MinHeight="{StaticResource ControlMinHeight}" />
                 </StackPanel>

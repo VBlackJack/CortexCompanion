@@ -10,7 +10,7 @@
     <Color x:Key="SurfaceColor">#44475A</Color>
     <Color x:Key="AccentColor">#BD93F9</Color>
     <Color x:Key="AccentHoverColor">#CAA9FA</Color>
-    <Color x:Key="AccentPressedColor">#9B72D6</Color>
+    <Color x:Key="AccentPressedColor">#A67AF7</Color>
     <Color x:Key="TextPrimaryColor">#F8F8F2</Color>
     <Color x:Key="TextSecondaryColor">#BFC4D6</Color>
     <Color x:Key="BorderColor">#6272A4</Color>
@@ -36,4 +36,3 @@
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}" />
     <SolidColorBrush x:Key="FocusIndicatorBrush" Color="{StaticResource InfoColor}" />
 </ResourceDictionary>
-
