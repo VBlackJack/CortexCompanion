@@ -11,7 +11,7 @@ namespace CortexCompanion.Services;
 /// <summary>
 /// Performs the startup CLI handshake and maps every uncertainty to read-only mode.
 /// </summary>
-public sealed class CliHandshakeService
+public sealed class CliHandshakeService : ICliHandshakeService
 {
     private readonly CliVersionPolicy _versionPolicy;
     private readonly IProcessRunner _processRunner;

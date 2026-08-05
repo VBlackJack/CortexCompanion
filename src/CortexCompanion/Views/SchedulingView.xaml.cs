@@ -6,11 +6,11 @@ using System.Windows.Controls;
 namespace CortexCompanion.Views;
 
 /// <summary>
-/// Displays the Scheduling placeholder without using the Task Scheduler API.
+/// Displays the bounded scheduling projection without directly accessing Task Scheduler COM.
 /// </summary>
 public partial class SchedulingView : UserControl
 {
-    /// <summary>Initializes the placeholder view.</summary>
+    /// <summary>Initializes the scheduling view.</summary>
     public SchedulingView() => InitializeComponent();
 }
 

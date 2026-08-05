@@ -183,4 +183,50 @@
   <data name="CredentialStored" xml:space="preserve"><value>Credential enregistre ; validite confirmee au prochain sync.</value></data>
   <data name="CredentialLaunchFailed" xml:space="preserve"><value>La console d'enregistrement du credential n'a pas pu etre ouverte.</value></data>
   <data name="CredentialFailed" xml:space="preserve"><value>L'enregistrement du credential a echoue (code {0}).</value></data>
+  <data name="SchedulingRefresh" xml:space="preserve"><value>Recharger</value></data>
+  <data name="SchedulingTaskContractDescription" xml:space="preserve"><value>Cortex Companion - programmation ingestion - contrat 1</value></data>
+  <data name="SchedulingReadOnly" xml:space="preserve"><value>Lecture seule : la création, la modification et la suppression sont désactivées. L'état de la tâche reste lisible.</value></data>
+  <data name="SchedulingSessionRequired" xml:space="preserve"><value>La tâche s'exécute uniquement lorsque votre session Windows est ouverte. Elle ne demande aucune élévation.</value></data>
+  <data name="SchedulingNotConfigured" xml:space="preserve"><value>Le chemin de Cortex ou la configuration Confluence n'est pas disponible. Les actions sont désactivées, mais l'état existant reste lisible.</value></data>
+  <data name="SchedulingPresetLabel" xml:space="preserve"><value>Fréquence</value></data>
+  <data name="SchedulingPresetDaily" xml:space="preserve"><value>Quotidienne</value></data>
+  <data name="SchedulingPresetHourly" xml:space="preserve"><value>Horaire</value></data>
+  <data name="SchedulingStartTimeLabel" xml:space="preserve"><value>Heure locale de départ (HH:mm)</value></data>
+  <data name="SchedulingCreateOrUpdate" xml:space="preserve"><value>Créer ou reconfigurer</value></data>
+  <data name="SchedulingDelete" xml:space="preserve"><value>Supprimer la tâche</value></data>
+  <data name="SchedulingStateTitle" xml:space="preserve"><value>État de la tâche</value></data>
+  <data name="SchedulingStateLabel" xml:space="preserve"><value>État</value></data>
+  <data name="SchedulingNextRunLabel" xml:space="preserve"><value>Prochaine exécution</value></data>
+  <data name="SchedulingLastRunLabel" xml:space="preserve"><value>Dernière exécution</value></data>
+  <data name="SchedulingLastResultLabel" xml:space="preserve"><value>Dernier résultat</value></data>
+  <data name="SchedulingExecutionLabel" xml:space="preserve"><value>Exécution actuelle</value></data>
+  <data name="SchedulingLoading" xml:space="preserve"><value>Lecture de la tâche en cours...</value></data>
+  <data name="SchedulingStateAbsent" xml:space="preserve"><value>Absente</value></data>
+  <data name="SchedulingStateActive" xml:space="preserve"><value>Présente et active</value></data>
+  <data name="SchedulingStateDisabled" xml:space="preserve"><value>Présente mais désactivée</value></data>
+  <data name="SchedulingStateNeedsReconfiguration" xml:space="preserve"><value>Présente - à reconfigurer</value></data>
+  <data name="SchedulingStateCollision" xml:space="preserve"><value>Collision : une tâche étrangère occupe ce nom. Aucune modification n'est autorisée.</value></data>
+  <data name="SchedulingStateReadError" xml:space="preserve"><value>Erreur de lecture</value></data>
+  <data name="SchedulingNeverRun" xml:space="preserve"><value>Jamais exécutée</value></data>
+  <data name="SchedulingRunning" xml:space="preserve"><value>En cours</value></data>
+  <data name="SchedulingRunningSinceFormat" xml:space="preserve"><value>En cours depuis le {0}</value></data>
+  <data name="SchedulingRunningSinceApproximateFormat" xml:space="preserve"><value>En cours depuis environ le {0}</value></data>
+  <data name="SchedulingNextRunDisabledFormat" xml:space="preserve"><value>{0} - tâche désactivée, cette exécution n'aura pas lieu tant qu'elle reste désactivée</value></data>
+  <data name="SchedulingResultSuccess" xml:space="preserve"><value>Terminée sans erreur</value></data>
+  <data name="SchedulingResultNothingToDo" xml:space="preserve"><value>Rien à faire, rien de nouveau à publier</value></data>
+  <data name="SchedulingResultFailure" xml:space="preserve"><value>Échec</value></data>
+  <data name="SchedulingResultUnexpectedFormat" xml:space="preserve"><value>Résultat non reconnu : 0x{0:X8}</value></data>
+  <data name="SchedulingInvalidTime" xml:space="preserve"><value>Saisissez une heure locale valide au format HH:mm.</value></data>
+  <data name="SchedulingSaved" xml:space="preserve"><value>La tâche a été créée ou reconfigurée.</value></data>
+  <data name="SchedulingDeleted" xml:space="preserve"><value>La tâche a été supprimée.</value></data>
+  <data name="SchedulingDeleteCancelled" xml:space="preserve"><value>Suppression annulée.</value></data>
+  <data name="SchedulingDeleteConfirmationTitle" xml:space="preserve"><value>Supprimer la programmation</value></data>
+  <data name="SchedulingDeleteConfirmation" xml:space="preserve"><value>Supprimer la tâche de programmation Cortex Companion ? Elle pourra être recréée depuis cet écran.</value></data>
+  <data name="SchedulingEnvironmentBlockedFormat" xml:space="preserve"><value>Programmation refusée : la tâche n'héritera pas des variables suivantes : {0}. Reportez la configuration voulue dans INGESTION.toml ou CONFLUENCE.toml, puis corrigez ou retirez les variables indiquées et relancez Cortex Companion. Les variables inconnues doivent être corrigées ou supprimées.</value></data>
+  <data name="SchedulingErrorMissing" xml:space="preserve"><value>La tâche n'existe plus. Rechargez l'écran avant de recommencer.</value></data>
+  <data name="SchedulingErrorAccessDenied" xml:space="preserve"><value>Accès refusé. Vérifiez le compte propriétaire et les droits du dossier de tâches CortexCompanion.</value></data>
+  <data name="SchedulingErrorServiceNotRunning" xml:space="preserve"><value>Le service Planificateur de tâches est arrêté. Démarrez-le puis rechargez l'écran.</value></data>
+  <data name="SchedulingErrorUserNotLoggedOn" xml:space="preserve"><value>L'utilisateur prévu pour la tâche n'est pas connecté. Ouvrez sa session puis réessayez.</value></data>
+  <data name="SchedulingErrorServiceUnavailable" xml:space="preserve"><value>Le service Planificateur de tâches est indisponible. Vérifiez son état puis réessayez.</value></data>
+  <data name="SchedulingErrorUnexpectedFormat" xml:space="preserve"><value>Erreur du Planificateur de tâches (0x{0:X8}). Rechargez l'écran ; si elle persiste, consultez le journal.</value></data>
 </root>

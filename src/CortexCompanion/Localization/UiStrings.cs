@@ -41,6 +41,18 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("CredentialFailed"));
     private static readonly CompositeFormat SyncUnexpectedExitFormat =
         CompositeFormat.Parse(GetString("SyncUnexpectedExit"));
+    private static readonly CompositeFormat SchedulingEnvironmentBlockedFormat =
+        CompositeFormat.Parse(GetString("SchedulingEnvironmentBlockedFormat"));
+    private static readonly CompositeFormat SchedulingNextRunDisabledFormat =
+        CompositeFormat.Parse(GetString("SchedulingNextRunDisabledFormat"));
+    private static readonly CompositeFormat SchedulingRunningSinceFormat =
+        CompositeFormat.Parse(GetString("SchedulingRunningSinceFormat"));
+    private static readonly CompositeFormat SchedulingRunningSinceApproximateFormat =
+        CompositeFormat.Parse(GetString("SchedulingRunningSinceApproximateFormat"));
+    private static readonly CompositeFormat SchedulingResultUnexpectedFormat =
+        CompositeFormat.Parse(GetString("SchedulingResultUnexpectedFormat"));
+    private static readonly CompositeFormat SchedulingErrorUnexpectedFormat =
+        CompositeFormat.Parse(GetString("SchedulingErrorUnexpectedFormat"));
 
     /// <summary>Gets the application title.</summary>
     public static string AppTitle => GetString(nameof(AppTitle));
@@ -311,8 +323,114 @@ public static class UiStrings
     /// <summary>Gets the Scheduling screen title.</summary>
     public static string SchedulingTitle => GetString(nameof(SchedulingTitle));
 
+    /// <summary>Gets the stable French scheduled-task contract description.</summary>
+    public static string SchedulingTaskContractDescription => GetString(nameof(SchedulingTaskContractDescription));
+
     /// <summary>Gets the Scheduling placeholder text.</summary>
     public static string SchedulingPlaceholder => GetString(nameof(SchedulingPlaceholder));
+
+    /// <summary>Gets the scheduling refresh action.</summary>
+    public static string SchedulingRefresh => GetString(nameof(SchedulingRefresh));
+    /// <summary>Gets the scheduling read-only explanation.</summary>
+    public static string SchedulingReadOnly => GetString(nameof(SchedulingReadOnly));
+    /// <summary>Gets the interactive-session scheduling constraint.</summary>
+    public static string SchedulingSessionRequired => GetString(nameof(SchedulingSessionRequired));
+    /// <summary>Gets the missing-configuration explanation.</summary>
+    public static string SchedulingNotConfigured => GetString(nameof(SchedulingNotConfigured));
+    /// <summary>Gets the preset field label.</summary>
+    public static string SchedulingPresetLabel => GetString(nameof(SchedulingPresetLabel));
+    /// <summary>Gets the daily preset name.</summary>
+    public static string SchedulingPresetDaily => GetString(nameof(SchedulingPresetDaily));
+    /// <summary>Gets the hourly preset name.</summary>
+    public static string SchedulingPresetHourly => GetString(nameof(SchedulingPresetHourly));
+    /// <summary>Gets the local start-time field label.</summary>
+    public static string SchedulingStartTimeLabel => GetString(nameof(SchedulingStartTimeLabel));
+    /// <summary>Gets the create-or-update action label.</summary>
+    public static string SchedulingCreateOrUpdate => GetString(nameof(SchedulingCreateOrUpdate));
+    /// <summary>Gets the delete action label.</summary>
+    public static string SchedulingDelete => GetString(nameof(SchedulingDelete));
+    /// <summary>Gets the task-state section title.</summary>
+    public static string SchedulingStateTitle => GetString(nameof(SchedulingStateTitle));
+    /// <summary>Gets the task-state field label.</summary>
+    public static string SchedulingStateLabel => GetString(nameof(SchedulingStateLabel));
+    /// <summary>Gets the next-run field label.</summary>
+    public static string SchedulingNextRunLabel => GetString(nameof(SchedulingNextRunLabel));
+    /// <summary>Gets the last-run field label.</summary>
+    public static string SchedulingLastRunLabel => GetString(nameof(SchedulingLastRunLabel));
+    /// <summary>Gets the last-result field label.</summary>
+    public static string SchedulingLastResultLabel => GetString(nameof(SchedulingLastResultLabel));
+    /// <summary>Gets the current-execution detail label.</summary>
+    public static string SchedulingExecutionLabel => GetString(nameof(SchedulingExecutionLabel));
+    /// <summary>Gets the initial task state.</summary>
+    public static string SchedulingLoading => GetString(nameof(SchedulingLoading));
+    /// <summary>Gets the absent task state.</summary>
+    public static string SchedulingStateAbsent => GetString(nameof(SchedulingStateAbsent));
+    /// <summary>Gets the active task state.</summary>
+    public static string SchedulingStateActive => GetString(nameof(SchedulingStateActive));
+    /// <summary>Gets the disabled task state.</summary>
+    public static string SchedulingStateDisabled => GetString(nameof(SchedulingStateDisabled));
+    /// <summary>Gets the owned divergent task state.</summary>
+    public static string SchedulingStateNeedsReconfiguration => GetString(nameof(SchedulingStateNeedsReconfiguration));
+    /// <summary>Gets the foreign collision state.</summary>
+    public static string SchedulingStateCollision => GetString(nameof(SchedulingStateCollision));
+    /// <summary>Gets the scheduler read-error state.</summary>
+    public static string SchedulingStateReadError => GetString(nameof(SchedulingStateReadError));
+    /// <summary>Gets the never-run state.</summary>
+    public static string SchedulingNeverRun => GetString(nameof(SchedulingNeverRun));
+    /// <summary>Gets the currently running state without an invented timestamp.</summary>
+    public static string SchedulingRunning => GetString(nameof(SchedulingRunning));
+    /// <summary>Gets the successful terminal result.</summary>
+    public static string SchedulingResultSuccess => GetString(nameof(SchedulingResultSuccess));
+    /// <summary>Gets the non-error no-work terminal result.</summary>
+    public static string SchedulingResultNothingToDo => GetString(nameof(SchedulingResultNothingToDo));
+    /// <summary>Gets the generic failure terminal result.</summary>
+    public static string SchedulingResultFailure => GetString(nameof(SchedulingResultFailure));
+    /// <summary>Gets the strict time validation message.</summary>
+    public static string SchedulingInvalidTime => GetString(nameof(SchedulingInvalidTime));
+    /// <summary>Gets the successful create-or-update message.</summary>
+    public static string SchedulingSaved => GetString(nameof(SchedulingSaved));
+    /// <summary>Gets the successful deletion message.</summary>
+    public static string SchedulingDeleted => GetString(nameof(SchedulingDeleted));
+    /// <summary>Gets the cancelled deletion message.</summary>
+    public static string SchedulingDeleteCancelled => GetString(nameof(SchedulingDeleteCancelled));
+    /// <summary>Gets the delete confirmation title.</summary>
+    public static string SchedulingDeleteConfirmationTitle => GetString(nameof(SchedulingDeleteConfirmationTitle));
+    /// <summary>Gets the delete confirmation consequence.</summary>
+    public static string SchedulingDeleteConfirmation => GetString(nameof(SchedulingDeleteConfirmation));
+    /// <summary>Gets the missing-task scheduler error.</summary>
+    public static string SchedulingErrorMissing => GetString(nameof(SchedulingErrorMissing));
+    /// <summary>Gets the access-denied scheduler error.</summary>
+    public static string SchedulingErrorAccessDenied => GetString(nameof(SchedulingErrorAccessDenied));
+    /// <summary>Gets the stopped-service scheduler error.</summary>
+    public static string SchedulingErrorServiceNotRunning => GetString(nameof(SchedulingErrorServiceNotRunning));
+    /// <summary>Gets the interactive-user scheduler error.</summary>
+    public static string SchedulingErrorUserNotLoggedOn => GetString(nameof(SchedulingErrorUserNotLoggedOn));
+    /// <summary>Gets the unavailable-service scheduler error.</summary>
+    public static string SchedulingErrorServiceUnavailable => GetString(nameof(SchedulingErrorServiceUnavailable));
+    /// <summary>Formats the environment refusal with names only and an actionable remediation.</summary>
+    public static string FormatSchedulingEnvironmentBlocked(string names) =>
+        string.Format(CultureInfo.CurrentCulture, SchedulingEnvironmentBlockedFormat, names);
+    /// <summary>Formats one local scheduler timestamp.</summary>
+    public static string FormatSchedulingDateTime(DateTimeOffset value) =>
+        value.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
+    /// <summary>Formats a disabled task's qualified next-run timestamp.</summary>
+    public static string FormatSchedulingNextRunDisabled(DateTimeOffset value) =>
+        string.Format(CultureInfo.CurrentCulture, SchedulingNextRunDisabledFormat, FormatSchedulingDateTime(value));
+    /// <summary>Formats a running task using the primary Task Scheduler timestamp.</summary>
+    public static string FormatSchedulingRunningSince(DateTimeOffset value) =>
+        string.Format(CultureInfo.CurrentCulture, SchedulingRunningSinceFormat, FormatSchedulingDateTime(value));
+    /// <summary>Formats a running task using the approximate worker-controlled fallback.</summary>
+    public static string FormatSchedulingRunningSinceApproximate(DateTimeOffset value) =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            SchedulingRunningSinceApproximateFormat,
+            FormatSchedulingDateTime(value));
+    /// <summary>Formats an unexpected task result as an unsigned hexadecimal value.</summary>
+    public static string FormatSchedulingResultUnexpected(uint result) =>
+        string.Format(CultureInfo.CurrentCulture, SchedulingResultUnexpectedFormat, result);
+    /// <summary>Formats an unexpected scheduler HRESULT as an unsigned hexadecimal value.</summary>
+    public static string FormatSchedulingErrorUnexpected(uint hResult) =>
+        string.Format(CultureInfo.CurrentCulture, SchedulingErrorUnexpectedFormat, hResult);
 
     /// <summary>Gets the initial handshake status.</summary>
     public static string HandshakePending => GetString(nameof(HandshakePending));
