@@ -104,6 +104,16 @@ public sealed class ThemeContrastTests
             "IsSelected",
             "Foreground",
             "{DynamicResource BackgroundBrush}");
+
+        XElement comboStyle = FindImplicitStyle(commonControls, presentation, "ComboBox");
+        XElement selectionPresenter = comboStyle.Descendants(presentation + "ContentPresenter")
+            .Single(element => string.Equals(
+                (string?)element.Attribute("Content"),
+                "{TemplateBinding SelectionBoxItem}",
+                StringComparison.Ordinal));
+        Assert.AreEqual(
+            "{TemplateBinding ItemTemplateSelector}",
+            (string?)selectionPresenter.Attribute("ContentTemplateSelector"));
     }
 
     /// <summary>Ensures color literals stay centralized in the palette dictionary.</summary>
