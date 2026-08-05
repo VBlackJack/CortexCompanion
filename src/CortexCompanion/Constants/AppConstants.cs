@@ -24,7 +24,7 @@ public static class AppConstants
     /// Gets the minimum supported CLI version measured from the current Cortex main
     /// development environment on 2026-08-05.
     /// </summary>
-    public const string MinSupportedCliVersion = "2026.0716.01";
+    public const string MinSupportedCliVersion = "2026.0805.00";
 
     /// <summary>Gets the only argument used by the startup handshake.</summary>
     public const string CliVersionArgument = "--version";
