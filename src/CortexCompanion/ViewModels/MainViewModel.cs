@@ -3,6 +3,7 @@
 
 using System.Windows.Input;
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
@@ -20,11 +21,15 @@ public sealed class MainViewModel : ViewModelBase
     private bool _isReadOnly = true;
 
     /// <summary>Initializes the shell view model.</summary>
-    public MainViewModel(CliHandshakeService handshakeService)
+    public MainViewModel(CliHandshakeService handshakeService, PagesViewModel pages)
     {
-        _handshakeService = handshakeService;
+        _handshakeService = handshakeService ?? throw new ArgumentNullException(nameof(handshakeService));
+        Pages = pages ?? throw new ArgumentNullException(nameof(pages));
         NavigateCommand = new RelayCommand<NavigationPage>(Navigate);
     }
+
+    /// <summary>Gets the functional Pages screen projection.</summary>
+    public PagesViewModel Pages { get; }
 
     /// <summary>Gets the navigation command for the three scaffold destinations.</summary>
     public ICommand NavigateCommand { get; }
@@ -73,6 +78,7 @@ public sealed class MainViewModel : ViewModelBase
         CliHandshakeResult result = await _handshakeService.EvaluateAsync(settings, cancellationToken);
         IsReadOnly = result.IsReadOnly;
         HandshakeStatusText = FormatHandshakeStatus(result);
+        await Pages.InitializeAsync(IsReadOnly);
     }
 
     private void Navigate(NavigationPage page) => CurrentPage = page;
@@ -85,7 +91,8 @@ public sealed class MainViewModel : ViewModelBase
         CliHandshakeStatus.NonZeroExitCode => UiStrings.HandshakeNonZeroExit,
         CliHandshakeStatus.UnparseableVersion => UiStrings.HandshakeUnparseable,
         CliHandshakeStatus.IncompatibleVersion => UiStrings.FormatHandshakeIncompatible(
-            result.DetectedVersion?.ToString() ?? string.Empty),
+            result.DetectedVersion?.ToString() ?? string.Empty,
+            AppConstants.MinSupportedCliVersion),
         CliHandshakeStatus.Compatible => UiStrings.FormatHandshakeCompatible(
             result.DetectedVersion?.ToString() ?? string.Empty),
         _ => UiStrings.HandshakeNotConfigured,
