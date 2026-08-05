@@ -10,6 +10,7 @@
         Height="{StaticResource WindowHeight}"
         MinWidth="{StaticResource WindowMinWidth}"
         MinHeight="{StaticResource WindowMinHeight}"
+        Icon="/Assets/cortex.ico"
         Background="{DynamicResource BackgroundBrush}"
         Foreground="{DynamicResource TextPrimaryBrush}"
         FontFamily="{StaticResource AppFontFamily}"
