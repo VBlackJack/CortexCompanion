@@ -1,0 +1,67 @@
+<!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
+<Window x:Class="CortexCompanion.Views.ConfirmationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localization="clr-namespace:CortexCompanion.Localization"
+        Width="{StaticResource ConfirmationDialogWidth}"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="{StaticResource AppFontFamily}"
+        FontSize="{StaticResource FontSizeBody}">
+    <Grid Margin="{StaticResource SpacingXl}"
+          FocusManager.FocusedElement="{Binding ElementName=CancelButton}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border x:Name="DestructiveIndicator"
+                    Width="{StaticResource ConfirmationEmphasisWidth}"
+                    Margin="{StaticResource MarginInlineSm}"
+                    Background="{DynamicResource ErrorBrush}"
+                    Visibility="Collapsed" />
+            <TextBlock x:Name="MessageText"
+                       Grid.Column="1"
+                       TextWrapping="Wrap" />
+        </Grid>
+        <StackPanel x:Name="TypedInputPanel"
+                    Grid.Row="1"
+                    Margin="{StaticResource MarginSectionTop}">
+            <TextBlock x:Name="InputLabelText"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBox x:Name="ConfirmationInput"
+                     Margin="{StaticResource MarginSectionTop}"
+                     MinHeight="{StaticResource ControlMinHeight}"
+                     Padding="{StaticResource SpacingSm}"
+                     Background="{DynamicResource SurfaceBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}"
+                     AutomationProperties.LabeledBy="{Binding ElementName=InputLabelText}" />
+        </StackPanel>
+        <StackPanel Grid.Row="2"
+                    Margin="{StaticResource MarginSectionTop}"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button x:Name="CancelButton"
+                    Content="{x:Static localization:UiStrings.CancelButton}"
+                    IsCancel="True"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Margin="{StaticResource MarginInlineSm}"
+                    AutomationProperties.Name="{x:Static localization:UiStrings.CancelButton}" />
+            <Button Content="{x:Static localization:UiStrings.ConfirmButton}"
+                    Click="ConfirmClick"
+                    IsDefault="False"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="{StaticResource MarginNone}"
+                    AutomationProperties.Name="{x:Static localization:UiStrings.ConfirmButton}" />
+        </StackPanel>
+    </Grid>
+</Window>

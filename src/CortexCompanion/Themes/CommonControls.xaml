@@ -12,6 +12,8 @@
     <system:Double x:Key="WindowMinWidth">820</system:Double>
     <system:Double x:Key="WindowMinHeight">520</system:Double>
     <system:Double x:Key="ControlMinHeight">40</system:Double>
+    <system:Double x:Key="ConfirmationDialogWidth">520</system:Double>
+    <system:Double x:Key="ConfirmationEmphasisWidth">4</system:Double>
     <system:Double x:Key="SchedulingInputWidth">240</system:Double>
     <system:Double x:Key="ScrollBarThickness">12</system:Double>
 
@@ -28,6 +30,8 @@
     <Thickness x:Key="MarginSectionBottom">0,0,0,12</Thickness>
     <Thickness x:Key="MarginHeadingBottom">0,0,0,12</Thickness>
     <Thickness x:Key="MarginSectionTop">0,12,0,0</Thickness>
+    <Thickness x:Key="MarginInlineSm">0,0,8,0</Thickness>
+    <Thickness x:Key="MarginNone">0</Thickness>
 
     <CornerRadius x:Key="CornerRadiusCard">10</CornerRadius>
     <CornerRadius x:Key="CornerRadiusControl">8</CornerRadius>

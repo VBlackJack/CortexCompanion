@@ -80,7 +80,7 @@
   <data name="PagesCliTimedOut" xml:space="preserve"><value>Le CLI n'a pas repondu dans le delai imparti.</value></data>
   <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu etre lance.</value></data>
   <data name="ConfirmAddTitle" xml:space="preserve"><value>Confirmer l'ajout</value></data>
-  <data name="ConfirmAddMessage" xml:space="preserve"><value>Ajouter la page « {0} » (ID {1}) dans l'espace {2} ?</value></data>
+  <data name="ConfirmAddMessage" xml:space="preserve"><value>Ajouter la page "{0}" (ID {1}) dans l'espace {2} ?</value></data>
   <data name="ConfirmRemoveTitle" xml:space="preserve"><value>Confirmer le retrait</value></data>
   <data name="ConfirmRemoveMessage" xml:space="preserve"><value>Retirer la page {0} de l'espace {1} ? Elle sera retiree de la generation suivante puis purgee de l'index.</value></data>
   <data name="ConfirmModeTitle" xml:space="preserve"><value>Confirmation typee du mode</value></data>
