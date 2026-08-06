@@ -1,0 +1,6 @@
+# Line-ending policy. Text files are stored with LF in the repository and
+# checked out as CRLF on every platform to match the root .editorconfig.
+* text=auto eol=crlf
+
+# Binary assets must never be normalized or diffed as text.
+*.ico binary
