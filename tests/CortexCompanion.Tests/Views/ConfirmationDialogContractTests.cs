@@ -63,7 +63,7 @@ public sealed class ConfirmationDialogContractTests
 
     /// <summary>Ensures Escape and the cancel button share the built-in WPF cancellation path.</summary>
     [TestMethod]
-    public void CancelButtonIsTheDefaultAndOnlyCancelHandler()
+    public void CancelButtonIsTheOnlyCancelHandlerAndNoButtonIsDefault()
     {
         XDocument dialog = XDocument.Load(GetDialogPath());
         XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -75,8 +75,13 @@ public sealed class ConfirmationDialogContractTests
                 StringComparison.Ordinal));
 
         Assert.AreEqual("True", (string?)cancelButton.Attribute("IsCancel"));
-        Assert.AreEqual("True", (string?)cancelButton.Attribute("IsDefault"));
+        Assert.IsNull(cancelButton.Attribute("IsDefault"));
         Assert.IsNull(cancelButton.Attribute("Click"));
+
+        foreach (XElement button in dialog.Descendants(presentation + "Button"))
+        {
+            Assert.AreNotEqual("True", (string?)button.Attribute("IsDefault"));
+        }
     }
 
     private static void AssertSafeMapping(string fileName, int expectedCount)

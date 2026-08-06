@@ -53,7 +53,6 @@
             <Button x:Name="CancelButton"
                     Content="{x:Static localization:UiStrings.CancelButton}"
                     IsCancel="True"
-                    IsDefault="True"
                     Style="{StaticResource SecondaryButtonStyle}"
                     Margin="{StaticResource MarginInlineSm}"
                     AutomationProperties.Name="{x:Static localization:UiStrings.CancelButton}" />
