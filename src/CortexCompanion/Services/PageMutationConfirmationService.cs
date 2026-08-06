@@ -13,22 +13,26 @@ namespace CortexCompanion.Services;
 public sealed class PageMutationConfirmationService : IPageMutationConfirmationService
 {
     /// <inheritdoc />
-    public bool ConfirmAdd(ResolvedPageContract page) => MessageBox.Show(
-        Application.Current.MainWindow,
-        UiStrings.FormatConfirmAdd(page.Title, page.PageId, page.SpaceKey),
-        UiStrings.ConfirmAddTitle,
-        MessageBoxButton.YesNo,
-        MessageBoxImage.Question,
-        MessageBoxResult.No) == MessageBoxResult.Yes;
+    public bool ConfirmAdd(ResolvedPageContract page)
+    {
+        ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(
+            UiStrings.ConfirmAddTitle,
+            UiStrings.FormatConfirmAdd(page.Title, page.PageId, page.SpaceKey),
+            false);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
 
     /// <inheritdoc />
-    public bool ConfirmRemove(string spaceKey, string pageId, string? title) => MessageBox.Show(
-        Application.Current.MainWindow,
-        UiStrings.FormatConfirmRemove(pageId, spaceKey),
-        UiStrings.ConfirmRemoveTitle,
-        MessageBoxButton.YesNo,
-        MessageBoxImage.Warning,
-        MessageBoxResult.No) == MessageBoxResult.Yes;
+    public bool ConfirmRemove(string spaceKey, string pageId, string? title)
+    {
+        ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(
+            UiStrings.ConfirmRemoveTitle,
+            UiStrings.FormatConfirmRemove(pageId, spaceKey),
+            true);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
 
     /// <inheritdoc />
     public string? ConfirmModeChange(
@@ -39,10 +43,11 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
         string message = targetSelection == ConfluenceSelection.WholeSpace
             ? UiStrings.FormatConfirmModeWholeSpace(spaceKey)
             : UiStrings.FormatConfirmModePagesEmpty(spaceKey);
-        TypedConfirmationDialog dialog = new(message)
-        {
-            Owner = Application.Current.MainWindow,
-        };
-        return dialog.ShowDialog() == true ? dialog.ConfirmationText : null;
+        ConfirmationDialog dialog = ConfirmationDialog.CreateTyped(
+            UiStrings.ConfirmModeTitle,
+            message,
+            UiStrings.ConfirmModeInputLabel);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog()) ? dialog.ConfirmationText : null;
     }
 }

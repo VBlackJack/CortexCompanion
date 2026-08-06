@@ -4,6 +4,7 @@
 using System.Windows;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
+using CortexCompanion.Views;
 
 namespace CortexCompanion.Services;
 
@@ -11,11 +12,13 @@ namespace CortexCompanion.Services;
 public sealed class SchedulingConfirmationService : ISchedulingConfirmationService
 {
     /// <inheritdoc />
-    public bool ConfirmDelete() => MessageBox.Show(
-        Application.Current.MainWindow,
-        UiStrings.SchedulingDeleteConfirmation,
-        UiStrings.SchedulingDeleteConfirmationTitle,
-        MessageBoxButton.YesNo,
-        MessageBoxImage.Warning,
-        MessageBoxResult.No) == MessageBoxResult.Yes;
+    public bool ConfirmDelete()
+    {
+        ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(
+            UiStrings.SchedulingDeleteConfirmationTitle,
+            UiStrings.SchedulingDeleteConfirmation,
+            true);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
 }
