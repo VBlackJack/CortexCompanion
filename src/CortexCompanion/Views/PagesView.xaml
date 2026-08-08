@@ -71,9 +71,11 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Text="{x:Static localization:UiStrings.PagesAddReferenceLabel}"
+                        <TextBlock x:Name="PageReferenceLabel"
+                                   Text="{x:Static localization:UiStrings.PagesAddReferenceLabel}"
                                    FontWeight="SemiBold" />
                         <TextBox Text="{Binding PageReference, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.LabeledBy="{Binding ElementName=PageReferenceLabel}"
                                  ToolTip="{x:Static localization:UiStrings.PagesAddReferenceHint}"
                                  MinHeight="{StaticResource ControlMinHeight}"
                                  Margin="0,8,12,0"

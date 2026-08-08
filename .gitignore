@@ -1,6 +1,7 @@
 bin/
 obj/
 local/
+artifacts/
 
 # IDE and user state
 .vs/
@@ -13,4 +14,3 @@ local/
 CLAUDE.md
 AGENTS.md
 codex_task.md
-

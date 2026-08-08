@@ -1,7 +1,6 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
-using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
 using CortexCompanion.Constants;
@@ -14,9 +13,7 @@ using CortexCompanion.ViewModels;
 
 namespace CortexCompanion;
 
-/// <summary>
-/// Composes the dependency-free application shell and performs the startup handshake.
-/// </summary>
+/// <summary>Composes the dependency-free application shell and bounded worker modes.</summary>
 public partial class App : Application, IDisposable
 {
     private readonly CancellationTokenSource _applicationCancellation = new();
@@ -25,172 +22,63 @@ public partial class App : Application, IDisposable
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-
         AppPaths paths = new();
         FileLogger.Initialize(paths.LogsDirectory);
         FileLogger.Info("Cortex Companion starting");
         RegisterExceptionHandlers();
 
-        if (e.Args.Length > 0 &&
-            string.Equals(e.Args[0], AppConstants.SyncWorkerArgument, StringComparison.Ordinal))
+        if (await TryRunWorkerModeAsync(e.Args, paths))
         {
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            if (!SyncWorkerArguments.TryParse(e.Args, out SyncWorkerArguments? workerArguments) ||
-                workerArguments is null ||
-                !SyncWorkerArguments.IsDirectChildOfRunsRoot(
-                    workerArguments.RunDirectory,
-                    paths.SyncRunsDirectory))
-            {
-                FileLogger.Warn("Detached sync worker arguments were invalid");
-                Shutdown(1);
-                return;
-            }
-
-            int workerExitCode = await SyncWorker.ExecuteAsync(workerArguments);
-            Shutdown(workerExitCode);
-            return;
-        }
-
-        if (e.Args.Length > 0 &&
-            string.Equals(e.Args[0], AppConstants.ScheduledWorkerArgument, StringComparison.Ordinal))
-        {
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            if (!ScheduledWorkerArguments.TryParse(
-                    e.Args,
-                    out ScheduledWorkerArguments? scheduledArguments) ||
-                scheduledArguments is null ||
-                !ScheduledWorkerArguments.IsExpectedRunsRoot(
-                    scheduledArguments.RunsRoot,
-                    paths.ScheduledRunsDirectory))
-            {
-                FileLogger.Warn("Scheduled worker arguments were invalid");
-                Shutdown(1);
-                return;
-            }
-
-            IProcessRunner scheduledHandshakeRunner = new ProcessRunner();
-            ICliHandshakeService scheduledHandshake = new CliHandshakeService(
-                new CliVersionPolicy(),
-                scheduledHandshakeRunner);
-            ScheduledWorker scheduledWorker = new(
-                scheduledHandshake,
-                new ScheduledProcessRunner(),
-                new ScheduledRunPersistence(paths.ScheduledRunsDirectory));
-            int scheduledExitCode = await scheduledWorker.ExecuteAsync(scheduledArguments);
-            Shutdown(scheduledExitCode);
             return;
         }
 
         try
         {
             SettingsStore settingsStore = new(paths.SettingsPath);
-            SettingsLoadResult settingsResult = await settingsStore.LoadAsync(_applicationCancellation.Token);
             IProcessRunner processRunner = new ProcessRunner();
             ICliHandshakeService handshakeService = new CliHandshakeService(
                 new CliVersionPolicy(),
                 processRunner);
-            CliPathValidationResult cliValidation = CliPathValidator.Validate(settingsResult.Settings.CliPath);
-            PagesViewModel pagesViewModel;
-            ConfluenceConfigPathResolution? configPath = null;
-            if (cliValidation.IsValid && cliValidation.AbsolutePath is not null)
-            {
-                configPath = ConfluenceConfigPathResolver.Resolve(
-                    cliValidation.AbsolutePath);
-                IConfluenceCliClient cliClient = new ConfluenceCliClient(
-                    processRunner,
-                    cliValidation.AbsolutePath,
-                    configPath.AbsolutePath);
-                IConfluenceConfigStore configStore = new ConfluenceConfigStore(configPath.AbsolutePath);
-                IPageMutationConfirmationService confirmations = new PageMutationConfirmationService();
-                PagesMutationService mutations = new(cliClient, configStore, confirmations);
-                pagesViewModel = new PagesViewModel(
-                    cliClient,
-                    mutations,
-                    configPath,
-                    ConfluenceEnvironmentInspector.GetActiveOverrides());
-            }
-            else
-            {
-                pagesViewModel = new PagesViewModel(
-                    null,
-                    null,
-                    null,
-                    ConfluenceEnvironmentInspector.GetActiveOverrides());
-            }
-
-            IngestionPathResolution? ingestionPath = null;
-            try
-            {
-                ingestionPath = IngestionPathResolver.Resolve(cliValidation.AbsolutePath);
-            }
-            catch (IngestionPathResolutionException exception)
-            {
-                FileLogger.Error("Ingestion source-health path could not be resolved", exception);
-            }
-
-            ISyncRunCoordinator? syncCoordinator = null;
-            IInteractiveProcessLauncher? interactiveLauncher = null;
-            if (cliValidation.IsValid &&
-                cliValidation.AbsolutePath is not null &&
-                configPath is not null &&
-                Environment.ProcessPath is not null)
-            {
-                syncCoordinator = new SyncRunCoordinator(paths.SyncRunsDirectory, Environment.ProcessPath);
-                interactiveLauncher = new InteractiveProcessLauncher();
-            }
-
-            SyncViewModel syncViewModel = new(
-                syncCoordinator,
-                interactiveLauncher,
-                cliValidation.AbsolutePath,
-                configPath?.AbsolutePath,
-                ingestionPath,
-                ConfluenceEnvironmentInspector.GetActiveOverrides());
-            ScheduledTaskContract? scheduledTaskContract = null;
-            if (cliValidation.IsValid &&
-                cliValidation.AbsolutePath is not null &&
-                configPath is not null &&
-                ingestionPath is not null &&
-                Environment.ProcessPath is not null &&
-                File.Exists(configPath.AbsolutePath))
-            {
-                scheduledTaskContract = new ScheduledTaskContract(
-                    Path.GetFullPath(Environment.ProcessPath),
-                    cliValidation.AbsolutePath,
-                    ingestionPath.ConfigPath,
-                    configPath.AbsolutePath,
-                    paths.ScheduledRunsDirectory,
-                    AppConstants.IngestionSourceKind,
-                    WindowsIdentity.GetCurrent().Name);
-            }
-
-            SchedulingViewModel schedulingViewModel = new(
-                new TaskSchedulerComAdapter(),
-                new SchedulingConfirmationService(),
-                new ScheduledRunPersistence(paths.ScheduledRunsDirectory),
-                scheduledTaskContract,
-                SchedulingEnvironmentInspector.GetActiveVariableNames());
-            MainViewModel viewModel = new(
+            ICompanionRuntimeFactory runtimeFactory = new CompanionRuntimeFactory(
+                paths,
                 handshakeService,
-                pagesViewModel,
-                syncViewModel,
-                schedulingViewModel);
-            await viewModel.InitializeAsync(settingsResult.Settings, _applicationCancellation.Token);
-
+                processRunner);
+            ICompanionRuntimeCoordinator runtimeCoordinator = new CompanionRuntimeCoordinator(runtimeFactory);
+            SettingsViewModel settings = new(
+                settingsStore,
+                new CliPathDiscovery(),
+                runtimeCoordinator,
+                new CortexConfigClient(processRunner),
+                new FileDialogService());
+            MainViewModel viewModel = new(runtimeCoordinator, settings);
             MainWindow window = new(viewModel);
             MainWindow = window;
             window.Show();
-            FileLogger.Info("Cortex Companion startup complete");
-        }
-        catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
-        {
-            Shutdown();
+            FileLogger.Info("Cortex Companion shell displayed");
+
+            try
+            {
+                SettingsLoadResult settingsResult = await settingsStore.LoadAsync(
+                    _applicationCancellation.Token);
+                await viewModel.InitializeAsync(settingsResult, _applicationCancellation.Token);
+                FileLogger.Info("Cortex Companion startup complete");
+            }
+            catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
+            {
+                Shutdown();
+            }
+            catch (Exception exception)
+            {
+                FileLogger.Error("Cortex Companion initialization failed", exception);
+                viewModel.ReportInitializationFailure();
+            }
         }
         catch (Exception exception)
         {
-            FileLogger.Error("Cortex Companion startup failed", exception);
+            FileLogger.Error("Cortex Companion shell composition failed", exception);
+            FileLogger.Flush();
             MessageBox.Show(
-                UiStrings.FatalStartupError,
+                UiStrings.FormatFatalStartupError(paths.LogsDirectory),
                 UiStrings.AppTitle,
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -213,6 +101,59 @@ public partial class App : Application, IDisposable
     {
         _applicationCancellation.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    private async Task<bool> TryRunWorkerModeAsync(string[] arguments, AppPaths paths)
+    {
+        if (arguments.Length > 0 &&
+            string.Equals(arguments[0], AppConstants.SyncWorkerArgument, StringComparison.Ordinal))
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (!SyncWorkerArguments.TryParse(arguments, out SyncWorkerArguments? workerArguments) ||
+                workerArguments is null ||
+                !SyncWorkerArguments.IsDirectChildOfRunsRoot(
+                    workerArguments.RunDirectory,
+                    paths.SyncRunsDirectory))
+            {
+                FileLogger.Warn("Detached sync worker arguments were invalid");
+                Shutdown(1);
+                return true;
+            }
+
+            int exitCode = await SyncWorker.ExecuteAsync(workerArguments);
+            Shutdown(exitCode);
+            return true;
+        }
+
+        if (arguments.Length > 0 &&
+            string.Equals(arguments[0], AppConstants.ScheduledWorkerArgument, StringComparison.Ordinal))
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (!ScheduledWorkerArguments.TryParse(arguments, out ScheduledWorkerArguments? workerArguments) ||
+                workerArguments is null ||
+                !ScheduledWorkerArguments.IsExpectedRunsRoot(
+                    workerArguments.RunsRoot,
+                    paths.ScheduledRunsDirectory))
+            {
+                FileLogger.Warn("Scheduled worker arguments were invalid");
+                Shutdown(1);
+                return true;
+            }
+
+            IProcessRunner processRunner = new ProcessRunner();
+            ICliHandshakeService handshake = new CliHandshakeService(
+                new CliVersionPolicy(),
+                processRunner);
+            ScheduledWorker worker = new(
+                handshake,
+                new ScheduledProcessRunner(),
+                new ScheduledRunPersistence(paths.ScheduledRunsDirectory));
+            int exitCode = await worker.ExecuteAsync(workerArguments);
+            Shutdown(exitCode);
+            return true;
+        }
+
+        return false;
     }
 
     private void RegisterExceptionHandlers()

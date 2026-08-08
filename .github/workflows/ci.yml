@@ -1,0 +1,118 @@
+# Copyright 2026 Julien Bombled
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+name: ci
+
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Build, test, and publish Windows payload
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1  # v5.4.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore locked dependencies
+        run: dotnet restore CortexCompanion.sln --locked-mode
+
+      - name: Verify explicit C# declarations
+        shell: pwsh
+        run: ./tools/ci-csharp-style.ps1
+
+      - name: Verify formatting
+        run: dotnet format CortexCompanion.sln --verify-no-changes --no-restore
+
+      - name: Build release
+        run: dotnet build CortexCompanion.sln -c Release --no-restore -warnaserror
+
+      - name: Run tests
+        run: dotnet test CortexCompanion.sln -c Release --no-build --no-restore
+
+      - name: Publish self-contained payload
+        run: >-
+          dotnet publish src/CortexCompanion/CortexCompanion.csproj
+          -c Release
+          --no-restore
+          -p:PublishProfile=win-x64
+          -o artifacts/publish/win-x64
+
+      - name: Verify published version contract
+        shell: pwsh
+        run: |
+          $expected = dotnet msbuild Directory.Build.props -getProperty:Version
+          $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+          $startInfo.FileName = "./artifacts/publish/win-x64/CortexCompanion.exe"
+          $startInfo.ArgumentList.Add("--version")
+          $startInfo.UseShellExecute = $false
+          $startInfo.CreateNoWindow = $true
+          $startInfo.RedirectStandardOutput = $true
+          $process = [System.Diagnostics.Process]::Start($startInfo)
+          $actual = $process.StandardOutput.ReadToEnd().Trim()
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0 -or $actual -ne $expected) {
+            throw "Published Companion version contract failed: expected '$expected', got '$actual'."
+          }
+
+      - name: Verify redistribution notices
+        shell: pwsh
+        run: |
+          $publishDirectory = "./artifacts/publish/win-x64"
+          $required = @(
+            "LICENSE.txt",
+            "ThirdPartyNotices.txt",
+            "WPF-LICENSE.txt",
+            "WPF-ThirdPartyNotices.txt",
+            "Tomlyn-LICENSE.txt",
+            "CortexCompanion-LICENSE.txt"
+          )
+          foreach ($name in $required) {
+            $path = Join-Path $publishDirectory $name
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+              throw "Required redistribution notice is missing: $name"
+            }
+            if ((Get-Item -LiteralPath $path).Length -eq 0) {
+              throw "Required redistribution notice is empty: $name"
+            }
+          }
+          $expectedTomlyn = (Get-FileHash -LiteralPath "./THIRD-PARTY-NOTICES.txt" -Algorithm SHA256).Hash
+          $actualTomlyn = (Get-FileHash -LiteralPath "$publishDirectory/Tomlyn-LICENSE.txt" -Algorithm SHA256).Hash
+          if ($actualTomlyn -ne $expectedTomlyn) {
+            throw "Published Tomlyn notice does not match the reviewed repository notice."
+          }
+          $tomlynText = Get-Content -LiteralPath "$publishDirectory/Tomlyn-LICENSE.txt" -Raw
+          if ($tomlynText -notmatch [regex]::Escape("Copyright (c) 2019-2026, Alexandre Mutel") -or
+              $tomlynText -notmatch [regex]::Escape("All rights reserved.")) {
+            throw "Published Tomlyn notice is incomplete."
+          }
+          $expectedCompanion = (Get-FileHash -LiteralPath "./LICENSE" -Algorithm SHA256).Hash
+          $actualCompanion = (Get-FileHash -LiteralPath "$publishDirectory/CortexCompanion-LICENSE.txt" -Algorithm SHA256).Hash
+          if ($actualCompanion -ne $expectedCompanion) {
+            throw "Published Cortex Companion license does not match the repository license."
+          }

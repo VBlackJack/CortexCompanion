@@ -4,3 +4,6 @@
 
 # Binary assets must never be normalized or diffed as text.
 *.ico binary
+
+# Git hooks must be executable by Git Bash on Windows and Unix runners.
+/.githooks/* text eol=lf

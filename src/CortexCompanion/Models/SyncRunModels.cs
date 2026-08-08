@@ -5,12 +5,23 @@ using System.Text.Json.Serialization;
 
 namespace CortexCompanion.Models;
 
+/// <summary>Identifies the bounded Cortex operation executed by a detached sync worker.</summary>
+public enum SyncRunKind
+{
+    /// <summary>The legacy Confluence collection operation.</summary>
+    Confluence,
+
+    /// <summary>The primary local knowledge-base indexing operation.</summary>
+    LocalDocuments,
+}
+
 /// <summary>Identifies one application-owned detached sync run.</summary>
 public sealed record SyncRunHandle(
     string RunId,
     string RunDirectory,
     int WorkerProcessId,
-    DateTimeOffset WorkerStartedAt);
+    DateTimeOffset WorkerStartedAt,
+    SyncRunKind RunKind = SyncRunKind.Confluence);
 
 /// <summary>Describes the durable worker identity used to reject PID reuse.</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
@@ -27,6 +38,10 @@ public sealed record SyncWorkerState
     /// <summary>Gets the observed worker process start timestamp.</summary>
     [JsonPropertyName("worker_started_at")]
     public required DateTimeOffset WorkerStartedAt { get; init; }
+
+    /// <summary>Gets the operation executed by the worker; absent legacy values map to Confluence.</summary>
+    [JsonPropertyName("run_kind")]
+    public SyncRunKind RunKind { get; init; }
 }
 
 /// <summary>Describes the durable terminal result written by the worker.</summary>

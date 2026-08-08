@@ -2,6 +2,7 @@
 <Window x:Class="CortexCompanion.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
         xmlns:localization="clr-namespace:CortexCompanion.Localization"
         xmlns:models="clr-namespace:CortexCompanion.Models"
         xmlns:views="clr-namespace:CortexCompanion.Views"
@@ -37,33 +38,67 @@
                            FontSize="{StaticResource FontSizeTitle}"
                            FontWeight="SemiBold"
                            Margin="{StaticResource MarginSectionBottom}" />
-                <Button Content="{x:Static localization:UiStrings.PagesNavigation}"
-                        AutomationProperties.Name="{x:Static localization:UiStrings.PagesNavigation}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Static models:NavigationPage.Pages}"
-                        Style="{StaticResource NavigationButtonStyle}" />
-                <Button Content="{x:Static localization:UiStrings.SyncNavigation}"
-                        AutomationProperties.Name="{x:Static localization:UiStrings.SyncNavigation}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Static models:NavigationPage.Sync}"
-                        Style="{StaticResource NavigationButtonStyle}" />
-                <Button Content="{x:Static localization:UiStrings.SchedulingNavigation}"
-                        AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingNavigation}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Static models:NavigationPage.Scheduling}"
-                        Style="{StaticResource NavigationButtonStyle}" />
+                <RadioButton Content="{x:Static localization:UiStrings.SyncNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.SyncNavigation}"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="{x:Static models:NavigationPage.LocalKnowledgeBase}"
+                             IsChecked="{Binding IsLocalKnowledgeBaseSelected, Mode=TwoWay}"
+                             Style="{StaticResource NavigationRadioButtonStyle}" />
+                <RadioButton Content="{x:Static localization:UiStrings.PagesNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.PagesNavigation}"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="{x:Static models:NavigationPage.ConfluencePages}"
+                             IsChecked="{Binding IsConfluencePagesSelected, Mode=TwoWay}"
+                             Style="{StaticResource NavigationRadioButtonStyle}" />
+                <RadioButton Content="{x:Static localization:UiStrings.SchedulingNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingNavigation}"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="{x:Static models:NavigationPage.ConfluenceScheduling}"
+                             IsChecked="{Binding IsConfluenceSchedulingSelected, Mode=TwoWay}"
+                             Style="{StaticResource NavigationRadioButtonStyle}" />
+                <RadioButton Content="{x:Static localization:UiStrings.SettingsNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.SettingsNavigation}"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="{x:Static models:NavigationPage.Settings}"
+                             IsChecked="{Binding IsSettingsSelected, Mode=TwoWay}"
+                             Style="{StaticResource NavigationRadioButtonStyle}" />
             </StackPanel>
         </Border>
 
         <Grid Grid.Row="0" Grid.Column="1" Margin="{StaticResource SpacingXl}">
-            <Grid Visibility="{Binding IsPagesVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"
+                    Style="{StaticResource PageCardStyle}"
+                    Padding="{StaticResource PaddingAlertBanner}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    Visibility="{Binding IsInitializing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <ProgressBar Width="{StaticResource SettingsLabelWidth}"
+                                 IsIndeterminate="True"
+                                 IsTabStop="False" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsLoading}"
+                               Margin="{StaticResource MarginInlineControl}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsConfluencePagesVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <views:PagesView DataContext="{Binding Pages}" />
             </Grid>
-            <Grid Visibility="{Binding IsSyncVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsLocalKnowledgeBaseVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <views:SyncView DataContext="{Binding Sync}" />
             </Grid>
-            <Grid Visibility="{Binding IsSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsConfluenceSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <views:SchedulingView DataContext="{Binding Scheduling}" />
+            </Grid>
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:SettingsView DataContext="{Binding Settings}" />
             </Grid>
         </Grid>
 
@@ -72,6 +107,8 @@
                 Grid.ColumnSpan="2"
                 Style="{StaticResource StatusBarStyle}">
             <TextBlock Text="{Binding HandshakeStatusText}"
+                       accessibility:LiveRegionBehavior.Announcement="{Binding HandshakeStatusText}"
+                       AutomationProperties.LiveSetting="Polite"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        TextTrimming="CharacterEllipsis" />
         </Border>

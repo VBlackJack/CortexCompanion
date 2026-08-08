@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Logging;
@@ -23,6 +24,7 @@ public sealed class SyncViewModel : ViewModelBase
     private readonly IngestionPathResolution? _ingestionPath;
     private readonly AsyncRelayCommand _refreshCommand;
     private readonly AsyncRelayCommand _syncCommand;
+    private readonly AsyncRelayCommand _confluenceSyncCommand;
     private readonly AsyncRelayCommand _storeCredentialCommand;
     private CancellationToken _applicationCancellation;
     private CancellationTokenSource? _monitorCancellation;
@@ -42,6 +44,7 @@ public sealed class SyncViewModel : ViewModelBase
     private string _standardError = string.Empty;
     private string _standardOutput = string.Empty;
     private string _runResult = UiStrings.SyncNoRunResult;
+    private string _runTitle = UiStrings.SyncRunTitle;
     private bool _hasHealth;
     private bool _isBusy;
     private bool _isSyncRunning;
@@ -71,8 +74,15 @@ public sealed class SyncViewModel : ViewModelBase
                 ingestionPath.DataRootOriginName,
                 ingestionPath.ConfigPathOriginName);
         _refreshCommand = new AsyncRelayCommand(RefreshAsync, () => !IsBusy);
-        _syncCommand = new AsyncRelayCommand(SyncNowAsync, () => CanRunActions && !IsSyncRunning);
-        _storeCredentialCommand = new AsyncRelayCommand(StoreCredentialAsync, () => CanRunActions && !IsSyncRunning);
+        _syncCommand = new AsyncRelayCommand(
+            SyncLocalDocumentsAsync,
+            () => CanRunLocalDocuments && !IsSyncRunning);
+        _confluenceSyncCommand = new AsyncRelayCommand(
+            SyncConfluenceAsync,
+            () => CanRunConfluenceActions && !IsSyncRunning);
+        _storeCredentialCommand = new AsyncRelayCommand(
+            StoreCredentialAsync,
+            () => CanRunConfluenceActions && !IsSyncRunning);
     }
 
     /// <summary>Gets active supported Confluence environment overrides.</summary>
@@ -186,6 +196,13 @@ public sealed class SyncViewModel : ViewModelBase
         private set => SetProperty(ref _runResult, value);
     }
 
+    /// <summary>Gets the novice scope label for the latest detached run.</summary>
+    public string RunTitle
+    {
+        get => _runTitle;
+        private set => SetProperty(ref _runTitle, value);
+    }
+
     /// <summary>Gets whether one UI operation is active.</summary>
     public bool IsBusy
     {
@@ -226,19 +243,28 @@ public sealed class SyncViewModel : ViewModelBase
         }
     }
 
-    /// <summary>Gets whether both action channels are configured and handshake-compatible.</summary>
-    public bool CanRunActions => !IsReadOnly &&
+    /// <summary>Gets whether the primary local document indexing action is handshake-compatible.</summary>
+    public bool CanRunLocalDocuments => !IsReadOnly &&
         _runCoordinator is not null &&
+        !string.IsNullOrWhiteSpace(_cliPath);
+
+    /// <summary>Gets whether the optional Confluence integration is fully configured.</summary>
+    public bool CanRunConfluenceActions => CanRunLocalDocuments &&
         _interactiveLauncher is not null &&
-        !string.IsNullOrWhiteSpace(_cliPath) &&
         !string.IsNullOrWhiteSpace(_configPath) &&
         File.Exists(_configPath);
+
+    /// <summary>Gets the retained compatibility alias for the primary local action.</summary>
+    public bool CanRunActions => CanRunLocalDocuments;
 
     /// <summary>Gets the direct-state refresh command.</summary>
     public ICommand RefreshCommand => _refreshCommand;
 
     /// <summary>Gets the detached sync launch command.</summary>
     public ICommand SyncCommand => _syncCommand;
+
+    /// <summary>Gets the optional Confluence collection command.</summary>
+    public ICommand ConfluenceSyncCommand => _confluenceSyncCommand;
 
     /// <summary>Gets the visible credential console command.</summary>
     public ICommand StoreCredentialCommand => _storeCredentialCommand;
@@ -303,21 +329,38 @@ public sealed class SyncViewModel : ViewModelBase
         ProjectPat(pat);
     }
 
-    private async Task SyncNowAsync()
+    private async Task SyncLocalDocumentsAsync()
+    {
+        if (_runCoordinator is null || _cliPath is null)
+        {
+            return;
+        }
+
+        await StartSyncAsync(() => _runCoordinator.StartLocalDocumentsAsync(
+            _cliPath,
+            _applicationCancellation));
+    }
+
+    private async Task SyncConfluenceAsync()
     {
         if (_runCoordinator is null || _cliPath is null || _configPath is null)
         {
             return;
         }
 
+        await StartSyncAsync(() => _runCoordinator.StartConfluenceAsync(
+            _cliPath,
+            _configPath,
+            _applicationCancellation));
+    }
+
+    private async Task StartSyncAsync(Func<Task<SyncRunHandle>> start)
+    {
         IsBusy = true;
         StateMessage = UiStrings.SyncStarting;
         try
         {
-            SyncRunHandle handle = await _runCoordinator.StartAsync(
-                _cliPath,
-                _configPath,
-                _applicationCancellation);
+            SyncRunHandle handle = await start();
             IsSyncRunning = true;
             IsBusy = false;
             await MonitorRunAsync(handle, _applicationCancellation);
@@ -427,6 +470,9 @@ public sealed class SyncViewModel : ViewModelBase
 
     private void ApplyRun(SyncRunSnapshot snapshot)
     {
+        RunTitle = snapshot.Handle.RunKind == SyncRunKind.LocalDocuments
+            ? UiStrings.LocalSyncRunTitle
+            : UiStrings.ConfluenceSyncRunTitle;
         StandardError = snapshot.StandardError;
         StandardOutput = snapshot.StandardOutput;
         IsSyncRunning = snapshot.IsRunning;
@@ -434,7 +480,10 @@ public sealed class SyncViewModel : ViewModelBase
             ? UiStrings.SyncRunUnknown
             : snapshot.IsRunning
                 ? UiStrings.SyncRunning
-                : FormatExitCode(snapshot.ExitCode, snapshot.LaunchError);
+                : FormatExitCode(
+                    snapshot.Handle.RunKind,
+                    snapshot.ExitCode,
+                    snapshot.LaunchError);
     }
 
     private void ProjectHealth(IngestionHealthReadResult result)
@@ -501,24 +550,36 @@ public sealed class SyncViewModel : ViewModelBase
         };
     }
 
-    private static string FormatExitCode(int? exitCode, string? launchError)
+    private static string FormatExitCode(
+        SyncRunKind runKind,
+        int? exitCode,
+        string? launchError)
     {
         if (launchError is not null)
         {
             return UiStrings.SyncLaunchFailed;
         }
 
-        return ConfluenceCliClient.MapExitCode(exitCode) switch
-        {
-            CortexExitCode.Ok => UiStrings.SyncSucceeded,
-            CortexExitCode.Locked => UiStrings.SyncLocked,
-            CortexExitCode.NotDue => UiStrings.SyncNotDue,
-            CortexExitCode.Auth => UiStrings.SyncAuthFailed,
-            CortexExitCode.Remote => UiStrings.SyncRemoteFailed,
-            CortexExitCode.InvalidInput or CortexExitCode.NotFound or CortexExitCode.OutsideAllowlist =>
-                UiStrings.FormatSyncUnexpectedExit(exitCode),
-            _ => UiStrings.SyncFailed,
-        };
+        return runKind == SyncRunKind.LocalDocuments
+            ? exitCode switch
+            {
+                AppConstants.CliExitSuccess => UiStrings.SyncSucceeded,
+                AppConstants.CliExitError => UiStrings.SyncFailed,
+                AppConstants.CliExitLocked => UiStrings.SyncLocked,
+                AppConstants.CliExitInvalidInput => UiStrings.LocalSyncConfigurationInvalid,
+                _ => UiStrings.FormatSyncUnexpectedExit(exitCode),
+            }
+            : ConfluenceCliClient.MapExitCode(exitCode) switch
+            {
+                CortexExitCode.Ok => UiStrings.SyncSucceeded,
+                CortexExitCode.Locked => UiStrings.SyncLocked,
+                CortexExitCode.NotDue => UiStrings.SyncNotDue,
+                CortexExitCode.Auth => UiStrings.SyncAuthFailed,
+                CortexExitCode.Remote => UiStrings.SyncRemoteFailed,
+                CortexExitCode.InvalidInput or CortexExitCode.NotFound or CortexExitCode.OutsideAllowlist =>
+                    UiStrings.FormatSyncUnexpectedExit(exitCode),
+                _ => UiStrings.SyncFailed,
+            };
     }
 
     private static string FormatDateTime(DateTimeOffset value) =>
@@ -527,8 +588,11 @@ public sealed class SyncViewModel : ViewModelBase
     private void NotifyCommandAvailability()
     {
         OnPropertyChanged(nameof(CanRunActions));
+        OnPropertyChanged(nameof(CanRunLocalDocuments));
+        OnPropertyChanged(nameof(CanRunConfluenceActions));
         _refreshCommand.RaiseCanExecuteChanged();
         _syncCommand.RaiseCanExecuteChanged();
+        _confluenceSyncCommand.RaiseCanExecuteChanged();
         _storeCredentialCommand.RaiseCanExecuteChanged();
     }
 }
