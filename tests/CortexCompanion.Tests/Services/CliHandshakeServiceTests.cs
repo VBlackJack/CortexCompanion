@@ -14,7 +14,7 @@ public sealed class CliHandshakeServiceTests
     [TestMethod]
     public async Task EvaluateAsyncCliNotConfiguredFailsClosedWithoutProcessCall()
     {
-        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0805.00", string.Empty));
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0808.00", string.Empty));
         CliHandshakeService service = CreateService(runner);
 
         CliHandshakeResult result = await service.EvaluateAsync(AppSettings.Empty);
@@ -34,10 +34,11 @@ public sealed class CliHandshakeServiceTests
 
     [TestMethod]
     [DataRow("2026.0716.01", CliHandshakeStatus.IncompatibleVersion, true, 2026, 7, 16, 1)]
-    [DataRow("2026.0805.00", CliHandshakeStatus.Compatible, false, 2026, 8, 5, 0)]
-    [DataRow("2026.0805.01", CliHandshakeStatus.Compatible, false, 2026, 8, 5, 1)]
-    [DataRow("2026.0806.00", CliHandshakeStatus.Compatible, false, 2026, 8, 6, 0)]
-    public async Task EvaluateAsyncVersionGateRejectsPreA3AndAcceptsA3OrLater(
+    [DataRow("2026.0805.00", CliHandshakeStatus.IncompatibleVersion, true, 2026, 8, 5, 0)]
+    [DataRow("2026.0807.99", CliHandshakeStatus.IncompatibleVersion, true, 2026, 8, 7, 99)]
+    [DataRow("2026.0808.00", CliHandshakeStatus.Compatible, false, 2026, 8, 8, 0)]
+    [DataRow("2026.0808.01", CliHandshakeStatus.Compatible, false, 2026, 8, 8, 1)]
+    public async Task EvaluateAsyncVersionGateRejectsPreReleaseAndAcceptsReleaseOrLater(
         string version,
         CliHandshakeStatus expectedStatus,
         bool expectedReadOnly,
@@ -88,14 +89,14 @@ public sealed class CliHandshakeServiceTests
     {
         using TemporaryDirectory temporaryDirectory = new();
         string executablePath = temporaryDirectory.CreateFakeCli();
-        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0805.00\r\n", string.Empty));
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0808.00\r\n", string.Empty));
         CliHandshakeService service = CreateService(runner);
 
         CliHandshakeResult result = await service.EvaluateAsync(new AppSettings(executablePath));
 
         Assert.AreEqual(CliHandshakeStatus.Compatible, result.Status);
         Assert.IsFalse(result.IsReadOnly);
-        Assert.AreEqual(new CliVersion(2026, 8, 5, 0), result.DetectedVersion);
+        Assert.AreEqual(new CliVersion(2026, 8, 8, 0), result.DetectedVersion);
         Assert.IsNotNull(runner.LastRequest);
         CollectionAssert.AreEqual(
             new[] { AppConstants.CliVersionArgument },

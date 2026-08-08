@@ -1,6 +1,8 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Diagnostics;
+using System.Text;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 
@@ -10,7 +12,7 @@ internal static class Program
 {
     private const int LockedExitCode = 2;
     private const int UsageExitCode = 64;
-    private const string CompatibleVersion = "2026.0805.00";
+    private const string CompatibleVersion = "2026.0808.00";
     private const string SyncProbeDelayVariable = "CORTEX_COMPANION_SYNC_PROBE_DELAY_MS";
 
     private static async Task<int> Main(string[] arguments)
@@ -18,6 +20,43 @@ internal static class Program
         if (arguments is ["--version"])
         {
             Console.WriteLine(CompatibleVersion);
+            return 0;
+        }
+
+        if (arguments is ["unicode-output"])
+        {
+            byte[] responseBytes = new UTF8Encoding(false, true).GetBytes(
+                "{\"path\":\"G:/Équipe/🔒\"}");
+            await Console.OpenStandardOutput().WriteAsync(responseBytes);
+            return 0;
+        }
+
+        if (arguments is ["hold-process"])
+        {
+            await Task.Delay(TimeSpan.FromSeconds(30));
+            return 0;
+        }
+
+        if (arguments is ["spawn-child-tree"])
+        {
+            return await RunChildTreeProbeAsync(waitForParent: true, childProcessIdPath: null);
+        }
+
+        if (arguments is ["exit-with-child-tree", string childProcessIdPath])
+        {
+            return await RunChildTreeProbeAsync(waitForParent: false, childProcessIdPath);
+        }
+
+        if (arguments is ["invalid-utf8"])
+        {
+            byte[] invalidUtf8 = [0xc3, 0x28];
+            await Console.OpenStandardOutput().WriteAsync(invalidUtf8);
+            return 0;
+        }
+        if (arguments is ["utf16-output"])
+        {
+            byte[] utf16Output = [0xff, 0xfe, 0x61, 0x00];
+            await Console.OpenStandardOutput().WriteAsync(utf16Output);
             return 0;
         }
 
@@ -57,6 +96,45 @@ internal static class Program
         await Console.Error.FlushAsync();
         Console.Out.WriteLine("{\"published\":true,\"probe\":true}");
         await Console.Out.FlushAsync();
+        return 0;
+    }
+
+    private static async Task<int> RunChildTreeProbeAsync(
+        bool waitForParent,
+        string? childProcessIdPath)
+    {
+        string? executablePath = Environment.ProcessPath;
+        if (executablePath is null)
+        {
+            return UsageExitCode;
+        }
+
+        ProcessStartInfo startInfo = new(executablePath)
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        startInfo.ArgumentList.Add("hold-process");
+        using Process? child = Process.Start(startInfo);
+        if (child is null)
+        {
+            return UsageExitCode;
+        }
+
+        Console.WriteLine(child.Id);
+        await Console.Out.FlushAsync();
+        if (childProcessIdPath is not null)
+        {
+            await File.WriteAllTextAsync(
+                childProcessIdPath,
+                child.Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        if (waitForParent)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(30));
+        }
+
         return 0;
     }
 

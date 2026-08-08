@@ -17,6 +17,8 @@ public static class UiStrings
         typeof(UiStrings).Assembly);
     private static readonly CompositeFormat HandshakeIncompatibleFormat =
         CompositeFormat.Parse(GetString("HandshakeIncompatible"));
+    private static readonly CompositeFormat FatalStartupErrorFormat =
+        CompositeFormat.Parse(GetString("FatalStartupErrorFormat"));
     private static readonly CompositeFormat HandshakeCompatibleFormat =
         CompositeFormat.Parse(GetString("HandshakeCompatible"));
     private static readonly CompositeFormat ConfigOriginFormat = CompositeFormat.Parse(GetString("ConfigOrigin"));
@@ -53,12 +55,12 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("SchedulingResultUnexpectedFormat"));
     private static readonly CompositeFormat SchedulingErrorUnexpectedFormat =
         CompositeFormat.Parse(GetString("SchedulingErrorUnexpectedFormat"));
-
     /// <summary>Gets the application title.</summary>
     public static string AppTitle => GetString(nameof(AppTitle));
 
-    /// <summary>Gets the fatal startup error message.</summary>
-    public static string FatalStartupError => GetString(nameof(FatalStartupError));
+    /// <summary>Formats the fatal startup error with its exact local log directory.</summary>
+    public static string FormatFatalStartupError(string logDirectory) =>
+        string.Format(CultureInfo.CurrentCulture, FatalStartupErrorFormat, logDirectory);
 
     /// <summary>Gets the navigation accessibility label.</summary>
     public static string NavigationLabel => GetString(nameof(NavigationLabel));
@@ -203,6 +205,14 @@ public static class UiStrings
     public static string SyncReadOnly => GetString(nameof(SyncReadOnly));
     /// <summary>Gets a Sync UI resource.</summary>
     public static string SyncNow => GetString(nameof(SyncNow));
+    /// <summary>Gets the primary local indexing explanation.</summary>
+    public static string LocalSyncDescription => GetString(nameof(LocalSyncDescription));
+    /// <summary>Gets the advanced Confluence integration heading.</summary>
+    public static string ConfluenceSyncAdvancedTitle => GetString(nameof(ConfluenceSyncAdvancedTitle));
+    /// <summary>Gets the advanced Confluence integration explanation.</summary>
+    public static string ConfluenceSyncAdvancedDescription => GetString(nameof(ConfluenceSyncAdvancedDescription));
+    /// <summary>Gets the optional Confluence collection action.</summary>
+    public static string ConfluenceSyncNow => GetString(nameof(ConfluenceSyncNow));
     /// <summary>Gets a Sync UI resource.</summary>
     public static string StoreCredential => GetString(nameof(StoreCredential));
     /// <summary>Gets a Sync UI resource.</summary>
@@ -283,6 +293,10 @@ public static class UiStrings
         string.Format(CultureInfo.CurrentCulture, PatExpiredFormat, FormatOptionalDate(value));
     /// <summary>Gets the run section title.</summary>
     public static string SyncRunTitle => GetString(nameof(SyncRunTitle));
+    /// <summary>Gets the latest local synchronization title.</summary>
+    public static string LocalSyncRunTitle => GetString(nameof(LocalSyncRunTitle));
+    /// <summary>Gets the latest Confluence collection title.</summary>
+    public static string ConfluenceSyncRunTitle => GetString(nameof(ConfluenceSyncRunTitle));
     /// <summary>Gets the run-result label.</summary>
     public static string SyncRunResultLabel => GetString(nameof(SyncRunResultLabel));
     /// <summary>Gets the streamed diagnostics label.</summary>
@@ -295,6 +309,12 @@ public static class UiStrings
     public static string SyncRunning => GetString(nameof(SyncRunning));
     /// <summary>Gets the unknown terminal state.</summary>
     public static string SyncRunUnknown => GetString(nameof(SyncRunUnknown));
+    /// <summary>Gets the collapsed technical-details label.</summary>
+    public static string SyncTechnicalDetails => GetString(nameof(SyncTechnicalDetails));
+    /// <summary>Gets the technical summary title.</summary>
+    public static string SyncDiagnosticsSummaryTitle => GetString(nameof(SyncDiagnosticsSummaryTitle));
+    /// <summary>Gets the raw process output title.</summary>
+    public static string SyncRawOutputTitle => GetString(nameof(SyncRawOutputTitle));
     /// <summary>Gets the worker launch failure.</summary>
     public static string SyncLaunchFailed => GetString(nameof(SyncLaunchFailed));
     /// <summary>Gets the successful sync result.</summary>
@@ -309,6 +329,8 @@ public static class UiStrings
     public static string SyncRemoteFailed => GetString(nameof(SyncRemoteFailed));
     /// <summary>Gets the generic sync failure.</summary>
     public static string SyncFailed => GetString(nameof(SyncFailed));
+    /// <summary>Gets the invalid local knowledge-base configuration result.</summary>
+    public static string LocalSyncConfigurationInvalid => GetString(nameof(LocalSyncConfigurationInvalid));
     /// <summary>Formats one non-nominal frozen exit code.</summary>
     public static string FormatSyncUnexpectedExit(int? exitCode) =>
         string.Format(CultureInfo.CurrentCulture, SyncUnexpectedExitFormat, exitCode);
@@ -431,6 +453,126 @@ public static class UiStrings
     /// <summary>Formats an unexpected scheduler HRESULT as an unsigned hexadecimal value.</summary>
     public static string FormatSchedulingErrorUnexpected(uint hResult) =>
         string.Format(CultureInfo.CurrentCulture, SchedulingErrorUnexpectedFormat, hResult);
+
+    /// <summary>Gets the Settings navigation label.</summary>
+    public static string SettingsNavigation => GetString(nameof(SettingsNavigation));
+    /// <summary>Gets the nonfatal startup initialization message.</summary>
+    public static string StartupInitializationError => GetString(nameof(StartupInitializationError));
+    /// <summary>Gets the common Browse action.</summary>
+    public static string BrowseButton => GetString(nameof(BrowseButton));
+    /// <summary>Gets the common Refresh action.</summary>
+    public static string RefreshButton => GetString(nameof(RefreshButton));
+    /// <summary>Gets the settings screen title.</summary>
+    public static string SettingsTitle => GetString(nameof(SettingsTitle));
+    /// <summary>Gets the settings screen introduction.</summary>
+    public static string SettingsIntroduction => GetString(nameof(SettingsIntroduction));
+    /// <summary>Gets the current-state section title.</summary>
+    public static string SettingsCurrentStateTitle => GetString(nameof(SettingsCurrentStateTitle));
+    /// <summary>Gets the visible startup loading state.</summary>
+    public static string SettingsLoading => GetString(nameof(SettingsLoading));
+    /// <summary>Gets the CLI setup section title.</summary>
+    public static string SettingsCliTitle => GetString(nameof(SettingsCliTitle));
+    /// <summary>Gets the CLI setup explanation.</summary>
+    public static string SettingsCliDescription => GetString(nameof(SettingsCliDescription));
+    /// <summary>Gets the CLI path label.</summary>
+    public static string SettingsCliPathLabel => GetString(nameof(SettingsCliPathLabel));
+    /// <summary>Gets the CLI Browse accessible name.</summary>
+    public static string SettingsBrowseCliAccessibleName => GetString(nameof(SettingsBrowseCliAccessibleName));
+    /// <summary>Gets the Save and connect action.</summary>
+    public static string SettingsSaveAndConnect => GetString(nameof(SettingsSaveAndConnect));
+    /// <summary>Gets the knowledge-base section title.</summary>
+    public static string SettingsKnowledgeBaseTitle => GetString(nameof(SettingsKnowledgeBaseTitle));
+    /// <summary>Gets the knowledge-base explanation.</summary>
+    public static string SettingsKnowledgeBaseDescription => GetString(nameof(SettingsKnowledgeBaseDescription));
+    /// <summary>Gets the knowledge-base path label.</summary>
+    public static string SettingsKnowledgeBasePathLabel => GetString(nameof(SettingsKnowledgeBasePathLabel));
+    /// <summary>Gets the knowledge-base Browse accessible name.</summary>
+    public static string SettingsBrowseKnowledgeBaseAccessibleName =>
+        GetString(nameof(SettingsBrowseKnowledgeBaseAccessibleName));
+    /// <summary>Gets the knowledge-base save action.</summary>
+    public static string SettingsSaveKnowledgeBase => GetString(nameof(SettingsSaveKnowledgeBase));
+    /// <summary>Gets the configuration Refresh accessible name.</summary>
+    public static string SettingsRefreshAccessibleName => GetString(nameof(SettingsRefreshAccessibleName));
+    /// <summary>Gets the unconfigured CLI state.</summary>
+    public static string SettingsCliNotConfigured => GetString(nameof(SettingsCliNotConfigured));
+    /// <summary>Gets the first-run guidance.</summary>
+    public static string SettingsFirstRun => GetString(nameof(SettingsFirstRun));
+    /// <summary>Gets the corrupt settings recovery guidance.</summary>
+    public static string SettingsFileCorrupt => GetString(nameof(SettingsFileCorrupt));
+    /// <summary>Gets the unreadable settings recovery guidance.</summary>
+    public static string SettingsFileUnreadable => GetString(nameof(SettingsFileUnreadable));
+    /// <summary>Gets the automatic CLI discovery success.</summary>
+    public static string SettingsCliDetected => GetString(nameof(SettingsCliDetected));
+    /// <summary>Gets the configured CLI ready state.</summary>
+    public static string SettingsCliReady => GetString(nameof(SettingsCliReady));
+    /// <summary>Gets the selected CLI pending state.</summary>
+    public static string SettingsCliSelectionPending => GetString(nameof(SettingsCliSelectionPending));
+    /// <summary>Gets the invalid CLI path recovery action.</summary>
+    public static string SettingsCliFixPath => GetString(nameof(SettingsCliFixPath));
+    /// <summary>Gets the persisted CLI state.</summary>
+    public static string SettingsCliSaved => GetString(nameof(SettingsCliSaved));
+    /// <summary>Gets the settings persistence failure.</summary>
+    public static string SettingsSaveFailed => GetString(nameof(SettingsSaveFailed));
+    /// <summary>Gets the failed CLI replacement state while the previous runtime remains active.</summary>
+    public static string SettingsCliReplacementFailedPreviousRetained =>
+        GetString(nameof(SettingsCliReplacementFailedPreviousRetained));
+    /// <summary>Gets the CLI checking state.</summary>
+    public static string SettingsCheckingCli => GetString(nameof(SettingsCheckingCli));
+    /// <summary>Gets the failed handshake recovery state.</summary>
+    public static string SettingsCliHandshakeFailed => GetString(nameof(SettingsCliHandshakeFailed));
+    /// <summary>Gets the configuration refresh state.</summary>
+    public static string SettingsRefreshing => GetString(nameof(SettingsRefreshing));
+    /// <summary>Gets the configuration refreshed state.</summary>
+    public static string SettingsRefreshed => GetString(nameof(SettingsRefreshed));
+    /// <summary>Gets the unavailable configuration state.</summary>
+    public static string SettingsConfigUnavailable => GetString(nameof(SettingsConfigUnavailable));
+    /// <summary>Gets the loaded configuration state.</summary>
+    public static string SettingsConfigLoaded => GetString(nameof(SettingsConfigLoaded));
+    /// <summary>Gets the default configuration state.</summary>
+    public static string SettingsConfigDefaults => GetString(nameof(SettingsConfigDefaults));
+    /// <summary>Gets the invalid configuration state.</summary>
+    public static string SettingsConfigInvalid => GetString(nameof(SettingsConfigInvalid));
+    /// <summary>Gets the failed configuration read state.</summary>
+    public static string SettingsConfigReadFailed => GetString(nameof(SettingsConfigReadFailed));
+    /// <summary>Gets the configuration state whose read outcome could not be observed.</summary>
+    public static string SettingsConfigOutcomeUnknown => GetString(nameof(SettingsConfigOutcomeUnknown));
+    /// <summary>Gets the selected knowledge-base pending state.</summary>
+    public static string SettingsKnowledgeBaseSelectionPending =>
+        GetString(nameof(SettingsKnowledgeBaseSelectionPending));
+    /// <summary>Gets the invalid knowledge-base state.</summary>
+    public static string SettingsKnowledgeBaseInvalid => GetString(nameof(SettingsKnowledgeBaseInvalid));
+    /// <summary>Gets the explicit refresh requirement.</summary>
+    public static string SettingsConfigRefreshRequired => GetString(nameof(SettingsConfigRefreshRequired));
+    /// <summary>Gets the knowledge-base save progress state.</summary>
+    public static string SettingsSavingKnowledgeBase => GetString(nameof(SettingsSavingKnowledgeBase));
+    /// <summary>Gets the knowledge-base saved state.</summary>
+    public static string SettingsKnowledgeBaseSaved => GetString(nameof(SettingsKnowledgeBaseSaved));
+    /// <summary>Gets the knowledge-base saved and reindex-required state.</summary>
+    public static string SettingsKnowledgeBaseSavedReindex => GetString(nameof(SettingsKnowledgeBaseSavedReindex));
+    /// <summary>Gets the unchanged knowledge-base state.</summary>
+    public static string SettingsKnowledgeBaseUnchanged => GetString(nameof(SettingsKnowledgeBaseUnchanged));
+    /// <summary>Gets the configuration compare-and-swap conflict.</summary>
+    public static string SettingsConfigConflict => GetString(nameof(SettingsConfigConflict));
+    /// <summary>Gets the configuration lock state.</summary>
+    public static string SettingsConfigLocked => GetString(nameof(SettingsConfigLocked));
+    /// <summary>Gets the failed knowledge-base save state.</summary>
+    public static string SettingsKnowledgeBaseSaveFailed => GetString(nameof(SettingsKnowledgeBaseSaveFailed));
+    /// <summary>Gets the Cortex executable picker title.</summary>
+    public static string CliFileDialogTitle => GetString(nameof(CliFileDialogTitle));
+    /// <summary>Gets the Cortex executable picker filter.</summary>
+    public static string CliFileDialogFilter => GetString(nameof(CliFileDialogFilter));
+    /// <summary>Gets the knowledge-base folder picker title.</summary>
+    public static string KnowledgeBaseFolderDialogTitle => GetString(nameof(KnowledgeBaseFolderDialogTitle));
+    /// <summary>Gets the absolute-path validation state.</summary>
+    public static string SettingsCliPathMustBeAbsolute => GetString(nameof(SettingsCliPathMustBeAbsolute));
+    /// <summary>Gets the wrong executable-name validation state.</summary>
+    public static string SettingsCliWrongFileName => GetString(nameof(SettingsCliWrongFileName));
+    /// <summary>Gets the missing executable validation state.</summary>
+    public static string SettingsCliFileNotFound => GetString(nameof(SettingsCliFileNotFound));
+    /// <summary>Gets the malformed executable-path validation state.</summary>
+    public static string SettingsCliInvalidPath => GetString(nameof(SettingsCliInvalidPath));
+    /// <summary>Gets the valid executable-path state.</summary>
+    public static string SettingsCliPathValid => GetString(nameof(SettingsCliPathValid));
 
     /// <summary>Gets the initial handshake status.</summary>
     public static string HandshakePending => GetString(nameof(HandshakePending));

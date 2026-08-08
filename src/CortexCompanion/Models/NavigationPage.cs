@@ -4,17 +4,20 @@
 namespace CortexCompanion.Models;
 
 /// <summary>
-/// Identifies the three placeholder destinations in the initial shell.
+/// Identifies the persistent destinations in the application shell.
 /// </summary>
 public enum NavigationPage
 {
     /// <summary>The configured Confluence pages destination.</summary>
-    Pages,
+    ConfluencePages,
 
-    /// <summary>The manual synchronization destination.</summary>
-    Sync,
+    /// <summary>The primary local knowledge-base synchronization destination.</summary>
+    LocalKnowledgeBase,
 
-    /// <summary>The scheduling destination.</summary>
-    Scheduling,
+    /// <summary>The optional Confluence scheduling destination.</summary>
+    ConfluenceScheduling,
+
+    /// <summary>The first-run and configuration destination.</summary>
+    Settings,
 }
 

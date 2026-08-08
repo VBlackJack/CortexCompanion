@@ -22,21 +22,57 @@ public static class AppConstants
 
     /// <summary>
     /// Gets the minimum supported CLI version measured from the current Cortex main
-    /// development environment on 2026-08-05.
+    /// release contract on 2026-08-08.
     /// </summary>
-    public const string MinSupportedCliVersion = "2026.0805.00";
+    public const string MinSupportedCliVersion = "2026.0808.00";
 
     /// <summary>Gets the only argument used by the startup handshake.</summary>
     public const string CliVersionArgument = "--version";
 
+    /// <summary>Gets the public version argument accepted by Cortex Companion itself.</summary>
+    public const string CompanionVersionArgument = "--version";
+
+    /// <summary>Gets the directory name used by the per-user Cortex installer.</summary>
+    public const string CortexInstallDirectoryName = "Cortex";
+
+    /// <summary>Gets the conventional per-user application directory.</summary>
+    public const string ProgramsDirectoryName = "Programs";
+
+    /// <summary>Gets the supported Cortex configuration JSON contract version.</summary>
+    public const int ConfigContractVersion = 1;
+
+    /// <summary>Gets the shared successful Cortex process exit code.</summary>
+    public const int CliExitSuccess = 0;
+
+    /// <summary>Gets the shared generic Cortex failure exit code.</summary>
+    public const int CliExitError = 1;
+
+    /// <summary>Gets the shared Cortex lock-contention exit code.</summary>
+    public const int CliExitLocked = 2;
+
+    /// <summary>Gets the shared Cortex invalid-input exit code.</summary>
+    public const int CliExitInvalidInput = 6;
+
+    /// <summary>Gets the shared Cortex compare-and-swap conflict exit code.</summary>
+    public const int CliExitConflict = 9;
+
     /// <summary>Gets the bounded CLI handshake timeout.</summary>
     public static readonly TimeSpan CliHandshakeTimeout = TimeSpan.FromSeconds(5);
+
+    /// <summary>Gets the bounded timeout for configuration operations.</summary>
+    public static readonly TimeSpan CliConfigurationTimeout = TimeSpan.FromSeconds(15);
 
     /// <summary>Gets the maximum retained characters for each process output stream.</summary>
     public const int MaxProcessOutputCharacters = 16_384;
 
     /// <summary>Gets the maximum diagnostic exception text retained in a log entry.</summary>
     public const int MaxExceptionDiagnosticCharacters = 8_192;
+
+    /// <summary>Gets the maximum wait for a requested child-process termination.</summary>
+    public static readonly TimeSpan ProcessTerminationGracePeriod = TimeSpan.FromSeconds(2);
+
+    /// <summary>Gets the maximum wait used to drain redirected output after termination.</summary>
+    public static readonly TimeSpan ProcessOutputDrainGracePeriod = TimeSpan.FromSeconds(1);
 
     /// <summary>Gets the design-v1 PAT warning boundary.</summary>
     public const int PatExpiryWarningDays = 30;
@@ -72,7 +108,11 @@ public static class AppConstants
     public const string ScheduledTaskNamePrefix = "Ingestion-";
 
     /// <summary>Gets the immutable ownership token persisted in RegistrationInfo.Source.</summary>
-    public const string ScheduledTaskOwnershipToken = "cdcf4053-94d6-4a54-8b79-c5b744472971";
+    public const string ScheduledTaskOwnershipToken =
+        "cdcf4053-94d6-4a54-8b79-c5b744472971"; // gitleaks:allow - public ownership marker.
+
+    /// <summary>Gets the process-only uninstall cleanup argument.</summary>
+    public const string CompanionUninstallCleanupArgument = "--uninstall-cleanup";
 
     /// <summary>Gets the unlimited Task Scheduler execution-time contract.</summary>
     public const string ScheduledTaskExecutionTimeLimit = "PT0S";

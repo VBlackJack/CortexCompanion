@@ -9,6 +9,9 @@
     <RootNamespace>CortexCompanion</RootNamespace>
     <AssemblyName>CortexCompanion</AssemblyName>
     <ApplicationIcon>Assets\cortex.ico</ApplicationIcon>
+    <StartupObject>CortexCompanion.Program</StartupObject>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,5 +21,55 @@
   <ItemGroup>
     <PackageReference Include="Tomlyn" Version="2.10.1" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <DotNetDistributionLicense>$(NetCoreRoot)LICENSE.txt</DotNetDistributionLicense>
+    <DotNetDistributionNotices>$(NetCoreRoot)ThirdPartyNotices.txt</DotNetDistributionNotices>
+    <WindowsDesktopLicense>$(MSBuildSDKsPath)\Microsoft.NET.Sdk.WindowsDesktop\LICENSE.TXT</WindowsDesktopLicense>
+    <WindowsDesktopNotices>$(MSBuildSDKsPath)\Microsoft.NET.Sdk.WindowsDesktop\THIRD-PARTY-NOTICES.TXT</WindowsDesktopNotices>
+    <TomlynNotices>$(MSBuildProjectDirectory)\..\..\THIRD-PARTY-NOTICES.txt</TomlynNotices>
+    <CortexCompanionLicense>$(MSBuildProjectDirectory)\..\..\LICENSE</CortexCompanionLicense>
+  </PropertyGroup>
+
+  <Target Name="IncludeRedistributionNotices" BeforeTargets="PrepareForPublish">
+    <Error Condition="!Exists('$(DotNetDistributionLicense)')"
+           Text="Required .NET distribution license was not found: $(DotNetDistributionLicense)" />
+    <Error Condition="!Exists('$(DotNetDistributionNotices)')"
+           Text="Required .NET distribution notices were not found: $(DotNetDistributionNotices)" />
+    <Error Condition="!Exists('$(WindowsDesktopLicense)')"
+           Text="Required WPF license was not found: $(WindowsDesktopLicense)" />
+    <Error Condition="!Exists('$(WindowsDesktopNotices)')"
+           Text="Required WPF notices were not found: $(WindowsDesktopNotices)" />
+    <Error Condition="!Exists('$(TomlynNotices)')"
+           Text="Required Tomlyn notices were not found: $(TomlynNotices)" />
+    <Error Condition="!Exists('$(CortexCompanionLicense)')"
+           Text="Required Cortex Companion license was not found: $(CortexCompanionLicense)" />
+    <ItemGroup>
+      <ResolvedFileToPublish Include="$(DotNetDistributionLicense)"
+                             RelativePath="LICENSE.txt"
+                             CopyToPublishDirectory="Always"
+                             ExcludeFromSingleFile="true" />
+      <ResolvedFileToPublish Include="$(DotNetDistributionNotices)"
+                             RelativePath="ThirdPartyNotices.txt"
+                             CopyToPublishDirectory="Always"
+                             ExcludeFromSingleFile="true" />
+      <ResolvedFileToPublish Include="$(WindowsDesktopLicense)"
+                             RelativePath="WPF-LICENSE.txt"
+                             CopyToPublishDirectory="Always"
+                             ExcludeFromSingleFile="true" />
+      <ResolvedFileToPublish Include="$(WindowsDesktopNotices)"
+                             RelativePath="WPF-ThirdPartyNotices.txt"
+                             CopyToPublishDirectory="Always"
+                             ExcludeFromSingleFile="true" />
+      <ResolvedFileToPublish Include="$(TomlynNotices)"
+                             RelativePath="Tomlyn-LICENSE.txt"
+                             CopyToPublishDirectory="Always"
+                             ExcludeFromSingleFile="true" />
+      <ResolvedFileToPublish Include="$(CortexCompanionLicense)"
+                             RelativePath="CortexCompanion-LICENSE.txt"
+                             CopyToPublishDirectory="Always"
+                             ExcludeFromSingleFile="true" />
+    </ItemGroup>
+  </Target>
 
 </Project>

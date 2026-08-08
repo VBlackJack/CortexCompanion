@@ -17,7 +17,7 @@ public sealed class PagesPresentationTests
         string result = UiStrings.FormatHandshakeIncompatible("2026.0804.00", AppConstants.MinSupportedCliVersion);
 
         StringAssert.Contains(result, "version trop ancienne");
-        StringAssert.Contains(result, "detectee 2026.0804.00");
+        StringAssert.Contains(result, "détectée 2026.0804.00");
         StringAssert.Contains(result, $"minimum {AppConstants.MinSupportedCliVersion}");
     }
 

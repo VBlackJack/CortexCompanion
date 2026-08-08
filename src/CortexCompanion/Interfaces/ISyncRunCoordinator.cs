@@ -8,8 +8,13 @@ namespace CortexCompanion.Interfaces;
 /// <summary>Abstracts detached sync launch and durable run observation.</summary>
 public interface ISyncRunCoordinator
 {
-    /// <summary>Starts one detached worker after enforcing the local active-run guard.</summary>
-    Task<SyncRunHandle> StartAsync(
+    /// <summary>Starts local document indexing after enforcing the application-owned active-run guard.</summary>
+    Task<SyncRunHandle> StartLocalDocumentsAsync(
+        string cliPath,
+        CancellationToken cancellationToken);
+
+    /// <summary>Starts the advanced Confluence collection after enforcing the active-run guard.</summary>
+    Task<SyncRunHandle> StartConfluenceAsync(
         string cliPath,
         string confluenceConfigPath,
         CancellationToken cancellationToken);

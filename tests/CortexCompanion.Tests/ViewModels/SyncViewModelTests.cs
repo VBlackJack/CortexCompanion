@@ -66,6 +66,7 @@ public sealed class SyncViewModelTests
         coordinator.Release.TrySetResult(coordinator.Handle);
         await WaitUntilAsync(() => viewModel.RunResult == UiStrings.SyncSucceeded);
         Assert.AreEqual(1, coordinator.StartCallCount);
+        Assert.AreEqual(UiStrings.LocalSyncRunTitle, viewModel.RunTitle);
     }
 
     [TestMethod]
@@ -121,17 +122,26 @@ public sealed class SyncViewModelTests
 
         File.WriteAllText(healthPath, "{");
         viewModel.RefreshCommand.Execute(null);
-        await WaitUntilAsync(() => viewModel.HealthStatus == UiStrings.SyncHealthUnreadable);
+        await WaitUntilAsync(() =>
+            viewModel.HealthStatus == UiStrings.SyncHealthUnreadable &&
+            !viewModel.IsBusy &&
+            viewModel.RefreshCommand.CanExecute(null));
         Assert.IsFalse(viewModel.HasHealth);
 
         File.WriteAllText(healthPath, IngestionHealthReaderTests.ValidJson("ok", null));
         viewModel.RefreshCommand.Execute(null);
-        await WaitUntilAsync(() => viewModel.HealthStatus == UiStrings.SyncHealthOk);
+        await WaitUntilAsync(() =>
+            viewModel.HealthStatus == UiStrings.SyncHealthOk &&
+            !viewModel.IsBusy &&
+            viewModel.RefreshCommand.CanExecute(null));
         Assert.IsTrue(viewModel.HasHealth);
 
         File.WriteAllText(healthPath, IngestionHealthReaderTests.ValidJson("error", "remote_failure"));
         viewModel.RefreshCommand.Execute(null);
-        await WaitUntilAsync(() => viewModel.HealthStatus == UiStrings.SyncHealthError);
+        await WaitUntilAsync(() =>
+            viewModel.HealthStatus == UiStrings.SyncHealthError &&
+            !viewModel.IsBusy &&
+            viewModel.RefreshCommand.CanExecute(null));
         Assert.AreEqual("remote_failure", viewModel.ErrorCode);
     }
 
@@ -150,7 +160,7 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
-    public async Task MissingConfluenceConfigurationDisablesBothActions()
+    public async Task MissingConfluenceConfigurationKeepsLocalSyncActionable()
     {
         using TemporaryDirectory temporary = new();
         SyncViewModel viewModel = CreateViewModel(
@@ -162,13 +172,15 @@ public sealed class SyncViewModelTests
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
-        Assert.IsFalse(viewModel.CanRunActions);
-        Assert.IsFalse(viewModel.SyncCommand.CanExecute(null));
+        Assert.IsTrue(viewModel.CanRunLocalDocuments);
+        Assert.IsTrue(viewModel.SyncCommand.CanExecute(null));
+        Assert.IsFalse(viewModel.CanRunConfluenceActions);
+        Assert.IsFalse(viewModel.ConfluenceSyncCommand.CanExecute(null));
         Assert.IsFalse(viewModel.StoreCredentialCommand.CanExecute(null));
     }
 
     [TestMethod]
-    [DataRow(0, "Synchronisation terminee")]
+    [DataRow(0, "Synchronisation terminée")]
     [DataRow(1, "code 1")]
     [DataRow(2, "code 2")]
     [DataRow(3, "code 3")]
@@ -202,6 +214,7 @@ public sealed class SyncViewModelTests
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
         StringAssert.Contains(viewModel.RunResult, expectedText);
+        Assert.AreEqual(UiStrings.ConfluenceSyncRunTitle, viewModel.RunTitle);
     }
 
     [TestMethod]
@@ -281,11 +294,16 @@ public sealed class SyncViewModelTests
 
     private sealed class StubSyncRunCoordinator : ISyncRunCoordinator
     {
-        public Task<SyncRunHandle> StartAsync(
+        public Task<SyncRunHandle> StartLocalDocumentsAsync(
+            string cliPath,
+            CancellationToken cancellationToken) =>
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected local sync launch."));
+
+        public Task<SyncRunHandle> StartConfluenceAsync(
             string cliPath,
             string confluenceConfigPath,
             CancellationToken cancellationToken) =>
-            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected sync launch."));
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
         public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) =>
             Task.FromResult<SyncRunSnapshot?>(null);
@@ -305,18 +323,24 @@ public sealed class SyncViewModelTests
             "run",
             Path.Combine(Path.GetTempPath(), "run"),
             Environment.ProcessId,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow,
+            SyncRunKind.LocalDocuments);
         public int StartCallCount { get; private set; }
 
-        public async Task<SyncRunHandle> StartAsync(
+        public async Task<SyncRunHandle> StartLocalDocumentsAsync(
             string cliPath,
-            string confluenceConfigPath,
             CancellationToken cancellationToken)
         {
             StartCallCount++;
             Started.TrySetResult();
             return await Release.Task.WaitAsync(cancellationToken);
         }
+
+        public Task<SyncRunHandle> StartConfluenceAsync(
+            string cliPath,
+            string confluenceConfigPath,
+            CancellationToken cancellationToken) =>
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
         public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) =>
             Task.FromResult<SyncRunSnapshot?>(null);
@@ -337,11 +361,16 @@ public sealed class SyncViewModelTests
 
     private sealed class LatestRunCoordinator(SyncRunSnapshot latest) : ISyncRunCoordinator
     {
-        public Task<SyncRunHandle> StartAsync(
+        public Task<SyncRunHandle> StartLocalDocumentsAsync(
+            string cliPath,
+            CancellationToken cancellationToken) =>
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected local sync launch."));
+
+        public Task<SyncRunHandle> StartConfluenceAsync(
             string cliPath,
             string confluenceConfigPath,
             CancellationToken cancellationToken) =>
-            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected sync launch."));
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
         public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) =>
             Task.FromResult<SyncRunSnapshot?>(latest);
@@ -358,18 +387,24 @@ public sealed class SyncViewModelTests
             "run",
             Path.Combine(Path.GetTempPath(), "run"),
             Environment.ProcessId,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow,
+            SyncRunKind.LocalDocuments);
 
         public int StartCallCount { get; private set; }
 
-        public Task<SyncRunHandle> StartAsync(
+        public Task<SyncRunHandle> StartLocalDocumentsAsync(
             string cliPath,
-            string confluenceConfigPath,
             CancellationToken cancellationToken)
         {
             StartCallCount++;
             return Task.FromResult(_handle);
         }
+
+        public Task<SyncRunHandle> StartConfluenceAsync(
+            string cliPath,
+            string confluenceConfigPath,
+            CancellationToken cancellationToken) =>
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
         public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) =>
             Task.FromResult<SyncRunSnapshot?>(null);

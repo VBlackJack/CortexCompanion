@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Windows.Input;
+using CortexCompanion.Logging;
 
 namespace CortexCompanion.Commands;
 
@@ -22,11 +23,20 @@ public sealed class AsyncRelayCommand : ICommand
     /// <inheritdoc />
     public event EventHandler? CanExecuteChanged;
 
+    /// <summary>Signals that an asynchronous UI action failed after the failure was contained.</summary>
+    public event EventHandler? ExecutionFailed;
+
     /// <inheritdoc />
     public bool CanExecute(object? parameter) => !_isRunning && (_canExecute?.Invoke() ?? true);
 
     /// <inheritdoc />
     public async void Execute(object? parameter)
+    {
+        await ExecuteAsync(parameter);
+    }
+
+    /// <summary>Executes the command through an awaitable, exception-containing boundary.</summary>
+    internal async Task ExecuteAsync(object? parameter)
     {
         if (!CanExecute(parameter))
         {
@@ -38,6 +48,11 @@ public sealed class AsyncRelayCommand : ICommand
         try
         {
             await _execute();
+        }
+        catch (Exception exception)
+        {
+            FileLogger.Error($"Asynchronous UI command failed ({exception.GetType().Name})");
+            ExecutionFailed?.Invoke(this, EventArgs.Empty);
         }
         finally
         {

@@ -8,7 +8,7 @@ using CortexCompanion.ViewModels;
 namespace CortexCompanion;
 
 /// <summary>
-/// Hosts the three-screen navigation shell.
+/// Hosts the four-destination navigation shell.
 /// </summary>
 public partial class MainWindow : Window
 {

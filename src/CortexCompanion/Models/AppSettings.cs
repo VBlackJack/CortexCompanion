@@ -4,7 +4,7 @@
 namespace CortexCompanion.Models;
 
 /// <summary>
-/// Represents the version-zero application settings schema.
+/// Represents the application-owned settings schema.
 /// </summary>
 public sealed record AppSettings(string? CliPath)
 {

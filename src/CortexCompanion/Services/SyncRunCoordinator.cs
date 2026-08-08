@@ -25,9 +25,28 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
     }
 
     /// <inheritdoc />
-    public async Task<SyncRunHandle> StartAsync(
+    public Task<SyncRunHandle> StartLocalDocumentsAsync(
+        string cliPath,
+        CancellationToken cancellationToken) => StartAsync(
+            cliPath,
+            SyncRunKind.LocalDocuments,
+            configPath: null,
+            cancellationToken);
+
+    /// <inheritdoc />
+    public Task<SyncRunHandle> StartConfluenceAsync(
         string cliPath,
         string confluenceConfigPath,
+        CancellationToken cancellationToken) => StartAsync(
+            cliPath,
+            SyncRunKind.Confluence,
+            confluenceConfigPath,
+            cancellationToken);
+
+    private async Task<SyncRunHandle> StartAsync(
+        string cliPath,
+        SyncRunKind runKind,
+        string? configPath,
         CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(_runsRoot);
@@ -48,7 +67,8 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
         foreach (string argument in SyncWorkerArguments.BuildWorkerArguments(
                      runDirectory,
                      cliPath,
-                     confluenceConfigPath))
+                     runKind,
+                     configPath))
         {
             startInfo.ArgumentList.Add(argument);
         }
@@ -68,6 +88,7 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
                 RunId = runId,
                 WorkerProcessId = process.Id,
                 WorkerStartedAt = startedAt,
+                RunKind = runKind,
             };
             await SyncRunPersistence.WriteJsonAtomicAsync(
                 Path.Combine(runDirectory, SyncRunPersistence.WorkerStateFileName),
@@ -78,7 +99,7 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
                 state,
                 cancellationToken);
             FileLogger.Info($"Detached sync worker started run_id={runId} worker_pid={process.Id}");
-            return new SyncRunHandle(runId, runDirectory, process.Id, startedAt);
+            return new SyncRunHandle(runId, runDirectory, process.Id, startedAt, runKind);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
@@ -224,7 +245,7 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
     }
 
     private static SyncRunHandle ToHandle(string runDirectory, SyncWorkerState state) =>
-        new(state.RunId, runDirectory, state.WorkerProcessId, state.WorkerStartedAt);
+        new(state.RunId, runDirectory, state.WorkerProcessId, state.WorkerStartedAt, state.RunKind);
 }
 
 /// <summary>Reports that an application-owned worker is already alive.</summary>

@@ -29,6 +29,9 @@ public enum CliPathValidationStatus
     /// <summary>The configured file does not exist.</summary>
     FileNotFound,
 
+    /// <summary>The configured text cannot be normalized as a Windows path.</summary>
+    InvalidPath,
+
     /// <summary>The configured path is absolute and points to an existing cortex.exe.</summary>
     Valid,
 }

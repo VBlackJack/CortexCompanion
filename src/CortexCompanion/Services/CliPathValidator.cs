@@ -19,12 +19,30 @@ public static class CliPathValidator
             return new CliPathValidationResult(CliPathValidationStatus.Missing, null);
         }
 
-        if (!Path.IsPathFullyQualified(configuredPath))
+        bool isFullyQualified;
+        try
+        {
+            isFullyQualified = Path.IsPathFullyQualified(configuredPath);
+        }
+        catch (Exception exception) when (exception is ArgumentException or NotSupportedException)
+        {
+            return new CliPathValidationResult(CliPathValidationStatus.InvalidPath, null);
+        }
+
+        if (!isFullyQualified)
         {
             return new CliPathValidationResult(CliPathValidationStatus.Relative, null);
         }
 
-        string absolutePath = Path.GetFullPath(configuredPath);
+        string absolutePath;
+        try
+        {
+            absolutePath = Path.GetFullPath(configuredPath);
+        }
+        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            return new CliPathValidationResult(CliPathValidationStatus.InvalidPath, null);
+        }
         if (!string.Equals(
             Path.GetFileName(absolutePath),
             AppConstants.CliExecutableName,

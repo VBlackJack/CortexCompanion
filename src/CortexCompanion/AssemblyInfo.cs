@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 
 [assembly: InternalsVisibleTo("CortexCompanion.LockProbe")]
+[assembly: InternalsVisibleTo("CortexCompanion.Tests")]
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located

@@ -40,7 +40,9 @@ public static class SyncWorker
             StandardErrorEncoding = Utf8WithoutBom,
             StandardOutputEncoding = Utf8WithoutBom,
         };
-        foreach (string argument in SyncWorkerArguments.BuildCliArguments(arguments.ConfigPath))
+        foreach (string argument in SyncWorkerArguments.BuildCliArguments(
+                     arguments.RunKind,
+                     arguments.ConfigPath))
         {
             startInfo.ArgumentList.Add(argument);
         }
