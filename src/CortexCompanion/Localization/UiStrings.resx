@@ -187,7 +187,9 @@
   <data name="SyncLaunchFailed" xml:space="preserve"><value>Le worker de synchronisation n'a pas pu être lancé.</value></data>
   <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminée avec succès (code 0).</value></data>
   <data name="SyncLocked" xml:space="preserve"><value>Un sync est déjà en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
-  <data name="SyncNotDue" xml:space="preserve"><value>La synchronisation n'était pas due (code 3).</value></data>
+  <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Cochez "Forcer la collecte" puis relancez pour l'exécuter tout de suite.</value></data>
+  <data name="ConfluenceSyncForce" xml:space="preserve"><value>Forcer la collecte</value></data>
+  <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>Ignore l'échéance planifiée par Cortex et collecte immédiatement.</value></data>
   <data name="SyncAuthFailed" xml:space="preserve"><value>Credential absent, expiré ou refusé (code 4).</value></data>
   <data name="SyncRemoteFailed" xml:space="preserve"><value>Le service distant est indisponible (code 5).</value></data>
   <data name="SyncFailed" xml:space="preserve"><value>La synchronisation a échoué (code 1).</value></data>

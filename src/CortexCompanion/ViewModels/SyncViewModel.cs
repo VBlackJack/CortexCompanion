@@ -49,6 +49,7 @@ public sealed class SyncViewModel : ViewModelBase
     private bool _isBusy;
     private bool _isSyncRunning;
     private bool _isReadOnly = true;
+    private bool _forceConfluenceCollect;
 
     /// <summary>Initializes a Sync projection whose read channel remains independent from the handshake.</summary>
     public SyncViewModel(
@@ -257,6 +258,13 @@ public sealed class SyncViewModel : ViewModelBase
     /// <summary>Gets the retained compatibility alias for the primary local action.</summary>
     public bool CanRunActions => CanRunLocalDocuments;
 
+    /// <summary>Gets or sets whether the next collection bypasses the Cortex due-interval schedule.</summary>
+    public bool ForceConfluenceCollect
+    {
+        get => _forceConfluenceCollect;
+        set => SetProperty(ref _forceConfluenceCollect, value);
+    }
+
     /// <summary>Gets the direct-state refresh command.</summary>
     public ICommand RefreshCommand => _refreshCommand;
 
@@ -351,6 +359,7 @@ public sealed class SyncViewModel : ViewModelBase
         await StartSyncAsync(() => _runCoordinator.StartConfluenceAsync(
             _cliPath,
             _configPath,
+            ForceConfluenceCollect,
             _applicationCancellation));
     }
 

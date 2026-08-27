@@ -84,6 +84,15 @@
                                 Command="{Binding StoreCredentialCommand}"
                                 Style="{StaticResource SecondaryButtonStyle}" />
                     </WrapPanel>
+                    <CheckBox Content="{x:Static localization:UiStrings.ConfluenceSyncForce}"
+                              AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncForce}"
+                              IsChecked="{Binding ForceConfluenceCollect}"
+                              IsEnabled="{Binding CanRunConfluenceActions}"
+                              Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.ConfluenceSyncForceHint}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
                     <Border Style="{StaticResource PageCardStyle}">
                         <StackPanel>
                     <TextBlock Text="{x:Static localization:UiStrings.SyncHealthTitle}"

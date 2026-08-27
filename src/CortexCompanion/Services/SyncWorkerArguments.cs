@@ -11,12 +11,14 @@ public sealed record SyncWorkerArguments(
     string RunDirectory,
     string CliPath,
     SyncRunKind RunKind,
-    string? ConfigPath)
+    string? ConfigPath,
+    bool Force)
 {
     private const string RunDirectoryArgument = "--run-directory";
     private const string CliPathArgument = "--cli-path";
     private const string RunKindArgument = "--run-kind";
     private const string ConfigPathArgument = "--config-path";
+    private const string ForceArgument = "--force";
     private const string LocalDocumentsKind = "local-documents";
     private const string ConfluenceKind = "confluence";
 
@@ -24,36 +26,46 @@ public sealed record SyncWorkerArguments(
     public static bool TryParse(IReadOnlyList<string> arguments, out SyncWorkerArguments? result)
     {
         result = null;
-        if (arguments.Count is not (7 or 9) ||
-            !string.Equals(arguments[0], AppConstants.SyncWorkerArgument, StringComparison.Ordinal) ||
-            !string.Equals(arguments[1], RunDirectoryArgument, StringComparison.Ordinal) ||
-            !string.Equals(arguments[3], CliPathArgument, StringComparison.Ordinal) ||
-            !string.Equals(arguments[5], RunKindArgument, StringComparison.Ordinal))
+        bool force = arguments.Count > 0 &&
+            string.Equals(arguments[^1], ForceArgument, StringComparison.Ordinal);
+        IReadOnlyList<string> required = force
+            ? arguments.Take(arguments.Count - 1).ToArray()
+            : arguments;
+        if (required.Count is not (7 or 9) ||
+            !string.Equals(required[0], AppConstants.SyncWorkerArgument, StringComparison.Ordinal) ||
+            !string.Equals(required[1], RunDirectoryArgument, StringComparison.Ordinal) ||
+            !string.Equals(required[3], CliPathArgument, StringComparison.Ordinal) ||
+            !string.Equals(required[5], RunKindArgument, StringComparison.Ordinal))
         {
             return false;
         }
 
         try
         {
-            string runDirectory = Path.GetFullPath(arguments[2]);
-            string cliPath = Path.GetFullPath(arguments[4]);
-            SyncRunKind runKind = arguments[6] switch
+            string runDirectory = Path.GetFullPath(required[2]);
+            string cliPath = Path.GetFullPath(required[4]);
+            SyncRunKind runKind = required[6] switch
             {
                 LocalDocumentsKind => SyncRunKind.LocalDocuments,
                 ConfluenceKind => SyncRunKind.Confluence,
                 _ => throw new ArgumentException("The sync worker kind is invalid."),
             };
             bool expectsConfig = runKind == SyncRunKind.Confluence;
-            if (expectsConfig != (arguments.Count == 9) ||
+            if (expectsConfig != (required.Count == 9) ||
                 (expectsConfig && !string.Equals(
-                    arguments[7],
+                    required[7],
                     ConfigPathArgument,
                     StringComparison.Ordinal)))
             {
                 return false;
             }
 
-            string? configPath = expectsConfig ? Path.GetFullPath(arguments[8]) : null;
+            if (force && !expectsConfig)
+            {
+                return false;
+            }
+
+            string? configPath = expectsConfig ? Path.GetFullPath(required[8]) : null;
             if (!Path.IsPathFullyQualified(runDirectory) ||
                 !Path.IsPathFullyQualified(cliPath) ||
                 (configPath is not null && !Path.IsPathFullyQualified(configPath)))
@@ -61,7 +73,7 @@ public sealed record SyncWorkerArguments(
                 return false;
             }
 
-            result = new SyncWorkerArguments(runDirectory, cliPath, runKind, configPath);
+            result = new SyncWorkerArguments(runDirectory, cliPath, runKind, configPath, force);
             return true;
         }
         catch (Exception exception) when (exception is ArgumentException or NotSupportedException)
@@ -70,12 +82,15 @@ public sealed record SyncWorkerArguments(
         }
     }
 
-    /// <summary>Builds only the two audited Cortex sync command shapes.</summary>
+    /// <summary>Builds only the audited Cortex sync command shapes, forcing collection on demand.</summary>
     public static IReadOnlyList<string> BuildCliArguments(
         SyncRunKind runKind,
-        string? configPath) => runKind switch
+        string? configPath,
+        bool force) => runKind switch
         {
-            SyncRunKind.LocalDocuments when configPath is null => ["sync", "--json"],
+            SyncRunKind.LocalDocuments when configPath is null && !force => ["sync", "--json"],
+            SyncRunKind.Confluence when configPath is not null && force =>
+                ["confluence", "--config", Path.GetFullPath(configPath), "sync", ForceArgument],
             SyncRunKind.Confluence when configPath is not null =>
                 ["confluence", "--config", Path.GetFullPath(configPath), "sync"],
             _ => throw new ArgumentException("The sync worker arguments do not match the requested kind."),
@@ -86,7 +101,8 @@ public sealed record SyncWorkerArguments(
         string runDirectory,
         string cliPath,
         SyncRunKind runKind,
-        string? configPath)
+        string? configPath,
+        bool force)
     {
         List<string> arguments =
         [
@@ -103,9 +119,14 @@ public sealed record SyncWorkerArguments(
             arguments.Add(ConfigPathArgument);
             arguments.Add(Path.GetFullPath(configPath));
         }
-        else if (runKind != SyncRunKind.LocalDocuments || configPath is not null)
+        else if (runKind != SyncRunKind.LocalDocuments || configPath is not null || force)
         {
             throw new ArgumentException("The sync worker arguments do not match the requested kind.");
+        }
+
+        if (force)
+        {
+            arguments.Add(ForceArgument);
         }
 
         return arguments;
