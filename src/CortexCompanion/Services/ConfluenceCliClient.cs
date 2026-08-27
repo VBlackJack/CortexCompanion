@@ -4,6 +4,7 @@
 using System.Text.Json;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
+using CortexCompanion.Localization;
 using CortexCompanion.Models;
 
 namespace CortexCompanion.Services;
@@ -112,7 +113,7 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
     };
 
     private static ConfluenceCliResult<T> InvalidJson<T>() =>
-        new(CortexExitCode.Error, default, "La reponse JSON du CLI est invalide.", false, null);
+        new(CortexExitCode.Error, default, UiStrings.PagesCliInvalidJson, false, null);
 
     private static string Sanitize(string value) => value.Trim();
 }

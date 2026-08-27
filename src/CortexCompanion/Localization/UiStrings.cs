@@ -168,6 +168,20 @@ public static class UiStrings
     public static string PagesCliTimedOut => GetString(nameof(PagesCliTimedOut));
     /// <summary>Gets a Pages CLI message.</summary>
     public static string PagesCliLaunchFailed => GetString(nameof(PagesCliLaunchFailed));
+    /// <summary>Gets a Pages CLI message.</summary>
+    public static string PagesCliInvalidJson => GetString(nameof(PagesCliInvalidJson));
+    /// <summary>Gets the refusal shown when the space is already collected whole.</summary>
+    public static string PagesRejectWholeSpaceCovered => GetString(nameof(PagesRejectWholeSpaceCovered));
+    /// <summary>Gets the refusal shown when the page is already listed.</summary>
+    public static string PagesRejectPageAlreadyConfigured =>
+        GetString(nameof(PagesRejectPageAlreadyConfigured));
+    /// <summary>Gets the refusal shown when the page is absent from the current mode.</summary>
+    public static string PagesRejectPageNotConfigured => GetString(nameof(PagesRejectPageNotConfigured));
+    /// <summary>Gets the refusal shown when the resolved space is outside the raw configuration.</summary>
+    public static string PagesRejectSpaceNotAllowlisted =>
+        GetString(nameof(PagesRejectSpaceNotAllowlisted));
+    /// <summary>Gets the refusal shown when every mutation is disabled.</summary>
+    public static string PagesRejectReadOnly => GetString(nameof(PagesRejectReadOnly));
     /// <summary>Gets the add confirmation title.</summary>
     public static string ConfirmAddTitle => GetString(nameof(ConfirmAddTitle));
     /// <summary>Formats the add confirmation.</summary>

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Interfaces;
+using CortexCompanion.Localization;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 
@@ -82,6 +83,31 @@ public sealed class PagesMutationServiceTests
         await Assert.ThrowsAsync<PageMutationRejectedException>(() =>
             service.AddPageAsync("123", false, CancellationToken.None));
 
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public async Task SpaceOutsideConfigurationIsRefusedWithLocalizedActionableMessage()
+    {
+        FakeCliClient cli = new()
+        {
+            ResolveResult = Success(new ResolvedPageContract
+            {
+                ContractVersion = 1,
+                PageId = "123",
+                Title = "Titre",
+                SpaceKey = "OTHER",
+                Configured = false,
+            }),
+        };
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(cli, store, new FakeConfirmations());
+
+        PageMutationRejectedException exception =
+            await Assert.ThrowsAsync<PageMutationRejectedException>(() =>
+                service.AddPageAsync("123", false, CancellationToken.None));
+
+        Assert.AreEqual(UiStrings.PagesRejectSpaceNotAllowlisted, exception.Message);
         Assert.AreEqual(0, store.WriteCalls);
     }
 
