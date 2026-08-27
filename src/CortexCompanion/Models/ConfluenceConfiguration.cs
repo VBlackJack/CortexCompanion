@@ -17,21 +17,32 @@ public sealed record ConfluenceConfiguration(
     IReadOnlyList<ConfluenceSpaceConfiguration> Spaces)
 {
     /// <summary>Creates schema v2 while preserving every schema v1 space as whole-space collection.</summary>
-    public ConfluenceConfiguration MigrateToVersionTwo()
+    public ConfluenceConfiguration MigrateToVersionTwo() => MigrateToSchema(2);
+
+    /// <summary>Raises the schema to the version one selection mode needs, never lowering it.</summary>
+    public ConfluenceConfiguration MigrateToSchema(int targetVersion)
     {
-        if (SchemaVersion == 2)
+        if (SchemaVersion >= targetVersion)
         {
             return this;
         }
 
-        IReadOnlyList<ConfluenceSpaceConfiguration> migratedSpaces = Spaces
-            .Select(space => space with
-            {
-                Selection = ConfluenceSelection.WholeSpace,
-                PageIds = Array.Empty<string>(),
-            })
-            .ToArray();
-        return this with { SchemaVersion = 2, Spaces = migratedSpaces };
+        ConfluenceConfiguration migrated = this;
+        if (migrated.SchemaVersion == 1)
+        {
+            IReadOnlyList<ConfluenceSpaceConfiguration> migratedSpaces = migrated.Spaces
+                .Select(space => space with
+                {
+                    Selection = ConfluenceSelection.WholeSpace,
+                    PageIds = Array.Empty<string>(),
+                })
+                .ToArray();
+            migrated = migrated with { SchemaVersion = 2, Spaces = migratedSpaces };
+        }
+
+        return migrated.SchemaVersion >= targetVersion
+            ? migrated
+            : migrated with { SchemaVersion = targetVersion };
     }
 
     /// <summary>Replaces one space without changing any unrelated configuration value.</summary>
@@ -106,6 +117,9 @@ public enum ConfluenceSelection
 
     /// <summary>Collects only explicitly listed page identifiers.</summary>
     Pages,
+
+    /// <summary>Collects every listed root together with its current descendants.</summary>
+    Subtree,
 }
 
 /// <summary>Couples exact source bytes, their CAS hash, and the validated model.</summary>

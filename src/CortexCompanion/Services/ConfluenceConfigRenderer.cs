@@ -52,8 +52,13 @@ public sealed class ConfluenceConfigRenderer
                 continue;
             }
 
-            lines.Add($"selection = {Quote(space.Selection == ConfluenceSelection.Pages ? "pages" : "whole_space")}");
-            if (space.Selection != ConfluenceSelection.Pages)
+            lines.Add($"selection = {Quote(space.Selection switch
+            {
+                ConfluenceSelection.Pages => "pages",
+                ConfluenceSelection.Subtree => "subtree",
+                _ => "whole_space",
+            })}");
+            if (space.Selection == ConfluenceSelection.WholeSpace)
             {
                 continue;
             }

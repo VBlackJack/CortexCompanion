@@ -40,9 +40,15 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
         ConfluenceSelection targetSelection,
         IReadOnlyList<string> targetPageIds)
     {
-        string message = targetSelection == ConfluenceSelection.WholeSpace
-            ? UiStrings.FormatConfirmModeWholeSpace(spaceKey)
-            : UiStrings.FormatConfirmModePagesEmpty(spaceKey);
+        string message = targetSelection switch
+        {
+            ConfluenceSelection.WholeSpace => UiStrings.FormatConfirmModeWholeSpace(spaceKey),
+            ConfluenceSelection.Subtree when targetPageIds.Count == 0 =>
+                UiStrings.FormatConfirmModeSubtreeEmpty(spaceKey),
+            ConfluenceSelection.Subtree =>
+                UiStrings.FormatConfirmModeSubtree(spaceKey, targetPageIds.Count),
+            _ => UiStrings.FormatConfirmModePagesEmpty(spaceKey),
+        };
         ConfirmationDialog dialog = ConfirmationDialog.CreateTyped(
             UiStrings.ConfirmModeTitle,
             message,

@@ -103,9 +103,10 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             pages.Spaces.All(space =>
                 space.SpaceKey is not null && space.Target is not null &&
                 space.Classification is "perso-non-sensible" or "pro-confidentiel" &&
-                (space.Selection == "whole_space" ? space.Pages is null :
-                 space.Selection == "pages" && space.Pages is not null &&
-                 space.Pages.All(page => page.PageId is not null))) &&
+                (space.Selection == "whole_space"
+                    ? space.Pages is null
+                    : space.Selection is "pages" or "subtree" && space.Pages is not null &&
+                      space.Pages.All(page => page.PageId is not null))) &&
             pages.LastSync.Status is null or "ok" or "degraded" or "error",
         ResolvedPageContract resolved => resolved.ContractVersion == 1 &&
             resolved.PageId is not null && resolved.Title is not null && resolved.SpaceKey is not null,
