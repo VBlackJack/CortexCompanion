@@ -10,6 +10,8 @@ namespace CortexCompanion.Tests.Services;
 [TestClass]
 public sealed class ConfluenceConfigParserRendererTests
 {
+    private static readonly string[] ExpectedSubtreeRoots = ["1001", "1002"];
+
     [TestMethod]
     public void GoldenCasesMatchPythonRendererBytes()
     {
@@ -118,6 +120,92 @@ public sealed class ConfluenceConfigParserRendererTests
             classification = "pro-confidentiel"
             selection = "whole_space"
             pages = []
+            """);
+
+        Assert.Throws<ConfluenceConfigValidationException>(() =>
+            ConfluenceConfigParser.Parse(source, "invalid.toml"));
+    }
+
+    [TestMethod]
+    public void VersionThreeSubtreeRoundTripsItsRootsThroughTheRenderer()
+    {
+        byte[] source = Encoding.UTF8.GetBytes("""
+            schema_version = 3
+            credential_target = "cortex-spike"
+            max_attachment_size_mb = 50
+            failure_threshold = 0.1
+            [[spaces]]
+            space_key = "DOC"
+            target = "docs"
+            classification = "pro-confidentiel"
+            selection = "subtree"
+            [[spaces.pages]]
+            page_id = "1001"
+            [[spaces.pages]]
+            page_id = "1002"
+            """);
+
+        ConfluenceConfiguration parsed = ConfluenceConfigParser.Parse(source, "subtree.toml");
+        string rendered = Encoding.UTF8.GetString(ConfluenceConfigRenderer.Render(parsed));
+
+        Assert.AreEqual(3, parsed.SchemaVersion);
+        Assert.AreEqual(ConfluenceSelection.Subtree, parsed.Spaces[0].Selection);
+        CollectionAssert.AreEqual(ExpectedSubtreeRoots, parsed.Spaces[0].PageIds.ToArray());
+        StringAssert.Contains(rendered, "schema_version = 3");
+        StringAssert.Contains(rendered, "selection = \"subtree\"");
+        Assert.AreEqual(2, rendered.Split("[[spaces.pages]]").Length - 1);
+        Assert.IsTrue(ConfluenceConfigParser
+            .Parse(Encoding.UTF8.GetBytes(rendered), "subtree.toml")
+            .SemanticallyEquals(parsed));
+    }
+
+    [TestMethod]
+    public void VersionThreeSubtreeAcceptsAnExplicitEmptyRootList()
+    {
+        byte[] source = Encoding.UTF8.GetBytes("""
+            schema_version = 3
+            [[spaces]]
+            space_key = "DOC"
+            target = "docs"
+            classification = "pro-confidentiel"
+            selection = "subtree"
+            pages = []
+            """);
+
+        ConfluenceConfiguration parsed = ConfluenceConfigParser.Parse(source, "subtree.toml");
+
+        Assert.AreEqual(ConfluenceSelection.Subtree, parsed.Spaces[0].Selection);
+        Assert.IsEmpty(parsed.Spaces[0].PageIds);
+    }
+
+    [TestMethod]
+    public void VersionTwoRejectsTheSubtreeSelectionReservedForVersionThree()
+    {
+        byte[] source = Encoding.UTF8.GetBytes("""
+            schema_version = 2
+            [[spaces]]
+            space_key = "DOC"
+            target = "docs"
+            classification = "pro-confidentiel"
+            selection = "subtree"
+            [[spaces.pages]]
+            page_id = "1001"
+            """);
+
+        Assert.Throws<ConfluenceConfigValidationException>(() =>
+            ConfluenceConfigParser.Parse(source, "invalid.toml"));
+    }
+
+    [TestMethod]
+    public void VersionThreeSubtreeWithoutAPagesTableIsRejected()
+    {
+        byte[] source = Encoding.UTF8.GetBytes("""
+            schema_version = 3
+            [[spaces]]
+            space_key = "DOC"
+            target = "docs"
+            classification = "pro-confidentiel"
+            selection = "subtree"
             """);
 
         Assert.Throws<ConfluenceConfigValidationException>(() =>

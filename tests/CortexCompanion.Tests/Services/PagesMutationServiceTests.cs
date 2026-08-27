@@ -112,6 +112,72 @@ public sealed class PagesMutationServiceTests
     }
 
     [TestMethod]
+    [DataRow(ConfluenceSelection.WholeSpace, ConfluenceSelection.Pages)]
+    [DataRow(ConfluenceSelection.Pages, ConfluenceSelection.Subtree)]
+    [DataRow(ConfluenceSelection.Subtree, ConfluenceSelection.WholeSpace)]
+    public async Task ModeSwitchCyclesWholeSpaceThenPagesThenSubtree(
+        ConfluenceSelection current,
+        ConfluenceSelection expected)
+    {
+        IReadOnlyList<string> pageIds = current == ConfluenceSelection.WholeSpace ? [] : SinglePage;
+        FakeConfigStore store = new(SelectionSnapshot(current, pageIds, schemaVersion: 3));
+        FakeConfirmations confirmations = new() { TypedValue = "DOC" };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+
+        Assert.IsTrue(await service.SwitchModeAsync("DOC", false, CancellationToken.None));
+
+        Assert.AreEqual(expected, confirmations.LastTargetSelection);
+        Assert.AreEqual(expected, store.WrittenConfiguration!.Spaces[0].Selection);
+    }
+
+    [TestMethod]
+    public async Task SwitchingPagesToSubtreeKeepsEveryIdentifierAsARoot()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, SinglePage));
+        FakeConfirmations confirmations = new() { TypedValue = "DOC" };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+
+        Assert.IsTrue(await service.SwitchModeAsync("DOC", false, CancellationToken.None));
+
+        CollectionAssert.AreEqual(SinglePage, confirmations.LastTargetPageIds!.ToArray());
+        CollectionAssert.AreEqual(SinglePage, store.WrittenConfiguration!.Spaces[0].PageIds.ToArray());
+        Assert.AreEqual(3, store.WrittenConfiguration.SchemaVersion);
+    }
+
+    [TestMethod]
+    public async Task SwitchingSubtreeToWholeSpaceDropsEveryRoot()
+    {
+        FakeConfigStore store = new(
+            SelectionSnapshot(ConfluenceSelection.Subtree, SinglePage, schemaVersion: 3));
+        FakeConfirmations confirmations = new() { TypedValue = "DOC" };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+
+        Assert.IsTrue(await service.SwitchModeAsync("DOC", false, CancellationToken.None));
+
+        Assert.AreEqual(ConfluenceSelection.WholeSpace, store.WrittenConfiguration!.Spaces[0].Selection);
+        Assert.IsEmpty(store.WrittenConfiguration.Spaces[0].PageIds);
+    }
+
+    [TestMethod]
+    public async Task SubtreeRootsCanBeRemovedLikeAnyExplicitIdentifier()
+    {
+        FakeConfigStore store = new(
+            SelectionSnapshot(ConfluenceSelection.Subtree, SinglePage, schemaVersion: 3));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations());
+
+        bool changed = await service.RemovePageAsync(
+            "DOC",
+            "123",
+            null,
+            false,
+            CancellationToken.None);
+
+        Assert.IsTrue(changed);
+        Assert.IsEmpty(store.WrittenConfiguration!.Spaces[0].PageIds);
+        Assert.AreEqual(ConfluenceSelection.Subtree, store.WrittenConfiguration.Spaces[0].Selection);
+    }
+
+    [TestMethod]
     public async Task WrongTypedConfirmationLeavesVersionOneUntouched()
     {
         FakeConfigStore store = new(WholeSpaceSnapshot(schemaVersion: 1));
@@ -212,6 +278,20 @@ public sealed class PagesMutationServiceTests
             [new ConfluenceSpaceConfiguration(
                 "DOC", "docs", "pro-confidentiel", ConfluenceSelection.WholeSpace, [])]));
 
+    private static ConfluenceConfigSnapshot SelectionSnapshot(
+        ConfluenceSelection selection,
+        IReadOnlyList<string> pageIds,
+        int schemaVersion = 2) => Snapshot(
+        new ConfluenceConfiguration(
+            schemaVersion,
+            "https://raw.example.test",
+            "raw-target",
+            null,
+            null,
+            50,
+            0.1,
+            [new ConfluenceSpaceConfiguration("DOC", "docs", "pro-confidentiel", selection, pageIds)]));
+
     private static ConfluenceConfigSnapshot Snapshot(ConfluenceConfiguration configuration) =>
         new([], new string('a', 64), configuration);
 
@@ -285,9 +365,18 @@ public sealed class PagesMutationServiceTests
 
         public bool ConfirmRemove(string spaceKey, string pageId, string? title) => true;
 
+        public ConfluenceSelection? LastTargetSelection { get; private set; }
+
+        public IReadOnlyList<string>? LastTargetPageIds { get; private set; }
+
         public string? ConfirmModeChange(
             string spaceKey,
             ConfluenceSelection targetSelection,
-            IReadOnlyList<string> targetPageIds) => TypedValue;
+            IReadOnlyList<string> targetPageIds)
+        {
+            LastTargetSelection = targetSelection;
+            LastTargetPageIds = targetPageIds;
+            return TypedValue;
+        }
     }
 }

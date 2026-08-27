@@ -26,6 +26,9 @@ public sealed partial class ConfluenceConfigParser
     ];
     private static readonly HashSet<string> PageKeys = ["page_id"];
 
+    /// <summary>Gets the first schema version that accepts the subtree selection.</summary>
+    public const int SubtreeSchemaVersion = 3;
+
     /// <summary>Parses exact UTF-8 bytes into the frozen schema v1/v2 model.</summary>
     public static ConfluenceConfiguration Parse(byte[] content, string sourcePath)
     {
@@ -39,9 +42,11 @@ public sealed partial class ConfluenceConfigParser
             RejectUnknown(root, RootKeys, "configuration", sourcePath);
 
             int schemaVersion = OptionalInteger(root, "schema_version", 1, sourcePath);
-            if (schemaVersion is not 1 and not 2)
+            if (schemaVersion is not (1 or 2 or 3))
             {
-                throw Invalid(sourcePath, $"Unsupported schema_version={schemaVersion}; expected 1 or 2.");
+                throw Invalid(
+                    sourcePath,
+                    $"Unsupported schema_version={schemaVersion}; expected 1, 2, or 3.");
             }
 
             string? baseUrl = OptionalString(root, "base_url", sourcePath);
@@ -138,7 +143,7 @@ public sealed partial class ConfluenceConfigParser
             }
 
             ConfluenceSelection selection = ConfluenceSelection.WholeSpace;
-            if (schemaVersion == 2)
+            if (schemaVersion >= 2)
             {
                 if (!hasSelection || selectionValue is not string selectionText)
                 {
@@ -149,8 +154,18 @@ public sealed partial class ConfluenceConfigParser
                 {
                     "whole_space" => ConfluenceSelection.WholeSpace,
                     "pages" => ConfluenceSelection.Pages,
-                    _ => throw Invalid(sourcePath, "selection must be 'whole_space' or 'pages'."),
+                    "subtree" => ConfluenceSelection.Subtree,
+                    _ => throw Invalid(
+                        sourcePath,
+                        "selection must be 'whole_space', 'pages', or 'subtree'."),
                 };
+            }
+
+            if (selection == ConfluenceSelection.Subtree && schemaVersion < SubtreeSchemaVersion)
+            {
+                throw Invalid(
+                    sourcePath,
+                    $"selection='subtree' requires schema_version={SubtreeSchemaVersion}.");
             }
 
             if (selection == ConfluenceSelection.WholeSpace && hasPages)
@@ -158,9 +173,14 @@ public sealed partial class ConfluenceConfigParser
                 throw Invalid(sourcePath, "selection='whole_space' must not include a pages table.");
             }
 
-            IReadOnlyList<string> pageIds = selection == ConfluenceSelection.Pages
-                ? ParsePages(pagesValue, hasPages, sourcePath)
-                : Array.Empty<string>();
+            if (selection == ConfluenceSelection.Subtree && !hasPages)
+            {
+                throw Invalid(sourcePath, "selection='subtree' requires an explicit pages table.");
+            }
+
+            IReadOnlyList<string> pageIds = selection == ConfluenceSelection.WholeSpace
+                ? Array.Empty<string>()
+                : ParsePages(pagesValue, hasPages, sourcePath);
             result.Add(new ConfluenceSpaceConfiguration(spaceKey, target, classification, selection, pageIds));
         }
 

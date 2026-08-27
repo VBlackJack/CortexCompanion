@@ -48,6 +48,7 @@
   <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectée.</value></data>
   <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listées sont collectées.</value></data>
   <data name="WholeSpaceModeDescription" xml:space="preserve"><value>L'espace entier est collecté ; aucune liste de pages n'est applicable.</value></data>
+  <data name="SubtreeModeDescription" xml:space="preserve"><value>Chaque page listée est une racine : elle est collectée avec toutes ses pages descendantes.</value></data>
   <data name="PagesSwitchMode" xml:space="preserve"><value>Changer de mode</value></data>
   <data name="PagesRemove" xml:space="preserve"><value>Retirer</value></data>
   <data name="PagesReadOnly" xml:space="preserve"><value>Lecture seule : les mutations sont désactivées.</value></data>
@@ -92,6 +93,8 @@
   <data name="ConfirmModeTitle" xml:space="preserve"><value>Confirmation typée du mode</value></data>
   <data name="ConfirmModeWholeSpace" xml:space="preserve"><value>L'espace {0} sera collecté en entier ; sa liste d'ID explicites sera retirée du fichier. Tapez exactement sa clé pour confirmer.</value></data>
   <data name="ConfirmModePagesEmpty" xml:space="preserve"><value>L'espace {0} passera en mode pages avec une liste initiale vide : ZERO page sera collectée. Tapez exactement sa clé pour confirmer.</value></data>
+  <data name="ConfirmModeSubtree" xml:space="preserve"><value>L'espace {0} passera en mode sous-arbre. Ses {1} page(s) explicites deviennent des racines : leurs pages descendantes seront collectées en plus. Tapez exactement sa clé pour confirmer.</value></data>
+  <data name="ConfirmModeSubtreeEmpty" xml:space="preserve"><value>L'espace {0} passera en mode sous-arbre avec une liste initiale vide : ZERO page sera collectée. Tapez exactement sa clé pour confirmer.</value></data>
   <data name="ConfirmModeInputLabel" xml:space="preserve"><value>Clé d'espace à saisir</value></data>
   <data name="ConfirmButton" xml:space="preserve"><value>Confirmer</value></data>
   <data name="CancelButton" xml:space="preserve"><value>Annuler</value></data>

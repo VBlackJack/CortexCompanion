@@ -79,7 +79,7 @@ public sealed class PagesMutationService
         EnsureMutable(isReadOnly);
         ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
         ConfluenceSpaceConfiguration space = FindSpace(snapshot.Configuration, spaceKey);
-        if (space.Selection != ConfluenceSelection.Pages ||
+        if (space.Selection == ConfluenceSelection.WholeSpace ||
             !space.PageIds.Contains(pageId, StringComparer.Ordinal))
         {
             throw new PageMutationRejectedException(UiStrings.PagesRejectPageNotConfigured);
@@ -109,24 +109,34 @@ public sealed class PagesMutationService
     {
         EnsureMutable(isReadOnly);
         ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
-        ConfluenceConfiguration migrated = snapshot.Configuration.MigrateToVersionTwo();
-        ConfluenceSpaceConfiguration current = FindSpace(migrated, spaceKey);
-        ConfluenceSelection target = current.Selection == ConfluenceSelection.WholeSpace
-            ? ConfluenceSelection.Pages
-            : ConfluenceSelection.WholeSpace;
-        IReadOnlyList<string> targetPages = target == ConfluenceSelection.Pages
-            ? Array.Empty<string>()
-            : current.PageIds;
+        ConfluenceSelection current = FindSpace(
+            snapshot.Configuration.MigrateToVersionTwo(),
+            spaceKey).Selection;
+        ConfluenceSelection target = current switch
+        {
+            ConfluenceSelection.WholeSpace => ConfluenceSelection.Pages,
+            ConfluenceSelection.Pages => ConfluenceSelection.Subtree,
+            _ => ConfluenceSelection.WholeSpace,
+        };
+        ConfluenceConfiguration migrated = snapshot.Configuration.MigrateToSchema(
+            target == ConfluenceSelection.Subtree ? ConfluenceConfigParser.SubtreeSchemaVersion : 2);
+        ConfluenceSpaceConfiguration space = FindSpace(migrated, spaceKey);
+
+        // Explicit identifiers survive the pages-to-subtree step: they become the roots
+        // whose descendants the next collection adds. Every other step clears the list.
+        IReadOnlyList<string> targetPages = target == ConfluenceSelection.Subtree
+            ? space.PageIds
+            : Array.Empty<string>();
         string? typed = _confirmations.ConfirmModeChange(spaceKey, target, targetPages);
         if (!string.Equals(typed, spaceKey, StringComparison.Ordinal))
         {
             return false;
         }
 
-        ConfluenceSpaceConfiguration replacement = current with
+        ConfluenceSpaceConfiguration replacement = space with
         {
             Selection = target,
-            PageIds = Array.Empty<string>(),
+            PageIds = targetPages,
         };
         await WriteOrRefreshAsync(
             migrated.ReplaceSpace(replacement),

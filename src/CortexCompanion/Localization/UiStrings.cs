@@ -34,6 +34,10 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("ConfirmModeWholeSpace"));
     private static readonly CompositeFormat ConfirmModePagesEmptyFormat =
         CompositeFormat.Parse(GetString("ConfirmModePagesEmpty"));
+    private static readonly CompositeFormat ConfirmModeSubtreeFormat =
+        CompositeFormat.Parse(GetString("ConfirmModeSubtree"));
+    private static readonly CompositeFormat ConfirmModeSubtreeEmptyFormat =
+        CompositeFormat.Parse(GetString("ConfirmModeSubtreeEmpty"));
     private static readonly CompositeFormat HealthPathOriginFormat =
         CompositeFormat.Parse(GetString("HealthPathOrigin"));
     private static readonly CompositeFormat PatOkFormat = CompositeFormat.Parse(GetString("PatOk"));
@@ -102,6 +106,8 @@ public static class UiStrings
     public static string PagesModeDescription => GetString(nameof(PagesModeDescription));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string WholeSpaceModeDescription => GetString(nameof(WholeSpaceModeDescription));
+    /// <summary>Gets the subtree mode consequence.</summary>
+    public static string SubtreeModeDescription => GetString(nameof(SubtreeModeDescription));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesSwitchMode => GetString(nameof(PagesSwitchMode));
     /// <summary>Gets a Pages UI resource.</summary>
@@ -200,6 +206,12 @@ public static class UiStrings
     /// <summary>Formats the empty-pages consequence.</summary>
     public static string FormatConfirmModePagesEmpty(string spaceKey) =>
         string.Format(CultureInfo.CurrentCulture, ConfirmModePagesEmptyFormat, spaceKey);
+    /// <summary>Formats the typed subtree confirmation carrying its root count.</summary>
+    public static string FormatConfirmModeSubtree(string spaceKey, int rootCount) =>
+        string.Format(CultureInfo.CurrentCulture, ConfirmModeSubtreeFormat, spaceKey, rootCount);
+    /// <summary>Formats the typed subtree confirmation for an empty root list.</summary>
+    public static string FormatConfirmModeSubtreeEmpty(string spaceKey) =>
+        string.Format(CultureInfo.CurrentCulture, ConfirmModeSubtreeEmptyFormat, spaceKey);
     /// <summary>Gets the typed input label.</summary>
     public static string ConfirmModeInputLabel => GetString(nameof(ConfirmModeInputLabel));
     /// <summary>Gets the confirm button label.</summary>

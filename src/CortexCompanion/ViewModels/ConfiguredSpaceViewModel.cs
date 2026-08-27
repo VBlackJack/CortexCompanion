@@ -15,16 +15,24 @@ public sealed record ConfiguredSpaceViewModel(
     IReadOnlyList<ConfiguredPageViewModel> Pages)
 {
     /// <summary>Gets the frozen mode token.</summary>
-    public string SelectionName => Selection == ConfluenceSelection.Pages ? "pages" : "whole_space";
+    public string SelectionName => Selection switch
+    {
+        ConfluenceSelection.Pages => "pages",
+        ConfluenceSelection.Subtree => "subtree",
+        _ => "whole_space",
+    };
 
     /// <summary>Gets whether an explicit page list is meaningful.</summary>
-    public bool IsPagesSelection => Selection == ConfluenceSelection.Pages;
+    public bool IsPagesSelection => Selection != ConfluenceSelection.WholeSpace;
 
     /// <summary>Gets whether the explicit page selection contains zero pages.</summary>
     public bool IsEmptyPagesSelection => IsPagesSelection && Pages.Count == 0;
 
     /// <summary>Gets the exact mode consequence shown in the card.</summary>
-    public string SelectionDescription => IsPagesSelection
-        ? UiStrings.PagesModeDescription
-        : UiStrings.WholeSpaceModeDescription;
+    public string SelectionDescription => Selection switch
+    {
+        ConfluenceSelection.Pages => UiStrings.PagesModeDescription,
+        ConfluenceSelection.Subtree => UiStrings.SubtreeModeDescription,
+        _ => UiStrings.WholeSpaceModeDescription,
+    };
 }

@@ -235,9 +235,12 @@ public sealed class PagesViewModel : ViewModelBase
         Spaces.Clear();
         foreach (ConfiguredSpaceContract space in contract.Spaces)
         {
-            ConfluenceSelection selection = space.Selection == "pages"
-                ? ConfluenceSelection.Pages
-                : ConfluenceSelection.WholeSpace;
+            ConfluenceSelection selection = space.Selection switch
+            {
+                "pages" => ConfluenceSelection.Pages,
+                "subtree" => ConfluenceSelection.Subtree,
+                _ => ConfluenceSelection.WholeSpace,
+            };
             IReadOnlyList<ConfiguredPageViewModel> pages = space.Pages?
                 .Select(page => new ConfiguredPageViewModel(
                     space.SpaceKey,
