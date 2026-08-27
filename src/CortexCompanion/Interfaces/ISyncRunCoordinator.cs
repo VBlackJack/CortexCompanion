@@ -14,9 +14,11 @@ public interface ISyncRunCoordinator
         CancellationToken cancellationToken);
 
     /// <summary>Starts the advanced Confluence collection after enforcing the active-run guard.</summary>
+    /// <param name="force">Bypasses the Cortex schedule so a due-interval refusal cannot block the user.</param>
     Task<SyncRunHandle> StartConfluenceAsync(
         string cliPath,
         string confluenceConfigPath,
+        bool force,
         CancellationToken cancellationToken);
 
     /// <summary>Returns the latest durable run, when one exists.</summary>

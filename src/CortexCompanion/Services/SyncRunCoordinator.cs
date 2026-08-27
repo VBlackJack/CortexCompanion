@@ -31,22 +31,26 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
             cliPath,
             SyncRunKind.LocalDocuments,
             configPath: null,
+            force: false,
             cancellationToken);
 
     /// <inheritdoc />
     public Task<SyncRunHandle> StartConfluenceAsync(
         string cliPath,
         string confluenceConfigPath,
+        bool force,
         CancellationToken cancellationToken) => StartAsync(
             cliPath,
             SyncRunKind.Confluence,
             confluenceConfigPath,
+            force,
             cancellationToken);
 
     private async Task<SyncRunHandle> StartAsync(
         string cliPath,
         SyncRunKind runKind,
         string? configPath,
+        bool force,
         CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(_runsRoot);
@@ -68,7 +72,8 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
                      runDirectory,
                      cliPath,
                      runKind,
-                     configPath))
+                     configPath,
+                     force))
         {
             startInfo.ArgumentList.Add(argument);
         }

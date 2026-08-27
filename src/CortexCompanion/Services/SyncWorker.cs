@@ -42,7 +42,8 @@ public static class SyncWorker
         };
         foreach (string argument in SyncWorkerArguments.BuildCliArguments(
                      arguments.RunKind,
-                     arguments.ConfigPath))
+                     arguments.ConfigPath,
+                     arguments.Force))
         {
             startInfo.ArgumentList.Add(argument);
         }

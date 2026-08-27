@@ -243,6 +243,47 @@ public sealed class SyncViewModelTests
         CollectionAssert.AreEqual(before, SHA256.HashData(File.ReadAllBytes(configPath)));
     }
 
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task ConfluenceCollectForwardsTheScheduleBypassExactlyAsToggled(bool force)
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        string configPath = CreateConfig(temporary);
+        RecordingConfluenceCoordinator coordinator = new();
+        SyncViewModel viewModel = CreateViewModel(
+            cliPath,
+            configPath,
+            Path.Combine(temporary.Path, "source-health.json"),
+            coordinator,
+            new StubInteractiveLauncher());
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        viewModel.ForceConfluenceCollect = force;
+
+        viewModel.ConfluenceSyncCommand.Execute(null);
+        await WaitUntilAsync(() => coordinator.LastForce is not null);
+
+        Assert.AreEqual(force, coordinator.LastForce);
+        Assert.AreEqual(Path.GetFullPath(configPath), coordinator.LastConfigPath);
+    }
+
+    [TestMethod]
+    public void ConfluenceCollectDefaultsToRespectingTheCortexSchedule()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        string configPath = CreateConfig(temporary);
+        SyncViewModel viewModel = CreateViewModel(
+            cliPath,
+            configPath,
+            Path.Combine(temporary.Path, "source-health.json"),
+            new RecordingConfluenceCoordinator(),
+            new StubInteractiveLauncher());
+
+        Assert.IsFalse(viewModel.ForceConfluenceCollect);
+    }
+
     private static SyncViewModel CreateViewModel(
         string cliPath,
         string configPath,
@@ -302,6 +343,7 @@ public sealed class SyncViewModelTests
         public Task<SyncRunHandle> StartConfluenceAsync(
             string cliPath,
             string confluenceConfigPath,
+            bool force,
             CancellationToken cancellationToken) =>
             Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
@@ -339,6 +381,7 @@ public sealed class SyncViewModelTests
         public Task<SyncRunHandle> StartConfluenceAsync(
             string cliPath,
             string confluenceConfigPath,
+            bool force,
             CancellationToken cancellationToken) =>
             Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
@@ -369,6 +412,7 @@ public sealed class SyncViewModelTests
         public Task<SyncRunHandle> StartConfluenceAsync(
             string cliPath,
             string confluenceConfigPath,
+            bool force,
             CancellationToken cancellationToken) =>
             Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
@@ -403,6 +447,7 @@ public sealed class SyncViewModelTests
         public Task<SyncRunHandle> StartConfluenceAsync(
             string cliPath,
             string confluenceConfigPath,
+            bool force,
             CancellationToken cancellationToken) =>
             Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected Confluence sync launch."));
 
@@ -420,6 +465,52 @@ public sealed class SyncViewModelTests
                 true,
                 false,
                 exitCode,
+                null));
+    }
+
+    private sealed class RecordingConfluenceCoordinator : ISyncRunCoordinator
+    {
+        private readonly SyncRunHandle _handle = new(
+            "run",
+            Path.Combine(Path.GetTempPath(), "run"),
+            Environment.ProcessId,
+            DateTimeOffset.UtcNow,
+            SyncRunKind.Confluence);
+
+        public bool? LastForce { get; private set; }
+
+        public string? LastConfigPath { get; private set; }
+
+        public Task<SyncRunHandle> StartLocalDocumentsAsync(
+            string cliPath,
+            CancellationToken cancellationToken) =>
+            Task.FromException<SyncRunHandle>(new AssertFailedException("Unexpected local sync launch."));
+
+        public Task<SyncRunHandle> StartConfluenceAsync(
+            string cliPath,
+            string confluenceConfigPath,
+            bool force,
+            CancellationToken cancellationToken)
+        {
+            LastConfigPath = Path.GetFullPath(confluenceConfigPath);
+            LastForce = force;
+            return Task.FromResult(_handle);
+        }
+
+        public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) =>
+            Task.FromResult<SyncRunSnapshot?>(null);
+
+        public Task<SyncRunSnapshot> ObserveAsync(
+            SyncRunHandle handle,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(new SyncRunSnapshot(
+                handle,
+                string.Empty,
+                string.Empty,
+                false,
+                true,
+                false,
+                0,
                 null));
     }
 

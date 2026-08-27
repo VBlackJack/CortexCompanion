@@ -227,6 +227,10 @@ public static class UiStrings
     public static string ConfluenceSyncAdvancedDescription => GetString(nameof(ConfluenceSyncAdvancedDescription));
     /// <summary>Gets the optional Confluence collection action.</summary>
     public static string ConfluenceSyncNow => GetString(nameof(ConfluenceSyncNow));
+    /// <summary>Gets the schedule-bypass toggle label.</summary>
+    public static string ConfluenceSyncForce => GetString(nameof(ConfluenceSyncForce));
+    /// <summary>Gets the schedule-bypass toggle explanation.</summary>
+    public static string ConfluenceSyncForceHint => GetString(nameof(ConfluenceSyncForceHint));
     /// <summary>Gets a Sync UI resource.</summary>
     public static string StoreCredential => GetString(nameof(StoreCredential));
     /// <summary>Gets a Sync UI resource.</summary>
