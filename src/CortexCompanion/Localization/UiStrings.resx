@@ -79,6 +79,12 @@
   <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>La page appartient à un espace hors allowlist.</value></data>
   <data name="PagesCliTimedOut" xml:space="preserve"><value>Le CLI n'a pas répondu dans le délai imparti.</value></data>
   <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu être lancé.</value></data>
+  <data name="PagesCliInvalidJson" xml:space="preserve"><value>La réponse JSON du CLI est invalide.</value></data>
+  <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>L'espace entier est déjà couvert. Basculez explicitement en mode pages avant tout ajout.</value></data>
+  <data name="PagesRejectPageAlreadyConfigured" xml:space="preserve"><value>Cette page est déjà configurée.</value></data>
+  <data name="PagesRejectPageNotConfigured" xml:space="preserve"><value>Cette page n'est pas configurée dans ce mode.</value></data>
+  <data name="PagesRejectSpaceNotAllowlisted" xml:space="preserve"><value>L'espace de cette page n'est pas déclaré dans la configuration Confluence. Companion ne crée pas d'espace : ajoutez-le au fichier TOML, puis rechargez.</value></data>
+  <data name="PagesRejectReadOnly" xml:space="preserve"><value>La mutation est désactivée en lecture seule.</value></data>
   <data name="ConfirmAddTitle" xml:space="preserve"><value>Confirmer l'ajout</value></data>
   <data name="ConfirmAddMessage" xml:space="preserve"><value>Ajouter la page "{0}" (ID {1}) dans l'espace {2} ?</value></data>
   <data name="ConfirmRemoveTitle" xml:space="preserve"><value>Confirmer le retrait</value></data>

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Interfaces;
+using CortexCompanion.Localization;
 using CortexCompanion.Models;
 
 namespace CortexCompanion.Services;
@@ -43,13 +44,12 @@ public sealed class PagesMutationService
         ConfluenceSpaceConfiguration space = FindSpace(snapshot.Configuration, resolution.Value.SpaceKey);
         if (space.Selection == ConfluenceSelection.WholeSpace)
         {
-            throw new PageMutationRejectedException(
-                "L'espace entier est deja couvert. Basculez explicitement en mode pages avant tout ajout.");
+            throw new PageMutationRejectedException(UiStrings.PagesRejectWholeSpaceCovered);
         }
 
         if (space.PageIds.Contains(resolution.Value.PageId, StringComparer.Ordinal))
         {
-            throw new PageMutationRejectedException("Cette page est deja configuree.");
+            throw new PageMutationRejectedException(UiStrings.PagesRejectPageAlreadyConfigured);
         }
 
         if (!_confirmations.ConfirmAdd(resolution.Value))
@@ -82,7 +82,7 @@ public sealed class PagesMutationService
         if (space.Selection != ConfluenceSelection.Pages ||
             !space.PageIds.Contains(pageId, StringComparer.Ordinal))
         {
-            throw new PageMutationRejectedException("Cette page n'est pas configuree dans ce mode.");
+            throw new PageMutationRejectedException(UiStrings.PagesRejectPageNotConfigured);
         }
 
         if (!_confirmations.ConfirmRemove(spaceKey, pageId, title))
@@ -126,7 +126,7 @@ public sealed class PagesMutationService
         ConfluenceSpaceConfiguration replacement = current with
         {
             Selection = target,
-            PageIds = target == ConfluenceSelection.Pages ? Array.Empty<string>() : Array.Empty<string>(),
+            PageIds = Array.Empty<string>(),
         };
         await WriteOrRefreshAsync(
             migrated.ReplaceSpace(replacement),
@@ -156,13 +156,13 @@ public sealed class PagesMutationService
         string spaceKey) =>
         configuration.Spaces.SingleOrDefault(space =>
             string.Equals(space.SpaceKey, spaceKey, StringComparison.OrdinalIgnoreCase))
-        ?? throw new PageMutationRejectedException("L'espace resolu n'est pas autorise par la configuration brute.");
+        ?? throw new PageMutationRejectedException(UiStrings.PagesRejectSpaceNotAllowlisted);
 
     private static void EnsureMutable(bool isReadOnly)
     {
         if (isReadOnly)
         {
-            throw new PageMutationRejectedException("La mutation est desactivee en lecture seule.");
+            throw new PageMutationRejectedException(UiStrings.PagesRejectReadOnly);
         }
     }
 }
