@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
@@ -15,6 +16,7 @@ namespace CortexCompanion.Tests.ViewModels;
 public sealed class SettingsViewModelTests
 {
     private const string SnapshotHash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    private static readonly int[] ExpectedHandshakeTimeoutOptions = [15, 30, 60, 120];
 
     [TestMethod]
     public async Task SaveCliDoesNotPersistOrReportSuccessWhenReplacementCompositionFails()
@@ -36,6 +38,28 @@ public sealed class SettingsViewModelTests
         Assert.AreEqual(cliA, context.ViewModel.CliPath);
         Assert.AreEqual(UiStrings.SettingsCliReplacementFailedPreviousRetained, context.ViewModel.StatusMessage);
         Assert.AreNotEqual(UiStrings.SettingsCliSaved, context.ViewModel.StatusMessage);
+    }
+
+    [TestMethod]
+    public async Task SaveCliAppliesAndPersistsSelectedHandshakeTimeout()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath);
+        CollectionAssert.AreEqual(
+            ExpectedHandshakeTimeoutOptions,
+            context.ViewModel.CliHandshakeTimeoutOptions.ToArray());
+        Assert.AreEqual(
+            AppConstants.DefaultCliHandshakeTimeoutSeconds,
+            context.ViewModel.CliHandshakeTimeoutSeconds);
+        context.ViewModel.CliHandshakeTimeoutSeconds = 120;
+
+        await ExecuteAsync(context.ViewModel.SaveCliCommand);
+
+        SettingsLoadResult stored = await context.SettingsStore.LoadAsync();
+        Assert.AreEqual(120, stored.Settings.CliHandshakeTimeoutSeconds);
+        Assert.AreEqual(120, context.Coordinator.LastSettings?.CliHandshakeTimeoutSeconds);
+        Assert.AreEqual(UiStrings.SettingsCliSaved, context.ViewModel.StatusMessage);
     }
 
     [TestMethod]
@@ -144,10 +168,13 @@ public sealed class SettingsViewModelTests
 
         public string? FailPath { get; set; }
 
+        public AppSettings? LastSettings { get; private set; }
+
         public Task<CompanionRuntime> ApplyAsync(
             AppSettings settings,
             CancellationToken cancellationToken = default)
         {
+            LastSettings = settings;
             if (string.Equals(settings.CliPath, FailPath, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("Simulated composition failure.");

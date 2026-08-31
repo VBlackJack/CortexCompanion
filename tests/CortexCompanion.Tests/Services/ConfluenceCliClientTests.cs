@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using CortexCompanion.Constants;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 using CortexCompanion.Tests.TestSupport;
@@ -49,6 +50,7 @@ public sealed class ConfluenceCliClientTests
         CollectionAssert.AreEqual(
             new[] { "confluence", "--config", configPath, "pages", "--json" },
             runner.LastRequest!.Arguments.ToArray());
+        Assert.AreEqual(AppConstants.CliReadTimeout, runner.LastRequest.Timeout);
     }
 
     [TestMethod]
