@@ -79,6 +79,40 @@ public sealed partial class SettingsUxContractTests
     }
 
     [TestMethod]
+    public void ConfluencePatUsesSecurePasswordBoxAndNeverTextBinding()
+    {
+        string root = FindRepositoryRoot();
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+        XDocument document = XDocument.Load(Path.Combine(
+            root,
+            "src",
+            "CortexCompanion",
+            "Views",
+            "SettingsView.xaml"));
+        XElement passwordBox = document
+            .Descendants()
+            .Single(element => element.Attribute(xaml + "Name")?.Value == "ConfluencePatInput");
+        XElement saveButton = document
+            .Descendants()
+            .Single(element => element.Attribute("Click")?.Value == "StoreConfluenceCredentialClick");
+        string codeBehind = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "CortexCompanion",
+            "Views",
+            "SettingsView.xaml.cs"));
+
+        Assert.AreEqual("PasswordBox", passwordBox.Name.LocalName);
+        Assert.IsNull(passwordBox.Attribute("Password"));
+        Assert.IsNull(passwordBox.Attribute("Text"));
+        Assert.IsNotNull(passwordBox.Attribute("AutomationProperties.LabeledBy"));
+        Assert.AreEqual("Button", saveButton.Name.LocalName);
+        StringAssert.Contains(codeBehind, "SecurePassword.Copy()");
+        StringAssert.Contains(codeBehind, "ConfluencePatInput.Clear()");
+        Assert.DoesNotContain("ConfluencePatInput.Password", codeBehind, StringComparison.Ordinal);
+    }
+
+    [TestMethod]
     public void PageReferenceAndReadOnlySyncOutputsHaveResolvedAccessibleLabels()
     {
         string viewsDirectory = Path.Combine(

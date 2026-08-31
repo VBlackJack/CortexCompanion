@@ -128,6 +128,41 @@
                 </StackPanel>
             </Border>
 
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    IsEnabled="{Binding IsCliReady}">
+                <StackPanel>
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsConfluenceCredentialTitle}"
+                               FontSize="{StaticResource FontSizeTitle}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsConfluenceCredentialDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{Binding ConfluenceCredentialStateText}"
+                               accessibility:LiveRegionBehavior.Announcement="{Binding ConfluenceCredentialStateText}"
+                               AutomationProperties.LiveSetting="Polite"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock x:Name="ConfluencePatLabel"
+                               Text="{x:Static localization:UiStrings.SettingsConfluenceCredentialPatLabel}"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <PasswordBox x:Name="ConfluencePatInput"
+                                 AutomationProperties.LabeledBy="{Binding ElementName=ConfluencePatLabel}"
+                                 MaxLength="1280"
+                                 Width="{StaticResource SettingsInputWidth}"
+                                 HorizontalAlignment="Left"
+                                 Margin="{StaticResource MarginStackItem}" />
+                    <Button Content="{x:Static localization:UiStrings.SettingsConfluenceCredentialSave}"
+                            AutomationProperties.Name="{x:Static localization:UiStrings.SettingsConfluenceCredentialSave}"
+                            IsEnabled="{Binding CanStoreConfluenceCredential}"
+                            Click="StoreConfluenceCredentialClick"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

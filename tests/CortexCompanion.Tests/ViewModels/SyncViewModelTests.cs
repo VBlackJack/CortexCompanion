@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Security.Cryptography;
+using CortexCompanion.Commands;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
@@ -261,8 +262,7 @@ public sealed class SyncViewModelTests
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
         viewModel.ForceConfluenceCollect = force;
 
-        viewModel.ConfluenceSyncCommand.Execute(null);
-        await WaitUntilAsync(() => coordinator.LastForce is not null);
+        await ((AsyncRelayCommand)viewModel.ConfluenceSyncCommand).ExecuteAsync(parameter: null);
 
         Assert.AreEqual(force, coordinator.LastForce);
         Assert.AreEqual(Path.GetFullPath(configPath), coordinator.LastConfigPath);

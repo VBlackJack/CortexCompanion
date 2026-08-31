@@ -49,7 +49,9 @@ public partial class App : Application, IDisposable
                 new CliPathDiscovery(),
                 runtimeCoordinator,
                 new CortexConfigClient(processRunner),
-                new FileDialogService());
+                new FileDialogService(),
+                new ConfluenceCredentialTargetProvider(),
+                new WindowsCredentialManagerStore());
             MainViewModel viewModel = new(runtimeCoordinator, settings);
             MainWindow window = new(viewModel);
             MainWindow = window;

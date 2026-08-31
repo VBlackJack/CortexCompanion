@@ -267,6 +267,18 @@
   <data name="SettingsKnowledgeBasePathLabel" xml:space="preserve"><value>Dossier de la base de connaissances</value></data>
   <data name="SettingsBrowseKnowledgeBaseAccessibleName" xml:space="preserve"><value>Choisir le dossier de la base de connaissances</value></data>
   <data name="SettingsSaveKnowledgeBase" xml:space="preserve"><value>Enregistrer le dossier</value></data>
+  <data name="SettingsConfluenceCredentialTitle" xml:space="preserve"><value>3. Authentification Confluence</value></data>
+  <data name="SettingsConfluenceCredentialDescription" xml:space="preserve"><value>Le PAT est enregistré dans le Gestionnaire d'identifiants Windows pour votre compte, protégé par DPAPI. Il n'est jamais écrit dans settings.json ni dans CONFLUENCE.toml.</value></data>
+  <data name="SettingsConfluenceCredentialPatLabel" xml:space="preserve"><value>Personal Access Token (PAT)</value></data>
+  <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Enregistrer le PAT</value></data>
+  <data name="SettingsConfluenceCredentialUnavailable" xml:space="preserve"><value>Connectez d'abord Cortex pour charger la cible d'identifiant Confluence.</value></data>
+  <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Aucune configuration Confluence valide n'a été trouvée. Configurez CONFLUENCE.toml avant d'enregistrer le PAT.</value></data>
+  <data name="SettingsConfluenceCredentialConfigInvalid" xml:space="preserve"><value>La cible d'identifiant Confluence n'a pas pu être validée. Corrigez CONFLUENCE.toml, puis actualisez.</value></data>
+  <data name="SettingsConfluenceCredentialReadyFormat" xml:space="preserve"><value>Le PAT sera enregistré pour la cible Windows : {0}</value></data>
+  <data name="SettingsConfluenceCredentialEmpty" xml:space="preserve"><value>Saisissez un PAT avant de l'enregistrer.</value></data>
+  <data name="SettingsConfluenceCredentialSaving" xml:space="preserve"><value>Enregistrement sécurisé du PAT dans Windows...</value></data>
+  <data name="SettingsConfluenceCredentialStored" xml:space="preserve"><value>Le PAT Confluence a été enregistré pour le compte Windows courant.</value></data>
+  <data name="SettingsConfluenceCredentialSaveFailed" xml:space="preserve"><value>Windows n'a pas pu enregistrer le PAT. Le secret n'a été écrit ni dans les réglages ni dans les journaux.</value></data>
   <data name="SettingsRefreshAccessibleName" xml:space="preserve"><value>Actualiser la configuration Cortex</value></data>
   <data name="SettingsCliNotConfigured" xml:space="preserve"><value>Aucun exécutable Cortex valide n'est configuré.</value></data>
   <data name="SettingsFirstRun" xml:space="preserve"><value>Bienvenue. Sélectionnez cortex.exe, puis choisissez Enregistrer et connecter.</value></data>

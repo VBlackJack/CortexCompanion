@@ -15,7 +15,9 @@ synchronization, or scheduling.
 3. Open **Réglages**. Companion normally detects the `cortex.exe` from the same
    Cortex installation, including the parent folder used by the combined installer.
    Choose an existing knowledge-base folder, then select **Enregistrer le dossier**.
-4. Open **Base locale** and select **Synchroniser les documents locaux**. This
+4. To use Confluence, configure `CONFLUENCE.toml`, then enter the PAT under
+   **Réglages > Authentification Confluence** and select **Enregistrer le PAT**.
+5. Open **Base locale** and select **Synchroniser les documents locaux**. This
    primary action runs `cortex sync --json`; it does not require Confluence.
 
 The **Pages Confluence** and **Planification Confluence** screens are optional advanced
@@ -54,6 +56,11 @@ Companion stores its `cortex.exe` path and bounded startup-handshake timeout in
 `%LOCALAPPDATA%\CortexCompanion\settings.json`. It does not write Cortex TOML files.
 The knowledge-base setting is read and changed exclusively through the versioned
 `cortex config get/set --json` compare-and-swap contract.
+
+The Confluence PAT is never written to `settings.json` or `CONFLUENCE.toml`. The
+masked Settings field writes it directly to the `credential_target` declared by the
+validated Confluence configuration. Cortex and Companion use the same generic entry
+in Windows Credential Manager, protected by DPAPI for the current Windows account.
 
 ## Build and test
 

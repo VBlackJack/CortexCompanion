@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Security;
 using System.Windows.Input;
 using CortexCompanion.Commands;
 using CortexCompanion.Constants;
@@ -20,6 +21,8 @@ public sealed class SettingsViewModel : ViewModelBase
     private readonly ICompanionRuntimeCoordinator _runtimeCoordinator;
     private readonly ICortexConfigClient _configClient;
     private readonly IFileDialogService _fileDialogs;
+    private readonly IConfluenceCredentialTargetProvider _credentialTargetProvider;
+    private readonly IConfluenceCredentialStore _credentialStore;
     private readonly IReadOnlyList<int> _cliHandshakeTimeoutOptions;
     private readonly AsyncRelayCommand _browseCliCommand;
     private readonly AsyncRelayCommand _saveCliCommand;
@@ -34,6 +37,8 @@ public sealed class SettingsViewModel : ViewModelBase
     private string _cliValidationMessage = UiStrings.SettingsCliNotConfigured;
     private string _statusMessage = UiStrings.SettingsLoading;
     private string _configStateText = UiStrings.SettingsConfigUnavailable;
+    private string _confluenceCredentialTarget = string.Empty;
+    private string _confluenceCredentialStateText = UiStrings.SettingsConfluenceCredentialUnavailable;
     private bool _isBusy;
     private bool _isCliReady;
 
@@ -43,13 +48,18 @@ public sealed class SettingsViewModel : ViewModelBase
         CliPathDiscovery cliPathDiscovery,
         ICompanionRuntimeCoordinator runtimeCoordinator,
         ICortexConfigClient configClient,
-        IFileDialogService fileDialogs)
+        IFileDialogService fileDialogs,
+        IConfluenceCredentialTargetProvider credentialTargetProvider,
+        IConfluenceCredentialStore credentialStore)
     {
         _settingsStore = settingsStore ?? throw new ArgumentNullException(nameof(settingsStore));
         _cliPathDiscovery = cliPathDiscovery ?? throw new ArgumentNullException(nameof(cliPathDiscovery));
         _runtimeCoordinator = runtimeCoordinator ?? throw new ArgumentNullException(nameof(runtimeCoordinator));
         _configClient = configClient ?? throw new ArgumentNullException(nameof(configClient));
         _fileDialogs = fileDialogs ?? throw new ArgumentNullException(nameof(fileDialogs));
+        _credentialTargetProvider = credentialTargetProvider ??
+            throw new ArgumentNullException(nameof(credentialTargetProvider));
+        _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
         _cliHandshakeTimeoutOptions = AppConstants.CliHandshakeTimeoutOptions;
 
         _browseCliCommand = new AsyncRelayCommand(BrowseCliAsync, () => !IsBusy);
@@ -121,6 +131,30 @@ public sealed class SettingsViewModel : ViewModelBase
         private set => SetProperty(ref _configStateText, value);
     }
 
+    /// <summary>Gets the configured non-secret Windows credential target.</summary>
+    public string ConfluenceCredentialTarget
+    {
+        get => _confluenceCredentialTarget;
+        private set
+        {
+            if (SetProperty(ref _confluenceCredentialTarget, value))
+            {
+                OnPropertyChanged(nameof(CanStoreConfluenceCredential));
+            }
+        }
+    }
+
+    /// <summary>Gets the current Confluence credential readiness or save result.</summary>
+    public string ConfluenceCredentialStateText
+    {
+        get => _confluenceCredentialStateText;
+        private set => SetProperty(ref _confluenceCredentialStateText, value);
+    }
+
+    /// <summary>Gets whether a PAT can be stored under the active Confluence target.</summary>
+    public bool CanStoreConfluenceCredential =>
+        IsCliReady && !IsBusy && !string.IsNullOrWhiteSpace(ConfluenceCredentialTarget);
+
     /// <summary>Gets whether an operation is currently running.</summary>
     public bool IsBusy
     {
@@ -161,6 +195,54 @@ public sealed class SettingsViewModel : ViewModelBase
 
     /// <summary>Gets the knowledge-base compare-and-swap command.</summary>
     public ICommand SaveKnowledgeBaseCommand { get; }
+
+    /// <summary>Stores a Confluence PAT without retaining or serializing managed clear text.</summary>
+    public async Task<bool> StoreConfluenceCredentialAsync(
+        SecureString personalAccessToken,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(personalAccessToken);
+        if (personalAccessToken.Length == 0)
+        {
+            StatusMessage = UiStrings.SettingsConfluenceCredentialEmpty;
+            return false;
+        }
+
+        if (!CanStoreConfluenceCredential)
+        {
+            StatusMessage = UiStrings.SettingsConfluenceCredentialUnavailable;
+            return false;
+        }
+
+        string credentialTarget = ConfluenceCredentialTarget;
+        IsBusy = true;
+        StatusMessage = UiStrings.SettingsConfluenceCredentialSaving;
+        try
+        {
+            await _credentialStore.StoreAsync(
+                credentialTarget,
+                personalAccessToken,
+                cancellationToken);
+            StatusMessage = UiStrings.SettingsConfluenceCredentialStored;
+            ConfluenceCredentialStateText = UiStrings.SettingsConfluenceCredentialStored;
+            FileLogger.Info("Confluence credential stored in Windows Credential Manager");
+            return true;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (ConfluenceCredentialStoreException exception)
+        {
+            FileLogger.Error("Confluence credential could not be stored", exception);
+            StatusMessage = UiStrings.SettingsConfluenceCredentialSaveFailed;
+            return false;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 
     /// <summary>Initializes the first-run path and publishes an operational runtime after the window is visible.</summary>
     public async Task InitializeAsync(
@@ -356,6 +438,7 @@ public sealed class SettingsViewModel : ViewModelBase
             return false;
         }
 
+        bool configRefreshed;
         try
         {
             CortexConfigSnapshot snapshot = await _configClient.GetAsync(cliPath, cancellationToken);
@@ -371,7 +454,7 @@ public sealed class SettingsViewModel : ViewModelBase
                     ? UiStrings.SettingsConfigLoaded
                     : UiStrings.SettingsConfigDefaults
                 : UiStrings.SettingsConfigInvalid;
-            return true;
+            configRefreshed = true;
         }
         catch (CortexCliContractException exception)
         {
@@ -380,7 +463,38 @@ public sealed class SettingsViewModel : ViewModelBase
             ConfigStateText = exception.OutcomeUnknown
                 ? UiStrings.SettingsConfigOutcomeUnknown
                 : UiStrings.SettingsConfigReadFailed;
-            return false;
+            configRefreshed = false;
+        }
+
+        await RefreshConfluenceCredentialTargetAsync(cliPath, cancellationToken);
+        return configRefreshed;
+    }
+
+    private async Task RefreshConfluenceCredentialTargetAsync(
+        string cliPath,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            string? credentialTarget = await _credentialTargetProvider.GetTargetAsync(
+                cliPath,
+                cancellationToken);
+            ConfluenceCredentialTarget = credentialTarget ?? string.Empty;
+            ConfluenceCredentialStateText = credentialTarget is null
+                ? UiStrings.SettingsConfluenceCredentialConfigMissing
+                : UiStrings.FormatSettingsConfluenceCredentialReady(credentialTarget);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
+                                          ArgumentException or NotSupportedException or
+                                          ConfluenceConfigValidationException)
+        {
+            FileLogger.Error("Confluence credential target could not be read", exception);
+            ConfluenceCredentialTarget = string.Empty;
+            ConfluenceCredentialStateText = UiStrings.SettingsConfluenceCredentialConfigInvalid;
         }
     }
 
@@ -474,6 +588,8 @@ public sealed class SettingsViewModel : ViewModelBase
         _configSnapshot = null;
         KnowledgeBasePath = string.Empty;
         ConfigStateText = UiStrings.SettingsConfigUnavailable;
+        ConfluenceCredentialTarget = string.Empty;
+        ConfluenceCredentialStateText = UiStrings.SettingsConfluenceCredentialUnavailable;
     }
 
     private void RaiseCommandStates()
@@ -483,6 +599,7 @@ public sealed class SettingsViewModel : ViewModelBase
         _refreshCommand.RaiseCanExecuteChanged();
         _browseKnowledgeBaseCommand.RaiseCanExecuteChanged();
         _saveKnowledgeBaseCommand.RaiseCanExecuteChanged();
+        OnPropertyChanged(nameof(CanStoreConfluenceCredential));
     }
 
     private static string FormatPathValidation(CliPathValidationResult validation) => validation.Status switch

@@ -59,6 +59,8 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("SchedulingResultUnexpectedFormat"));
     private static readonly CompositeFormat SchedulingErrorUnexpectedFormat =
         CompositeFormat.Parse(GetString("SchedulingErrorUnexpectedFormat"));
+    private static readonly CompositeFormat SettingsConfluenceCredentialReadyFormat =
+        CompositeFormat.Parse(GetString("SettingsConfluenceCredentialReadyFormat"));
     /// <summary>Gets the application title.</summary>
     public static string AppTitle => GetString(nameof(AppTitle));
 
@@ -526,6 +528,39 @@ public static class UiStrings
         GetString(nameof(SettingsBrowseKnowledgeBaseAccessibleName));
     /// <summary>Gets the knowledge-base save action.</summary>
     public static string SettingsSaveKnowledgeBase => GetString(nameof(SettingsSaveKnowledgeBase));
+    /// <summary>Gets the Confluence credential section title.</summary>
+    public static string SettingsConfluenceCredentialTitle =>
+        GetString(nameof(SettingsConfluenceCredentialTitle));
+    /// <summary>Gets the DPAPI-backed credential storage explanation.</summary>
+    public static string SettingsConfluenceCredentialDescription =>
+        GetString(nameof(SettingsConfluenceCredentialDescription));
+    /// <summary>Gets the PAT field label.</summary>
+    public static string SettingsConfluenceCredentialPatLabel =>
+        GetString(nameof(SettingsConfluenceCredentialPatLabel));
+    /// <summary>Gets the PAT save action.</summary>
+    public static string SettingsConfluenceCredentialSave =>
+        GetString(nameof(SettingsConfluenceCredentialSave));
+    /// <summary>Gets the unavailable credential state.</summary>
+    public static string SettingsConfluenceCredentialUnavailable =>
+        GetString(nameof(SettingsConfluenceCredentialUnavailable));
+    /// <summary>Gets the missing Confluence configuration state.</summary>
+    public static string SettingsConfluenceCredentialConfigMissing =>
+        GetString(nameof(SettingsConfluenceCredentialConfigMissing));
+    /// <summary>Gets the invalid Confluence configuration state.</summary>
+    public static string SettingsConfluenceCredentialConfigInvalid =>
+        GetString(nameof(SettingsConfluenceCredentialConfigInvalid));
+    /// <summary>Gets the empty PAT validation state.</summary>
+    public static string SettingsConfluenceCredentialEmpty =>
+        GetString(nameof(SettingsConfluenceCredentialEmpty));
+    /// <summary>Gets the PAT save progress state.</summary>
+    public static string SettingsConfluenceCredentialSaving =>
+        GetString(nameof(SettingsConfluenceCredentialSaving));
+    /// <summary>Gets the PAT stored state.</summary>
+    public static string SettingsConfluenceCredentialStored =>
+        GetString(nameof(SettingsConfluenceCredentialStored));
+    /// <summary>Gets the PAT save failure state.</summary>
+    public static string SettingsConfluenceCredentialSaveFailed =>
+        GetString(nameof(SettingsConfluenceCredentialSaveFailed));
     /// <summary>Gets the configuration Refresh accessible name.</summary>
     public static string SettingsRefreshAccessibleName => GetString(nameof(SettingsRefreshAccessibleName));
     /// <summary>Gets the unconfigured CLI state.</summary>
@@ -608,6 +643,13 @@ public static class UiStrings
     public static string SettingsCliInvalidPath => GetString(nameof(SettingsCliInvalidPath));
     /// <summary>Gets the valid executable-path state.</summary>
     public static string SettingsCliPathValid => GetString(nameof(SettingsCliPathValid));
+
+    /// <summary>Formats the ready state with the non-secret Windows credential target.</summary>
+    public static string FormatSettingsConfluenceCredentialReady(string credentialTarget) =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            SettingsConfluenceCredentialReadyFormat,
+            credentialTarget);
 
     /// <summary>Gets the initial handshake status.</summary>
     public static string HandshakePending => GetString(nameof(HandshakePending));
