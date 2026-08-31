@@ -1,6 +1,8 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Security;
+using System.Text.Json;
 using CortexCompanion.Commands;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
@@ -17,6 +19,8 @@ public sealed class SettingsViewModelTests
 {
     private const string SnapshotHash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     private static readonly int[] ExpectedHandshakeTimeoutOptions = [15, 30, 60, 120];
+    private static readonly string[] ExpectedPersistedSettingsProperties =
+        ["cliPath", "cliHandshakeTimeoutSeconds"];
 
     [TestMethod]
     public async Task SaveCliDoesNotPersistOrReportSuccessWhenReplacementCompositionFails()
@@ -112,6 +116,48 @@ public sealed class SettingsViewModelTests
         Assert.AreEqual(UiStrings.StartupInitializationError, context.ViewModel.StatusMessage);
     }
 
+    [TestMethod]
+    public async Task StoreConfluenceCredentialUsesConfiguredTargetWithoutPersistingPat()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath);
+        const string personalAccessToken = "test-pat-never-persist";
+        using SecureString secureToken = CreateSecureString(personalAccessToken);
+
+        bool stored = await context.ViewModel.StoreConfluenceCredentialAsync(secureToken);
+        string storedJson = await File.ReadAllTextAsync(context.SettingsPath);
+        using JsonDocument storedSettings = JsonDocument.Parse(storedJson);
+        string[] propertyNames = storedSettings.RootElement
+            .EnumerateObject()
+            .Select(property => property.Name)
+            .ToArray();
+
+        Assert.IsTrue(stored);
+        Assert.AreEqual("cortex-confluence", context.CredentialStore.TargetName);
+        Assert.AreEqual(personalAccessToken.Length, context.CredentialStore.SecretLength);
+        Assert.AreEqual(UiStrings.SettingsConfluenceCredentialStored, context.ViewModel.StatusMessage);
+        Assert.DoesNotContain(personalAccessToken, storedJson, StringComparison.Ordinal);
+        CollectionAssert.AreEquivalent(
+            ExpectedPersistedSettingsProperties,
+            propertyNames);
+    }
+
+    [TestMethod]
+    public async Task EmptyConfluenceCredentialIsRejectedBeforeCredentialManagerWrite()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath);
+        using SecureString emptyToken = new();
+
+        bool stored = await context.ViewModel.StoreConfluenceCredentialAsync(emptyToken);
+
+        Assert.IsFalse(stored);
+        Assert.AreEqual(0, context.CredentialStore.StoreCount);
+        Assert.AreEqual(UiStrings.SettingsConfluenceCredentialEmpty, context.ViewModel.StatusMessage);
+    }
+
     private static async Task<TestContext> CreateInitializedContextAsync(
         TemporaryDirectory temporary,
         string cliPath)
@@ -123,14 +169,24 @@ public sealed class SettingsViewModelTests
         CompanionRuntime runtime = CreateCompatibleRuntime(temporary.Path, cliPath);
         TestRuntimeCoordinator coordinator = new(runtime);
         TestConfigClient configClient = new(temporary.Path);
+        TestCredentialTargetProvider credentialTargetProvider = new("cortex-confluence");
+        TestCredentialStore credentialStore = new();
         SettingsViewModel viewModel = new(
             store,
             new CliPathDiscovery(Path.GetDirectoryName(cliPath), temporary.Path),
             coordinator,
             configClient,
-            new NullFileDialogs());
+            new NullFileDialogs(),
+            credentialTargetProvider,
+            credentialStore);
         await viewModel.InitializeAsync(new SettingsLoadResult(settings, SettingsLoadState.Loaded));
-        return new TestContext(viewModel, store, coordinator, configClient);
+        return new TestContext(
+            viewModel,
+            store,
+            settingsPath,
+            coordinator,
+            configClient,
+            credentialStore);
     }
 
     private static CompanionRuntime CreateCompatibleRuntime(string root, string cliPath)
@@ -154,11 +210,25 @@ public sealed class SettingsViewModelTests
     private static Task ExecuteAsync(System.Windows.Input.ICommand command) =>
         ((AsyncRelayCommand)command).ExecuteAsync(parameter: null);
 
+    private static SecureString CreateSecureString(string value)
+    {
+        SecureString secret = new();
+        foreach (char character in value)
+        {
+            secret.AppendChar(character);
+        }
+
+        secret.MakeReadOnly();
+        return secret;
+    }
+
     private sealed record TestContext(
         SettingsViewModel ViewModel,
         SettingsStore SettingsStore,
+        string SettingsPath,
         TestRuntimeCoordinator Coordinator,
-        TestConfigClient ConfigClient);
+        TestConfigClient ConfigClient,
+        TestCredentialStore CredentialStore);
 
     private sealed class TestRuntimeCoordinator(CompanionRuntime current) : ICompanionRuntimeCoordinator
     {
@@ -222,5 +292,33 @@ public sealed class SettingsViewModelTests
         public string? SelectCliExecutable(string? currentPath) => null;
 
         public string? SelectKnowledgeBaseDirectory(string? currentPath) => null;
+    }
+
+    private sealed class TestCredentialTargetProvider(string? target) : IConfluenceCredentialTargetProvider
+    {
+        public Task<string?> GetTargetAsync(
+            string cliPath,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(target);
+    }
+
+    private sealed class TestCredentialStore : IConfluenceCredentialStore
+    {
+        public int StoreCount { get; private set; }
+
+        public string? TargetName { get; private set; }
+
+        public int SecretLength { get; private set; }
+
+        public Task StoreAsync(
+            string targetName,
+            SecureString personalAccessToken,
+            CancellationToken cancellationToken = default)
+        {
+            StoreCount++;
+            TargetName = targetName;
+            SecretLength = personalAccessToken.Length;
+            return Task.CompletedTask;
+        }
     }
 }
