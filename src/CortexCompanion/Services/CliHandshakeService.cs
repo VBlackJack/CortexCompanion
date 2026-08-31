@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Diagnostics;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Logging;
@@ -45,12 +46,18 @@ public sealed class CliHandshakeService : ICliHandshakeService
             return new CliHandshakeResult(CliHandshakeStatus.NotConfigured, null);
         }
 
+        int timeoutSeconds = settings.EffectiveCliHandshakeTimeoutSeconds;
         ProcessRequest request = new(
             validation.AbsolutePath,
             [AppConstants.CliVersionArgument],
-            AppConstants.CliHandshakeTimeout,
+            TimeSpan.FromSeconds(timeoutSeconds),
             AppConstants.MaxProcessOutputCharacters);
+        Stopwatch stopwatch = Stopwatch.StartNew();
         ProcessRunResult processResult = await _processRunner.RunAsync(request, cancellationToken);
+        stopwatch.Stop();
+        FileLogger.Info(
+            $"CLI version handshake completed timeoutSeconds={timeoutSeconds} " +
+            $"elapsedMilliseconds={stopwatch.ElapsedMilliseconds} timedOut={processResult.TimedOut}");
 
         if (processResult.TimedOut)
         {

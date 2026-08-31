@@ -102,6 +102,29 @@ public sealed class CliHandshakeServiceTests
             new[] { AppConstants.CliVersionArgument },
             runner.LastRequest.Arguments.ToArray());
         Assert.AreEqual(executablePath, runner.LastRequest.FilePath);
+        Assert.AreEqual(
+            TimeSpan.FromSeconds(AppConstants.DefaultCliHandshakeTimeoutSeconds),
+            runner.LastRequest.Timeout);
+    }
+
+    [TestMethod]
+    [DataRow(15)]
+    [DataRow(30)]
+    [DataRow(60)]
+    [DataRow(120)]
+    public async Task EvaluateAsyncUsesConfiguredBoundedHandshakeTimeout(int timeoutSeconds)
+    {
+        using TemporaryDirectory temporaryDirectory = new();
+        string executablePath = temporaryDirectory.CreateFakeCli();
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0, "2026.0808.00", string.Empty));
+        CliHandshakeService service = CreateService(runner);
+
+        CliHandshakeResult result = await service.EvaluateAsync(
+            new AppSettings(executablePath, timeoutSeconds));
+
+        Assert.AreEqual(CliHandshakeStatus.Compatible, result.Status);
+        Assert.IsNotNull(runner.LastRequest);
+        Assert.AreEqual(TimeSpan.FromSeconds(timeoutSeconds), runner.LastRequest.Timeout);
     }
 
     private static CliHandshakeService CreateService(StubProcessRunner runner) =>

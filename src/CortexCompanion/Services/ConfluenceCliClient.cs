@@ -67,7 +67,7 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             new ProcessRequest(
                 _cliPath,
                 arguments,
-                AppConstants.CliHandshakeTimeout,
+                AppConstants.CliReadTimeout,
                 AppConstants.MaxProcessOutputCharacters),
             cancellationToken);
         CortexExitCode exitCode = MapExitCode(processResult.ExitCode);

@@ -66,7 +66,8 @@ public sealed partial class SettingsUxContractTests
             "SettingsView.xaml"));
         XElement[] controls = document
             .Descendants()
-            .Where(element => element.Name.LocalName is "Button" or "TextBox" or "PasswordBox")
+            .Where(element =>
+                element.Name.LocalName is "Button" or "TextBox" or "PasswordBox" or "ComboBox")
             .ToArray();
 
         foreach (XElement control in controls)

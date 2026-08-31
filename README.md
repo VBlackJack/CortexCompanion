@@ -37,7 +37,7 @@ Unexpected startup diagnostics are written under
 
 ## Configuration ownership
 
-Companion stores only its `cortex.exe` path in
+Companion stores its `cortex.exe` path and bounded startup-handshake timeout in
 `%LOCALAPPDATA%\CortexCompanion\settings.json`. It does not write Cortex TOML files.
 The knowledge-base setting is read and changed exclusively through the versioned
 `cortex config get/set --json` compare-and-swap contract.

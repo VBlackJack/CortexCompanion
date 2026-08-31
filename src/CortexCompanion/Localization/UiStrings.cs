@@ -506,6 +506,11 @@ public static class UiStrings
     public static string SettingsCliDescription => GetString(nameof(SettingsCliDescription));
     /// <summary>Gets the CLI path label.</summary>
     public static string SettingsCliPathLabel => GetString(nameof(SettingsCliPathLabel));
+    /// <summary>Gets the startup timeout label.</summary>
+    public static string SettingsCliHandshakeTimeoutLabel => GetString(nameof(SettingsCliHandshakeTimeoutLabel));
+    /// <summary>Gets the startup timeout explanation.</summary>
+    public static string SettingsCliHandshakeTimeoutDescription =>
+        GetString(nameof(SettingsCliHandshakeTimeoutDescription));
     /// <summary>Gets the CLI Browse accessible name.</summary>
     public static string SettingsBrowseCliAccessibleName => GetString(nameof(SettingsBrowseCliAccessibleName));
     /// <summary>Gets the Save and connect action.</summary>

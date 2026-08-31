@@ -140,6 +140,12 @@ public sealed class PagesViewModel : ViewModelBase
             return;
         }
 
+        if (isReadOnly)
+        {
+            StateMessage = UiStrings.PagesReadOnly;
+            return;
+        }
+
         await RefreshAsync();
     }
 

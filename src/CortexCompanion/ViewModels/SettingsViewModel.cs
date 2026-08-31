@@ -3,6 +3,7 @@
 
 using System.Windows.Input;
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Logging;
@@ -19,6 +20,7 @@ public sealed class SettingsViewModel : ViewModelBase
     private readonly ICompanionRuntimeCoordinator _runtimeCoordinator;
     private readonly ICortexConfigClient _configClient;
     private readonly IFileDialogService _fileDialogs;
+    private readonly IReadOnlyList<int> _cliHandshakeTimeoutOptions;
     private readonly AsyncRelayCommand _browseCliCommand;
     private readonly AsyncRelayCommand _saveCliCommand;
     private readonly AsyncRelayCommand _refreshCommand;
@@ -27,6 +29,7 @@ public sealed class SettingsViewModel : ViewModelBase
     private AppSettings _activeSettings = AppSettings.Empty;
     private CortexConfigSnapshot? _configSnapshot;
     private string _cliPath = string.Empty;
+    private int _cliHandshakeTimeoutSeconds = AppConstants.DefaultCliHandshakeTimeoutSeconds;
     private string _knowledgeBasePath = string.Empty;
     private string _cliValidationMessage = UiStrings.SettingsCliNotConfigured;
     private string _statusMessage = UiStrings.SettingsLoading;
@@ -47,6 +50,7 @@ public sealed class SettingsViewModel : ViewModelBase
         _runtimeCoordinator = runtimeCoordinator ?? throw new ArgumentNullException(nameof(runtimeCoordinator));
         _configClient = configClient ?? throw new ArgumentNullException(nameof(configClient));
         _fileDialogs = fileDialogs ?? throw new ArgumentNullException(nameof(fileDialogs));
+        _cliHandshakeTimeoutOptions = AppConstants.CliHandshakeTimeoutOptions;
 
         _browseCliCommand = new AsyncRelayCommand(BrowseCliAsync, () => !IsBusy);
         BrowseCliCommand = _browseCliCommand;
@@ -75,6 +79,18 @@ public sealed class SettingsViewModel : ViewModelBase
                 CliValidationMessage = FormatPathValidation(CliPathValidator.Validate(value));
             }
         }
+    }
+
+    /// <summary>Gets the bounded startup timeout choices.</summary>
+    public IReadOnlyList<int> CliHandshakeTimeoutOptions => _cliHandshakeTimeoutOptions;
+
+    /// <summary>Gets or sets the maximum wait for the Cortex startup handshake.</summary>
+    public int CliHandshakeTimeoutSeconds
+    {
+        get => _cliHandshakeTimeoutSeconds;
+        set => SetProperty(
+            ref _cliHandshakeTimeoutSeconds,
+            AppConstants.NormalizeCliHandshakeTimeoutSeconds(value));
     }
 
     /// <summary>Gets or sets the knowledge-base destination projected by Cortex.</summary>
@@ -154,6 +170,7 @@ public sealed class SettingsViewModel : ViewModelBase
         ArgumentNullException.ThrowIfNull(settingsResult);
         _activeSettings = settingsResult.Settings;
         CliPath = settingsResult.Settings.CliPath ?? string.Empty;
+        CliHandshakeTimeoutSeconds = settingsResult.Settings.EffectiveCliHandshakeTimeoutSeconds;
         bool discovered = false;
         if (!CliPathValidator.Validate(CliPath).IsValid)
         {
@@ -177,7 +194,7 @@ public sealed class SettingsViewModel : ViewModelBase
             return;
         }
 
-        CompanionRuntime? runtime = await ApplyRuntimeAsync(new AppSettings(CliPath), cancellationToken);
+        CompanionRuntime? runtime = await ApplyRuntimeAsync(CreateCandidateSettings(CliPath), cancellationToken);
         if (runtime is null || runtime.Handshake.IsReadOnly)
         {
             return;
@@ -185,7 +202,7 @@ public sealed class SettingsViewModel : ViewModelBase
 
         if (discovered)
         {
-            AppSettings discoveredSettings = new(runtime.CliPath);
+            AppSettings discoveredSettings = CreateCandidateSettings(runtime.CliPath);
             try
             {
                 await _settingsStore.SaveAsync(discoveredSettings, cancellationToken);
@@ -240,7 +257,7 @@ public sealed class SettingsViewModel : ViewModelBase
             return;
         }
 
-        AppSettings candidate = new(validation.AbsolutePath);
+        AppSettings candidate = CreateCandidateSettings(validation.AbsolutePath);
         CompanionRuntime? runtime = await ApplyRuntimeAsync(candidate, CancellationToken.None);
         if (runtime is null || runtime.Handshake.IsReadOnly || runtime.CliPath is null)
         {
@@ -249,7 +266,7 @@ public sealed class SettingsViewModel : ViewModelBase
 
         try
         {
-            AppSettings updatedSettings = new(runtime.CliPath);
+            AppSettings updatedSettings = CreateCandidateSettings(runtime.CliPath);
             await _settingsStore.SaveAsync(updatedSettings);
             _activeSettings = updatedSettings;
             CliPath = runtime.CliPath;
@@ -295,6 +312,7 @@ public sealed class SettingsViewModel : ViewModelBase
             CompanionRuntime current = _runtimeCoordinator.Current;
             IsCliReady = !current.Handshake.IsReadOnly;
             CliPath = _activeSettings.CliPath ?? string.Empty;
+            CliHandshakeTimeoutSeconds = _activeSettings.EffectiveCliHandshakeTimeoutSeconds;
             CliValidationMessage = CliHandshakePresenter.Format(current.Handshake);
             StatusMessage = IsCliReady
                 ? UiStrings.SettingsCliReplacementFailedPreviousRetained
@@ -311,6 +329,9 @@ public sealed class SettingsViewModel : ViewModelBase
             IsBusy = false;
         }
     }
+
+    private AppSettings CreateCandidateSettings(string? cliPath) =>
+        new(cliPath, CliHandshakeTimeoutSeconds);
 
     private async Task RefreshAsync()
     {

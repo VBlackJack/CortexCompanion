@@ -1,6 +1,8 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.ObjectModel;
+
 namespace CortexCompanion.Constants;
 
 /// <summary>
@@ -56,8 +58,15 @@ public static class AppConstants
     /// <summary>Gets the shared Cortex compare-and-swap conflict exit code.</summary>
     public const int CliExitConflict = 9;
 
-    /// <summary>Gets the bounded CLI handshake timeout.</summary>
-    public static readonly TimeSpan CliHandshakeTimeout = TimeSpan.FromSeconds(5);
+    /// <summary>Gets the default startup handshake timeout shown to users.</summary>
+    public const int DefaultCliHandshakeTimeoutSeconds = 30;
+
+    /// <summary>Gets the bounded startup handshake choices exposed by Companion.</summary>
+    public static IReadOnlyList<int> CliHandshakeTimeoutOptions { get; } =
+        new ReadOnlyCollection<int>([15, DefaultCliHandshakeTimeoutSeconds, 60, 120]);
+
+    /// <summary>Gets the bounded timeout for local Confluence read operations.</summary>
+    public static readonly TimeSpan CliReadTimeout = TimeSpan.FromSeconds(5);
 
     /// <summary>Gets the bounded timeout for configuration operations.</summary>
     public static readonly TimeSpan CliConfigurationTimeout = TimeSpan.FromSeconds(15);
@@ -146,5 +155,11 @@ public static class AppConstants
 
     /// <summary>Gets the background log flush period.</summary>
     public static readonly TimeSpan LogFlushInterval = TimeSpan.FromSeconds(2);
+
+    /// <summary>Returns a supported startup timeout or the safe default.</summary>
+    public static int NormalizeCliHandshakeTimeoutSeconds(int? value) =>
+        value is int seconds && CliHandshakeTimeoutOptions.Contains(seconds)
+            ? seconds
+            : DefaultCliHandshakeTimeoutSeconds;
 }
 

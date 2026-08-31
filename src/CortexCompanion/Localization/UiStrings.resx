@@ -258,6 +258,8 @@
   <data name="SettingsCliTitle" xml:space="preserve"><value>1. Connecter Cortex</value></data>
   <data name="SettingsCliDescription" xml:space="preserve"><value>Cortex Companion recherche cortex.exe dans la même installation Cortex (y compris son dossier parent), puis dans l'installation Windows standard. Vous pouvez aussi sélectionner le fichier manuellement.</value></data>
   <data name="SettingsCliPathLabel" xml:space="preserve"><value>Chemin de cortex.exe</value></data>
+  <data name="SettingsCliHandshakeTimeoutLabel" xml:space="preserve"><value>Délai maximal de démarrage de Cortex (secondes)</value></data>
+  <data name="SettingsCliHandshakeTimeoutDescription" xml:space="preserve"><value>Augmentez ce délai sur un ordinateur lent. Companion reste en lecture seule si Cortex ne répond pas avant la limite choisie.</value></data>
   <data name="SettingsBrowseCliAccessibleName" xml:space="preserve"><value>Choisir le fichier cortex.exe</value></data>
   <data name="SettingsSaveAndConnect" xml:space="preserve"><value>Enregistrer et connecter</value></data>
   <data name="SettingsKnowledgeBaseTitle" xml:space="preserve"><value>2. Base de connaissances</value></data>
@@ -278,7 +280,7 @@
   <data name="SettingsSaveFailed" xml:space="preserve"><value>Le chemin est valide, mais les réglages locaux n'ont pas pu être enregistrés. Vérifiez les droits du dossier local.</value></data>
   <data name="SettingsCliReplacementFailedPreviousRetained" xml:space="preserve"><value>Le nouveau Cortex n'a pas pu être préparé. Le Cortex précédemment connecté reste actif ; son chemin n'a pas été remplacé.</value></data>
   <data name="SettingsCheckingCli" xml:space="preserve"><value>Vérification de la version de Cortex et chargement des fonctions...</value></data>
-  <data name="SettingsCliHandshakeFailed" xml:space="preserve"><value>Cortex n'est pas compatible ou n'a pas répondu. Les actions restent désactivées. Corrigez le chemin ou l'installation, puis réessayez.</value></data>
+  <data name="SettingsCliHandshakeFailed" xml:space="preserve"><value>Cortex n'est pas compatible ou n'a pas répondu. Les actions restent désactivées. Vérifiez le chemin ou augmentez le délai sur un ordinateur lent, puis réessayez.</value></data>
   <data name="SettingsRefreshing" xml:space="preserve"><value>Actualisation de la configuration Cortex...</value></data>
   <data name="SettingsRefreshed" xml:space="preserve"><value>La configuration Cortex a été actualisée.</value></data>
   <data name="SettingsConfigUnavailable" xml:space="preserve"><value>Configuration indisponible tant que Cortex n'est pas connecté.</value></data>

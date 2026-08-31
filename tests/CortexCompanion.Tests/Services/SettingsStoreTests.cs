@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using CortexCompanion.Constants;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 using CortexCompanion.Tests.TestSupport;
@@ -11,18 +12,56 @@ namespace CortexCompanion.Tests.Services;
 public sealed class SettingsStoreTests
 {
     [TestMethod]
-    public async Task SaveAndLoadAsyncNewFileRoundTripsCliPath()
+    public async Task SaveAndLoadAsyncNewFileRoundTripsApplicationSettings()
     {
         using TemporaryDirectory temporaryDirectory = new();
         string settingsPath = Path.Combine(temporaryDirectory.Path, "app", "settings.json");
         SettingsStore store = new(settingsPath);
-        AppSettings expected = new(@"C:\Tools\cortex.exe");
+        AppSettings expected = new(@"C:\Tools\cortex.exe", 60);
 
         await store.SaveAsync(expected);
         SettingsLoadResult loaded = await store.LoadAsync();
+        string storedJson = await File.ReadAllTextAsync(settingsPath);
 
         Assert.AreEqual(SettingsLoadState.Loaded, loaded.State);
         Assert.AreEqual(expected, loaded.Settings);
+        Assert.IsFalse(storedJson.Contains("effectiveCliHandshakeTimeoutSeconds", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public async Task LoadAsyncLegacyFileUsesDefaultHandshakeTimeout()
+    {
+        using TemporaryDirectory temporaryDirectory = new();
+        string settingsPath = Path.Combine(temporaryDirectory.Path, "settings.json");
+        await File.WriteAllTextAsync(
+            settingsPath,
+            """{"cliPath":"C:\\Tools\\cortex.exe"}""");
+        SettingsStore store = new(settingsPath);
+
+        SettingsLoadResult loaded = await store.LoadAsync();
+
+        Assert.AreEqual(SettingsLoadState.Loaded, loaded.State);
+        Assert.AreEqual(
+            AppConstants.DefaultCliHandshakeTimeoutSeconds,
+            loaded.Settings.EffectiveCliHandshakeTimeoutSeconds);
+    }
+
+    [TestMethod]
+    public async Task LoadAsyncUnsupportedHandshakeTimeoutUsesSafeDefault()
+    {
+        using TemporaryDirectory temporaryDirectory = new();
+        string settingsPath = Path.Combine(temporaryDirectory.Path, "settings.json");
+        await File.WriteAllTextAsync(
+            settingsPath,
+            """{"cliPath":null,"cliHandshakeTimeoutSeconds":999}""");
+        SettingsStore store = new(settingsPath);
+
+        SettingsLoadResult loaded = await store.LoadAsync();
+
+        Assert.AreEqual(SettingsLoadState.Loaded, loaded.State);
+        Assert.AreEqual(
+            AppConstants.DefaultCliHandshakeTimeoutSeconds,
+            loaded.Settings.EffectiveCliHandshakeTimeoutSeconds);
     }
 
     [TestMethod]

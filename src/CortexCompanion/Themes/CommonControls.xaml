@@ -10,6 +10,7 @@
     <system:Double x:Key="FontSizeSmallCaption">11</system:Double>
     <system:Double x:Key="FontSizeSubtitle">15</system:Double>
     <system:Double x:Key="SettingsLabelWidth">190</system:Double>
+    <system:Double x:Key="SettingsInputWidth">240</system:Double>
     <system:Double x:Key="SettingsContentMaxWidth">820</system:Double>
     <system:Double x:Key="WindowWidth">1080</system:Double>
     <system:Double x:Key="WindowHeight">680</system:Double>
