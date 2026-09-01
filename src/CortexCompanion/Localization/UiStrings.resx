@@ -44,6 +44,7 @@
   <data name="PagesLoading" xml:space="preserve"><value>Chargement local des espaces...</value></data>
   <data name="PagesReady" xml:space="preserve"><value>Configuration Pages chargée.</value></data>
   <data name="PagesNotConfigured" xml:space="preserve"><value>CLI non configuré : aucune configuration Pages ne peut être lue.</value></data>
+  <data name="PagesConfigurationRequired" xml:space="preserve"><value>Configurez d'abord confluence.toml pour activer l'ajout de pages. Le PAT peut déjà être enregistré dans Réglages.</value></data>
   <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configuré.</value></data>
   <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectée.</value></data>
   <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listées sont collectées.</value></data>
@@ -75,7 +76,7 @@
   <data name="PagesCliNotDue" xml:space="preserve"><value>La commande n'est pas due.</value></data>
   <data name="PagesCliAuth" xml:space="preserve"><value>L'authentification Confluence est indisponible.</value></data>
   <data name="PagesCliRemote" xml:space="preserve"><value>Le service Confluence distant est indisponible.</value></data>
-  <data name="PagesCliInvalidInput" xml:space="preserve"><value>La référence de page est invalide.</value></data>
+  <data name="PagesCliInvalidInput" xml:space="preserve"><value>La configuration Confluence ou la référence de page est invalide.</value></data>
   <data name="PagesCliNotFound" xml:space="preserve"><value>La page n'existe pas.</value></data>
   <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>La page appartient à un espace hors allowlist.</value></data>
   <data name="PagesCliTimedOut" xml:space="preserve"><value>Le CLI n'a pas répondu dans le délai imparti.</value></data>

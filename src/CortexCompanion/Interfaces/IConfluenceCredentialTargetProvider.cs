@@ -3,10 +3,10 @@
 
 namespace CortexCompanion.Interfaces;
 
-/// <summary>Resolves the non-secret credential target from the active Confluence configuration.</summary>
+/// <summary>Resolves the non-secret configured or Cortex-default credential target.</summary>
 public interface IConfluenceCredentialTargetProvider
 {
-    /// <summary>Returns the configured target, or <see langword="null"/> when no configuration exists.</summary>
+    /// <summary>Returns the configured target, or the shared Cortex default while the file is absent.</summary>
     Task<string?> GetTargetAsync(
         string cliPath,
         CancellationToken cancellationToken = default);
