@@ -38,6 +38,21 @@ public sealed class FileDialogService : IFileDialogService
         return dialog.ShowDialog() == true ? Path.GetFullPath(dialog.FolderName) : null;
     }
 
+    /// <inheritdoc />
+    public string? SelectConfluenceConverterExecutable(string? currentPath)
+    {
+        OpenFileDialog dialog = new()
+        {
+            CheckFileExists = true,
+            FileName = Path.GetFileName(currentPath) ?? AppConstants.ConfluenceConverterExecutableName,
+            Filter = UiStrings.ConfluenceConverterFileDialogFilter,
+            Multiselect = false,
+            Title = UiStrings.ConfluenceConverterFileDialogTitle,
+        };
+        SetInitialDirectory(dialog, currentPath);
+        return NormalizeSelection(dialog.ShowDialog(), dialog.FileName);
+    }
+
     private static void SetInitialDirectory(FileDialog dialog, string? currentPath)
     {
         string? directory = string.IsNullOrWhiteSpace(currentPath)

@@ -16,22 +16,25 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
     private readonly AppPaths _paths;
     private readonly ICliHandshakeService _handshakeService;
     private readonly IProcessRunner _processRunner;
+    private readonly IFileDialogService _fileDialogs;
 
     /// <summary>Initializes the factory with application-owned paths and process services.</summary>
     public CompanionRuntimeFactory(
         AppPaths paths,
         ICliHandshakeService handshakeService,
-        IProcessRunner processRunner)
+        IProcessRunner processRunner,
+        IFileDialogService fileDialogs)
     {
         _paths = paths ?? throw new ArgumentNullException(nameof(paths));
         _handshakeService = handshakeService ?? throw new ArgumentNullException(nameof(handshakeService));
         _processRunner = processRunner ?? throw new ArgumentNullException(nameof(processRunner));
+        _fileDialogs = fileDialogs ?? throw new ArgumentNullException(nameof(fileDialogs));
     }
 
     /// <inheritdoc />
     public CompanionRuntime CreatePending()
     {
-        PagesViewModel pages = new(null, null, null, []);
+        PagesViewModel pages = new(null, null, null, null, null, []);
         SyncViewModel sync = new(null, null, null, null, null, []);
         SchedulingViewModel scheduling = new(
             new TaskSchedulerComAdapter(),
@@ -69,15 +72,20 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
                 cliClient,
                 configStore,
                 new PageMutationConfirmationService());
+            ConfluenceSetupService setup = new(configStore);
             pages = new PagesViewModel(
                 cliClient,
                 mutations,
+                setup,
+                _fileDialogs,
                 configPath,
                 ConfluenceEnvironmentInspector.GetActiveOverrides());
         }
         else
         {
             pages = new PagesViewModel(
+                null,
+                null,
                 null,
                 null,
                 null,

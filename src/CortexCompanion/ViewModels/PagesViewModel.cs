@@ -16,12 +16,22 @@ public sealed class PagesViewModel : ViewModelBase
 {
     private readonly IConfluenceCliClient? _cliClient;
     private readonly PagesMutationService? _mutations;
+    private readonly ConfluenceSetupService? _setupService;
+    private readonly IFileDialogService? _fileDialogs;
     private readonly string? _configurationPath;
     private readonly AsyncRelayCommand _refreshCommand;
     private readonly AsyncRelayCommand _addCommand;
+    private readonly AsyncRelayCommand _initializeConfluenceCommand;
+    private readonly AsyncRelayCommand _browseConverterCommand;
     private readonly AsyncRelayCommand<ConfiguredSpaceViewModel> _switchModeCommand;
     private readonly AsyncRelayCommand<ConfiguredPageViewModel> _removeCommand;
     private string _pageReference = string.Empty;
+    private string _setupPageUrl = string.Empty;
+    private string _setupSpaceKey = string.Empty;
+    private string? _lastInferredSpaceKey;
+    private DateTime? _setupExpiryDate;
+    private string _setupConverterPath = string.Empty;
+    private ConfluenceClassificationOption _selectedClassification;
     private string _stateMessage;
     private bool _isBusy;
     private bool _isReadOnly = true;
@@ -31,11 +41,15 @@ public sealed class PagesViewModel : ViewModelBase
     public PagesViewModel(
         IConfluenceCliClient? cliClient,
         PagesMutationService? mutations,
+        ConfluenceSetupService? setupService,
+        IFileDialogService? fileDialogs,
         ConfluenceConfigPathResolution? pathResolution,
         IReadOnlyList<ConfluenceEnvironmentOverride> overrides)
     {
         _cliClient = cliClient;
         _mutations = mutations;
+        _setupService = setupService;
+        _fileDialogs = fileDialogs;
         _configurationPath = pathResolution?.AbsolutePath;
         _hasConfluenceConfiguration = _configurationPath is not null && File.Exists(_configurationPath);
         ConfigPath = pathResolution?.AbsolutePath ?? UiStrings.ConfigPathUnavailable;
@@ -45,9 +59,21 @@ public sealed class PagesViewModel : ViewModelBase
         Overrides = new ReadOnlyCollection<EnvironmentOverrideViewModel>(overrides
             .Select(item => new EnvironmentOverrideViewModel(item.FieldName, item.EnvironmentName, item.Value))
             .ToArray());
+        ClassificationOptions = new ReadOnlyCollection<ConfluenceClassificationOption>(
+        [
+            new("pro-confidentiel", UiStrings.PagesSetupProfessional),
+            new("perso-non-sensible", UiStrings.PagesSetupPersonal),
+        ]);
+        _selectedClassification = ClassificationOptions[0];
         _stateMessage = cliClient is null ? UiStrings.PagesNotConfigured : UiStrings.PagesLoading;
         _refreshCommand = new AsyncRelayCommand(RefreshAsync, () => CanRead);
         _addCommand = new AsyncRelayCommand(AddAsync, () => CanMutate && !string.IsNullOrWhiteSpace(PageReference));
+        _initializeConfluenceCommand = new AsyncRelayCommand(
+            InitializeConfluenceAsync,
+            () => CanInitializeConfluence);
+        _browseConverterCommand = new AsyncRelayCommand(
+            BrowseConverterAsync,
+            () => CanBrowseConverter);
         _switchModeCommand = new AsyncRelayCommand<ConfiguredSpaceViewModel>(
             SwitchModeAsync,
             _ => CanMutate);
@@ -59,6 +85,9 @@ public sealed class PagesViewModel : ViewModelBase
 
     /// <summary>Gets active, supported root-field environment overrides.</summary>
     public IReadOnlyList<EnvironmentOverrideViewModel> Overrides { get; }
+
+    /// <summary>Gets the two explicit classification choices, with fail-closed first.</summary>
+    public IReadOnlyList<ConfluenceClassificationOption> ClassificationOptions { get; }
 
     /// <summary>Gets whether the environment-lock section has content.</summary>
     public bool HasOverrides => Overrides.Count > 0;
@@ -78,6 +107,69 @@ public sealed class PagesViewModel : ViewModelBase
             if (SetProperty(ref _pageReference, value))
             {
                 _addCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    /// <summary>Gets or sets the full page URL used by first-run setup.</summary>
+    public string SetupPageUrl
+    {
+        get => _setupPageUrl;
+        set
+        {
+            if (!SetProperty(ref _setupPageUrl, value))
+            {
+                return;
+            }
+
+            InferSpaceKey(value);
+            NotifySetupAvailability();
+        }
+    }
+
+    /// <summary>Gets or sets the explicit Confluence space key used by first-run setup.</summary>
+    public string SetupSpaceKey
+    {
+        get => _setupSpaceKey;
+        set
+        {
+            if (SetProperty(ref _setupSpaceKey, value))
+            {
+                NotifySetupAvailability();
+            }
+        }
+    }
+
+    /// <summary>Gets or sets the user-declared PAT expiry date.</summary>
+    public DateTime? SetupExpiryDate
+    {
+        get => _setupExpiryDate;
+        set
+        {
+            if (SetProperty(ref _setupExpiryDate, value))
+            {
+                NotifySetupAvailability();
+            }
+        }
+    }
+
+    /// <summary>Gets or sets the optional external converter path.</summary>
+    public string SetupConverterPath
+    {
+        get => _setupConverterPath;
+        set => SetProperty(ref _setupConverterPath, value);
+    }
+
+    /// <summary>Gets or sets the selected persisted classification.</summary>
+    public ConfluenceClassificationOption SelectedClassification
+    {
+        get => _selectedClassification;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            if (SetProperty(ref _selectedClassification, value))
+            {
+                NotifySetupAvailability();
             }
         }
     }
@@ -123,6 +215,24 @@ public sealed class PagesViewModel : ViewModelBase
     public bool CanMutate =>
         _mutations is not null && HasConfluenceConfiguration && !IsReadOnly && !IsBusy;
 
+    /// <summary>Gets whether the novice first-run card must be shown.</summary>
+    public bool NeedsConfluenceConfiguration => !HasConfluenceConfiguration;
+
+    /// <summary>Gets whether all required first-run values can be committed.</summary>
+    public bool CanInitializeConfluence =>
+        _setupService is not null &&
+        _mutations is not null &&
+        NeedsConfluenceConfiguration &&
+        !IsReadOnly &&
+        !IsBusy &&
+        !string.IsNullOrWhiteSpace(SetupPageUrl) &&
+        !string.IsNullOrWhiteSpace(SetupSpaceKey) &&
+        SetupExpiryDate.HasValue;
+
+    /// <summary>Gets whether the optional converter picker is available.</summary>
+    public bool CanBrowseConverter =>
+        _fileDialogs is not null && NeedsConfluenceConfiguration && !IsReadOnly && !IsBusy;
+
     /// <summary>Gets whether the session Confluence TOML currently exists.</summary>
     public bool HasConfluenceConfiguration
     {
@@ -131,6 +241,9 @@ public sealed class PagesViewModel : ViewModelBase
         {
             if (SetProperty(ref _hasConfluenceConfiguration, value))
             {
+                OnPropertyChanged(nameof(NeedsConfluenceConfiguration));
+                OnPropertyChanged(nameof(CanInitializeConfluence));
+                OnPropertyChanged(nameof(CanBrowseConverter));
                 NotifyCommandAvailability();
             }
         }
@@ -141,6 +254,12 @@ public sealed class PagesViewModel : ViewModelBase
 
     /// <summary>Gets the resolve-first add command.</summary>
     public ICommand AddCommand => _addCommand;
+
+    /// <summary>Gets the first-run initialize-and-add command.</summary>
+    public ICommand InitializeConfluenceCommand => _initializeConfluenceCommand;
+
+    /// <summary>Gets the optional converter browse command.</summary>
+    public ICommand BrowseConverterCommand => _browseConverterCommand;
 
     /// <summary>Gets the typed mode-switch command.</summary>
     public ICommand SwitchModeCommand => _switchModeCommand;
@@ -221,6 +340,109 @@ public sealed class PagesViewModel : ViewModelBase
 
             return changed;
         });
+    }
+
+    private async Task InitializeConfluenceAsync()
+    {
+        if (_setupService is null || _mutations is null || SetupExpiryDate is null)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        bool configurationCreated = false;
+        string terminalMessage;
+        try
+        {
+            ConfluenceSetupRequest request = new(
+                SetupPageUrl,
+                SetupSpaceKey,
+                ToEndOfLocalDay(SetupExpiryDate.Value),
+                SetupConverterPath,
+                SelectedClassification.Code);
+            await _setupService.InitializeAsync(request, CancellationToken.None);
+            configurationCreated = true;
+            HasConfluenceConfiguration = true;
+            PageReference = SetupPageUrl;
+            bool changed = await _mutations.AddPageAsync(
+                SetupPageUrl,
+                IsReadOnly,
+                CancellationToken.None);
+            terminalMessage = changed
+                ? UiStrings.PagesSetupCompleted
+                : UiStrings.PagesSetupCreatedAddCancelled;
+            if (changed)
+            {
+                PageReference = string.Empty;
+            }
+        }
+        catch (ConfluenceConfigConflictException)
+        {
+            terminalMessage = UiStrings.PagesCasConflict;
+        }
+        catch (ConfluenceCliOperationException exception)
+        {
+            terminalMessage = configurationCreated
+                ? $"{UiStrings.PagesSetupCreatedAddFailed} {FormatCliFailure(exception.ExitCode, exception.Message, false, null)}"
+                : FormatCliFailure(exception.ExitCode, exception.Message, false, null);
+        }
+        catch (Exception exception) when (exception is ConfluenceSetupValidationException or
+                                          PageMutationRejectedException or
+                                          ConfluenceConfigLockedException or
+                                          ConfluenceConfigMutationException or
+                                          ConfluenceConfigValidationException or
+                                          IOException)
+        {
+            terminalMessage = configurationCreated
+                ? $"{UiStrings.PagesSetupCreatedAddFailed} {exception.Message}"
+                : exception.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
+        await RefreshAsync();
+        StateMessage = terminalMessage;
+    }
+
+    private Task BrowseConverterAsync()
+    {
+        string? selected = _fileDialogs?.SelectConfluenceConverterExecutable(SetupConverterPath);
+        if (selected is not null)
+        {
+            SetupConverterPath = selected;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void InferSpaceKey(string pageUrl)
+    {
+        try
+        {
+            ConfluencePageUrlAnalysis analysis = ConfluencePageUrlAnalyzer.Analyze(pageUrl);
+            if (analysis.InferredSpaceKey is not null &&
+                (string.IsNullOrWhiteSpace(SetupSpaceKey) ||
+                 string.Equals(SetupSpaceKey, _lastInferredSpaceKey, StringComparison.Ordinal)))
+            {
+                SetupSpaceKey = analysis.InferredSpaceKey;
+                _lastInferredSpaceKey = analysis.InferredSpaceKey;
+            }
+        }
+        catch (ConfluenceSetupValidationException)
+        {
+            // Partial user input remains editable without presenting an error before submission.
+        }
+    }
+
+    private static DateTimeOffset ToEndOfLocalDay(DateTime selectedDate)
+    {
+        DateTime localEnd = DateTime.SpecifyKind(
+            selectedDate.Date.AddDays(1).AddSeconds(-1),
+            DateTimeKind.Unspecified);
+        TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(localEnd);
+        return new DateTimeOffset(localEnd, offset);
     }
 
     private Task SwitchModeAsync(ConfiguredSpaceViewModel space) => RunMutationAsync(() =>
@@ -324,9 +546,19 @@ public sealed class PagesViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(CanRead));
         OnPropertyChanged(nameof(CanMutate));
+        OnPropertyChanged(nameof(CanInitializeConfluence));
+        OnPropertyChanged(nameof(CanBrowseConverter));
         _refreshCommand.RaiseCanExecuteChanged();
         _addCommand.RaiseCanExecuteChanged();
+        _initializeConfluenceCommand.RaiseCanExecuteChanged();
+        _browseConverterCommand.RaiseCanExecuteChanged();
         _switchModeCommand.RaiseCanExecuteChanged();
         _removeCommand.RaiseCanExecuteChanged();
+    }
+
+    private void NotifySetupAvailability()
+    {
+        OnPropertyChanged(nameof(CanInitializeConfluence));
+        _initializeConfluenceCommand.RaiseCanExecuteChanged();
     }
 }

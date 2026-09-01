@@ -29,6 +29,8 @@ public sealed class PagesViewModelTests
         PagesViewModel viewModel = new(
             cliClient,
             mutations,
+            null,
+            null,
             new ConfluenceConfigPathResolution(
                 configPath,
                 ConfluenceConfigPathOrigin.Default,
@@ -56,6 +58,8 @@ public sealed class PagesViewModelTests
         PagesViewModel viewModel = new(
             cliClient,
             mutations,
+            null,
+            null,
             new ConfluenceConfigPathResolution(
                 configPath,
                 ConfluenceConfigPathOrigin.Default,
@@ -72,9 +76,50 @@ public sealed class PagesViewModelTests
         Assert.AreEqual(1, cliClient.GetPagesCount);
     }
 
+    [TestMethod]
+    public async Task FirstRunInfersSpaceCreatesConfigurationAndAddsConfirmedPage()
+    {
+        using TemporaryDirectory temporary = new();
+        string configPath = Path.Combine(temporary.Path, "confluence.toml");
+        StubCliClient cliClient = new();
+        ConfluenceConfigStore store = new(configPath);
+        PagesMutationService mutations = new(
+            cliClient,
+            store,
+            new AcceptingConfirmationService());
+        PagesViewModel viewModel = new(
+            cliClient,
+            mutations,
+            new ConfluenceSetupService(store),
+            null,
+            new ConfluenceConfigPathResolution(
+                configPath,
+                ConfluenceConfigPathOrigin.Default,
+                "APPDATA"),
+            []);
+        await viewModel.InitializeAsync(isReadOnly: false);
+
+        viewModel.SetupPageUrl = "https://kazan.example.test/wiki/spaces/DOC/pages/1001/Run+Book";
+        viewModel.SetupExpiryDate = new DateTime(2099, 12, 31);
+
+        Assert.AreEqual("DOC", viewModel.SetupSpaceKey);
+        Assert.IsTrue(viewModel.CanInitializeConfluence);
+        await ((AsyncRelayCommand)viewModel.InitializeConfluenceCommand).ExecuteAsync(parameter: null);
+
+        Assert.IsTrue(File.Exists(configPath), viewModel.StateMessage);
+        ConfluenceConfigSnapshot snapshot = await store.ReadAsync(CancellationToken.None);
+        Assert.IsTrue(viewModel.HasConfluenceConfiguration);
+        Assert.IsFalse(viewModel.NeedsConfluenceConfiguration);
+        Assert.AreEqual(1, cliClient.ResolveCount);
+        Assert.AreEqual("1001", snapshot.Configuration.Spaces[0].PageIds.Single());
+        Assert.AreEqual(UiStrings.PagesSetupCompleted, viewModel.StateMessage);
+    }
+
     private sealed class StubCliClient : IConfluenceCliClient
     {
         public int GetPagesCount { get; private set; }
+
+        public int ResolveCount { get; private set; }
 
         public Task<ConfluenceCliResult<PagesContract>> GetPagesAsync(
             CancellationToken cancellationToken)
@@ -95,8 +140,23 @@ public sealed class PagesViewModelTests
 
         public Task<ConfluenceCliResult<ResolvedPageContract>> ResolveAsync(
             string reference,
-            CancellationToken cancellationToken) =>
-            throw new InvalidOperationException("Resolve is outside this read-state test.");
+            CancellationToken cancellationToken)
+        {
+            ResolveCount++;
+            return Task.FromResult(new ConfluenceCliResult<ResolvedPageContract>(
+                CortexExitCode.Ok,
+                new ResolvedPageContract
+                {
+                    ContractVersion = 1,
+                    PageId = "1001",
+                    Title = "Run Book",
+                    SpaceKey = "DOC",
+                    Configured = false,
+                },
+                string.Empty,
+                false,
+                null));
+        }
     }
 
     private sealed class StubConfigStore : IConfluenceConfigStore
@@ -121,5 +181,17 @@ public sealed class PagesViewModelTests
             string spaceKey,
             ConfluenceSelection targetSelection,
             IReadOnlyList<string> targetPageIds) => null;
+    }
+
+    private sealed class AcceptingConfirmationService : IPageMutationConfirmationService
+    {
+        public bool ConfirmAdd(ResolvedPageContract page) => true;
+
+        public bool ConfirmRemove(string spaceKey, string pageId, string? title) => true;
+
+        public string? ConfirmModeChange(
+            string spaceKey,
+            ConfluenceSelection targetSelection,
+            IReadOnlyList<string> targetPageIds) => spaceKey;
     }
 }

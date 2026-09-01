@@ -36,20 +36,22 @@ public partial class App : Application, IDisposable
         {
             SettingsStore settingsStore = new(paths.SettingsPath);
             IProcessRunner processRunner = new ProcessRunner();
+            IFileDialogService fileDialogs = new FileDialogService();
             ICliHandshakeService handshakeService = new CliHandshakeService(
                 new CliVersionPolicy(),
                 processRunner);
             ICompanionRuntimeFactory runtimeFactory = new CompanionRuntimeFactory(
                 paths,
                 handshakeService,
-                processRunner);
+                processRunner,
+                fileDialogs);
             ICompanionRuntimeCoordinator runtimeCoordinator = new CompanionRuntimeCoordinator(runtimeFactory);
             SettingsViewModel settings = new(
                 settingsStore,
                 new CliPathDiscovery(),
                 runtimeCoordinator,
                 new CortexConfigClient(processRunner),
-                new FileDialogService(),
+                fileDialogs,
                 new ConfluenceCredentialTargetProvider(),
                 new WindowsCredentialManagerStore());
             MainViewModel viewModel = new(runtimeCoordinator, settings);

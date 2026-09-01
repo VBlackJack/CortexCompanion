@@ -196,7 +196,8 @@ public sealed class SettingsViewModelTests
         CompanionRuntimeFactory factory = new(
             new AppPaths(root),
             new CliHandshakeService(new CliVersionPolicy(), processRunner),
-            processRunner);
+            processRunner,
+            new NullFileDialogs());
         CompanionRuntime pending = factory.CreatePending();
         return pending with
         {
@@ -292,6 +293,8 @@ public sealed class SettingsViewModelTests
         public string? SelectCliExecutable(string? currentPath) => null;
 
         public string? SelectKnowledgeBaseDirectory(string? currentPath) => null;
+
+        public string? SelectConfluenceConverterExecutable(string? currentPath) => null;
     }
 
     private sealed class TestCredentialTargetProvider(string? target) : IConfluenceCredentialTargetProvider

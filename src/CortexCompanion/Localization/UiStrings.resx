@@ -44,7 +44,33 @@
   <data name="PagesLoading" xml:space="preserve"><value>Chargement local des espaces...</value></data>
   <data name="PagesReady" xml:space="preserve"><value>Configuration Pages chargée.</value></data>
   <data name="PagesNotConfigured" xml:space="preserve"><value>CLI non configuré : aucune configuration Pages ne peut être lue.</value></data>
-  <data name="PagesConfigurationRequired" xml:space="preserve"><value>Configurez d'abord confluence.toml pour activer l'ajout de pages. Le PAT peut déjà être enregistré dans Réglages.</value></data>
+  <data name="PagesConfigurationRequired" xml:space="preserve"><value>Initialisez Confluence ci-dessous pour activer l'ajout de pages. Aucun fichier TOML n'est à modifier manuellement.</value></data>
+  <data name="PagesSetupTitle" xml:space="preserve"><value>Première configuration Confluence</value></data>
+  <data name="PagesSetupDescription" xml:space="preserve"><value>Collez l'URL d'une page. Companion détecte l'instance et l'espace, crée la configuration, puis vous demande de confirmer la page.</value></data>
+  <data name="PagesSetupPageUrlLabel" xml:space="preserve"><value>URL de la première page</value></data>
+  <data name="PagesSetupPageUrlHint" xml:space="preserve"><value>URL complète copiée depuis votre navigateur Confluence</value></data>
+  <data name="PagesSetupSpaceKeyLabel" xml:space="preserve"><value>Clé de l'espace</value></data>
+  <data name="PagesSetupSpaceKeyHint" xml:space="preserve"><value>Détectée automatiquement quand l'URL la contient</value></data>
+  <data name="PagesSetupExpiryLabel" xml:space="preserve"><value>Date d'expiration du PAT</value></data>
+  <data name="PagesSetupExpiryHint" xml:space="preserve"><value>Choisissez la date déclarée lors de la création du PAT</value></data>
+  <data name="PagesSetupClassificationLabel" xml:space="preserve"><value>Classification locale</value></data>
+  <data name="PagesSetupConverterLabel" xml:space="preserve"><value>Convertisseur Confluence</value></data>
+  <data name="PagesSetupConverterHint" xml:space="preserve"><value>Facultatif pour gérer les pages, requis pour les collecter</value></data>
+  <data name="PagesSetupBrowse" xml:space="preserve"><value>Parcourir</value></data>
+  <data name="PagesSetupInitialize" xml:space="preserve"><value>Initialiser et ajouter la page</value></data>
+  <data name="PagesSetupProfessional" xml:space="preserve"><value>Professionnel - confidentiel</value></data>
+  <data name="PagesSetupPersonal" xml:space="preserve"><value>Personnel - non sensible</value></data>
+  <data name="PagesSetupCompleted" xml:space="preserve"><value>Confluence est configuré et la première page a été ajoutée.</value></data>
+  <data name="PagesSetupCreatedAddCancelled" xml:space="preserve"><value>Confluence est configuré. L'ajout de la page a été annulé.</value></data>
+  <data name="PagesSetupCreatedAddFailed" xml:space="preserve"><value>Confluence est configuré, mais la page n'a pas encore été ajoutée.</value></data>
+  <data name="ConfluenceSetupInvalidPageUrl" xml:space="preserve"><value>Collez une URL de page Confluence complète et prise en charge.</value></data>
+  <data name="ConfluenceSetupInvalidSpaceKey" xml:space="preserve"><value>La clé d'espace accepte uniquement lettres, chiffres, point, tiret et underscore.</value></data>
+  <data name="ConfluenceSetupSpaceMismatch" xml:space="preserve"><value>La clé d'espace ne correspond pas à celle détectée dans l'URL.</value></data>
+  <data name="ConfluenceSetupExpiredAuthentication" xml:space="preserve"><value>La date d'expiration du PAT doit être dans le futur.</value></data>
+  <data name="ConfluenceSetupInvalidClassification" xml:space="preserve"><value>La classification sélectionnée n'est pas prise en charge.</value></data>
+  <data name="ConfluenceSetupInvalidConverter" xml:space="preserve"><value>Le convertisseur doit être un fichier EXE existant.</value></data>
+  <data name="ConfluenceConverterFileDialogTitle" xml:space="preserve"><value>Choisir le convertisseur Confluence</value></data>
+  <data name="ConfluenceConverterFileDialogFilter" xml:space="preserve"><value>Convertisseur Confluence (ConfluenceRAGBuilder.Console.exe)|ConfluenceRAGBuilder.Console.exe|Exécutables (*.exe)|*.exe</value></data>
   <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configuré.</value></data>
   <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectée.</value></data>
   <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listées sont collectées.</value></data>

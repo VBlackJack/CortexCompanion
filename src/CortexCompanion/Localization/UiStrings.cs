@@ -102,6 +102,58 @@ public static class UiStrings
     public static string PagesNotConfigured => GetString(nameof(PagesNotConfigured));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesConfigurationRequired => GetString(nameof(PagesConfigurationRequired));
+    /// <summary>Gets the first-run setup title.</summary>
+    public static string PagesSetupTitle => GetString(nameof(PagesSetupTitle));
+    /// <summary>Gets the first-run setup explanation.</summary>
+    public static string PagesSetupDescription => GetString(nameof(PagesSetupDescription));
+    /// <summary>Gets the first-run page URL label.</summary>
+    public static string PagesSetupPageUrlLabel => GetString(nameof(PagesSetupPageUrlLabel));
+    /// <summary>Gets the first-run page URL hint.</summary>
+    public static string PagesSetupPageUrlHint => GetString(nameof(PagesSetupPageUrlHint));
+    /// <summary>Gets the first-run space key label.</summary>
+    public static string PagesSetupSpaceKeyLabel => GetString(nameof(PagesSetupSpaceKeyLabel));
+    /// <summary>Gets the first-run space key hint.</summary>
+    public static string PagesSetupSpaceKeyHint => GetString(nameof(PagesSetupSpaceKeyHint));
+    /// <summary>Gets the first-run PAT expiry label.</summary>
+    public static string PagesSetupExpiryLabel => GetString(nameof(PagesSetupExpiryLabel));
+    /// <summary>Gets the first-run PAT expiry hint.</summary>
+    public static string PagesSetupExpiryHint => GetString(nameof(PagesSetupExpiryHint));
+    /// <summary>Gets the first-run classification label.</summary>
+    public static string PagesSetupClassificationLabel => GetString(nameof(PagesSetupClassificationLabel));
+    /// <summary>Gets the first-run converter label.</summary>
+    public static string PagesSetupConverterLabel => GetString(nameof(PagesSetupConverterLabel));
+    /// <summary>Gets the first-run converter hint.</summary>
+    public static string PagesSetupConverterHint => GetString(nameof(PagesSetupConverterHint));
+    /// <summary>Gets the converter browse action.</summary>
+    public static string PagesSetupBrowse => GetString(nameof(PagesSetupBrowse));
+    /// <summary>Gets the first-run commit action.</summary>
+    public static string PagesSetupInitialize => GetString(nameof(PagesSetupInitialize));
+    /// <summary>Gets the secure default classification label.</summary>
+    public static string PagesSetupProfessional => GetString(nameof(PagesSetupProfessional));
+    /// <summary>Gets the personal classification label.</summary>
+    public static string PagesSetupPersonal => GetString(nameof(PagesSetupPersonal));
+    /// <summary>Gets the completed first-run message.</summary>
+    public static string PagesSetupCompleted => GetString(nameof(PagesSetupCompleted));
+    /// <summary>Gets the first-run message when page confirmation is cancelled.</summary>
+    public static string PagesSetupCreatedAddCancelled => GetString(nameof(PagesSetupCreatedAddCancelled));
+    /// <summary>Gets the first-run partial success message.</summary>
+    public static string PagesSetupCreatedAddFailed => GetString(nameof(PagesSetupCreatedAddFailed));
+    /// <summary>Gets the supported-page-URL validation message.</summary>
+    public static string ConfluenceSetupInvalidPageUrl => GetString(nameof(ConfluenceSetupInvalidPageUrl));
+    /// <summary>Gets the space-key validation message.</summary>
+    public static string ConfluenceSetupInvalidSpaceKey => GetString(nameof(ConfluenceSetupInvalidSpaceKey));
+    /// <summary>Gets the URL/space mismatch validation message.</summary>
+    public static string ConfluenceSetupSpaceMismatch => GetString(nameof(ConfluenceSetupSpaceMismatch));
+    /// <summary>Gets the expired-authentication validation message.</summary>
+    public static string ConfluenceSetupExpiredAuthentication => GetString(nameof(ConfluenceSetupExpiredAuthentication));
+    /// <summary>Gets the classification validation message.</summary>
+    public static string ConfluenceSetupInvalidClassification => GetString(nameof(ConfluenceSetupInvalidClassification));
+    /// <summary>Gets the converter-path validation message.</summary>
+    public static string ConfluenceSetupInvalidConverter => GetString(nameof(ConfluenceSetupInvalidConverter));
+    /// <summary>Gets the converter file-picker title.</summary>
+    public static string ConfluenceConverterFileDialogTitle => GetString(nameof(ConfluenceConverterFileDialogTitle));
+    /// <summary>Gets the converter file-picker filter.</summary>
+    public static string ConfluenceConverterFileDialogFilter => GetString(nameof(ConfluenceConverterFileDialogFilter));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesNoSpaces => GetString(nameof(PagesNoSpaces));
     /// <summary>Gets a Pages UI resource.</summary>
