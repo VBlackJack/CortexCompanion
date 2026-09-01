@@ -47,22 +47,24 @@ while mutation commands remain disabled.
 Unexpected startup diagnostics are written under
 `%LOCALAPPDATA%\CortexCompanion\logs`.
 
-## Slow Cortex startup
+## Slow Cortex commands
 
-The Settings screen provides a bounded Cortex startup timeout of 15, 30, 60,
-or 120 seconds. The default is 30 seconds, including when Companion loads a
+The Settings screen provides a bounded Cortex CLI timeout of 15, 30, 60, or
+120 seconds. The default is 30 seconds, including when Companion loads a
 settings file created by an older release. Select a longer value before using
 **Enregistrer et connecter** on a computer where `cortex.exe` needs more time
-to start.
+to answer.
 
-This setting applies only to the `cortex.exe --version` compatibility handshake;
-Confluence read operations keep their own five-second timeout. If the startup
-limit expires, Companion remains read-only and does not start a second Cortex
-process from the Pages screen.
+The selected value is shared by the `cortex.exe --version` compatibility
+handshake, Cortex configuration reads and writes, and Confluence page reads and
+resolutions. If a read exceeds the limit, Companion keeps mutations fail-closed
+and directs the user back to Settings instead of reporting that the CLI refused
+the request. Timeout logs include the configured and elapsed durations without
+recording command arguments or secrets.
 
 ## Configuration ownership
 
-Companion stores its `cortex.exe` path and bounded startup-handshake timeout in
+Companion stores its `cortex.exe` path and bounded shared CLI timeout in
 `%LOCALAPPDATA%\CortexCompanion\settings.json`. The knowledge-base setting is read and
 changed exclusively through the versioned `cortex config get/set --json`
 compare-and-swap contract.
