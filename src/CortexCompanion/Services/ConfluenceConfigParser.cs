@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using CortexCompanion.Constants;
 using CortexCompanion.Models;
 using Tomlyn;
 using Tomlyn.Model;
@@ -55,7 +56,8 @@ public sealed partial class ConfluenceConfigParser
                 baseUrl = ValidateBaseUrl(baseUrl, sourcePath);
             }
 
-            string credentialTarget = OptionalString(root, "credential_target", sourcePath) ?? "cortex-spike";
+            string credentialTarget = OptionalString(root, "credential_target", sourcePath) ??
+                AppConstants.DefaultConfluenceCredentialTarget;
             if (string.IsNullOrWhiteSpace(credentialTarget) || credentialTarget.Any(character => character < 32))
             {
                 throw Invalid(sourcePath, "credential_target must be a non-empty printable value.");

@@ -86,6 +86,9 @@ public static class AppConstants
     /// <summary>Gets the design-v1 PAT warning boundary.</summary>
     public const int PatExpiryWarningDays = 30;
 
+    /// <summary>Gets the Windows credential target used by Cortex when Confluence TOML is absent.</summary>
+    public const string DefaultConfluenceCredentialTarget = "cortex-spike";
+
     /// <summary>Gets the source kind owned by the current Companion release.</summary>
     public const string IngestionSourceKind = "doc";
 

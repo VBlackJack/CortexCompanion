@@ -15,13 +15,16 @@ synchronization, or scheduling.
 3. Open **Réglages**. Companion normally detects the `cortex.exe` from the same
    Cortex installation, including the parent folder used by the combined installer.
    Choose an existing knowledge-base folder, then select **Enregistrer le dossier**.
-4. To use Confluence, configure `CONFLUENCE.toml`, then enter the PAT under
-   **Réglages > Authentification Confluence** and select **Enregistrer le PAT**.
+4. To use Confluence, enter the PAT under **Réglages > Authentification
+   Confluence** and select **Enregistrer le PAT**. On a new installation,
+   Companion uses Cortex's default Windows credential target, `cortex-spike`.
+   Configure `CONFLUENCE.toml` before adding pages or starting a collection.
 5. Open **Base locale** and select **Synchroniser les documents locaux**. This
    primary action runs `cortex sync --json`; it does not require Confluence.
 
 The **Pages Confluence** and **Planification Confluence** screens are optional advanced
 integration features. They require a separate Confluence configuration and credential.
+Page mutations remain disabled with an explicit prerequisite until that TOML file exists.
 
 ## What users can do
 
@@ -59,8 +62,10 @@ The knowledge-base setting is read and changed exclusively through the versioned
 
 The Confluence PAT is never written to `settings.json` or `CONFLUENCE.toml`. The
 masked Settings field writes it directly to the `credential_target` declared by the
-validated Confluence configuration. Cortex and Companion use the same generic entry
-in Windows Credential Manager, protected by DPAPI for the current Windows account.
+validated Confluence configuration, or to Cortex's `cortex-spike` default when that
+file does not exist yet. Cortex and Companion use the same generic entry in Windows
+Credential Manager, protected by DPAPI for the current Windows account. If a later
+configuration selects another target, save the PAT again for that displayed target.
 
 ## Build and test
 

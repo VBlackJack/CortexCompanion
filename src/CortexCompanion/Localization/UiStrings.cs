@@ -101,6 +101,8 @@ public static class UiStrings
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesNotConfigured => GetString(nameof(PagesNotConfigured));
     /// <summary>Gets a Pages UI resource.</summary>
+    public static string PagesConfigurationRequired => GetString(nameof(PagesConfigurationRequired));
+    /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesNoSpaces => GetString(nameof(PagesNoSpaces));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesEmptySelection => GetString(nameof(PagesEmptySelection));

@@ -16,6 +16,7 @@ public sealed class PagesViewModel : ViewModelBase
 {
     private readonly IConfluenceCliClient? _cliClient;
     private readonly PagesMutationService? _mutations;
+    private readonly string? _configurationPath;
     private readonly AsyncRelayCommand _refreshCommand;
     private readonly AsyncRelayCommand _addCommand;
     private readonly AsyncRelayCommand<ConfiguredSpaceViewModel> _switchModeCommand;
@@ -24,6 +25,7 @@ public sealed class PagesViewModel : ViewModelBase
     private string _stateMessage;
     private bool _isBusy;
     private bool _isReadOnly = true;
+    private bool _hasConfluenceConfiguration;
 
     /// <summary>Initializes a configured or explicitly non-configured Pages projection.</summary>
     public PagesViewModel(
@@ -34,6 +36,8 @@ public sealed class PagesViewModel : ViewModelBase
     {
         _cliClient = cliClient;
         _mutations = mutations;
+        _configurationPath = pathResolution?.AbsolutePath;
+        _hasConfluenceConfiguration = _configurationPath is not null && File.Exists(_configurationPath);
         ConfigPath = pathResolution?.AbsolutePath ?? UiStrings.ConfigPathUnavailable;
         ConfigOrigin = pathResolution is null
             ? UiStrings.ConfigOriginUnavailable
@@ -116,7 +120,21 @@ public sealed class PagesViewModel : ViewModelBase
     public bool CanRead => _cliClient is not null && !IsBusy;
 
     /// <summary>Gets whether the configured mutation boundaries are currently enabled.</summary>
-    public bool CanMutate => _mutations is not null && !IsReadOnly && !IsBusy;
+    public bool CanMutate =>
+        _mutations is not null && HasConfluenceConfiguration && !IsReadOnly && !IsBusy;
+
+    /// <summary>Gets whether the session Confluence TOML currently exists.</summary>
+    public bool HasConfluenceConfiguration
+    {
+        get => _hasConfluenceConfiguration;
+        private set
+        {
+            if (SetProperty(ref _hasConfluenceConfiguration, value))
+            {
+                NotifyCommandAvailability();
+            }
+        }
+    }
 
     /// <summary>Gets the refresh command.</summary>
     public ICommand RefreshCommand => _refreshCommand;
@@ -153,6 +171,15 @@ public sealed class PagesViewModel : ViewModelBase
     {
         if (_cliClient is null)
         {
+            return;
+        }
+
+        HasConfluenceConfiguration =
+            _configurationPath is not null && File.Exists(_configurationPath);
+        if (!HasConfluenceConfiguration)
+        {
+            Spaces.Clear();
+            StateMessage = UiStrings.PagesConfigurationRequired;
             return;
         }
 
