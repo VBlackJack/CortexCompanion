@@ -163,6 +163,48 @@ public sealed partial class SettingsUxContractTests
     }
 
     [TestMethod]
+    public void ConfluenceFirstRunCardIsMutuallyExclusiveAndAccessible()
+    {
+        XDocument document = XDocument.Load(Path.Combine(
+            FindRepositoryRoot(),
+            "src",
+            "CortexCompanion",
+            "Views",
+            "PagesView.xaml"));
+        XElement setupCard = document
+            .Descendants()
+            .Single(element => element.Attribute("Visibility")?.Value.Contains(
+                "NeedsConfluenceConfiguration",
+                StringComparison.Ordinal) == true);
+        XElement addCard = document
+            .Descendants()
+            .Single(element => element.Attribute("Visibility")?.Value.Contains(
+                "HasConfluenceConfiguration",
+                StringComparison.Ordinal) == true);
+        XElement[] interactiveControls = setupCard
+            .Descendants()
+            .Where(element =>
+                element.Name.LocalName is "Button" or "TextBox" or "DatePicker" or "ComboBox")
+            .ToArray();
+
+        Assert.IsNotNull(addCard);
+        Assert.HasCount(7, interactiveControls);
+        foreach (XElement control in interactiveControls)
+        {
+            bool accessible = control.Attribute("AutomationProperties.Name") is not null ||
+                control.Attribute("AutomationProperties.LabeledBy") is not null;
+            Assert.IsTrue(accessible, $"{control.Name.LocalName} is missing an accessible name or label.");
+        }
+    }
+
+    [TestMethod]
+    public void MissingConfluenceConfigurationNoLongerRequiresManualTomlEditing()
+    {
+        Assert.Contains("Initialisez Confluence", UiStrings.PagesConfigurationRequired, StringComparison.Ordinal);
+        Assert.Contains("Aucun fichier TOML", UiStrings.PagesConfigurationRequired, StringComparison.Ordinal);
+    }
+
+    [TestMethod]
     public void FrenchUserFacingResourcesDoNotRegressToReviewedAsciiSpellings()
     {
         XDocument document = XDocument.Load(Path.Combine(

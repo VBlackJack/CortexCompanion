@@ -64,7 +64,89 @@
                 </StackPanel>
             </Border>
 
-            <Border Style="{StaticResource PageCardStyle}" Margin="0,0,0,16">
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionSeparator}"
+                    Visibility="{Binding NeedsConfluenceConfiguration, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel MaxWidth="{StaticResource SettingsContentMaxWidth}"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock Text="{x:Static localization:UiStrings.PagesSetupTitle}"
+                               FontSize="{StaticResource FontSizeTitle}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.PagesSetupDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginSectionBottom}" />
+
+                    <TextBlock x:Name="SetupPageUrlLabel"
+                               Text="{x:Static localization:UiStrings.PagesSetupPageUrlLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBox Text="{Binding SetupPageUrl, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.LabeledBy="{Binding ElementName=SetupPageUrlLabel}"
+                             ToolTip="{x:Static localization:UiStrings.PagesSetupPageUrlHint}"
+                             Margin="{StaticResource MarginStackItem}" />
+
+                    <TextBlock x:Name="SetupSpaceKeyLabel"
+                               Text="{x:Static localization:UiStrings.PagesSetupSpaceKeyLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBox Text="{Binding SetupSpaceKey, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.LabeledBy="{Binding ElementName=SetupSpaceKeyLabel}"
+                             ToolTip="{x:Static localization:UiStrings.PagesSetupSpaceKeyHint}"
+                             Margin="{StaticResource MarginStackItem}" />
+
+                    <TextBlock x:Name="SetupExpiryLabel"
+                               Text="{x:Static localization:UiStrings.PagesSetupExpiryLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <DatePicker SelectedDate="{Binding SetupExpiryDate, Mode=TwoWay}"
+                                SelectedDateFormat="Long"
+                                AutomationProperties.LabeledBy="{Binding ElementName=SetupExpiryLabel}"
+                                ToolTip="{x:Static localization:UiStrings.PagesSetupExpiryHint}"
+                                Margin="{StaticResource MarginStackItem}" />
+
+                    <TextBlock x:Name="SetupClassificationLabel"
+                               Text="{x:Static localization:UiStrings.PagesSetupClassificationLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <ComboBox ItemsSource="{Binding ClassificationOptions}"
+                              SelectedItem="{Binding SelectedClassification, Mode=TwoWay}"
+                              DisplayMemberPath="DisplayName"
+                              AutomationProperties.LabeledBy="{Binding ElementName=SetupClassificationLabel}"
+                              Margin="{StaticResource MarginStackItem}" />
+
+                    <TextBlock x:Name="SetupConverterLabel"
+                               Text="{x:Static localization:UiStrings.PagesSetupConverterLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <Grid Margin="{StaticResource MarginSectionBottom}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding SetupConverterPath, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.LabeledBy="{Binding ElementName=SetupConverterLabel}"
+                                 ToolTip="{x:Static localization:UiStrings.PagesSetupConverterHint}" />
+                        <Button Grid.Column="1"
+                                Content="{x:Static localization:UiStrings.PagesSetupBrowse}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupBrowse}"
+                                Command="{Binding BrowseConverterCommand}"
+                                Margin="{StaticResource MarginInlineControl}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                    </Grid>
+
+                    <Button Content="{x:Static localization:UiStrings.PagesSetupInitialize}"
+                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupInitialize}"
+                            Command="{Binding InitializeConfluenceCommand}"
+                            HorizontalAlignment="Left"
+                            Style="{StaticResource PrimaryButtonStyle}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionSeparator}"
+                    Visibility="{Binding HasConfluenceConfiguration, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -86,6 +168,7 @@
                     </StackPanel>
                     <Button Grid.Column="1"
                             Content="{x:Static localization:UiStrings.PagesResolveAndAdd}"
+                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesResolveAndAdd}"
                             Command="{Binding AddCommand}"
                             VerticalAlignment="Bottom"
                             Style="{StaticResource PrimaryButtonStyle}" />

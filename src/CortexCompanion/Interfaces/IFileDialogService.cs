@@ -12,4 +12,6 @@ public interface IFileDialogService
     /// <summary>Selects an existing knowledge-base directory.</summary>
     string? SelectKnowledgeBaseDirectory(string? currentPath);
 
+    /// <summary>Selects the optional Confluence converter executable.</summary>
+    string? SelectConfluenceConverterExecutable(string? currentPath);
 }

@@ -42,7 +42,7 @@ public sealed class PagesPresentationTests
     [TestMethod]
     public void EmptyEnvironmentOverridesAreHiddenByOneExplicitProjection()
     {
-        PagesViewModel viewModel = new(null, null, null, []);
+        PagesViewModel viewModel = new(null, null, null, null, null, []);
 
         Assert.IsFalse(viewModel.HasOverrides);
     }
@@ -51,7 +51,7 @@ public sealed class PagesPresentationTests
     public async Task ReadOnlyInitializationDoesNotRelaunchCortexAfterFailedHandshake()
     {
         CountingCliClient client = new();
-        PagesViewModel viewModel = new(client, null, null, []);
+        PagesViewModel viewModel = new(client, null, null, null, null, []);
 
         await viewModel.InitializeAsync(isReadOnly: true);
 
