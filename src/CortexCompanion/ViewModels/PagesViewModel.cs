@@ -24,6 +24,7 @@ public sealed class PagesViewModel : ViewModelBase
     private readonly AsyncRelayCommand _initializeConfluenceCommand;
     private readonly AsyncRelayCommand _browseConverterCommand;
     private readonly AsyncRelayCommand<ConfiguredSpaceViewModel> _switchModeCommand;
+    private readonly AsyncRelayCommand<ConfiguredSpaceViewModel> _expandSubtreeCommand;
     private readonly AsyncRelayCommand<ConfiguredPageViewModel> _removeCommand;
     private string _pageReference = string.Empty;
     private string _setupPageUrl = string.Empty;
@@ -79,6 +80,9 @@ public sealed class PagesViewModel : ViewModelBase
         _switchModeCommand = new AsyncRelayCommand<ConfiguredSpaceViewModel>(
             SwitchModeAsync,
             _ => CanMutate);
+        _expandSubtreeCommand = new AsyncRelayCommand<ConfiguredSpaceViewModel>(
+            ExpandSubtreeAsync,
+            space => CanMutate && space?.HasScopeWarning == true);
         _removeCommand = new AsyncRelayCommand<ConfiguredPageViewModel>(RemoveAsync, _ => CanMutate);
     }
 
@@ -266,6 +270,9 @@ public sealed class PagesViewModel : ViewModelBase
 
     /// <summary>Gets the typed mode-switch command.</summary>
     public ICommand SwitchModeCommand => _switchModeCommand;
+
+    /// <summary>Gets the precise one-click subtree expansion command.</summary>
+    public ICommand ExpandSubtreeCommand => _expandSubtreeCommand;
 
     /// <summary>Gets the tombstone-confirmed removal command.</summary>
     public ICommand RemoveCommand => _removeCommand;
@@ -489,6 +496,9 @@ public sealed class PagesViewModel : ViewModelBase
     private Task SwitchModeAsync(ConfiguredSpaceViewModel space) => RunMutationAsync(() =>
         _mutations!.SwitchModeAsync(space.SpaceKey, IsReadOnly, CancellationToken.None));
 
+    private Task ExpandSubtreeAsync(ConfiguredSpaceViewModel space) => RunMutationAsync(() =>
+        _mutations!.ExpandToSubtreeAsync(space.SpaceKey, IsReadOnly, CancellationToken.None));
+
     private Task RemoveAsync(ConfiguredPageViewModel page) => RunMutationAsync(() =>
         _mutations!.RemovePageAsync(page.SpaceKey, page.PageId, page.Title, IsReadOnly, CancellationToken.None));
 
@@ -549,7 +559,9 @@ public sealed class PagesViewModel : ViewModelBase
                 space.Target,
                 space.Classification,
                 selection,
-                pages));
+                pages,
+                contract.LastSync.ScopeSummaries.SingleOrDefault(summary =>
+                    string.Equals(summary.SpaceKey, space.SpaceKey, StringComparison.OrdinalIgnoreCase))));
         }
     }
 
@@ -594,6 +606,7 @@ public sealed class PagesViewModel : ViewModelBase
         _initializeConfluenceCommand.RaiseCanExecuteChanged();
         _browseConverterCommand.RaiseCanExecuteChanged();
         _switchModeCommand.RaiseCanExecuteChanged();
+        _expandSubtreeCommand.RaiseCanExecuteChanged();
         _removeCommand.RaiseCanExecuteChanged();
     }
 

@@ -21,13 +21,27 @@ synchronization, or scheduling.
 5. Open **Pages Confluence** and paste the full URL of the first page. Companion
    detects the instance and space whenever the URL contains them. Choose the PAT
    expiry date and classification, then select **Initialiser et ajouter la page**.
-   Legacy `viewpage.action` and short URLs require the space key to be entered.
-6. The combined Cortex installer already provides the windowless Confluence
+   Companion counts page-only, subtree, and whole-space scope before writing the
+   choice. Subtree is preselected when the page has descendants. Legacy
+   `viewpage.action` and short URLs require the space key to be entered.
+6. Review the measured page count, approximate storage, physical ingestion root,
+   and generation retention. The configured `target` is a logical index prefix,
+   not a directory inside the selected knowledge-base folder.
+7. The combined Cortex installer already provides the windowless Confluence
    converter. No path is required. The developer override remains under the
    collapsed advanced options and is accepted only after a five-second machine
    capability probe; the windowed `ConfluenceRAGBuilder.exe` is rejected.
-7. Open **Base locale** and select **Synchroniser les documents locaux**. This
-   primary action runs `cortex sync --json`; it does not require Confluence.
+8. Open **Base locale** and select **Collecter Confluence**. A
+   manual collection always runs immediately and displays phase plus numeric
+   progress. Then select **Synchroniser les documents locaux** to index the local
+   knowledge base and the current published ingestion generation.
+9. Use **Ouvrir la génération courante** to inspect the immutable published
+   documents. A narrow successful scope reports excluded descendants and offers
+   a one-click switch to subtree collection.
+
+The local synchronization action runs `cortex sync --json`; it does not require
+Confluence. The Confluence collection action is distinct and always passes
+`--force` because cadence must not override an explicit user gesture.
 
 The **Pages Confluence** screen creates the initial configuration itself. Users do not
 need to find or edit a TOML file. Existing configurations keep their exact advanced
@@ -41,6 +55,9 @@ atomically on first load, after the embedded converter passes the same probe.
 - choose the Cortex knowledge-base directory;
 - synchronize local documents without a Confluence configuration;
 - initialize Confluence from one page URL without editing TOML;
+- compare page-only, subtree, and whole-space scope before saving it;
+- follow long collections through enumeration, staging, conversion, and publication;
+- open the current generation and see the configured storage retention;
 - optionally review configured Confluence pages, store a Confluence credential, run
   Confluence collection, and manage its owned Windows scheduled task.
 

@@ -75,5 +75,11 @@ public sealed class PagesPresentationTests
             CancellationToken cancellationToken) =>
             Task.FromException<ConfluenceCliResult<ResolvedPageContract>>(
                 new InvalidOperationException("Resolve is not part of startup initialization."));
+
+        public Task<ConfluenceCliResult<ScopePreviewContract>> PreviewAsync(
+            string reference,
+            CancellationToken cancellationToken) =>
+            Task.FromException<ConfluenceCliResult<ScopePreviewContract>>(
+                new InvalidOperationException("Preview is not part of startup initialization."));
     }
 }

@@ -233,6 +233,27 @@
                                 <TextBlock Text="{Binding SelectionDescription}"
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            Margin="{StaticResource MarginStackItem}" />
+                                <TextBlock Text="{x:Static localization:UiStrings.LogicalTargetExplanation}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource MarginStackItem}" />
+                                <Border Background="{DynamicResource WarningBrush}"
+                                        Padding="{StaticResource SpacingSm}"
+                                        Margin="{StaticResource MarginStackItem}"
+                                        Visibility="{Binding HasScopeWarning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ScopeWarning}"
+                                                   Foreground="{DynamicResource BackgroundBrush}"
+                                                   FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" />
+                                        <Button Content="{x:Static localization:UiStrings.ExpandToSubtree}"
+                                                Command="{Binding DataContext.ExpandSubtreeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                HorizontalAlignment="Left"
+                                                Margin="{StaticResource MarginSectionTop}"
+                                                Style="{StaticResource SecondaryButtonStyle}" />
+                                    </StackPanel>
+                                </Border>
                                 <TextBlock Text="{x:Static localization:UiStrings.PagesEmptySelection}"
                                            Foreground="{DynamicResource WarningBrush}"
                                            FontWeight="SemiBold"

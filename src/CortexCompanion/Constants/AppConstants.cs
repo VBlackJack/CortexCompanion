@@ -91,6 +91,8 @@ public static class AppConstants
 
     /// <summary>Gets the source kind owned by the current Companion release.</summary>
     public const string IngestionSourceKind = "doc";
+    /// <summary>Matches the Cortex bounded generation-retention default.</summary>
+    public const int DefaultIngestionRetentionGenerations = 2;
 
     /// <summary>Gets the dedicated process-mode argument for detached sync workers.</summary>
     public const string SyncWorkerArgument = "--sync-worker";

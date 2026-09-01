@@ -32,7 +32,7 @@ public static class IngestionPathResolver
         string? cliDirectory = ResolveCliDirectory(cliPath);
         (string ConfigPath, IngestionPathOrigin Origin, string OriginName) config =
             ResolveConfigPath(values, cliDirectory);
-        string? tomlDataRoot = ReadTomlDataRoot(config.ConfigPath);
+        (string? tomlDataRoot, int retentionGenerations) = ReadTomlSettings(config.ConfigPath);
 
         string dataRoot;
         IngestionPathOrigin dataRootOrigin;
@@ -69,7 +69,8 @@ public static class IngestionPathResolver
             absoluteDataRoot,
             dataRootOrigin,
             dataRootOriginName,
-            Path.GetFullPath(healthPath));
+            Path.GetFullPath(healthPath),
+            retentionGenerations);
     }
 
     private static (string ConfigPath, IngestionPathOrigin Origin, string OriginName) ResolveConfigPath(
@@ -95,11 +96,11 @@ public static class IngestionPathResolver
             !string.IsNullOrWhiteSpace(appData) ? "APPDATA" : "HOME/.config");
     }
 
-    private static string? ReadTomlDataRoot(string configPath)
+    private static (string? DataRoot, int RetentionGenerations) ReadTomlSettings(string configPath)
     {
         if (!File.Exists(configPath))
         {
-            return null;
+            return (null, AppConstants.DefaultIngestionRetentionGenerations);
         }
 
         try
@@ -132,14 +133,27 @@ public static class IngestionPathResolver
                     $"Unsupported ingestion schema_version={schemaVersion}; expected 1.");
             }
 
-            if (!root.TryGetValue("data_root", out object? rawDataRoot))
+            string? dataRoot = null;
+            if (root.TryGetValue("data_root", out object? rawDataRoot))
             {
-                return null;
+                dataRoot = rawDataRoot is string configuredDataRoot &&
+                    !string.IsNullOrWhiteSpace(configuredDataRoot)
+                    ? configuredDataRoot.Trim()
+                    : throw new IngestionPathResolutionException(
+                        "ingestion data_root must be a non-empty path.");
             }
 
-            return rawDataRoot is string dataRoot && !string.IsNullOrWhiteSpace(dataRoot)
-                ? dataRoot.Trim()
-                : throw new IngestionPathResolutionException("ingestion data_root must be a non-empty path.");
+            int retention = AppConstants.DefaultIngestionRetentionGenerations;
+            if (root.TryGetValue("retention_generations", out object? rawRetention))
+            {
+                retention = rawRetention is long configuredRetention &&
+                    configuredRetention is >= 1 and <= int.MaxValue
+                    ? checked((int)configuredRetention)
+                    : throw new IngestionPathResolutionException(
+                        "ingestion retention_generations must be at least one.");
+            }
+
+            return (dataRoot, retention);
         }
         catch (IngestionPathResolutionException)
         {

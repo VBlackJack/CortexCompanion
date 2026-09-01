@@ -61,6 +61,19 @@
                                TextWrapping="Wrap"
                                FontWeight="SemiBold"
                                AutomationProperties.LiveSetting="Assertive" />
+                    <StackPanel Visibility="{Binding HasProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Margin="{StaticResource MarginSectionTop}">
+                        <TextBlock Text="{Binding ProgressText}"
+                                   AutomationProperties.LiveSetting="Polite"
+                                   accessibility:LiveRegionBehavior.Announcement="{Binding ProgressText}"
+                                   FontWeight="SemiBold" />
+                        <ProgressBar Minimum="0"
+                                     Maximum="{Binding ProgressMaximum}"
+                                     Value="{Binding ProgressCurrent}"
+                                     IsIndeterminate="{Binding IsProgressIndeterminate}"
+                                     Height="8"
+                                     Margin="{StaticResource MarginStackItem}" />
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
@@ -84,11 +97,6 @@
                                 Command="{Binding StoreCredentialCommand}"
                                 Style="{StaticResource SecondaryButtonStyle}" />
                     </WrapPanel>
-                    <CheckBox Content="{x:Static localization:UiStrings.ConfluenceSyncForce}"
-                              AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncForce}"
-                              IsChecked="{Binding ForceConfluenceCollect}"
-                              IsEnabled="{Binding CanRunConfluenceActions}"
-                              Margin="{StaticResource MarginStackItem}" />
                     <TextBlock Text="{x:Static localization:UiStrings.ConfluenceSyncForceHint}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"
@@ -158,6 +166,22 @@
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        TextWrapping="Wrap"
                                        Margin="{StaticResource MarginSectionTop}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource PageCardStyle}"
+                            Margin="{StaticResource MarginSectionBottom}">
+                        <StackPanel>
+                            <TextBlock Text="{x:Static localization:UiStrings.IngestionStorageTitle}"
+                                       FontWeight="SemiBold"
+                                       Margin="{StaticResource MarginStackItem}" />
+                            <TextBlock Text="{Binding StorageSummary}" TextWrapping="Wrap" />
+                            <Button Content="{x:Static localization:UiStrings.OpenCurrentGeneration}"
+                                    AutomationProperties.Name="{x:Static localization:UiStrings.OpenCurrentGeneration}"
+                                    Command="{Binding OpenCurrentGenerationCommand}"
+                                    HorizontalAlignment="Left"
+                                    Margin="{StaticResource MarginSectionTop}"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
                         </StackPanel>
                     </Border>
 

@@ -1,0 +1,85 @@
+<!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
+<Window x:Class="CortexCompanion.Views.ScopeSelectionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localization="clr-namespace:CortexCompanion.Localization"
+        Width="620"
+        SizeToContent="Height"
+        MaxHeight="760"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="{StaticResource AppFontFamily}"
+        FontSize="{StaticResource FontSizeBody}"
+        Title="{x:Static localization:UiStrings.ScopeDialogTitle}">
+    <Grid Margin="{StaticResource SpacingXl}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="RootDetails"
+                   TextWrapping="Wrap"
+                   FontWeight="SemiBold"
+                   Margin="{StaticResource MarginSectionBottom}" />
+        <StackPanel Grid.Row="1">
+            <RadioButton x:Name="PageOnlyOption" GroupName="Scope" Margin="0,0,0,12">
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="{x:Static localization:UiStrings.ScopeChoicePageOnly}" FontWeight="SemiBold" />
+                        <TextBlock x:Name="PageOnlyRecommended"
+                                   Text="  ·  " />
+                        <TextBlock x:Name="PageOnlyRecommendedLabel"
+                                   Text="{x:Static localization:UiStrings.ScopeRecommended}"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   FontWeight="SemiBold" />
+                    </WrapPanel>
+                    <TextBlock x:Name="PageOnlyDetails" Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="SubtreeOption" GroupName="Scope" Margin="0,0,0,12">
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="{x:Static localization:UiStrings.ScopeChoiceSubtree}" FontWeight="SemiBold" />
+                        <TextBlock x:Name="SubtreeRecommended"
+                                   Text="  ·  " />
+                        <TextBlock x:Name="SubtreeRecommendedLabel"
+                                   Text="{x:Static localization:UiStrings.ScopeRecommended}"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   FontWeight="SemiBold" />
+                    </WrapPanel>
+                    <TextBlock x:Name="SubtreeDetails" Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="WholeSpaceOption" GroupName="Scope">
+                <StackPanel>
+                    <TextBlock x:Name="WholeSpaceLabel" FontWeight="SemiBold" />
+                    <TextBlock x:Name="WholeSpaceDetails" Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+        <Border Grid.Row="2"
+                Background="{DynamicResource HighlightBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                Padding="{StaticResource SpacingMd}"
+                Margin="{StaticResource MarginSectionTop}">
+            <TextBlock x:Name="StorageDetails" TextWrapping="Wrap" />
+        </Border>
+        <StackPanel Grid.Row="3"
+                    Margin="{StaticResource MarginSectionTop}"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button Content="{x:Static localization:UiStrings.CancelButton}"
+                    IsCancel="True"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Margin="{StaticResource MarginInlineSm}" />
+            <Button Content="{x:Static localization:UiStrings.ConfirmButton}"
+                    Click="ConfirmClick"
+                    IsDefault="True"
+                    Style="{StaticResource PrimaryButtonStyle}" />
+        </StackPanel>
+    </Grid>
+</Window>

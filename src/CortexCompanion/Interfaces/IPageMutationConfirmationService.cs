@@ -11,6 +11,9 @@ public interface IPageMutationConfirmationService
     /// <summary>Confirms a resolved page identity before its numeric ID can be persisted.</summary>
     bool ConfirmAdd(ResolvedPageContract page);
 
+    /// <summary>Returns the explicit measured collection choice, or null when cancelled.</summary>
+    ConfluenceSelection? ChooseScope(ScopePreviewContract preview);
+
     /// <summary>Confirms the tombstone consequence before removing a configured page.</summary>
     bool ConfirmRemove(string spaceKey, string pageId, string? title);
 

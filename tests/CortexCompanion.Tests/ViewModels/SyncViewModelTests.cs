@@ -245,9 +245,7 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
-    [DataRow(false)]
-    [DataRow(true)]
-    public async Task ConfluenceCollectForwardsTheScheduleBypassExactlyAsToggled(bool force)
+    public async Task ConfluenceCollectAlwaysBypassesTheSchedule()
     {
         using TemporaryDirectory temporary = new();
         string cliPath = temporary.CreateFakeCli();
@@ -260,28 +258,10 @@ public sealed class SyncViewModelTests
             coordinator,
             new StubInteractiveLauncher());
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
-        viewModel.ForceConfluenceCollect = force;
-
         await ((AsyncRelayCommand)viewModel.ConfluenceSyncCommand).ExecuteAsync(parameter: null);
 
-        Assert.AreEqual(force, coordinator.LastForce);
+        Assert.IsTrue(coordinator.LastForce);
         Assert.AreEqual(Path.GetFullPath(configPath), coordinator.LastConfigPath);
-    }
-
-    [TestMethod]
-    public void ConfluenceCollectDefaultsToRespectingTheCortexSchedule()
-    {
-        using TemporaryDirectory temporary = new();
-        string cliPath = temporary.CreateFakeCli();
-        string configPath = CreateConfig(temporary);
-        SyncViewModel viewModel = CreateViewModel(
-            cliPath,
-            configPath,
-            Path.Combine(temporary.Path, "source-health.json"),
-            new RecordingConfluenceCoordinator(),
-            new StubInteractiveLauncher());
-
-        Assert.IsFalse(viewModel.ForceConfluenceCollect);
     }
 
     private static SyncViewModel CreateViewModel(

@@ -25,44 +25,54 @@ public sealed class PagesMutationService
         _confirmations = confirmations ?? throw new ArgumentNullException(nameof(confirmations));
     }
 
-    /// <summary>Resolves, presents, and then persists one page ID without ever persisting its title.</summary>
+    /// <summary>Measures, presents, and persists one explicit scope without storing the title.</summary>
     public async Task<bool> AddPageAsync(
         string reference,
         bool isReadOnly,
         CancellationToken cancellationToken)
     {
         EnsureMutable(isReadOnly);
-        ConfluenceCliResult<ResolvedPageContract> resolution = await _cliClient.ResolveAsync(
+        ConfluenceCliResult<ScopePreviewContract> preview = await _cliClient.PreviewAsync(
             reference,
             cancellationToken);
-        if (!resolution.IsSuccess || resolution.Value is null)
+        if (!preview.IsSuccess || preview.Value is null)
         {
-            throw new ConfluenceCliOperationException(resolution.ExitCode, resolution.StandardError);
+            throw new ConfluenceCliOperationException(preview.ExitCode, preview.StandardError);
         }
 
         ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
-        ConfluenceSpaceConfiguration space = FindSpace(snapshot.Configuration, resolution.Value.SpaceKey);
+        ConfluenceSpaceConfiguration space = FindSpace(snapshot.Configuration, preview.Value.SpaceKey);
         if (space.Selection == ConfluenceSelection.WholeSpace)
         {
             throw new PageMutationRejectedException(UiStrings.PagesRejectWholeSpaceCovered);
         }
 
-        if (space.PageIds.Contains(resolution.Value.PageId, StringComparer.Ordinal))
+        if (space.PageIds.Contains(preview.Value.PageId, StringComparer.Ordinal))
         {
             throw new PageMutationRejectedException(UiStrings.PagesRejectPageAlreadyConfigured);
         }
 
-        if (!_confirmations.ConfirmAdd(resolution.Value))
+        ConfluenceSelection? selectedScope = _confirmations.ChooseScope(preview.Value);
+        if (selectedScope is null)
         {
             return false;
         }
 
+        int targetSchema = selectedScope == ConfluenceSelection.Subtree
+            ? ConfluenceConfigParser.SubtreeSchemaVersion
+            : 2;
+        ConfluenceConfiguration migrated = snapshot.Configuration.MigrateToSchema(targetSchema);
+        space = FindSpace(migrated, preview.Value.SpaceKey);
+        IReadOnlyList<string> pageIds = selectedScope == ConfluenceSelection.WholeSpace
+            ? Array.Empty<string>()
+            : space.PageIds.Append(preview.Value.PageId).ToArray();
         ConfluenceSpaceConfiguration replacement = space with
         {
-            PageIds = space.PageIds.Append(resolution.Value.PageId).ToArray(),
+            Selection = selectedScope.Value,
+            PageIds = pageIds,
         };
         await WriteOrRefreshAsync(
-            snapshot.Configuration.ReplaceSpace(replacement),
+            migrated.ReplaceSpace(replacement),
             snapshot.ContentHash,
             cancellationToken);
         return true;
@@ -140,6 +150,29 @@ public sealed class PagesMutationService
         };
         await WriteOrRefreshAsync(
             migrated.ReplaceSpace(replacement),
+            snapshot.ContentHash,
+            cancellationToken);
+        return true;
+    }
+
+    /// <summary>Expands an explicit page selection to its subtrees from a precise corrective action.</summary>
+    public async Task<bool> ExpandToSubtreeAsync(
+        string spaceKey,
+        bool isReadOnly,
+        CancellationToken cancellationToken)
+    {
+        EnsureMutable(isReadOnly);
+        ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
+        ConfluenceConfiguration migrated = snapshot.Configuration.MigrateToSchema(
+            ConfluenceConfigParser.SubtreeSchemaVersion);
+        ConfluenceSpaceConfiguration space = FindSpace(migrated, spaceKey);
+        if (space.Selection != ConfluenceSelection.Pages || space.PageIds.Count == 0)
+        {
+            throw new PageMutationRejectedException(UiStrings.PagesRejectPageNotConfigured);
+        }
+
+        await WriteOrRefreshAsync(
+            migrated.ReplaceSpace(space with { Selection = ConfluenceSelection.Subtree }),
             snapshot.ContentHash,
             cancellationToken);
         return true;

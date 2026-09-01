@@ -15,4 +15,9 @@ public interface IConfluenceCliClient
     Task<ConfluenceCliResult<ResolvedPageContract>> ResolveAsync(
         string reference,
         CancellationToken cancellationToken);
+
+    /// <summary>Measures all collection scopes for one page before any selection write.</summary>
+    Task<ConfluenceCliResult<ScopePreviewContract>> PreviewAsync(
+        string reference,
+        CancellationToken cancellationToken);
 }

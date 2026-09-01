@@ -39,7 +39,7 @@ public sealed class ConfluenceCliClientTests
     {
         StubProcessRunner runner = new(ProcessRunResult.Completed(
             0,
-            """{"contract_version":1,"spaces":[],"last_sync":{"last_success_at":null,"status":null,"error_code":null}}""",
+            """{"contract_version":2,"spaces":[],"last_sync":{"last_success_at":null,"status":null,"error_code":null,"scope_summaries":[]}}""",
             string.Empty));
         string cliPath = Path.GetFullPath(@"C:\tools\cortex.exe");
         string configPath = Path.GetFullPath(@"C:\config\confluence.toml");
@@ -69,5 +69,39 @@ public sealed class ConfluenceCliClientTests
         Assert.AreEqual(CortexExitCode.NotFound, result.ExitCode);
         Assert.IsNull(result.Value);
         Assert.AreEqual("page absente", result.StandardError);
+    }
+
+    [TestMethod]
+    public async Task PreviewUsesStrictMeasuredScopeCommand()
+    {
+        StubProcessRunner runner = new(ProcessRunResult.Completed(
+            0,
+            """
+            {"contract_version":1,"page_id":"123","title":"Root","space_key":"DOC",
+            "recommended_selection":"subtree","page_only":{"page_count":1,"estimated_bytes":393216},
+            "subtree":{"page_count":12,"estimated_bytes":4718592},
+            "whole_space":{"page_count":20,"estimated_bytes":7864320},
+            "storage_root":"C:\\state","retention_generations":2}
+            """,
+            string.Empty));
+        string configPath = Path.GetFullPath(@"C:\config\confluence.toml");
+        ConfluenceCliClient client = new(
+            runner,
+            @"C:\tools\cortex.exe",
+            configPath,
+            ConfiguredTimeout);
+
+        ConfluenceCliResult<ScopePreviewContract> result = await client.PreviewAsync(
+            "https://wiki/pages/123",
+            CancellationToken.None);
+
+        Assert.IsTrue(result.IsSuccess);
+        Assert.AreEqual(12, result.Value!.Subtree.PageCount);
+        CollectionAssert.AreEqual(
+            new[]
+            {
+                "confluence", "--config", configPath, "preview", "https://wiki/pages/123", "--json",
+            },
+            runner.LastRequest!.Arguments.ToArray());
     }
 }

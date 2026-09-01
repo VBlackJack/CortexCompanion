@@ -31,7 +31,7 @@ public sealed class ConfirmationDialogContractTests
     [TestMethod]
     public void ConfirmationServicesUseSafeDialogResultMapping()
     {
-        AssertSafeMapping("PageMutationConfirmationService.cs", 3);
+        AssertSafeMapping("PageMutationConfirmationService.cs", 4);
         AssertSafeMapping("SchedulingConfirmationService.cs", 1);
     }
 

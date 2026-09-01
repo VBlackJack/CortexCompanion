@@ -175,7 +175,7 @@ public sealed class PagesViewModelTests
                 CortexExitCode.Ok,
                 new PagesContract
                 {
-                    ContractVersion = 1,
+                    ContractVersion = 2,
                     Spaces = [],
                     LastSync = new LastSyncContract(),
                 },
@@ -203,6 +203,33 @@ public sealed class PagesViewModelTests
                 false,
                 null));
         }
+
+        public async Task<ConfluenceCliResult<ScopePreviewContract>> PreviewAsync(
+            string reference,
+            CancellationToken cancellationToken)
+        {
+            ConfluenceCliResult<ResolvedPageContract> resolved = await ResolveAsync(
+                reference,
+                cancellationToken);
+            return new ConfluenceCliResult<ScopePreviewContract>(
+                resolved.ExitCode,
+                new ScopePreviewContract
+                {
+                    ContractVersion = 1,
+                    PageId = "1001",
+                    Title = "Run Book",
+                    SpaceKey = "DOC",
+                    RecommendedSelection = "subtree",
+                    PageOnly = new ScopeChoiceContract { PageCount = 1, EstimatedBytes = 393_216 },
+                    Subtree = new ScopeChoiceContract { PageCount = 8, EstimatedBytes = 3_145_728 },
+                    WholeSpace = new ScopeChoiceContract { PageCount = 10, EstimatedBytes = 3_932_160 },
+                    StorageRoot = "C:\\state",
+                    RetentionGenerations = 2,
+                },
+                string.Empty,
+                false,
+                null);
+        }
     }
 
     private sealed class StubConfigStore : IConfluenceConfigStore
@@ -221,6 +248,8 @@ public sealed class PagesViewModelTests
     {
         public bool ConfirmAdd(ResolvedPageContract page) => false;
 
+        public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) => null;
+
         public bool ConfirmRemove(string spaceKey, string pageId, string? title) => false;
 
         public string? ConfirmModeChange(
@@ -232,6 +261,9 @@ public sealed class PagesViewModelTests
     private sealed class AcceptingConfirmationService : IPageMutationConfirmationService
     {
         public bool ConfirmAdd(ResolvedPageContract page) => true;
+
+        public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) =>
+            ConfluenceSelection.Subtree;
 
         public bool ConfirmRemove(string spaceKey, string pageId, string? title) => true;
 

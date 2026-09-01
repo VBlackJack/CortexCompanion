@@ -26,6 +26,7 @@ public sealed class SyncViewModel : ViewModelBase
     private readonly AsyncRelayCommand _syncCommand;
     private readonly AsyncRelayCommand _confluenceSyncCommand;
     private readonly AsyncRelayCommand _storeCredentialCommand;
+    private readonly AsyncRelayCommand _openCurrentGenerationCommand;
     private CancellationToken _applicationCancellation;
     private CancellationTokenSource? _monitorCancellation;
     private string _stateMessage = UiStrings.SyncLoading;
@@ -45,11 +46,15 @@ public sealed class SyncViewModel : ViewModelBase
     private string _standardOutput = string.Empty;
     private string _runResult = UiStrings.SyncNoRunResult;
     private string _runTitle = UiStrings.SyncRunTitle;
+    private string _progressText = string.Empty;
+    private int _progressCurrent;
+    private int _progressMaximum = 1;
+    private bool _hasProgress;
+    private bool _isProgressIndeterminate;
     private bool _hasHealth;
     private bool _isBusy;
     private bool _isSyncRunning;
     private bool _isReadOnly = true;
-    private bool _forceConfluenceCollect;
 
     /// <summary>Initializes a Sync projection whose read channel remains independent from the handshake.</summary>
     public SyncViewModel(
@@ -74,6 +79,11 @@ public sealed class SyncViewModel : ViewModelBase
             : UiStrings.FormatHealthPathOrigin(
                 ingestionPath.DataRootOriginName,
                 ingestionPath.ConfigPathOriginName);
+        StorageSummary = ingestionPath is null
+            ? UiStrings.ConfigPathUnavailable
+            : UiStrings.FormatIngestionStorage(
+                ingestionPath.DataRoot,
+                ingestionPath.RetentionGenerations);
         _refreshCommand = new AsyncRelayCommand(RefreshAsync, () => !IsBusy);
         _syncCommand = new AsyncRelayCommand(
             SyncLocalDocumentsAsync,
@@ -84,6 +94,9 @@ public sealed class SyncViewModel : ViewModelBase
         _storeCredentialCommand = new AsyncRelayCommand(
             StoreCredentialAsync,
             () => CanRunConfluenceActions && !IsSyncRunning);
+        _openCurrentGenerationCommand = new AsyncRelayCommand(
+            OpenCurrentGenerationAsync,
+            () => _ingestionPath is not null && !IsBusy);
     }
 
     /// <summary>Gets active supported Confluence environment overrides.</summary>
@@ -97,6 +110,9 @@ public sealed class SyncViewModel : ViewModelBase
 
     /// <summary>Gets the two path origins used to resolve source-health.</summary>
     public string HealthPathOrigin { get; }
+
+    /// <summary>Gets the physical store and bounded retention summary.</summary>
+    public string StorageSummary { get; }
 
     /// <summary>Gets the current screen-level state message.</summary>
     public string StateMessage
@@ -204,6 +220,41 @@ public sealed class SyncViewModel : ViewModelBase
         private set => SetProperty(ref _runTitle, value);
     }
 
+    /// <summary>Gets the localized phase and numeric progress.</summary>
+    public string ProgressText
+    {
+        get => _progressText;
+        private set => SetProperty(ref _progressText, value);
+    }
+
+    /// <summary>Gets the current numeric progress.</summary>
+    public int ProgressCurrent
+    {
+        get => _progressCurrent;
+        private set => SetProperty(ref _progressCurrent, value);
+    }
+
+    /// <summary>Gets a non-zero progress-bar maximum.</summary>
+    public int ProgressMaximum
+    {
+        get => _progressMaximum;
+        private set => SetProperty(ref _progressMaximum, value);
+    }
+
+    /// <summary>Gets whether a run phase should be visible.</summary>
+    public bool HasProgress
+    {
+        get => _hasProgress;
+        private set => SetProperty(ref _hasProgress, value);
+    }
+
+    /// <summary>Gets whether the current phase has no Cortex numeric contract.</summary>
+    public bool IsProgressIndeterminate
+    {
+        get => _isProgressIndeterminate;
+        private set => SetProperty(ref _isProgressIndeterminate, value);
+    }
+
     /// <summary>Gets whether one UI operation is active.</summary>
     public bool IsBusy
     {
@@ -258,13 +309,6 @@ public sealed class SyncViewModel : ViewModelBase
     /// <summary>Gets the retained compatibility alias for the primary local action.</summary>
     public bool CanRunActions => CanRunLocalDocuments;
 
-    /// <summary>Gets or sets whether the next collection bypasses the Cortex due-interval schedule.</summary>
-    public bool ForceConfluenceCollect
-    {
-        get => _forceConfluenceCollect;
-        set => SetProperty(ref _forceConfluenceCollect, value);
-    }
-
     /// <summary>Gets the direct-state refresh command.</summary>
     public ICommand RefreshCommand => _refreshCommand;
 
@@ -276,6 +320,9 @@ public sealed class SyncViewModel : ViewModelBase
 
     /// <summary>Gets the visible credential console command.</summary>
     public ICommand StoreCredentialCommand => _storeCredentialCommand;
+
+    /// <summary>Gets the current immutable generation open command.</summary>
+    public ICommand OpenCurrentGenerationCommand => _openCurrentGenerationCommand;
 
     /// <summary>Applies the handshake mode and reads local state in every mode.</summary>
     public async Task InitializeAsync(bool isReadOnly, CancellationToken cancellationToken)
@@ -359,7 +406,7 @@ public sealed class SyncViewModel : ViewModelBase
         await StartSyncAsync(() => _runCoordinator.StartConfluenceAsync(
             _cliPath,
             _configPath,
-            ForceConfluenceCollect,
+            force: true,
             _applicationCancellation));
     }
 
@@ -429,6 +476,28 @@ public sealed class SyncViewModel : ViewModelBase
         }
     }
 
+    private async Task OpenCurrentGenerationAsync()
+    {
+        if (_ingestionPath is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await CurrentGenerationFolderService.OpenAsync(
+                _ingestionPath,
+                _applicationCancellation);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
+                                          InvalidDataException or System.Text.Json.JsonException or
+                                          InvalidOperationException)
+        {
+            FileLogger.Error("Current ingestion generation could not be opened", exception);
+            StateMessage = UiStrings.CurrentGenerationUnavailable;
+        }
+    }
+
     private void StartBackgroundMonitor(SyncRunHandle handle)
     {
         _monitorCancellation?.Cancel();
@@ -485,6 +554,7 @@ public sealed class SyncViewModel : ViewModelBase
         StandardError = snapshot.StandardError;
         StandardOutput = snapshot.StandardOutput;
         IsSyncRunning = snapshot.IsRunning;
+        ApplyProgress(snapshot);
         RunResult = snapshot.IsUnknown
             ? UiStrings.SyncRunUnknown
             : snapshot.IsRunning
@@ -493,6 +563,40 @@ public sealed class SyncViewModel : ViewModelBase
                     snapshot.Handle.RunKind,
                     snapshot.ExitCode,
                     snapshot.LaunchError);
+    }
+
+    private void ApplyProgress(SyncRunSnapshot snapshot)
+    {
+        SyncProgressRecord? progress = SyncProgressParser.ReadLatest(snapshot.StandardError);
+        if (progress is not null)
+        {
+            string phase = progress.Phase switch
+            {
+                "enumeration" => UiStrings.ProgressEnumeration,
+                "staging" => UiStrings.ProgressStaging,
+                "conversion" => UiStrings.ProgressConversion,
+                _ => UiStrings.ProgressPublication,
+            };
+            ProgressCurrent = progress.Current;
+            ProgressMaximum = Math.Max(1, progress.Total);
+            ProgressText = UiStrings.FormatProgress(phase, progress.Current, progress.Total);
+            IsProgressIndeterminate = progress.Total == 0;
+            HasProgress = snapshot.IsRunning || progress.Current < progress.Total;
+            return;
+        }
+
+        if (snapshot.IsRunning && snapshot.Handle.RunKind == SyncRunKind.LocalDocuments)
+        {
+            ProgressText = UiStrings.ProgressIndexation;
+            ProgressCurrent = 0;
+            ProgressMaximum = 1;
+            IsProgressIndeterminate = true;
+            HasProgress = true;
+            return;
+        }
+
+        HasProgress = false;
+        IsProgressIndeterminate = false;
     }
 
     private void ProjectHealth(IngestionHealthReadResult result)
@@ -603,5 +707,6 @@ public sealed class SyncViewModel : ViewModelBase
         _syncCommand.RaiseCanExecuteChanged();
         _confluenceSyncCommand.RaiseCanExecuteChanged();
         _storeCredentialCommand.RaiseCanExecuteChanged();
+        _openCurrentGenerationCommand.RaiseCanExecuteChanged();
     }
 }

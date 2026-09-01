@@ -75,7 +75,17 @@ public static class IngestionHealthReader
             snapshot.Status is not "ok" and not "degraded" and not "error" ||
             snapshot.Counts is null ||
             snapshot.Counts.Seen < 0 || snapshot.Counts.Converted < 0 || snapshot.Counts.Failed < 0 ||
-            snapshot.Counts.CarryForward < 0 || snapshot.Counts.Tombstones < 0)
+            snapshot.Counts.CarryForward < 0 || snapshot.Counts.Tombstones < 0 ||
+            snapshot.SelectionFingerprint is not null &&
+                (snapshot.SelectionFingerprint.Length != 64 ||
+                 snapshot.SelectionFingerprint.Any(character =>
+                    !char.IsAsciiDigit(character) && character is < 'a' or > 'f')) ||
+            snapshot.ScopeSummaries.Any(summary =>
+                summary.SpaceKey.Length == 0 ||
+                summary.Selection is not "whole_space" and not "pages" and not "subtree" ||
+                summary.SelectedPageCount < 0 ||
+                summary.AvailablePageCount < 0 ||
+                summary.ExcludedDescendantCount < 0))
         {
             throw new IngestionHealthValidationException();
         }

@@ -24,6 +24,18 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
     }
 
     /// <inheritdoc />
+    public ConfluenceSelection? ChooseScope(ScopePreviewContract preview)
+    {
+        ScopeSelectionDialog dialog = new(preview)
+        {
+            Owner = Application.Current.MainWindow,
+        };
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog())
+            ? dialog.SelectedSelection
+            : null;
+    }
+
+    /// <inheritdoc />
     public bool ConfirmRemove(string spaceKey, string pageId, string? title)
     {
         ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(

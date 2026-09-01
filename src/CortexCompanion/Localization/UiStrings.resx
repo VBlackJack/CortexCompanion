@@ -41,12 +41,20 @@
   <data name="PagesAddReferenceLabel" xml:space="preserve"><value>URL ou ID de page</value></data>
   <data name="PagesAddReferenceHint" xml:space="preserve"><value>Collez une URL Confluence ou un ID numérique</value></data>
   <data name="PagesResolveAndAdd" xml:space="preserve"><value>Résoudre et ajouter</value></data>
+  <data name="ScopeDialogTitle" xml:space="preserve"><value>Choisir le périmètre Confluence</value></data>
+  <data name="ScopeRootDetails" xml:space="preserve"><value>Page racine : {0}&#xA;Cette page contient {1:N0} page(s) descendante(s).</value></data>
+  <data name="ScopeChoicePageOnly" xml:space="preserve"><value>Cette page seule</value></data>
+  <data name="ScopeChoiceSubtree" xml:space="preserve"><value>Cette page et son arborescence</value></data>
+  <data name="ScopeChoiceWholeSpace" xml:space="preserve"><value>Tout l'espace {0}</value></data>
+  <data name="ScopeChoiceDetails" xml:space="preserve"><value>{0:N0} page(s) - environ {1:N1} Mo</value></data>
+  <data name="ScopeRecommended" xml:space="preserve"><value>Recommandé</value></data>
+  <data name="ScopeStorageDetails" xml:space="preserve"><value>Stockage des générations : {0}&#xA;Rétention bornée : {1:N0} génération(s).</value></data>
   <data name="PagesLoading" xml:space="preserve"><value>Chargement local des espaces...</value></data>
   <data name="PagesReady" xml:space="preserve"><value>Configuration Pages chargée.</value></data>
   <data name="PagesNotConfigured" xml:space="preserve"><value>CLI non configuré : aucune configuration Pages ne peut être lue.</value></data>
   <data name="PagesConfigurationRequired" xml:space="preserve"><value>Initialisez Confluence ci-dessous pour activer l'ajout de pages. Aucun fichier TOML n'est à modifier manuellement.</value></data>
   <data name="PagesSetupTitle" xml:space="preserve"><value>Première configuration Confluence</value></data>
-  <data name="PagesSetupDescription" xml:space="preserve"><value>Collez l'URL d'une page. Companion détecte l'instance et l'espace, crée la configuration, puis vous demande de confirmer la page.</value></data>
+  <data name="PagesSetupDescription" xml:space="preserve"><value>Collez l'URL d'une page. Companion mesure son arborescence et son coût, recommande de l'inclure, puis enregistre votre choix explicite.</value></data>
   <data name="PagesSetupPageUrlLabel" xml:space="preserve"><value>URL de la première page</value></data>
   <data name="PagesSetupPageUrlHint" xml:space="preserve"><value>URL complète copiée depuis votre navigateur Confluence</value></data>
   <data name="PagesSetupSpaceKeyLabel" xml:space="preserve"><value>Clé de l'espace</value></data>
@@ -76,6 +84,12 @@
   <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configuré.</value></data>
   <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectée.</value></data>
   <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listées sont collectées.</value></data>
+  <data name="PagesModeName" xml:space="preserve"><value>Cette page seule</value></data>
+  <data name="SubtreeModeName" xml:space="preserve"><value>Page et arborescence</value></data>
+  <data name="WholeSpaceModeName" xml:space="preserve"><value>Tout l'espace</value></data>
+  <data name="ScopeAnomaly" xml:space="preserve"><value>{0:N0} page(s) collectée(s) sur {1:N0} disponible(s) : {2:N0} descendant(s) ne sont pas inclus.</value></data>
+  <data name="ExpandToSubtree" xml:space="preserve"><value>Élargir à l'arborescence</value></data>
+  <data name="LogicalTargetExplanation" xml:space="preserve"><value>La cible est un préfixe logique dans l'index Cortex, pas un dossier de votre Vault.</value></data>
   <data name="WholeSpaceModeDescription" xml:space="preserve"><value>L'espace entier est collecté ; aucune liste de pages n'est applicable.</value></data>
   <data name="SubtreeModeDescription" xml:space="preserve"><value>Chaque page listée est une racine : elle est collectée avec toutes ses pages descendantes.</value></data>
   <data name="PagesSwitchMode" xml:space="preserve"><value>Changer de mode</value></data>
@@ -91,7 +105,7 @@
   <data name="ConfigOrigin" xml:space="preserve"><value>{0}</value></data>
   <data name="EnvironmentOverridesTitle" xml:space="preserve"><value>Champs verrouillés par l'environnement</value></data>
   <data name="EnvironmentOverrideOrigin" xml:space="preserve"><value>Verrouillé - origine : {0}</value></data>
-  <data name="SpaceTargetLabel" xml:space="preserve"><value>Cible</value></data>
+  <data name="SpaceTargetLabel" xml:space="preserve"><value>Préfixe logique</value></data>
   <data name="SpaceClassificationLabel" xml:space="preserve"><value>Classification</value></data>
   <data name="SpaceModeLabel" xml:space="preserve"><value>Mode</value></data>
   <data name="PageIdLabel" xml:space="preserve"><value>ID</value></data>
@@ -177,6 +191,10 @@
   <data name="SyncStarting" xml:space="preserve"><value>Démarrage du worker de synchronisation...</value></data>
   <data name="SyncContinuesAfterClose" xml:space="preserve"><value>La synchronisation continue en dehors de l'application.</value></data>
   <data name="SyncHealthPathTitle" xml:space="preserve"><value>Canal d'état local</value></data>
+  <data name="IngestionStorageTitle" xml:space="preserve"><value>Stockage des générations Confluence</value></data>
+  <data name="IngestionStorageSummary" xml:space="preserve"><value>{0}&#xA;Rétention : {1:N0} génération(s) maximum.</value></data>
+  <data name="OpenCurrentGeneration" xml:space="preserve"><value>Ouvrir la génération courante</value></data>
+  <data name="CurrentGenerationUnavailable" xml:space="preserve"><value>Aucune génération courante lisible n'est disponible.</value></data>
   <data name="SyncHealthPathLabel" xml:space="preserve"><value>Fichier source-health.json</value></data>
   <data name="SyncHealthPathOriginLabel" xml:space="preserve"><value>Résolution</value></data>
   <data name="HealthPathOrigin" xml:space="preserve"><value>data_root : {0} ; fichier de configuration : {1}</value></data>
@@ -215,13 +233,19 @@
   <data name="SyncFinalOutputLabel" xml:space="preserve"><value>Sortie finale Cortex (stdout)</value></data>
   <data name="SyncNoRunResult" xml:space="preserve"><value>Aucun run Companion enregistré.</value></data>
   <data name="SyncRunning" xml:space="preserve"><value>Synchronisation en cours.</value></data>
+  <data name="ProgressEnumeration" xml:space="preserve"><value>Énumération</value></data>
+  <data name="ProgressStaging" xml:space="preserve"><value>Téléchargement et préparation</value></data>
+  <data name="ProgressConversion" xml:space="preserve"><value>Conversion</value></data>
+  <data name="ProgressPublication" xml:space="preserve"><value>Publication atomique</value></data>
+  <data name="ProgressIndexation" xml:space="preserve"><value>Indexation</value></data>
+  <data name="ProgressCounter" xml:space="preserve"><value>{0} - {1:N0}/{2:N0}</value></data>
   <data name="SyncRunUnknown" xml:space="preserve"><value>Résultat inconnu ; l'état est relu depuis source-health.json.</value></data>
   <data name="SyncLaunchFailed" xml:space="preserve"><value>Le worker de synchronisation n'a pas pu être lancé.</value></data>
   <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminée avec succès (code 0).</value></data>
   <data name="SyncLocked" xml:space="preserve"><value>Un sync est déjà en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
   <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Cochez "Forcer la collecte" puis relancez pour l'exécuter tout de suite.</value></data>
   <data name="ConfluenceSyncForce" xml:space="preserve"><value>Forcer la collecte</value></data>
-  <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>Ignore l'échéance planifiée par Cortex et collecte immédiatement.</value></data>
+  <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>Cette action manuelle collecte toujours immédiatement. La cadence reste réservée aux exécutions automatiques.</value></data>
   <data name="SyncAuthFailed" xml:space="preserve"><value>Credential absent, expiré ou refusé (code 4).</value></data>
   <data name="SyncRemoteFailed" xml:space="preserve"><value>Le service distant est indisponible (code 5).</value></data>
   <data name="SyncFailed" xml:space="preserve"><value>La synchronisation a échoué (code 1).</value></data>

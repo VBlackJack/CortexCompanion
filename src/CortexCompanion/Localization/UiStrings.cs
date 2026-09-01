@@ -28,6 +28,16 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("PageTitleLastSync"));
     private static readonly CompositeFormat ConfirmAddMessageFormat =
         CompositeFormat.Parse(GetString("ConfirmAddMessage"));
+    private static readonly CompositeFormat ScopeRootDetailsFormat =
+        CompositeFormat.Parse(GetString("ScopeRootDetails"));
+    private static readonly CompositeFormat ScopeChoiceWholeSpaceFormat =
+        CompositeFormat.Parse(GetString("ScopeChoiceWholeSpace"));
+    private static readonly CompositeFormat ScopeChoiceDetailsFormat =
+        CompositeFormat.Parse(GetString("ScopeChoiceDetails"));
+    private static readonly CompositeFormat ScopeStorageDetailsFormat =
+        CompositeFormat.Parse(GetString("ScopeStorageDetails"));
+    private static readonly CompositeFormat ScopeAnomalyFormat =
+        CompositeFormat.Parse(GetString("ScopeAnomaly"));
     private static readonly CompositeFormat ConfirmRemoveMessageFormat =
         CompositeFormat.Parse(GetString("ConfirmRemoveMessage"));
     private static readonly CompositeFormat ConfirmModeWholeSpaceFormat =
@@ -47,6 +57,10 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("CredentialFailed"));
     private static readonly CompositeFormat SyncUnexpectedExitFormat =
         CompositeFormat.Parse(GetString("SyncUnexpectedExit"));
+    private static readonly CompositeFormat ProgressCounterFormat =
+        CompositeFormat.Parse(GetString("ProgressCounter"));
+    private static readonly CompositeFormat IngestionStorageSummaryFormat =
+        CompositeFormat.Parse(GetString("IngestionStorageSummary"));
     private static readonly CompositeFormat SchedulingEnvironmentBlockedFormat =
         CompositeFormat.Parse(GetString("SchedulingEnvironmentBlockedFormat"));
     private static readonly CompositeFormat SchedulingNextRunDisabledFormat =
@@ -94,6 +108,34 @@ public static class UiStrings
     public static string PagesAddReferenceHint => GetString(nameof(PagesAddReferenceHint));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesResolveAndAdd => GetString(nameof(PagesResolveAndAdd));
+    /// <summary>Gets the measured scope dialog title.</summary>
+    public static string ScopeDialogTitle => GetString(nameof(ScopeDialogTitle));
+    /// <summary>Gets the page-only scope label.</summary>
+    public static string ScopeChoicePageOnly => GetString(nameof(ScopeChoicePageOnly));
+    /// <summary>Gets the subtree scope label.</summary>
+    public static string ScopeChoiceSubtree => GetString(nameof(ScopeChoiceSubtree));
+    /// <summary>Gets the recommended badge.</summary>
+    public static string ScopeRecommended => GetString(nameof(ScopeRecommended));
+    /// <summary>Formats the measured root and descendant count.</summary>
+    public static string FormatScopeRoot(string title, int descendantCount) =>
+        string.Format(CultureInfo.CurrentCulture, ScopeRootDetailsFormat, title, descendantCount);
+    /// <summary>Formats the whole-space scope label.</summary>
+    public static string FormatScopeWholeSpace(string spaceKey) =>
+        string.Format(CultureInfo.CurrentCulture, ScopeChoiceWholeSpaceFormat, spaceKey);
+    /// <summary>Formats one measured page count and approximate storage size.</summary>
+    public static string FormatScopeChoice(int pageCount, long estimatedBytes) =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            ScopeChoiceDetailsFormat,
+            pageCount,
+            estimatedBytes / (1024d * 1024d));
+    /// <summary>Formats the physical generation store and bounded retention.</summary>
+    public static string FormatScopeStorage(string storageRoot, int retentionGenerations) =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            ScopeStorageDetailsFormat,
+            storageRoot,
+            retentionGenerations);
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesLoading => GetString(nameof(PagesLoading));
     /// <summary>Gets a Pages UI resource.</summary>
@@ -164,6 +206,24 @@ public static class UiStrings
     public static string PagesEmptySelection => GetString(nameof(PagesEmptySelection));
     /// <summary>Gets a Pages UI resource.</summary>
     public static string PagesModeDescription => GetString(nameof(PagesModeDescription));
+    /// <summary>Gets the user-facing page-only mode name.</summary>
+    public static string PagesModeName => GetString(nameof(PagesModeName));
+    /// <summary>Gets the user-facing subtree mode name.</summary>
+    public static string SubtreeModeName => GetString(nameof(SubtreeModeName));
+    /// <summary>Gets the user-facing whole-space mode name.</summary>
+    public static string WholeSpaceModeName => GetString(nameof(WholeSpaceModeName));
+    /// <summary>Gets the one-click corrective scope action.</summary>
+    public static string ExpandToSubtree => GetString(nameof(ExpandToSubtree));
+    /// <summary>Gets the logical target explanation.</summary>
+    public static string LogicalTargetExplanation => GetString(nameof(LogicalTargetExplanation));
+    /// <summary>Formats a measured narrow-scope warning.</summary>
+    public static string FormatScopeAnomaly(int selected, int available, int excluded) =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            ScopeAnomalyFormat,
+            selected,
+            available,
+            excluded);
     /// <summary>Gets a Pages UI resource.</summary>
     public static string WholeSpaceModeDescription => GetString(nameof(WholeSpaceModeDescription));
     /// <summary>Gets the subtree mode consequence.</summary>
@@ -317,6 +377,19 @@ public static class UiStrings
     public static string SyncContinuesAfterClose => GetString(nameof(SyncContinuesAfterClose));
     /// <summary>Gets a Sync UI resource.</summary>
     public static string SyncHealthPathTitle => GetString(nameof(SyncHealthPathTitle));
+    /// <summary>Gets the physical generation store title.</summary>
+    public static string IngestionStorageTitle => GetString(nameof(IngestionStorageTitle));
+    /// <summary>Gets the action that opens current immutable documents.</summary>
+    public static string OpenCurrentGeneration => GetString(nameof(OpenCurrentGeneration));
+    /// <summary>Gets the missing or invalid generation message.</summary>
+    public static string CurrentGenerationUnavailable => GetString(nameof(CurrentGenerationUnavailable));
+    /// <summary>Formats the physical store and its bounded retention.</summary>
+    public static string FormatIngestionStorage(string dataRoot, int retentionGenerations) =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            IngestionStorageSummaryFormat,
+            dataRoot,
+            retentionGenerations);
     /// <summary>Gets a Sync UI resource.</summary>
     public static string SyncHealthPathLabel => GetString(nameof(SyncHealthPathLabel));
     /// <summary>Gets a Sync UI resource.</summary>
@@ -397,6 +470,19 @@ public static class UiStrings
     public static string SyncNoRunResult => GetString(nameof(SyncNoRunResult));
     /// <summary>Gets the active run state.</summary>
     public static string SyncRunning => GetString(nameof(SyncRunning));
+    /// <summary>Gets the remote enumeration phase.</summary>
+    public static string ProgressEnumeration => GetString(nameof(ProgressEnumeration));
+    /// <summary>Gets the remote staging phase.</summary>
+    public static string ProgressStaging => GetString(nameof(ProgressStaging));
+    /// <summary>Gets the converter phase.</summary>
+    public static string ProgressConversion => GetString(nameof(ProgressConversion));
+    /// <summary>Gets the atomic publication phase.</summary>
+    public static string ProgressPublication => GetString(nameof(ProgressPublication));
+    /// <summary>Gets the local indexation phase.</summary>
+    public static string ProgressIndexation => GetString(nameof(ProgressIndexation));
+    /// <summary>Formats a named numeric phase.</summary>
+    public static string FormatProgress(string phase, int current, int total) =>
+        string.Format(CultureInfo.CurrentCulture, ProgressCounterFormat, phase, current, total);
     /// <summary>Gets the unknown terminal state.</summary>
     public static string SyncRunUnknown => GetString(nameof(SyncRunUnknown));
     /// <summary>Gets the collapsed technical-details label.</summary>

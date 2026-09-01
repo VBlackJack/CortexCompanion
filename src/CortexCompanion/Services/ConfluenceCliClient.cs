@@ -50,6 +50,17 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             cancellationToken);
     }
 
+    /// <inheritdoc />
+    public Task<ConfluenceCliResult<ScopePreviewContract>> PreviewAsync(
+        string reference,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(reference);
+        return RunAsync<ScopePreviewContract>(
+            ["confluence", "--config", _configPath, "preview", reference.Trim(), "--json"],
+            cancellationToken);
+    }
+
     /// <summary>Maps the complete frozen numeric process contract, failing unknown values to the generic error.</summary>
     public static CortexExitCode MapExitCode(int? exitCode) => exitCode switch
     {
@@ -106,7 +117,7 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
 
     private static bool HasValidContract<T>(T value) => value switch
     {
-        PagesContract pages => pages.ContractVersion == 1 && pages.Spaces is not null && pages.LastSync is not null &&
+        PagesContract pages => pages.ContractVersion == 2 && pages.Spaces is not null && pages.LastSync is not null &&
             pages.Spaces.All(space =>
                 space.SpaceKey is not null && space.Target is not null &&
                 space.Classification is "perso-non-sensible" or "pro-confidentiel" &&
@@ -117,8 +128,17 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             pages.LastSync.Status is null or "ok" or "degraded" or "error",
         ResolvedPageContract resolved => resolved.ContractVersion == 1 &&
             resolved.PageId is not null && resolved.Title is not null && resolved.SpaceKey is not null,
+        ScopePreviewContract preview => preview.ContractVersion == 1 &&
+            preview.PageId is not null && preview.Title is not null && preview.SpaceKey is not null &&
+            preview.StorageRoot is not null && preview.RetentionGenerations >= 1 &&
+            preview.RecommendedSelection is "pages" or "subtree" &&
+            HasValidChoice(preview.PageOnly) && HasValidChoice(preview.Subtree) &&
+            HasValidChoice(preview.WholeSpace),
         _ => false,
     };
+
+    private static bool HasValidChoice(ScopeChoiceContract choice) =>
+        choice is not null && choice.PageCount >= 0 && choice.EstimatedBytes >= 0;
 
     private static ConfluenceCliResult<T> InvalidJson<T>() =>
         new(CortexExitCode.Error, default, UiStrings.PagesCliInvalidJson, false, null);

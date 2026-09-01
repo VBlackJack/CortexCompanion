@@ -64,6 +64,35 @@ public sealed class PagesMutationServiceTests
     }
 
     [TestMethod]
+    public async Task ExplicitSubtreeChoiceMigratesSchemaAndPersistsRoot()
+    {
+        FakeCliClient cli = new()
+        {
+            ResolveResult = Success(new ResolvedPageContract
+            {
+                ContractVersion = 1,
+                PageId = "123",
+                Title = "Root",
+                SpaceKey = "DOC",
+                Configured = false,
+            }),
+        };
+        FakeConfigStore store = new(PagesSnapshot());
+        FakeConfirmations confirmations = new()
+        {
+            AddAccepted = true,
+            SelectedScope = ConfluenceSelection.Subtree,
+        };
+        PagesMutationService service = new(cli, store, confirmations);
+
+        Assert.IsTrue(await service.AddPageAsync("123", false, CancellationToken.None));
+
+        Assert.AreEqual(3, store.WrittenConfiguration!.SchemaVersion);
+        Assert.AreEqual(ConfluenceSelection.Subtree, store.WrittenConfiguration.Spaces[0].Selection);
+        CollectionAssert.AreEqual(SinglePage, store.WrittenConfiguration.Spaces[0].PageIds.ToArray());
+    }
+
+    [TestMethod]
     public async Task WholeSpaceRejectsAddEvenAfterResolve()
     {
         FakeCliClient cli = new()
@@ -142,6 +171,22 @@ public sealed class PagesMutationServiceTests
         CollectionAssert.AreEqual(SinglePage, confirmations.LastTargetPageIds!.ToArray());
         CollectionAssert.AreEqual(SinglePage, store.WrittenConfiguration!.Spaces[0].PageIds.ToArray());
         Assert.AreEqual(3, store.WrittenConfiguration.SchemaVersion);
+    }
+
+    [TestMethod]
+    public async Task OneClickScopeCorrectionPreservesRootsAndExpandsToSubtree()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, SinglePage));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations());
+
+        Assert.IsTrue(await service.ExpandToSubtreeAsync(
+            "DOC",
+            false,
+            CancellationToken.None));
+
+        Assert.AreEqual(3, store.WrittenConfiguration!.SchemaVersion);
+        Assert.AreEqual(ConfluenceSelection.Subtree, store.WrittenConfiguration.Spaces[0].Selection);
+        CollectionAssert.AreEqual(SinglePage, store.WrittenConfiguration.Spaces[0].PageIds.ToArray());
     }
 
     [TestMethod]
@@ -312,6 +357,35 @@ public sealed class PagesMutationServiceTests
             ResolveCalls++;
             return Task.FromResult(ResolveResult);
         }
+
+        public Task<ConfluenceCliResult<ScopePreviewContract>> PreviewAsync(
+            string reference,
+            CancellationToken cancellationToken)
+        {
+            ResolveCalls++;
+            ResolvedPageContract? resolved = ResolveResult.Value;
+            ScopePreviewContract? preview = resolved is null
+                ? null
+                : new ScopePreviewContract
+                {
+                    ContractVersion = 1,
+                    PageId = resolved.PageId,
+                    Title = resolved.Title,
+                    SpaceKey = resolved.SpaceKey,
+                    RecommendedSelection = "subtree",
+                    PageOnly = new ScopeChoiceContract { PageCount = 1, EstimatedBytes = 393_216 },
+                    Subtree = new ScopeChoiceContract { PageCount = 12, EstimatedBytes = 4_718_592 },
+                    WholeSpace = new ScopeChoiceContract { PageCount = 20, EstimatedBytes = 7_864_320 },
+                    StorageRoot = "C:\\state",
+                    RetentionGenerations = 2,
+                };
+            return Task.FromResult(new ConfluenceCliResult<ScopePreviewContract>(
+                ResolveResult.ExitCode,
+                preview,
+                ResolveResult.StandardError,
+                ResolveResult.TimedOut,
+                ResolveResult.LaunchError));
+        }
     }
 
     private sealed class FakeConfigStore(ConfluenceConfigSnapshot snapshot) : IConfluenceConfigStore
@@ -353,6 +427,8 @@ public sealed class PagesMutationServiceTests
     {
         public bool AddAccepted { get; init; }
 
+        public ConfluenceSelection SelectedScope { get; init; } = ConfluenceSelection.Pages;
+
         public string? TypedValue { get; init; }
 
         public ResolvedPageContract? LastResolvedPage { get; private set; }
@@ -361,6 +437,19 @@ public sealed class PagesMutationServiceTests
         {
             LastResolvedPage = page;
             return AddAccepted;
+        }
+
+        public ConfluenceSelection? ChooseScope(ScopePreviewContract preview)
+        {
+            LastResolvedPage = new ResolvedPageContract
+            {
+                ContractVersion = preview.ContractVersion,
+                PageId = preview.PageId,
+                Title = preview.Title,
+                SpaceKey = preview.SpaceKey,
+                Configured = false,
+            };
+            return AddAccepted ? SelectedScope : null;
         }
 
         public bool ConfirmRemove(string spaceKey, string pageId, string? title) => true;

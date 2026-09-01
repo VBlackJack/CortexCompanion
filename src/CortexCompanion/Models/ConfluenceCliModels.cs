@@ -73,6 +73,54 @@ public sealed record ResolvedPageContract
     public required bool Configured { get; init; }
 }
 
+/// <summary>Represents one measured collection choice.</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ScopeChoiceContract
+{
+    /// <summary>Gets the measured number of pages.</summary>
+    [JsonPropertyName("page_count")]
+    public required int PageCount { get; init; }
+
+    /// <summary>Gets the approximate first-generation storage cost.</summary>
+    [JsonPropertyName("estimated_bytes")]
+    public required long EstimatedBytes { get; init; }
+}
+
+/// <summary>Represents the strict `preview --json` contract.</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ScopePreviewContract
+{
+    [JsonPropertyName("contract_version")]
+    public required int ContractVersion { get; init; }
+
+    [JsonPropertyName("page_id")]
+    public required string PageId { get; init; }
+
+    [JsonPropertyName("title")]
+    public required string Title { get; init; }
+
+    [JsonPropertyName("space_key")]
+    public required string SpaceKey { get; init; }
+
+    [JsonPropertyName("recommended_selection")]
+    public required string RecommendedSelection { get; init; }
+
+    [JsonPropertyName("page_only")]
+    public required ScopeChoiceContract PageOnly { get; init; }
+
+    [JsonPropertyName("subtree")]
+    public required ScopeChoiceContract Subtree { get; init; }
+
+    [JsonPropertyName("whole_space")]
+    public required ScopeChoiceContract WholeSpace { get; init; }
+
+    [JsonPropertyName("storage_root")]
+    public required string StorageRoot { get; init; }
+
+    [JsonPropertyName("retention_generations")]
+    public required int RetentionGenerations { get; init; }
+}
+
 /// <summary>Represents the strict local-only `pages --json` contract.</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record PagesContract
@@ -143,4 +191,27 @@ public sealed record LastSyncContract
     /// <summary>Gets the stable source error code.</summary>
     [JsonPropertyName("error_code")]
     public string? ErrorCode { get; init; }
+
+    [JsonPropertyName("scope_summaries")]
+    public IReadOnlyList<ScopeSummaryContract> ScopeSummaries { get; init; } = [];
+}
+
+/// <summary>Represents one persisted last-run scope measurement.</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ScopeSummaryContract
+{
+    [JsonPropertyName("space_key")]
+    public required string SpaceKey { get; init; }
+
+    [JsonPropertyName("selection")]
+    public required string Selection { get; init; }
+
+    [JsonPropertyName("selected_page_count")]
+    public required int SelectedPageCount { get; init; }
+
+    [JsonPropertyName("available_page_count")]
+    public int? AvailablePageCount { get; init; }
+
+    [JsonPropertyName("excluded_descendant_count")]
+    public int? ExcludedDescendantCount { get; init; }
 }

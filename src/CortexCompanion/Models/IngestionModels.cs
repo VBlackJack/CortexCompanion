@@ -26,7 +26,8 @@ public sealed record IngestionPathResolution(
     string DataRoot,
     IngestionPathOrigin DataRootOrigin,
     string DataRootOriginName,
-    string HealthPath);
+    string HealthPath,
+    int RetentionGenerations = 2);
 
 /// <summary>Defines the three persisted source-health states.</summary>
 public enum IngestionHealthStatus
@@ -109,6 +110,14 @@ public sealed record IngestionHealthSnapshot
     /// <summary>Gets the persisted counters.</summary>
     [JsonPropertyName("counts")]
     public required IngestionHealthCounts Counts { get; init; }
+
+    /// <summary>Gets the successful effective-selection fingerprint.</summary>
+    [JsonPropertyName("selection_fingerprint")]
+    public string? SelectionFingerprint { get; init; }
+
+    /// <summary>Gets the per-space last-run scope measurements.</summary>
+    [JsonPropertyName("scope_summaries")]
+    public IReadOnlyList<ScopeSummaryContract> ScopeSummaries { get; init; } = [];
 }
 
 /// <summary>Defines the outcome of one direct source-health read.</summary>
