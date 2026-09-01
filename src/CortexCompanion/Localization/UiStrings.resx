@@ -55,7 +55,8 @@
   <data name="PagesSetupExpiryHint" xml:space="preserve"><value>Choisissez la date déclarée lors de la création du PAT</value></data>
   <data name="PagesSetupClassificationLabel" xml:space="preserve"><value>Classification locale</value></data>
   <data name="PagesSetupConverterLabel" xml:space="preserve"><value>Convertisseur Confluence</value></data>
-  <data name="PagesSetupConverterHint" xml:space="preserve"><value>Facultatif pour gérer les pages, requis pour les collecter</value></data>
+  <data name="PagesSetupConverterHint" xml:space="preserve"><value>Fourni automatiquement avec Cortex. À modifier uniquement pour le développement.</value></data>
+  <data name="PagesSetupAdvanced" xml:space="preserve"><value>Options avancées pour développeurs</value></data>
   <data name="PagesSetupBrowse" xml:space="preserve"><value>Parcourir</value></data>
   <data name="PagesSetupInitialize" xml:space="preserve"><value>Initialiser et ajouter la page</value></data>
   <data name="PagesSetupProfessional" xml:space="preserve"><value>Professionnel - confidentiel</value></data>
@@ -68,7 +69,8 @@
   <data name="ConfluenceSetupSpaceMismatch" xml:space="preserve"><value>La clé d'espace ne correspond pas à celle détectée dans l'URL.</value></data>
   <data name="ConfluenceSetupExpiredAuthentication" xml:space="preserve"><value>La date d'expiration du PAT doit être dans le futur.</value></data>
   <data name="ConfluenceSetupInvalidClassification" xml:space="preserve"><value>La classification sélectionnée n'est pas prise en charge.</value></data>
-  <data name="ConfluenceSetupInvalidConverter" xml:space="preserve"><value>Le convertisseur doit être un fichier EXE existant.</value></data>
+  <data name="ConfluenceSetupInvalidConverter" xml:space="preserve"><value>Le convertisseur Cortex est introuvable. Réinstallez Cortex ou choisissez le convertisseur console livré avec l'application.</value></data>
+  <data name="ConfluenceSetupIncompatibleConverter" xml:space="preserve"><value>Ce fichier n'est pas le convertisseur console Cortex compatible. Le chemin n'a pas été enregistré.</value></data>
   <data name="ConfluenceConverterFileDialogTitle" xml:space="preserve"><value>Choisir le convertisseur Confluence</value></data>
   <data name="ConfluenceConverterFileDialogFilter" xml:space="preserve"><value>Convertisseur Confluence (ConfluenceRAGBuilder.Console.exe)|ConfluenceRAGBuilder.Console.exe|Exécutables (*.exe)|*.exe</value></data>
   <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configuré.</value></data>

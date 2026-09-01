@@ -22,15 +22,18 @@ synchronization, or scheduling.
    detects the instance and space whenever the URL contains them. Choose the PAT
    expiry date and classification, then select **Initialiser et ajouter la page**.
    Legacy `viewpage.action` and short URLs require the space key to be entered.
-6. If Confluence collection is required, optionally select the existing
-   `ConfluenceRAGBuilder.Console.exe` during first-run setup. This external converter
-   is not bundled; page management works without it, but collection does not.
+6. The combined Cortex installer already provides the windowless Confluence
+   converter. No path is required. The developer override remains under the
+   collapsed advanced options and is accepted only after a five-second machine
+   capability probe; the windowed `ConfluenceRAGBuilder.exe` is rejected.
 7. Open **Base locale** and select **Synchroniser les documents locaux**. This
    primary action runs `cortex sync --json`; it does not require Confluence.
 
 The **Pages Confluence** screen creates the initial configuration itself. Users do not
 need to find or edit a TOML file. Existing configurations keep their exact advanced
 values and continue through the compare-and-swap mutation path.
+Configurations created by releases that omitted `console_path` are repaired
+atomically on first load, after the embedded converter passes the same probe.
 
 ## What users can do
 
@@ -72,8 +75,8 @@ compare-and-swap contract.
 The first-run Pages card creates `%APPDATA%\Cortex\confluence.toml` through the same
 locked, validated, atomic writer used by later page mutations. It refuses to overwrite a
 file that appeared concurrently. The file contains the inferred base URL, declared PAT
-expiry, explicit space allowlist, local target, classification, and optional converter
-path. It never contains the PAT.
+expiry, explicit space allowlist, local target, classification, and the validated
+embedded converter path. It never contains the PAT.
 
 The Confluence PAT is never written to `settings.json` or `CONFLUENCE.toml`. The
 masked Settings field writes it directly to the `credential_target` declared by the

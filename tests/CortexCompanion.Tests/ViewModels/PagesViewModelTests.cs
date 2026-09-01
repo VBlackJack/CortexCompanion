@@ -117,6 +117,8 @@ public sealed class PagesViewModelTests
     {
         using TemporaryDirectory temporary = new();
         string configPath = Path.Combine(temporary.Path, "confluence.toml");
+        string converterPath = Path.Combine(temporary.Path, "ConfluenceRAGBuilder.Console.exe");
+        await File.WriteAllBytesAsync(converterPath, [0x4d, 0x5a]);
         StubCliClient cliClient = new();
         ConfluenceConfigStore store = new(configPath);
         PagesMutationService mutations = new(
@@ -126,7 +128,13 @@ public sealed class PagesViewModelTests
         PagesViewModel viewModel = new(
             cliClient,
             mutations,
-            new ConfluenceSetupService(store),
+            new ConfluenceSetupService(
+                store,
+                new ConfluenceConverterProbe(new StubProcessRunner(ProcessRunResult.Completed(
+                    0,
+                    "{\"tool_version\":\"1.2.0\",\"schema_version\":1}",
+                    string.Empty))),
+                converterPath),
             null,
             new ConfluenceConfigPathResolution(
                 configPath,

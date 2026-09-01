@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
+using CortexCompanion.Logging;
 using CortexCompanion.Models;
 
 namespace CortexCompanion.Services;
@@ -17,16 +18,45 @@ public sealed partial class ConfluenceSetupService
     private const double DefaultFailureThreshold = 0.1;
     private const string TargetRoot = "confluence";
     private readonly IConfluenceConfigStore _configStore;
+    private readonly ConfluenceConverterProbe _converterProbe;
+    private readonly string _defaultConsolePath;
+    private readonly string? _environmentConsolePath;
     private readonly TimeProvider _timeProvider;
 
     /// <summary>Initializes first-run creation over the existing atomic configuration store.</summary>
     public ConfluenceSetupService(
         IConfluenceConfigStore configStore,
         TimeProvider? timeProvider = null)
+        : this(
+            configStore,
+            new ConfluenceConverterProbe(new ProcessRunner()),
+            ConfluenceConverterPathResolver.ResolveDefault(),
+            environmentConsolePath: null,
+            timeProvider)
+    {
+    }
+
+    /// <summary>Initializes setup with an injectable converter boundary and installation path.</summary>
+    public ConfluenceSetupService(
+        IConfluenceConfigStore configStore,
+        ConfluenceConverterProbe converterProbe,
+        string defaultConsolePath,
+        string? environmentConsolePath = null,
+        TimeProvider? timeProvider = null)
     {
         _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
+        _converterProbe = converterProbe ?? throw new ArgumentNullException(nameof(converterProbe));
+        _defaultConsolePath = string.IsNullOrWhiteSpace(defaultConsolePath)
+            ? throw new ArgumentException("A default converter path is required.", nameof(defaultConsolePath))
+            : defaultConsolePath;
+        _environmentConsolePath = string.IsNullOrWhiteSpace(environmentConsolePath)
+            ? null
+            : environmentConsolePath;
         _timeProvider = timeProvider ?? TimeProvider.System;
     }
+
+    /// <summary>Gets the installer-owned converter path shown as the advanced default.</summary>
+    public string DefaultConsolePath => _defaultConsolePath;
 
     /// <summary>Validates non-secret setup values and creates the file only when it is still absent.</summary>
     public async Task<ConfluenceConfigSnapshot> InitializeAsync(
@@ -57,7 +87,10 @@ public sealed partial class ConfluenceSetupService
             throw new ConfluenceSetupValidationException(UiStrings.ConfluenceSetupInvalidClassification);
         }
 
-        string? consolePath = NormalizeConsolePath(request.ConsolePath);
+        string consolePath = await ValidateSelectedOrDefaultAsync(
+            request.ConsolePath,
+            cancellationToken);
+        await ValidateEnvironmentOverrideAsync(cancellationToken);
         ConfluenceSpaceConfiguration space = new(
             spaceKey,
             $"{TargetRoot}/{spaceKey}",
@@ -76,31 +109,68 @@ public sealed partial class ConfluenceSetupService
         return await _configStore.WriteAsync(configuration, expectedHash: null, cancellationToken);
     }
 
-    private static string? NormalizeConsolePath(string? value)
+    /// <summary>Validates and migrates an existing configuration before the CLI can read it.</summary>
+    public async Task<ConfluenceConfigSnapshot> EnsureReadyAsync(
+        CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return null;
-        }
-
-        string fullPath;
+        ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
+        string validatedPath;
         try
         {
-            fullPath = Path.GetFullPath(value.Trim());
+            validatedPath = await ValidateSelectedOrDefaultAsync(
+                snapshot.Configuration.ConsolePath,
+                cancellationToken);
         }
-        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or PathTooLongException)
+        catch (ConfluenceSetupValidationException) when (
+            IsKnownWindowedExecutable(snapshot.Configuration.ConsolePath))
         {
-            throw new ConfluenceSetupValidationException(UiStrings.ConfluenceSetupInvalidConverter, exception);
+            FileLogger.Warn("Replacing known windowed Confluence converter with embedded console");
+            validatedPath = await _converterProbe.ValidateAsync(
+                _defaultConsolePath,
+                cancellationToken);
+        }
+        if (!string.Equals(
+                snapshot.Configuration.ConsolePath,
+                validatedPath,
+                StringComparison.Ordinal))
+        {
+            snapshot = await _configStore.WriteAsync(
+                snapshot.Configuration with { ConsolePath = validatedPath },
+                snapshot.ContentHash,
+                cancellationToken);
         }
 
-        if (!File.Exists(fullPath) ||
-            !string.Equals(Path.GetExtension(fullPath), ".exe", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ConfluenceSetupValidationException(UiStrings.ConfluenceSetupInvalidConverter);
-        }
-
-        return fullPath;
+        await ValidateEnvironmentOverrideAsync(cancellationToken);
+        return snapshot;
     }
+
+    /// <summary>Validates a developer-selected override before the UI accepts it.</summary>
+    public Task<string> ValidateConverterAsync(
+        string path,
+        CancellationToken cancellationToken) =>
+        _converterProbe.ValidateAsync(path, cancellationToken);
+
+    private Task<string> ValidateSelectedOrDefaultAsync(
+        string? selectedPath,
+        CancellationToken cancellationToken) =>
+        _converterProbe.ValidateAsync(
+            string.IsNullOrWhiteSpace(selectedPath) ? _defaultConsolePath : selectedPath,
+            cancellationToken);
+
+    private async Task ValidateEnvironmentOverrideAsync(CancellationToken cancellationToken)
+    {
+        if (_environmentConsolePath is not null)
+        {
+            _ = await _converterProbe.ValidateAsync(_environmentConsolePath, cancellationToken);
+        }
+    }
+
+    private static bool IsKnownWindowedExecutable(string? path) =>
+        !string.IsNullOrWhiteSpace(path) &&
+        string.Equals(
+            Path.GetFileName(path),
+            AppConstants.ConfluenceWindowedExecutableName,
+            StringComparison.OrdinalIgnoreCase);
 
     [GeneratedRegex("^[A-Za-z0-9._-]+$", RegexOptions.CultureInvariant)]
     private static partial Regex SpaceKeyPattern();

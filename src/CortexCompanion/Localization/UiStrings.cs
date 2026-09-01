@@ -124,6 +124,8 @@ public static class UiStrings
     public static string PagesSetupConverterLabel => GetString(nameof(PagesSetupConverterLabel));
     /// <summary>Gets the first-run converter hint.</summary>
     public static string PagesSetupConverterHint => GetString(nameof(PagesSetupConverterHint));
+    /// <summary>Gets the advanced first-run section label.</summary>
+    public static string PagesSetupAdvanced => GetString(nameof(PagesSetupAdvanced));
     /// <summary>Gets the converter browse action.</summary>
     public static string PagesSetupBrowse => GetString(nameof(PagesSetupBrowse));
     /// <summary>Gets the first-run commit action.</summary>
@@ -150,6 +152,8 @@ public static class UiStrings
     public static string ConfluenceSetupInvalidClassification => GetString(nameof(ConfluenceSetupInvalidClassification));
     /// <summary>Gets the converter-path validation message.</summary>
     public static string ConfluenceSetupInvalidConverter => GetString(nameof(ConfluenceSetupInvalidConverter));
+
+    public static string ConfluenceSetupIncompatibleConverter => GetString(nameof(ConfluenceSetupIncompatibleConverter));
     /// <summary>Gets the converter file-picker title.</summary>
     public static string ConfluenceConverterFileDialogTitle => GetString(nameof(ConfluenceConverterFileDialogTitle));
     /// <summary>Gets the converter file-picker filter.</summary>

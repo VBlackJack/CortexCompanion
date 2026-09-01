@@ -116,25 +116,34 @@
                               AutomationProperties.LabeledBy="{Binding ElementName=SetupClassificationLabel}"
                               Margin="{StaticResource MarginStackItem}" />
 
-                    <TextBlock x:Name="SetupConverterLabel"
-                               Text="{x:Static localization:UiStrings.PagesSetupConverterLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <Grid Margin="{StaticResource MarginSectionBottom}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding SetupConverterPath, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.LabeledBy="{Binding ElementName=SetupConverterLabel}"
-                                 ToolTip="{x:Static localization:UiStrings.PagesSetupConverterHint}" />
-                        <Button Grid.Column="1"
-                                Content="{x:Static localization:UiStrings.PagesSetupBrowse}"
-                                AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupBrowse}"
-                                Command="{Binding BrowseConverterCommand}"
-                                Margin="{StaticResource MarginInlineControl}"
-                                Style="{StaticResource SecondaryButtonStyle}" />
-                    </Grid>
+                    <Expander Header="{x:Static localization:UiStrings.PagesSetupAdvanced}"
+                              Margin="{StaticResource MarginSectionBottom}">
+                        <StackPanel Margin="{StaticResource MarginStackItem}">
+                            <TextBlock x:Name="SetupConverterLabel"
+                                       Text="{x:Static localization:UiStrings.PagesSetupConverterLabel}"
+                                       FontWeight="SemiBold"
+                                       Margin="{StaticResource MarginLabelBottom}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding SetupConverterPath, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.LabeledBy="{Binding ElementName=SetupConverterLabel}"
+                                         ToolTip="{x:Static localization:UiStrings.PagesSetupConverterHint}" />
+                                <Button Grid.Column="1"
+                                        Content="{x:Static localization:UiStrings.PagesSetupBrowse}"
+                                        AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupBrowse}"
+                                        Command="{Binding BrowseConverterCommand}"
+                                        Margin="{StaticResource MarginInlineControl}"
+                                        Style="{StaticResource SecondaryButtonStyle}" />
+                            </Grid>
+                            <TextBlock Text="{x:Static localization:UiStrings.PagesSetupConverterHint}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="{StaticResource MarginStackItem}" />
+                        </StackPanel>
+                    </Expander>
 
                     <Button Content="{x:Static localization:UiStrings.PagesSetupInitialize}"
                             AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupInitialize}"

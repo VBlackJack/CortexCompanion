@@ -36,6 +36,7 @@ public sealed class PagesViewModel : ViewModelBase
     private bool _isBusy;
     private bool _isReadOnly = true;
     private bool _hasConfluenceConfiguration;
+    private bool _isConfluenceConfigurationReady;
 
     /// <summary>Initializes a configured or explicitly non-configured Pages projection.</summary>
     public PagesViewModel(
@@ -52,6 +53,7 @@ public sealed class PagesViewModel : ViewModelBase
         _fileDialogs = fileDialogs;
         _configurationPath = pathResolution?.AbsolutePath;
         _hasConfluenceConfiguration = _configurationPath is not null && File.Exists(_configurationPath);
+        _setupConverterPath = setupService?.DefaultConsolePath ?? string.Empty;
         ConfigPath = pathResolution?.AbsolutePath ?? UiStrings.ConfigPathUnavailable;
         ConfigOrigin = pathResolution is null
             ? UiStrings.ConfigOriginUnavailable
@@ -213,7 +215,8 @@ public sealed class PagesViewModel : ViewModelBase
 
     /// <summary>Gets whether the configured mutation boundaries are currently enabled.</summary>
     public bool CanMutate =>
-        _mutations is not null && HasConfluenceConfiguration && !IsReadOnly && !IsBusy;
+        _mutations is not null && HasConfluenceConfiguration &&
+        _isConfluenceConfigurationReady && !IsReadOnly && !IsBusy;
 
     /// <summary>Gets whether the novice first-run card must be shown.</summary>
     public bool NeedsConfluenceConfiguration => !HasConfluenceConfiguration;
@@ -302,6 +305,29 @@ public sealed class PagesViewModel : ViewModelBase
             return;
         }
 
+        try
+        {
+            if (_setupService is not null)
+            {
+                _ = await _setupService.EnsureReadyAsync(CancellationToken.None);
+            }
+
+            _isConfluenceConfigurationReady = true;
+        }
+        catch (Exception exception) when (exception is ConfluenceSetupValidationException or
+                                          ConfluenceConfigConflictException or
+                                          ConfluenceConfigLockedException or
+                                          ConfluenceConfigMutationException or
+                                          ConfluenceConfigValidationException or
+                                          IOException)
+        {
+            _isConfluenceConfigurationReady = false;
+            Spaces.Clear();
+            StateMessage = exception.Message;
+            NotifyCommandAvailability();
+            return;
+        }
+
         IsBusy = true;
         StateMessage = UiStrings.PagesLoading;
         try
@@ -363,6 +389,7 @@ public sealed class PagesViewModel : ViewModelBase
             await _setupService.InitializeAsync(request, CancellationToken.None);
             configurationCreated = true;
             HasConfluenceConfiguration = true;
+            _isConfluenceConfigurationReady = true;
             PageReference = SetupPageUrl;
             bool changed = await _mutations.AddPageAsync(
                 SetupPageUrl,
@@ -406,15 +433,29 @@ public sealed class PagesViewModel : ViewModelBase
         StateMessage = terminalMessage;
     }
 
-    private Task BrowseConverterAsync()
+    private async Task BrowseConverterAsync()
     {
         string? selected = _fileDialogs?.SelectConfluenceConverterExecutable(SetupConverterPath);
-        if (selected is not null)
+        if (selected is null || _setupService is null)
         {
-            SetupConverterPath = selected;
+            return;
         }
 
-        return Task.CompletedTask;
+        IsBusy = true;
+        try
+        {
+            SetupConverterPath = await _setupService.ValidateConverterAsync(
+                selected,
+                CancellationToken.None);
+        }
+        catch (ConfluenceSetupValidationException exception)
+        {
+            StateMessage = exception.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void InferSpaceKey(string pageUrl)

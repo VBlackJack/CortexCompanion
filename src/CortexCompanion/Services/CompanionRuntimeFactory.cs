@@ -62,6 +62,8 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
         PagesViewModel pages;
         if (cliValidation.IsValid && cliValidation.AbsolutePath is not null)
         {
+            IReadOnlyList<ConfluenceEnvironmentOverride> overrides =
+                ConfluenceEnvironmentInspector.GetActiveOverrides();
             configPath = ConfluenceConfigPathResolver.Resolve(cliValidation.AbsolutePath);
             IConfluenceCliClient cliClient = new ConfluenceCliClient(
                 _processRunner,
@@ -73,14 +75,24 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
                 cliClient,
                 configStore,
                 new PageMutationConfirmationService());
-            ConfluenceSetupService setup = new(configStore);
+            string? consoleOverride = overrides
+                .SingleOrDefault(item => string.Equals(
+                    item.FieldName,
+                    "console_path",
+                    StringComparison.Ordinal))
+                ?.Value;
+            ConfluenceSetupService setup = new(
+                configStore,
+                new ConfluenceConverterProbe(_processRunner),
+                ConfluenceConverterPathResolver.ResolveDefault(cliValidation.AbsolutePath),
+                consoleOverride);
             pages = new PagesViewModel(
                 cliClient,
                 mutations,
                 setup,
                 _fileDialogs,
                 configPath,
-                ConfluenceEnvironmentInspector.GetActiveOverrides());
+                overrides);
         }
         else
         {
