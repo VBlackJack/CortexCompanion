@@ -18,19 +18,26 @@ synchronization, or scheduling.
 4. To use Confluence, enter the PAT under **Réglages > Authentification
    Confluence** and select **Enregistrer le PAT**. On a new installation,
    Companion uses Cortex's default Windows credential target, `cortex-spike`.
-   Configure `CONFLUENCE.toml` before adding pages or starting a collection.
-5. Open **Base locale** and select **Synchroniser les documents locaux**. This
+5. Open **Pages Confluence** and paste the full URL of the first page. Companion
+   detects the instance and space whenever the URL contains them. Choose the PAT
+   expiry date and classification, then select **Initialiser et ajouter la page**.
+   Legacy `viewpage.action` and short URLs require the space key to be entered.
+6. If Confluence collection is required, optionally select the existing
+   `ConfluenceRAGBuilder.Console.exe` during first-run setup. This external converter
+   is not bundled; page management works without it, but collection does not.
+7. Open **Base locale** and select **Synchroniser les documents locaux**. This
    primary action runs `cortex sync --json`; it does not require Confluence.
 
-The **Pages Confluence** and **Planification Confluence** screens are optional advanced
-integration features. They require a separate Confluence configuration and credential.
-Page mutations remain disabled with an explicit prerequisite until that TOML file exists.
+The **Pages Confluence** screen creates the initial configuration itself. Users do not
+need to find or edit a TOML file. Existing configurations keep their exact advanced
+values and continue through the compare-and-swap mutation path.
 
 ## What users can do
 
 - connect to `cortex.exe` through automatic first-run discovery or a native file picker;
 - choose the Cortex knowledge-base directory;
 - synchronize local documents without a Confluence configuration;
+- initialize Confluence from one page URL without editing TOML;
 - optionally review configured Confluence pages, store a Confluence credential, run
   Confluence collection, and manage its owned Windows scheduled task.
 
@@ -56,9 +63,15 @@ process from the Pages screen.
 ## Configuration ownership
 
 Companion stores its `cortex.exe` path and bounded startup-handshake timeout in
-`%LOCALAPPDATA%\CortexCompanion\settings.json`. It does not write Cortex TOML files.
-The knowledge-base setting is read and changed exclusively through the versioned
-`cortex config get/set --json` compare-and-swap contract.
+`%LOCALAPPDATA%\CortexCompanion\settings.json`. The knowledge-base setting is read and
+changed exclusively through the versioned `cortex config get/set --json`
+compare-and-swap contract.
+
+The first-run Pages card creates `%APPDATA%\Cortex\confluence.toml` through the same
+locked, validated, atomic writer used by later page mutations. It refuses to overwrite a
+file that appeared concurrently. The file contains the inferred base URL, declared PAT
+expiry, explicit space allowlist, local target, classification, and optional converter
+path. It never contains the PAT.
 
 The Confluence PAT is never written to `settings.json` or `CONFLUENCE.toml`. The
 masked Settings field writes it directly to the `credential_target` declared by the
