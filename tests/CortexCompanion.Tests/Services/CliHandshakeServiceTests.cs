@@ -103,7 +103,7 @@ public sealed class CliHandshakeServiceTests
             runner.LastRequest.Arguments.ToArray());
         Assert.AreEqual(executablePath, runner.LastRequest.FilePath);
         Assert.AreEqual(
-            TimeSpan.FromSeconds(AppConstants.DefaultCliHandshakeTimeoutSeconds),
+            TimeSpan.FromSeconds(AppConstants.DefaultCliTimeoutSeconds),
             runner.LastRequest.Timeout);
     }
 

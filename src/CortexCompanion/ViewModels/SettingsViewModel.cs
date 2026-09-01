@@ -23,7 +23,7 @@ public sealed class SettingsViewModel : ViewModelBase
     private readonly IFileDialogService _fileDialogs;
     private readonly IConfluenceCredentialTargetProvider _credentialTargetProvider;
     private readonly IConfluenceCredentialStore _credentialStore;
-    private readonly IReadOnlyList<int> _cliHandshakeTimeoutOptions;
+    private readonly IReadOnlyList<int> _cliTimeoutOptions;
     private readonly AsyncRelayCommand _browseCliCommand;
     private readonly AsyncRelayCommand _saveCliCommand;
     private readonly AsyncRelayCommand _refreshCommand;
@@ -32,7 +32,7 @@ public sealed class SettingsViewModel : ViewModelBase
     private AppSettings _activeSettings = AppSettings.Empty;
     private CortexConfigSnapshot? _configSnapshot;
     private string _cliPath = string.Empty;
-    private int _cliHandshakeTimeoutSeconds = AppConstants.DefaultCliHandshakeTimeoutSeconds;
+    private int _cliTimeoutSeconds = AppConstants.DefaultCliTimeoutSeconds;
     private string _knowledgeBasePath = string.Empty;
     private string _cliValidationMessage = UiStrings.SettingsCliNotConfigured;
     private string _statusMessage = UiStrings.SettingsLoading;
@@ -60,7 +60,7 @@ public sealed class SettingsViewModel : ViewModelBase
         _credentialTargetProvider = credentialTargetProvider ??
             throw new ArgumentNullException(nameof(credentialTargetProvider));
         _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
-        _cliHandshakeTimeoutOptions = AppConstants.CliHandshakeTimeoutOptions;
+        _cliTimeoutOptions = AppConstants.CliTimeoutOptions;
 
         _browseCliCommand = new AsyncRelayCommand(BrowseCliAsync, () => !IsBusy);
         BrowseCliCommand = _browseCliCommand;
@@ -91,16 +91,16 @@ public sealed class SettingsViewModel : ViewModelBase
         }
     }
 
-    /// <summary>Gets the bounded startup timeout choices.</summary>
-    public IReadOnlyList<int> CliHandshakeTimeoutOptions => _cliHandshakeTimeoutOptions;
+    /// <summary>Gets the bounded Cortex CLI timeout choices.</summary>
+    public IReadOnlyList<int> CliTimeoutOptions => _cliTimeoutOptions;
 
-    /// <summary>Gets or sets the maximum wait for the Cortex startup handshake.</summary>
-    public int CliHandshakeTimeoutSeconds
+    /// <summary>Gets or sets the maximum wait for every bounded Cortex CLI operation.</summary>
+    public int CliTimeoutSeconds
     {
-        get => _cliHandshakeTimeoutSeconds;
+        get => _cliTimeoutSeconds;
         set => SetProperty(
-            ref _cliHandshakeTimeoutSeconds,
-            AppConstants.NormalizeCliHandshakeTimeoutSeconds(value));
+            ref _cliTimeoutSeconds,
+            AppConstants.NormalizeCliTimeoutSeconds(value));
     }
 
     /// <summary>Gets or sets the knowledge-base destination projected by Cortex.</summary>
@@ -252,7 +252,7 @@ public sealed class SettingsViewModel : ViewModelBase
         ArgumentNullException.ThrowIfNull(settingsResult);
         _activeSettings = settingsResult.Settings;
         CliPath = settingsResult.Settings.CliPath ?? string.Empty;
-        CliHandshakeTimeoutSeconds = settingsResult.Settings.EffectiveCliHandshakeTimeoutSeconds;
+        CliTimeoutSeconds = settingsResult.Settings.EffectiveCliTimeoutSeconds;
         bool discovered = false;
         if (!CliPathValidator.Validate(CliPath).IsValid)
         {
@@ -394,7 +394,7 @@ public sealed class SettingsViewModel : ViewModelBase
             CompanionRuntime current = _runtimeCoordinator.Current;
             IsCliReady = !current.Handshake.IsReadOnly;
             CliPath = _activeSettings.CliPath ?? string.Empty;
-            CliHandshakeTimeoutSeconds = _activeSettings.EffectiveCliHandshakeTimeoutSeconds;
+            CliTimeoutSeconds = _activeSettings.EffectiveCliTimeoutSeconds;
             CliValidationMessage = CliHandshakePresenter.Format(current.Handshake);
             StatusMessage = IsCliReady
                 ? UiStrings.SettingsCliReplacementFailedPreviousRetained
@@ -413,7 +413,7 @@ public sealed class SettingsViewModel : ViewModelBase
     }
 
     private AppSettings CreateCandidateSettings(string? cliPath) =>
-        new(cliPath, CliHandshakeTimeoutSeconds);
+        new(cliPath, CliTimeoutSeconds);
 
     private async Task RefreshAsync()
     {
@@ -441,7 +441,10 @@ public sealed class SettingsViewModel : ViewModelBase
         bool configRefreshed;
         try
         {
-            CortexConfigSnapshot snapshot = await _configClient.GetAsync(cliPath, cancellationToken);
+            CortexConfigSnapshot snapshot = await _configClient.GetAsync(
+                cliPath,
+                _activeSettings.EffectiveCliTimeout,
+                cancellationToken);
             if (snapshot.Error is not null)
             {
                 LogCliOutcome("config_get", "succeeded", snapshot.Error);
@@ -460,9 +463,11 @@ public sealed class SettingsViewModel : ViewModelBase
         {
             FileLogger.Error("Cortex configuration contract could not be read", exception);
             ClearConfigProjection();
-            ConfigStateText = exception.OutcomeUnknown
-                ? UiStrings.SettingsConfigOutcomeUnknown
-                : UiStrings.SettingsConfigReadFailed;
+            ConfigStateText = exception.TimedOut
+                ? UiStrings.SettingsConfigTimedOut
+                : exception.OutcomeUnknown
+                    ? UiStrings.SettingsConfigOutcomeUnknown
+                    : UiStrings.SettingsConfigReadFailed;
             configRefreshed = false;
         }
 
@@ -533,6 +538,7 @@ public sealed class SettingsViewModel : ViewModelBase
                 Path.GetFullPath(KnowledgeBasePath),
                 _configSnapshot.ContentHash,
                 !_configSnapshot.Present,
+                _activeSettings.EffectiveCliTimeout,
                 CancellationToken.None);
             LogCliOutcome("config_set", result.Status, result.Error);
             StatusMessage = result.Status switch

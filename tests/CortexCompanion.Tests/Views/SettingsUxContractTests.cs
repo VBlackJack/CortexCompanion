@@ -232,7 +232,7 @@ public sealed partial class SettingsUxContractTests
             new(StringComparer.Ordinal)
             {
                 ["PagesNoSpaces"] = "configuré",
-                ["PagesCliError"] = "refusé",
+                ["PagesCliError"] = "échoué",
                 ["WholeSpaceModeDescription"] = "collecté",
                 ["SyncStateReady"] = "rechargé",
                 ["SyncNeverRun"] = "synchronisé",

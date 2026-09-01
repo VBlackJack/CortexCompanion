@@ -66,7 +66,8 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             IConfluenceCliClient cliClient = new ConfluenceCliClient(
                 _processRunner,
                 cliValidation.AbsolutePath,
-                configPath.AbsolutePath);
+                configPath.AbsolutePath,
+                settings.EffectiveCliTimeout);
             IConfluenceConfigStore configStore = new ConfluenceConfigStore(configPath.AbsolutePath);
             PagesMutationService mutations = new(
                 cliClient,

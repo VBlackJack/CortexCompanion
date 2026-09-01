@@ -11,6 +11,7 @@ public interface ICortexConfigClient
     /// <summary>Reads the complete versioned configuration snapshot.</summary>
     Task<CortexConfigSnapshot> GetAsync(
         string cliPath,
+        TimeSpan timeout,
         CancellationToken cancellationToken = default);
 
     /// <summary>Updates the knowledge-base path through the Cortex compare-and-swap contract.</summary>
@@ -19,5 +20,6 @@ public interface ICortexConfigClient
         string knowledgeBasePath,
         string? expectedContentHash,
         bool expectAbsent,
+        TimeSpan timeout,
         CancellationToken cancellationToken = default);
 }

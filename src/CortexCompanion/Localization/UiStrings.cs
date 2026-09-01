@@ -562,11 +562,10 @@ public static class UiStrings
     public static string SettingsCliDescription => GetString(nameof(SettingsCliDescription));
     /// <summary>Gets the CLI path label.</summary>
     public static string SettingsCliPathLabel => GetString(nameof(SettingsCliPathLabel));
-    /// <summary>Gets the startup timeout label.</summary>
-    public static string SettingsCliHandshakeTimeoutLabel => GetString(nameof(SettingsCliHandshakeTimeoutLabel));
-    /// <summary>Gets the startup timeout explanation.</summary>
-    public static string SettingsCliHandshakeTimeoutDescription =>
-        GetString(nameof(SettingsCliHandshakeTimeoutDescription));
+    /// <summary>Gets the shared Cortex CLI timeout label.</summary>
+    public static string SettingsCliTimeoutLabel => GetString(nameof(SettingsCliTimeoutLabel));
+    /// <summary>Gets the shared Cortex CLI timeout explanation.</summary>
+    public static string SettingsCliTimeoutDescription => GetString(nameof(SettingsCliTimeoutDescription));
     /// <summary>Gets the CLI Browse accessible name.</summary>
     public static string SettingsBrowseCliAccessibleName => GetString(nameof(SettingsBrowseCliAccessibleName));
     /// <summary>Gets the Save and connect action.</summary>
@@ -658,6 +657,8 @@ public static class UiStrings
     public static string SettingsConfigInvalid => GetString(nameof(SettingsConfigInvalid));
     /// <summary>Gets the failed configuration read state.</summary>
     public static string SettingsConfigReadFailed => GetString(nameof(SettingsConfigReadFailed));
+    /// <summary>Gets the configuration read timeout state.</summary>
+    public static string SettingsConfigTimedOut => GetString(nameof(SettingsConfigTimedOut));
     /// <summary>Gets the configuration state whose read outcome could not be observed.</summary>
     public static string SettingsConfigOutcomeUnknown => GetString(nameof(SettingsConfigOutcomeUnknown));
     /// <summary>Gets the selected knowledge-base pending state.</summary>

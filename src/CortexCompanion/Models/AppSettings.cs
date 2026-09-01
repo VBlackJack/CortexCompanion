@@ -11,13 +11,20 @@ namespace CortexCompanion.Models;
 /// </summary>
 public sealed record AppSettings(string? CliPath, int? CliHandshakeTimeoutSeconds = null)
 {
-    /// <summary>Gets a validated startup timeout while accepting settings from older releases.</summary>
+    /// <summary>
+    /// Gets the validated timeout shared by every bounded Cortex CLI operation.
+    /// The serialized constructor property keeps its legacy name for settings compatibility.
+    /// </summary>
     [JsonIgnore]
-    public int EffectiveCliHandshakeTimeoutSeconds =>
-        AppConstants.NormalizeCliHandshakeTimeoutSeconds(CliHandshakeTimeoutSeconds);
+    public int EffectiveCliTimeoutSeconds =>
+        AppConstants.NormalizeCliTimeoutSeconds(CliHandshakeTimeoutSeconds);
+
+    /// <summary>Gets the validated shared Cortex CLI timeout as a duration.</summary>
+    [JsonIgnore]
+    public TimeSpan EffectiveCliTimeout => TimeSpan.FromSeconds(EffectiveCliTimeoutSeconds);
 
     /// <summary>Gets an empty settings instance for a first launch or invalid file.</summary>
     public static AppSettings Empty { get; } = new(
         (string?)null,
-        AppConstants.DefaultCliHandshakeTimeoutSeconds);
+        AppConstants.DefaultCliTimeoutSeconds);
 }

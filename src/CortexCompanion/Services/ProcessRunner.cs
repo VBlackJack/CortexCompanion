@@ -38,6 +38,7 @@ public sealed class ProcessRunner : IProcessRunner
     public async Task<ProcessRunResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         ProcessStartInfo startInfo = new()
         {
@@ -110,7 +111,9 @@ public sealed class ProcessRunner : IProcessRunner
                 standardOutputTask,
                 standardErrorTask,
                 outputReadSource);
-            FileLogger.Warn("Cortex CLI process timed out");
+            FileLogger.Warn(
+                $"Cortex CLI process timed out timeoutMilliseconds={(long)request.Timeout.TotalMilliseconds} " +
+                $"elapsedMilliseconds={stopwatch.ElapsedMilliseconds}");
             return ProcessRunResult.Timeout(timedOut.StandardOutput, timedOut.StandardError);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
