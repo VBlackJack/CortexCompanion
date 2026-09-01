@@ -58,18 +58,12 @@ public static class AppConstants
     /// <summary>Gets the shared Cortex compare-and-swap conflict exit code.</summary>
     public const int CliExitConflict = 9;
 
-    /// <summary>Gets the default startup handshake timeout shown to users.</summary>
-    public const int DefaultCliHandshakeTimeoutSeconds = 30;
+    /// <summary>Gets the default timeout shared by bounded Cortex CLI operations.</summary>
+    public const int DefaultCliTimeoutSeconds = 30;
 
-    /// <summary>Gets the bounded startup handshake choices exposed by Companion.</summary>
-    public static IReadOnlyList<int> CliHandshakeTimeoutOptions { get; } =
-        new ReadOnlyCollection<int>([15, DefaultCliHandshakeTimeoutSeconds, 60, 120]);
-
-    /// <summary>Gets the bounded timeout for local Confluence read operations.</summary>
-    public static readonly TimeSpan CliReadTimeout = TimeSpan.FromSeconds(5);
-
-    /// <summary>Gets the bounded timeout for configuration operations.</summary>
-    public static readonly TimeSpan CliConfigurationTimeout = TimeSpan.FromSeconds(15);
+    /// <summary>Gets the bounded Cortex CLI timeout choices exposed by Companion.</summary>
+    public static IReadOnlyList<int> CliTimeoutOptions { get; } =
+        new ReadOnlyCollection<int>([15, DefaultCliTimeoutSeconds, 60, 120]);
 
     /// <summary>Gets the maximum retained characters for each process output stream.</summary>
     public const int MaxProcessOutputCharacters = 16_384;
@@ -162,10 +156,10 @@ public static class AppConstants
     /// <summary>Gets the background log flush period.</summary>
     public static readonly TimeSpan LogFlushInterval = TimeSpan.FromSeconds(2);
 
-    /// <summary>Returns a supported startup timeout or the safe default.</summary>
-    public static int NormalizeCliHandshakeTimeoutSeconds(int? value) =>
-        value is int seconds && CliHandshakeTimeoutOptions.Contains(seconds)
+    /// <summary>Returns a supported Cortex CLI timeout or the safe default.</summary>
+    public static int NormalizeCliTimeoutSeconds(int? value) =>
+        value is int seconds && CliTimeoutOptions.Contains(seconds)
             ? seconds
-            : DefaultCliHandshakeTimeoutSeconds;
+            : DefaultCliTimeoutSeconds;
 }
 

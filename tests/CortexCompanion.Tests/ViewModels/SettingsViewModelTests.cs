@@ -18,7 +18,7 @@ namespace CortexCompanion.Tests.ViewModels;
 public sealed class SettingsViewModelTests
 {
     private const string SnapshotHash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    private static readonly int[] ExpectedHandshakeTimeoutOptions = [15, 30, 60, 120];
+    private static readonly int[] ExpectedCliTimeoutOptions = [15, 30, 60, 120];
     private static readonly string[] ExpectedPersistedSettingsProperties =
         ["cliPath", "cliHandshakeTimeoutSeconds"];
 
@@ -45,24 +45,25 @@ public sealed class SettingsViewModelTests
     }
 
     [TestMethod]
-    public async Task SaveCliAppliesAndPersistsSelectedHandshakeTimeout()
+    public async Task SaveCliAppliesAndPersistsSelectedTimeoutForEveryCliClient()
     {
         using TemporaryDirectory temporary = new();
         string cliPath = temporary.CreateFakeCli();
         TestContext context = await CreateInitializedContextAsync(temporary, cliPath);
         CollectionAssert.AreEqual(
-            ExpectedHandshakeTimeoutOptions,
-            context.ViewModel.CliHandshakeTimeoutOptions.ToArray());
+            ExpectedCliTimeoutOptions,
+            context.ViewModel.CliTimeoutOptions.ToArray());
         Assert.AreEqual(
-            AppConstants.DefaultCliHandshakeTimeoutSeconds,
-            context.ViewModel.CliHandshakeTimeoutSeconds);
-        context.ViewModel.CliHandshakeTimeoutSeconds = 120;
+            AppConstants.DefaultCliTimeoutSeconds,
+            context.ViewModel.CliTimeoutSeconds);
+        context.ViewModel.CliTimeoutSeconds = 120;
 
         await ExecuteAsync(context.ViewModel.SaveCliCommand);
 
         SettingsLoadResult stored = await context.SettingsStore.LoadAsync();
         Assert.AreEqual(120, stored.Settings.CliHandshakeTimeoutSeconds);
         Assert.AreEqual(120, context.Coordinator.LastSettings?.CliHandshakeTimeoutSeconds);
+        Assert.AreEqual(TimeSpan.FromSeconds(120), context.ConfigClient.LastTimeout);
         Assert.AreEqual(UiStrings.SettingsCliSaved, context.ViewModel.StatusMessage);
     }
 
@@ -96,6 +97,24 @@ public sealed class SettingsViewModelTests
         Assert.AreEqual(UiStrings.SettingsConfigOutcomeUnknown, context.ViewModel.ConfigStateText);
         Assert.AreEqual(UiStrings.SettingsConfigOutcomeUnknown, context.ViewModel.StatusMessage);
         Assert.AreNotEqual(UiStrings.SettingsRefreshed, context.ViewModel.StatusMessage);
+    }
+
+    [TestMethod]
+    public async Task RefreshTimeoutShowsActionableConfiguredTimeoutGuidance()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath);
+        context.ConfigClient.GetException = new CortexCliContractException(
+            "Simulated timeout.",
+            outcomeUnknown: true,
+            timedOut: true);
+
+        await ExecuteAsync(context.ViewModel.RefreshCommand);
+
+        Assert.AreEqual(UiStrings.SettingsConfigTimedOut, context.ViewModel.ConfigStateText);
+        Assert.AreEqual(UiStrings.SettingsConfigTimedOut, context.ViewModel.StatusMessage);
+        Assert.Contains("Réglages", context.ViewModel.StatusMessage, StringComparison.Ordinal);
     }
 
     [TestMethod]
@@ -261,10 +280,15 @@ public sealed class SettingsViewModelTests
     {
         public CortexCliContractException? GetException { get; set; }
 
+        public TimeSpan? LastTimeout { get; private set; }
+
         public Task<CortexConfigSnapshot> GetAsync(
             string cliPath,
-            CancellationToken cancellationToken = default) =>
-            GetException is null
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default)
+        {
+            LastTimeout = timeout;
+            return GetException is null
                 ? Task.FromResult(new CortexConfigSnapshot(
                     true,
                     SnapshotHash,
@@ -272,20 +296,25 @@ public sealed class SettingsViewModelTests
                     knowledgeBasePath,
                     null))
                 : Task.FromException<CortexConfigSnapshot>(GetException);
+        }
 
         public Task<CortexConfigMutationResult> SetKnowledgeBasePathAsync(
             string cliPath,
             string knowledgeBasePathValue,
             string? expectedContentHash,
             bool expectAbsent,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult(new CortexConfigMutationResult(
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default)
+        {
+            LastTimeout = timeout;
+            return Task.FromResult(new CortexConfigMutationResult(
                 CortexConfigMutationStatus.Succeeded,
                 true,
                 SnapshotHash,
                 true,
                 true,
                 null));
+        }
     }
 
     private sealed class NullFileDialogs : IFileDialogService

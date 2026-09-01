@@ -97,7 +97,7 @@
   <data name="PageTitleUnknownUntilSync" xml:space="preserve"><value>Titre inconnu jusqu'au prochain sync.</value></data>
   <data name="PageTitleLastSync" xml:space="preserve"><value>Titre au dernier sync du {0}</value></data>
   <data name="PageTitleNeverSynced" xml:space="preserve"><value>Titre issu du dernier état local ; aucune date de sync disponible.</value></data>
-  <data name="PagesCliError" xml:space="preserve"><value>Le CLI a refusé la lecture.</value></data>
+  <data name="PagesCliError" xml:space="preserve"><value>Cortex a échoué pendant la lecture des pages Confluence. Consultez les journaux locaux.</value></data>
   <data name="PagesCliLocked" xml:space="preserve"><value>Le CLI signale un verrou actif.</value></data>
   <data name="PagesCliNotDue" xml:space="preserve"><value>La commande n'est pas due.</value></data>
   <data name="PagesCliAuth" xml:space="preserve"><value>L'authentification Confluence est indisponible.</value></data>
@@ -105,7 +105,7 @@
   <data name="PagesCliInvalidInput" xml:space="preserve"><value>La configuration Confluence ou la référence de page est invalide.</value></data>
   <data name="PagesCliNotFound" xml:space="preserve"><value>La page n'existe pas.</value></data>
   <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>La page appartient à un espace hors allowlist.</value></data>
-  <data name="PagesCliTimedOut" xml:space="preserve"><value>Le CLI n'a pas répondu dans le délai imparti.</value></data>
+  <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré. Augmentez-le dans Réglages, choisissez Enregistrer et connecter, puis réessayez.</value></data>
   <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu être lancé.</value></data>
   <data name="PagesCliInvalidJson" xml:space="preserve"><value>La réponse JSON du CLI est invalide.</value></data>
   <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>L'espace entier est déjà couvert. Basculez explicitement en mode pages avant tout ajout.</value></data>
@@ -285,8 +285,8 @@
   <data name="SettingsCliTitle" xml:space="preserve"><value>1. Connecter Cortex</value></data>
   <data name="SettingsCliDescription" xml:space="preserve"><value>Cortex Companion recherche cortex.exe dans la même installation Cortex (y compris son dossier parent), puis dans l'installation Windows standard. Vous pouvez aussi sélectionner le fichier manuellement.</value></data>
   <data name="SettingsCliPathLabel" xml:space="preserve"><value>Chemin de cortex.exe</value></data>
-  <data name="SettingsCliHandshakeTimeoutLabel" xml:space="preserve"><value>Délai maximal de démarrage de Cortex (secondes)</value></data>
-  <data name="SettingsCliHandshakeTimeoutDescription" xml:space="preserve"><value>Augmentez ce délai sur un ordinateur lent. Companion reste en lecture seule si Cortex ne répond pas avant la limite choisie.</value></data>
+  <data name="SettingsCliTimeoutLabel" xml:space="preserve"><value>Délai maximal des commandes Cortex (secondes)</value></data>
+  <data name="SettingsCliTimeoutDescription" xml:space="preserve"><value>Cette valeur s'applique à la connexion, aux réglages et aux pages Confluence. Augmentez-la sur un ordinateur lent.</value></data>
   <data name="SettingsBrowseCliAccessibleName" xml:space="preserve"><value>Choisir le fichier cortex.exe</value></data>
   <data name="SettingsSaveAndConnect" xml:space="preserve"><value>Enregistrer et connecter</value></data>
   <data name="SettingsKnowledgeBaseTitle" xml:space="preserve"><value>2. Base de connaissances</value></data>
@@ -327,6 +327,7 @@
   <data name="SettingsConfigDefaults" xml:space="preserve"><value>Aucun fichier utilisateur n'existe encore. Cortex utilise ses valeurs par défaut.</value></data>
   <data name="SettingsConfigInvalid" xml:space="preserve"><value>La configuration Cortex est invalide. Un nouvel enregistrement la reconstruira depuis les valeurs par défaut en conservant une sauvegarde.</value></data>
   <data name="SettingsConfigReadFailed" xml:space="preserve"><value>La réponse de configuration Cortex n'a pas pu être authentifiée. Ne lancez aucune modification et consultez les journaux locaux.</value></data>
+  <data name="SettingsConfigTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré pendant la lecture locale. Augmentez-le dans Réglages, choisissez Enregistrer et connecter, puis réessayez.</value></data>
   <data name="SettingsConfigOutcomeUnknown" xml:space="preserve"><value>Cortex n'a pas terminé la lecture de la configuration locale. Ne lancez aucune modification. Redémarrez Cortex Companion avant de réessayer.</value></data>
   <data name="SettingsKnowledgeBaseSelectionPending" xml:space="preserve"><value>Dossier sélectionné. Enregistrez-le pour appliquer le changement à Cortex.</value></data>
   <data name="SettingsKnowledgeBaseInvalid" xml:space="preserve"><value>Choisissez un dossier existant avec un chemin absolu.</value></data>

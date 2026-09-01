@@ -25,11 +25,11 @@ public sealed class SettingsStoreTests
 
         Assert.AreEqual(SettingsLoadState.Loaded, loaded.State);
         Assert.AreEqual(expected, loaded.Settings);
-        Assert.IsFalse(storedJson.Contains("effectiveCliHandshakeTimeoutSeconds", StringComparison.Ordinal));
+        Assert.IsFalse(storedJson.Contains("effectiveCliTimeoutSeconds", StringComparison.Ordinal));
     }
 
     [TestMethod]
-    public async Task LoadAsyncLegacyFileUsesDefaultHandshakeTimeout()
+    public async Task LoadAsyncLegacyFileUsesDefaultCliTimeout()
     {
         using TemporaryDirectory temporaryDirectory = new();
         string settingsPath = Path.Combine(temporaryDirectory.Path, "settings.json");
@@ -42,12 +42,12 @@ public sealed class SettingsStoreTests
 
         Assert.AreEqual(SettingsLoadState.Loaded, loaded.State);
         Assert.AreEqual(
-            AppConstants.DefaultCliHandshakeTimeoutSeconds,
-            loaded.Settings.EffectiveCliHandshakeTimeoutSeconds);
+            AppConstants.DefaultCliTimeoutSeconds,
+            loaded.Settings.EffectiveCliTimeoutSeconds);
     }
 
     [TestMethod]
-    public async Task LoadAsyncUnsupportedHandshakeTimeoutUsesSafeDefault()
+    public async Task LoadAsyncUnsupportedCliTimeoutUsesSafeDefault()
     {
         using TemporaryDirectory temporaryDirectory = new();
         string settingsPath = Path.Combine(temporaryDirectory.Path, "settings.json");
@@ -60,8 +60,8 @@ public sealed class SettingsStoreTests
 
         Assert.AreEqual(SettingsLoadState.Loaded, loaded.State);
         Assert.AreEqual(
-            AppConstants.DefaultCliHandshakeTimeoutSeconds,
-            loaded.Settings.EffectiveCliHandshakeTimeoutSeconds);
+            AppConstants.DefaultCliTimeoutSeconds,
+            loaded.Settings.EffectiveCliTimeoutSeconds);
     }
 
     [TestMethod]

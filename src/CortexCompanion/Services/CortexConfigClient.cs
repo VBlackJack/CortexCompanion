@@ -22,11 +22,13 @@ public sealed class CortexConfigClient : ICortexConfigClient
     /// <inheritdoc />
     public async Task<CortexConfigSnapshot> GetAsync(
         string cliPath,
+        TimeSpan timeout,
         CancellationToken cancellationToken = default)
     {
         ProcessRunResult processResult = await RunAsync(
             cliPath,
             ["config", "get", "--json"],
+            timeout,
             cancellationToken);
         if (processResult.ExitCode != 0)
         {
@@ -90,6 +92,7 @@ public sealed class CortexConfigClient : ICortexConfigClient
         string knowledgeBasePath,
         string? expectedContentHash,
         bool expectAbsent,
+        TimeSpan timeout,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(knowledgeBasePath);
@@ -115,7 +118,7 @@ public sealed class CortexConfigClient : ICortexConfigClient
 
         arguments.Add("--kb-path");
         arguments.Add(knowledgeBasePath);
-        ProcessRunResult processResult = await RunAsync(cliPath, arguments, cancellationToken);
+        ProcessRunResult processResult = await RunAsync(cliPath, arguments, timeout, cancellationToken);
         using JsonDocument document = ParseDocument(processResult.StandardOutput);
         JsonElement root = document.RootElement;
         ValidateEnvelope(root, "config_set");
@@ -182,15 +185,25 @@ public sealed class CortexConfigClient : ICortexConfigClient
     private async Task<ProcessRunResult> RunAsync(
         string cliPath,
         IReadOnlyList<string> arguments,
+        TimeSpan timeout,
         CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(cliPath);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(timeout, TimeSpan.Zero);
         ProcessRequest request = new(
             cliPath,
             arguments,
-            AppConstants.CliConfigurationTimeout,
+            timeout,
             AppConstants.MaxProcessOutputCharacters);
         ProcessRunResult result = await _processRunner.RunAsync(request, cancellationToken);
+        if (result.TimedOut)
+        {
+            throw new CortexCliContractException(
+                "Cortex configuration operation exceeded the configured timeout.",
+                outcomeUnknown: true,
+                timedOut: true);
+        }
+
         if (result.OutcomeUnknown)
         {
             throw new CortexCliContractException(

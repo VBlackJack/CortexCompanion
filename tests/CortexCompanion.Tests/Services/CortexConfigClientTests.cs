@@ -39,6 +39,7 @@ public sealed class CortexConfigClientTests
     private static readonly string[] GetArguments = ["config", "get", "--json"];
     private static readonly string[] SetAbsentArguments =
         ["config", "set", "--json", "--expect-absent", "--kb-path", "G:/Knowledge"];
+    private static readonly TimeSpan ConfiguredTimeout = TimeSpan.FromSeconds(120);
 
     [TestMethod]
     public async Task GetAsyncProjectsVersionedSnapshotAndUsesOnlyJsonCli()
@@ -46,7 +47,9 @@ public sealed class CortexConfigClientTests
         StubProcessRunner runner = new(ProcessRunResult.Completed(0, ValidGetJson, string.Empty));
         CortexConfigClient client = new(runner);
 
-        CortexConfigSnapshot snapshot = await client.GetAsync(@"C:\Cortex\cortex.exe");
+        CortexConfigSnapshot snapshot = await client.GetAsync(
+            @"C:\Cortex\cortex.exe",
+            timeout: ConfiguredTimeout);
 
         Assert.IsTrue(snapshot.IsValid);
         Assert.AreEqual("G:/Knowledge", snapshot.KnowledgeBasePath);
@@ -54,6 +57,7 @@ public sealed class CortexConfigClientTests
         CollectionAssert.AreEqual(
             GetArguments,
             runner.LastRequest.Arguments.ToArray());
+        Assert.AreEqual(ConfiguredTimeout, runner.LastRequest.Timeout);
     }
 
     [TestMethod]
@@ -81,7 +85,8 @@ public sealed class CortexConfigClientTests
             @"C:\Cortex\cortex.exe",
             "G:/Knowledge",
             expectedContentHash: null,
-            expectAbsent: true);
+            expectAbsent: true,
+            timeout: ConfiguredTimeout);
 
         Assert.AreEqual(CortexConfigMutationStatus.Succeeded, result.Status);
         Assert.IsTrue(result.ReindexRequired);
@@ -116,7 +121,8 @@ public sealed class CortexConfigClientTests
             @"C:\Cortex\cortex.exe",
             "G:/Knowledge",
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            expectAbsent: false);
+            expectAbsent: false,
+            timeout: ConfiguredTimeout);
 
         Assert.AreEqual(CortexConfigMutationStatus.Succeeded, result.Status);
         Assert.IsFalse(result.ReindexRequired);
@@ -147,7 +153,8 @@ public sealed class CortexConfigClientTests
             @"C:\Cortex\cortex.exe",
             "G:/Knowledge",
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            expectAbsent: false);
+            expectAbsent: false,
+            timeout: ConfiguredTimeout);
 
         Assert.AreEqual(CortexConfigMutationStatus.Conflict, result.Status);
         Assert.AreEqual("hash_mismatch", result.Error?.Code);
@@ -164,7 +171,7 @@ public sealed class CortexConfigClientTests
             new StubProcessRunner(ProcessRunResult.Completed(0, json, string.Empty)));
 
         await Assert.ThrowsAsync<CortexCliContractException>(
-            () => client.GetAsync(@"C:\Cortex\cortex.exe"));
+            () => client.GetAsync(@"C:\Cortex\cortex.exe", ConfiguredTimeout));
     }
 
     [TestMethod]
@@ -200,7 +207,7 @@ public sealed class CortexConfigClientTests
             new StubProcessRunner(ProcessRunResult.Completed(0, json, string.Empty)));
 
         await Assert.ThrowsAsync<CortexCliContractException>(
-            () => client.GetAsync(@"C:\Cortex\cortex.exe"));
+            () => client.GetAsync(@"C:\Cortex\cortex.exe", ConfiguredTimeout));
     }
 
     [TestMethod]
@@ -222,7 +229,8 @@ public sealed class CortexConfigClientTests
             @"C:\Cortex\cortex.exe",
             "G:/Knowledge",
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            expectAbsent: false);
+            expectAbsent: false,
+            timeout: ConfiguredTimeout);
 
         Assert.AreEqual(expectedStatus, result.Status);
         Assert.AreEqual(code, result.Error?.Code);
@@ -239,7 +247,8 @@ public sealed class CortexConfigClientTests
             @"C:\Cortex\cortex.exe",
             "G:/Knowledge",
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            expectAbsent: false));
+            expectAbsent: false,
+            timeout: ConfiguredTimeout));
     }
 
     [TestMethod]
@@ -272,7 +281,8 @@ public sealed class CortexConfigClientTests
             @"C:\Cortex\cortex.exe",
             "G:/Knowledge",
             expectedContentHash: null,
-            expectAbsent: true));
+            expectAbsent: true,
+            timeout: ConfiguredTimeout));
     }
 
     [TestMethod]
@@ -282,9 +292,10 @@ public sealed class CortexConfigClientTests
             new StubProcessRunner(ProcessRunResult.Timeout(string.Empty, string.Empty)));
 
         CortexCliContractException exception = await Assert.ThrowsAsync<CortexCliContractException>(
-            () => client.GetAsync(@"C:\Cortex\cortex.exe"));
+            () => client.GetAsync(@"C:\Cortex\cortex.exe", ConfiguredTimeout));
 
         Assert.IsTrue(exception.OutcomeUnknown);
+        Assert.IsTrue(exception.TimedOut);
     }
 
     private static string InvalidGetJson(string? path) => $$"""

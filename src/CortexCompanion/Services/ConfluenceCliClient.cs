@@ -19,13 +19,20 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
     private readonly IProcessRunner _processRunner;
     private readonly string _cliPath;
     private readonly string _configPath;
+    private readonly TimeSpan _timeout;
 
-    /// <summary>Initializes a session-bound client with one absolute CLI path and one absolute TOML path.</summary>
-    public ConfluenceCliClient(IProcessRunner processRunner, string cliPath, string configPath)
+    /// <summary>Initializes a session-bound client with absolute paths and the validated shared timeout.</summary>
+    public ConfluenceCliClient(
+        IProcessRunner processRunner,
+        string cliPath,
+        string configPath,
+        TimeSpan timeout)
     {
         _processRunner = processRunner ?? throw new ArgumentNullException(nameof(processRunner));
         _cliPath = Path.GetFullPath(cliPath ?? throw new ArgumentNullException(nameof(cliPath)));
         _configPath = Path.GetFullPath(configPath ?? throw new ArgumentNullException(nameof(configPath)));
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(timeout, TimeSpan.Zero);
+        _timeout = timeout;
     }
 
     /// <inheritdoc />
@@ -67,7 +74,7 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             new ProcessRequest(
                 _cliPath,
                 arguments,
-                AppConstants.CliReadTimeout,
+                _timeout,
                 AppConstants.MaxProcessOutputCharacters),
             cancellationToken);
         CortexExitCode exitCode = MapExitCode(processResult.ExitCode);

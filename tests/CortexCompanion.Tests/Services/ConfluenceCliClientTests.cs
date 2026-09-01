@@ -1,7 +1,6 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
-using CortexCompanion.Constants;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 using CortexCompanion.Tests.TestSupport;
@@ -11,6 +10,8 @@ namespace CortexCompanion.Tests.Services;
 [TestClass]
 public sealed class ConfluenceCliClientTests
 {
+    private static readonly TimeSpan ConfiguredTimeout = TimeSpan.FromSeconds(120);
+
     [TestMethod]
     public void MapExitCodeImplementsCompleteFrozenTable()
     {
@@ -42,7 +43,7 @@ public sealed class ConfluenceCliClientTests
             string.Empty));
         string cliPath = Path.GetFullPath(@"C:\tools\cortex.exe");
         string configPath = Path.GetFullPath(@"C:\config\confluence.toml");
-        ConfluenceCliClient client = new(runner, cliPath, configPath);
+        ConfluenceCliClient client = new(runner, cliPath, configPath, ConfiguredTimeout);
 
         ConfluenceCliResult<PagesContract> result = await client.GetPagesAsync(CancellationToken.None);
 
@@ -50,14 +51,18 @@ public sealed class ConfluenceCliClientTests
         CollectionAssert.AreEqual(
             new[] { "confluence", "--config", configPath, "pages", "--json" },
             runner.LastRequest!.Arguments.ToArray());
-        Assert.AreEqual(AppConstants.CliReadTimeout, runner.LastRequest.Timeout);
+        Assert.AreEqual(ConfiguredTimeout, runner.LastRequest.Timeout);
     }
 
     [TestMethod]
     public async Task NonzeroResolveDoesNotParseStdout()
     {
         StubProcessRunner runner = new(ProcessRunResult.Completed(7, "{not-json", "page absente"));
-        ConfluenceCliClient client = new(runner, @"C:\tools\cortex.exe", @"C:\config\confluence.toml");
+        ConfluenceCliClient client = new(
+            runner,
+            @"C:\tools\cortex.exe",
+            @"C:\config\confluence.toml",
+            ConfiguredTimeout);
 
         ConfluenceCliResult<ResolvedPageContract> result = await client.ResolveAsync("123", CancellationToken.None);
 

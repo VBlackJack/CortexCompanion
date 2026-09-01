@@ -46,7 +46,7 @@ public sealed class CliHandshakeService : ICliHandshakeService
             return new CliHandshakeResult(CliHandshakeStatus.NotConfigured, null);
         }
 
-        int timeoutSeconds = settings.EffectiveCliHandshakeTimeoutSeconds;
+        int timeoutSeconds = settings.EffectiveCliTimeoutSeconds;
         ProcessRequest request = new(
             validation.AbsolutePath,
             [AppConstants.CliVersionArgument],

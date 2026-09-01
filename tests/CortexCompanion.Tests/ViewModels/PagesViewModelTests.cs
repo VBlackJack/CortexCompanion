@@ -77,6 +77,42 @@ public sealed class PagesViewModelTests
     }
 
     [TestMethod]
+    public async Task RefreshTimeoutExplainsWhereToIncreaseTheSharedCliLimit()
+    {
+        using TemporaryDirectory temporary = new();
+        string configPath = Path.Combine(temporary.Path, "confluence.toml");
+        await File.WriteAllTextAsync(configPath, "schema_version = 2\n");
+        StubCliClient cliClient = new()
+        {
+            PagesResult = new ConfluenceCliResult<PagesContract>(
+                CortexExitCode.Error,
+                null,
+                string.Empty,
+                true,
+                null),
+        };
+        PagesViewModel viewModel = new(
+            cliClient,
+            new PagesMutationService(
+                cliClient,
+                new StubConfigStore(),
+                new RejectingConfirmationService()),
+            null,
+            null,
+            new ConfluenceConfigPathResolution(
+                configPath,
+                ConfluenceConfigPathOrigin.Default,
+                "APPDATA"),
+            []);
+
+        await viewModel.InitializeAsync(isReadOnly: false);
+
+        Assert.AreEqual(UiStrings.PagesCliTimedOut, viewModel.StateMessage);
+        Assert.Contains("Réglages", viewModel.StateMessage, StringComparison.Ordinal);
+        Assert.DoesNotContain("refusé", viewModel.StateMessage, StringComparison.Ordinal);
+    }
+
+    [TestMethod]
     public async Task FirstRunInfersSpaceCreatesConfigurationAndAddsConfirmedPage()
     {
         using TemporaryDirectory temporary = new();
@@ -117,6 +153,8 @@ public sealed class PagesViewModelTests
 
     private sealed class StubCliClient : IConfluenceCliClient
     {
+        public ConfluenceCliResult<PagesContract>? PagesResult { get; init; }
+
         public int GetPagesCount { get; private set; }
 
         public int ResolveCount { get; private set; }
@@ -125,7 +163,7 @@ public sealed class PagesViewModelTests
             CancellationToken cancellationToken)
         {
             GetPagesCount++;
-            return Task.FromResult(new ConfluenceCliResult<PagesContract>(
+            return Task.FromResult(PagesResult ?? new ConfluenceCliResult<PagesContract>(
                 CortexExitCode.Ok,
                 new PagesContract
                 {

@@ -60,18 +60,18 @@
                                TextWrapping="Wrap"
                                AutomationProperties.LiveSetting="Polite"
                                Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock x:Name="CliHandshakeTimeoutLabel"
-                               Text="{x:Static localization:UiStrings.SettingsCliHandshakeTimeoutLabel}"
+                    <TextBlock x:Name="CliTimeoutLabel"
+                               Text="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
                                Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliHandshakeTimeoutDescription}"
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliTimeoutDescription}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
-                    <ComboBox ItemsSource="{Binding CliHandshakeTimeoutOptions}"
-                              SelectedItem="{Binding CliHandshakeTimeoutSeconds, Mode=TwoWay}"
+                    <ComboBox ItemsSource="{Binding CliTimeoutOptions}"
+                              SelectedItem="{Binding CliTimeoutSeconds, Mode=TwoWay}"
                               Width="{StaticResource SettingsInputWidth}"
                               HorizontalAlignment="Left"
-                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsCliHandshakeTimeoutLabel}"
+                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
                               Margin="{StaticResource MarginSectionBottom}" />
                     <Button Content="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
                             AutomationProperties.Name="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
