@@ -15,6 +15,7 @@ namespace CortexCompanion.Tests.Themes;
 public sealed class ThemeContrastTests
 {
     private const double MinimumContrastRatio = 4.5;
+    private const double MinimumNonTextContrastRatio = 3.0;
     private static readonly Regex HexColorPattern = new("#[0-9A-Fa-f]{6,8}", RegexOptions.CultureInvariant);
 
     private static readonly ThemeContrastCase[] ContrastCases =
@@ -35,6 +36,30 @@ public sealed class ThemeContrastTests
         new("Combo item hover", "BackgroundBrush", "AccentHoverBrush"),
         new("Combo item selected", "BackgroundBrush", "AccentBrush"),
         new("ToolTip rest", "TextPrimaryBrush", "CardBrush"),
+        // Semantic states carry meaning in the views, so they are guarded too.
+        new("Secondary text on a card", "TextSecondaryBrush", "SurfaceBrush"),
+        new("Secondary text on the page", "TextSecondaryBrush", "BackgroundBrush"),
+        new("Secondary text on a highlighted row", "TextSecondaryBrush", "HighlightBrush"),
+        new("Primary text on a highlighted row", "TextPrimaryBrush", "HighlightBrush"),
+        new("Error text on a card", "ErrorBrush", "SurfaceBrush"),
+        new("Error text on the page", "ErrorBrush", "BackgroundBrush"),
+        new("Success text on a card", "SuccessBrush", "SurfaceBrush"),
+        new("Info text on a card", "InfoBrush", "SurfaceBrush"),
+        new("Warning text on a card", "WarningBrush", "SurfaceBrush"),
+        new("Warning banner text", "BackgroundBrush", "WarningBrush"),
+        new("Accent emphasis on a card", "AccentBrush", "SurfaceBrush"),
+    ];
+
+    // WCAG 1.4.11: borders and focus rings are non-text, so they answer to 3:1.
+    private static readonly ThemeContrastCase[] NonTextContrastCases =
+    [
+        new("Card border on the page", "BorderBrush", "BackgroundBrush"),
+        new("Border inside a card", "BorderBrush", "SurfaceBrush"),
+        new("Border on a highlighted row", "BorderBrush", "HighlightBrush"),
+        new("Border on a secondary button", "BorderBrush", "CardBrush"),
+        new("Focus ring on the page", "FocusIndicatorBrush", "BackgroundBrush"),
+        new("Focus ring on a card", "FocusIndicatorBrush", "SurfaceBrush"),
+        new("Focus ring on a secondary button", "FocusIndicatorBrush", "CardBrush"),
     ];
 
     /// <summary>Ensures every interactive text and background pair meets WCAG AA.</summary>
@@ -56,6 +81,29 @@ public sealed class ThemeContrastTests
                     ratio,
                     $"{contrastCase.Name}: {contrastCase.ForegroundKey}/{contrastCase.BackgroundKey} " +
                     $"has contrast {ratio:F4}:1, below {MinimumContrastRatio:F1}:1.");
+            }
+        });
+    }
+
+    /// <summary>Ensures borders and focus rings stay perceivable at the non-text floor.</summary>
+    [TestMethod]
+    public void NonTextThemeAffordancesMeetMinimumContrast()
+    {
+        RunInSta(() =>
+        {
+            ResourceDictionary theme = LoadTheme();
+
+            foreach (ThemeContrastCase contrastCase in NonTextContrastCases)
+            {
+                Color foreground = GetBrush(theme, contrastCase.ForegroundKey).Color;
+                Color background = GetBrush(theme, contrastCase.BackgroundKey).Color;
+                double ratio = CalculateContrastRatio(foreground, background);
+
+                Assert.IsGreaterThanOrEqualTo(
+                    MinimumNonTextContrastRatio,
+                    ratio,
+                    $"{contrastCase.Name}: {contrastCase.ForegroundKey}/{contrastCase.BackgroundKey} " +
+                    $"has contrast {ratio:F4}:1, below {MinimumNonTextContrastRatio:F1}:1.");
             }
         });
     }

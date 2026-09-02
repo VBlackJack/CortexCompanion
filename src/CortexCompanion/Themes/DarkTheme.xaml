@@ -13,7 +13,7 @@
     <Color x:Key="AccentPressedColor">#A67AF7</Color>
     <Color x:Key="TextPrimaryColor">#F8F8F2</Color>
     <Color x:Key="TextSecondaryColor">#BFC4D6</Color>
-    <Color x:Key="BorderColor">#6272A4</Color>
+    <Color x:Key="BorderColor">#7D92D2</Color>
     <Color x:Key="HighlightColor">#343746</Color>
     <Color x:Key="SuccessColor">#50FA7B</Color>
     <Color x:Key="WarningColor">#FFB86C</Color>
