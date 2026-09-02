@@ -75,6 +75,8 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("SchedulingErrorUnexpectedFormat"));
     private static readonly CompositeFormat SettingsConfluenceCredentialReadyFormat =
         CompositeFormat.Parse(GetString("SettingsConfluenceCredentialReadyFormat"));
+    private static readonly CompositeFormat LabelledValueFormat =
+        CompositeFormat.Parse(GetString("LabelledValueFormat"));
     /// <summary>Gets the application title.</summary>
     public static string AppTitle => GetString(nameof(AppTitle));
 
@@ -821,6 +823,47 @@ public static class UiStrings
     /// <summary>Formats the compatible-version handshake status.</summary>
     public static string FormatHandshakeCompatible(string version) =>
         string.Format(CultureInfo.CurrentCulture, HandshakeCompatibleFormat, version);
+
+    /// <summary>Formats one label and its value as a single unbreakable run of text.</summary>
+    public static string FormatLabelledValue(string label, string value) =>
+        string.Format(CultureInfo.CurrentCulture, LabelledValueFormat, label, value);
+
+    /// <summary>Gets the refusal shown when a pasted page URL is not TLS-protected.</summary>
+    public static string ConfluenceSetupInsecurePageUrl =>
+        GetString(nameof(ConfluenceSetupInsecurePageUrl));
+
+    /// <summary>Gets the label of the action that stops the running operation.</summary>
+    public static string SyncCancel => GetString(nameof(SyncCancel));
+
+    /// <summary>Gets the title of the stop confirmation.</summary>
+    public static string SyncCancelConfirmTitle => GetString(nameof(SyncCancelConfirmTitle));
+
+    /// <summary>Gets the exact consequence of stopping local indexing.</summary>
+    public static string SyncCancelConfirmLocal => GetString(nameof(SyncCancelConfirmLocal));
+
+    /// <summary>Gets the exact consequence of stopping a Confluence collection.</summary>
+    public static string SyncCancelConfirmConfluence => GetString(nameof(SyncCancelConfirmConfluence));
+
+    /// <summary>Gets the terminal state of a run the user stopped.</summary>
+    public static string SyncCancelled => GetString(nameof(SyncCancelled));
+
+    /// <summary>Gets the honest outcome when no live worker was left to stop.</summary>
+    public static string SyncCancelFailed => GetString(nameof(SyncCancelFailed));
+
+    /// <summary>Gets the title of the close-during-run confirmation.</summary>
+    public static string CloseDuringRunTitle => GetString(nameof(CloseDuringRunTitle));
+
+    /// <summary>Gets the consequence of closing the window while a worker runs.</summary>
+    public static string CloseDuringRunMessage => GetString(nameof(CloseDuringRunMessage));
+
+    /// <summary>Gets the note stating that raw CLI diagnostics are English.</summary>
+    public static string SyncDiagnosticsLanguageNote => GetString(nameof(SyncDiagnosticsLanguageNote));
+
+    /// <summary>Gets the refresh keyboard-shortcut hint.</summary>
+    public static string ShortcutRefreshHint => GetString(nameof(ShortcutRefreshHint));
+
+    /// <summary>Gets the save keyboard-shortcut hint.</summary>
+    public static string ShortcutSaveHint => GetString(nameof(ShortcutSaveHint));
 
     private static string GetString(string name) =>
         ResourceManager.GetString(name, CultureInfo.CurrentUICulture) ?? name;

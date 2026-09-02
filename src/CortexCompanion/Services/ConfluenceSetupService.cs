@@ -196,6 +196,15 @@ public static class ConfluencePageUrlAnalyzer
             throw InvalidPageUrl();
         }
 
+        // Refuse a cleartext origin here, where the user can still fix the URL,
+        // rather than at the later write that Cortex would reject anyway.
+        if (uri.Scheme == Uri.UriSchemeHttp &&
+            !uri.IsLoopback &&
+            !string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ConfluenceSetupValidationException(UiStrings.ConfluenceSetupInsecurePageUrl);
+        }
+
         string path = uri.AbsolutePath;
         int markerIndex;
         string? inferredSpace = null;

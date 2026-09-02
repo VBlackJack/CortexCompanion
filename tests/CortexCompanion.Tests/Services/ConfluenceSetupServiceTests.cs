@@ -280,4 +280,30 @@ public sealed class ConfluenceSetupServiceTests
             return Task.FromResult(result);
         }
     }
+
+    [TestMethod]
+    [DataRow("http://wiki.example.test/spaces/DOC/pages/1001/Page")]
+    [DataRow("http://10.0.0.5:8090/spaces/DOC/pages/1001/Page")]
+    public void AnalyzeRefusesACleartextRemoteOrigin(string pageUrl)
+    {
+        // The PAT rides every request as a bearer header, so the user must be
+        // told at paste time, not after a rejected write.
+        ConfluenceSetupValidationException failure =
+            Assert.ThrowsExactly<ConfluenceSetupValidationException>(
+                () => ConfluencePageUrlAnalyzer.Analyze(pageUrl));
+
+        Assert.AreEqual(UiStrings.ConfluenceSetupInsecurePageUrl, failure.Message);
+    }
+
+    [TestMethod]
+    [DataRow("https://wiki.example.test/spaces/DOC/pages/1001/Page")]
+    [DataRow("http://localhost:8090/spaces/DOC/pages/1001/Page")]
+    [DataRow("http://127.0.0.1:8090/spaces/DOC/pages/1001/Page")]
+    public void AnalyzeAcceptsTlsAndLoopbackOrigins(string pageUrl)
+    {
+        ConfluencePageUrlAnalysis analysis = ConfluencePageUrlAnalyzer.Analyze(pageUrl);
+
+        StringAssert.StartsWith(analysis.BaseUrl, pageUrl[..pageUrl.IndexOf("/spaces", StringComparison.Ordinal)]);
+        Assert.AreEqual("DOC", analysis.InferredSpaceKey);
+    }
 }

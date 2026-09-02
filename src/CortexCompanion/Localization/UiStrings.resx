@@ -376,4 +376,17 @@
   <data name="SyncTechnicalDetails" xml:space="preserve"><value>Afficher les détails techniques</value></data>
   <data name="SyncDiagnosticsSummaryTitle" xml:space="preserve"><value>Compteurs et diagnostic</value></data>
   <data name="SyncRawOutputTitle" xml:space="preserve"><value>Sorties de la commande</value></data>
+  <data name="ConfluenceSetupInsecurePageUrl" xml:space="preserve"><value>Cette adresse utilise http. Le jeton Confluence circulerait en clair sur le réseau. Utilisez l'adresse https de votre instance.</value></data>
+  <data name="LabelledValueFormat" xml:space="preserve"><value>{0} : {1}</value></data>
+  <data name="SyncCancel" xml:space="preserve"><value>Interrompre</value></data>
+  <data name="SyncCancelConfirmTitle" xml:space="preserve"><value>Interrompre l'opération en cours</value></data>
+  <data name="SyncCancelConfirmLocal" xml:space="preserve"><value>L'indexation des documents locaux va être arrêtée immédiatement. L'index déjà écrit est conservé et sera complété à la prochaine synchronisation. Interrompre ?</value></data>
+  <data name="SyncCancelConfirmConfluence" xml:space="preserve"><value>La collecte Confluence va être arrêtée immédiatement. La génération publiée précédente reste intacte ; la collecte en cours est abandonnée. Interrompre ?</value></data>
+  <data name="SyncCancelled" xml:space="preserve"><value>Opération interrompue à votre demande.</value></data>
+  <data name="SyncCancelFailed" xml:space="preserve"><value>L'opération n'a pas pu être interrompue ; elle était probablement déjà terminée.</value></data>
+  <data name="CloseDuringRunTitle" xml:space="preserve"><value>Une opération est en cours</value></data>
+  <data name="CloseDuringRunMessage" xml:space="preserve"><value>Une opération Cortex est en cours. Si vous fermez Cortex Companion maintenant, elle continue en arrière-plan et vous ne verrez plus sa progression. Fermer quand même ?</value></data>
+  <data name="SyncDiagnosticsLanguageNote" xml:space="preserve"><value>Sortie brute de la ligne de commande Cortex. Ces messages sont en anglais.</value></data>
+  <data name="ShortcutRefreshHint" xml:space="preserve"><value>Raccourci : F5</value></data>
+  <data name="ShortcutSaveHint" xml:space="preserve"><value>Raccourci : Ctrl+S</value></data>
 </root>

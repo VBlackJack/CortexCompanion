@@ -224,4 +224,35 @@ public sealed class ConfluenceConfigParserRendererTests
         Assert.Throws<ConfluenceConfigValidationException>(() =>
             ConfluenceConfigParser.Parse(withoutOffset, "local.toml"));
     }
+
+    [TestMethod]
+    [DataRow("http://wiki.example.test")]
+    [DataRow("http://10.0.0.5:8090/confluence")]
+    public void ParserRefusesACleartextRemoteBaseUrl(string baseUrl)
+    {
+        // Companion must never write a configuration that Cortex will reject.
+        ConfluenceConfigValidationException failure =
+            Assert.ThrowsExactly<ConfluenceConfigValidationException>(
+                () => ConfluenceConfigParser.Parse(Encoding.UTF8.GetBytes(MinimalToml(baseUrl)), "confluence.toml"));
+
+        StringAssert.Contains(failure.Message, "https");
+    }
+
+    [TestMethod]
+    [DataRow("https://wiki.example.test")]
+    [DataRow("http://localhost:8090")]
+    [DataRow("http://127.0.0.1:8090")]
+    public void ParserAcceptsTlsAndLoopbackBaseUrls(string baseUrl)
+    {
+        Assert.AreEqual(
+            baseUrl,
+            ConfluenceConfigParser.Parse(Encoding.UTF8.GetBytes(MinimalToml(baseUrl)), "confluence.toml").BaseUrl);
+    }
+
+    private static string MinimalToml(string baseUrl) => string.Join(
+        "\n",
+        "schema_version = 1",
+        $"base_url = \"{baseUrl}\"",
+        "auth_expires_at = 2026-11-01T00:00:00+01:00",
+        string.Empty);
 }

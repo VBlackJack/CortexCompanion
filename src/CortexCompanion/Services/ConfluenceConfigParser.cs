@@ -237,8 +237,19 @@ public sealed partial class ConfluenceConfigParser
             throw Invalid(sourcePath, "base_url must be an HTTP(S) URL without credentials or query.");
         }
 
+        // Cortex refuses a cleartext remote origin because the PAT rides every
+        // request as a bearer header. Companion must not write what Cortex rejects.
+        if (uri.Scheme == Uri.UriSchemeHttp && !IsLoopback(uri))
+        {
+            throw Invalid(sourcePath, "base_url must use https outside loopback.");
+        }
+
         return normalized;
     }
+
+    private static bool IsLoopback(Uri uri) =>
+        uri.IsLoopback ||
+        string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase);
 
     private static void ValidateTarget(string value, string sourcePath)
     {
