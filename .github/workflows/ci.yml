@@ -15,7 +15,7 @@ name: ci
 
 on:
   push:
-    branches: [main, "codex/**"]
+    branches: [main, "claude/**", "claude-code/**", "codex/**"]
   pull_request:
     branches: [main]
 
@@ -41,6 +41,15 @@ jobs:
 
       - name: Restore locked dependencies
         run: dotnet restore CortexCompanion.sln --locked-mode
+
+      - name: Audit dependencies for known vulnerabilities
+        shell: pwsh
+        run: |
+          $report = dotnet list CortexCompanion.sln package --vulnerable --include-transitive
+          $report | Write-Output
+          if ($report -match "has the following vulnerable packages") {
+            throw "Vulnerable NuGet packages were reported; review the listing above."
+          }
 
       - name: Verify explicit C# declarations
         shell: pwsh
