@@ -4,6 +4,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
              xmlns:localization="clr-namespace:CortexCompanion.Localization">
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveCliCommand}" />
+    </UserControl.InputBindings>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel MaxWidth="{StaticResource SettingsContentMaxWidth}"
                     HorizontalAlignment="Left">
@@ -75,6 +79,7 @@
                               Margin="{StaticResource MarginSectionBottom}" />
                     <Button Content="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
                             AutomationProperties.Name="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
+                            ToolTip="{x:Static localization:UiStrings.ShortcutSaveHint}"
                             Command="{Binding SaveCliCommand}"
                             Style="{StaticResource PrimaryButtonStyle}"
                             HorizontalAlignment="Left" />
@@ -122,6 +127,7 @@
                                 Margin="{StaticResource MarginInlineSm}" />
                         <Button Content="{x:Static localization:UiStrings.RefreshButton}"
                                 AutomationProperties.Name="{x:Static localization:UiStrings.SettingsRefreshAccessibleName}"
+                                ToolTip="{x:Static localization:UiStrings.ShortcutRefreshHint}"
                                 Command="{Binding RefreshCommand}"
                                 Style="{StaticResource SecondaryButtonStyle}" />
                     </StackPanel>

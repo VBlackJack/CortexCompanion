@@ -23,6 +23,16 @@ public sealed record ConfiguredSpaceViewModel(
         _ => UiStrings.WholeSpaceModeName,
     };
 
+    /// <summary>Gets the mode label and value as one unbreakable run.</summary>
+    public string ModeSummary => UiStrings.FormatLabelledValue(UiStrings.SpaceModeLabel, SelectionName);
+
+    /// <summary>Gets the logical target label and value as one unbreakable run.</summary>
+    public string TargetSummary => UiStrings.FormatLabelledValue(UiStrings.SpaceTargetLabel, Target);
+
+    /// <summary>Gets the classification label and value as one unbreakable run.</summary>
+    public string ClassificationSummary =>
+        UiStrings.FormatLabelledValue(UiStrings.SpaceClassificationLabel, Classification);
+
     /// <summary>Gets whether an explicit page list is meaningful.</summary>
     public bool IsPagesSelection => Selection != ConfluenceSelection.WholeSpace;
 

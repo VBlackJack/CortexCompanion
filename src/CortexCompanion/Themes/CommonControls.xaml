@@ -21,6 +21,10 @@
     <system:Double x:Key="ConfirmationEmphasisWidth">4</system:Double>
     <system:Double x:Key="SchedulingInputWidth">240</system:Double>
     <system:Double x:Key="ScrollBarThickness">12</system:Double>
+    <system:Double x:Key="ScopeDialogWidth">620</system:Double>
+    <system:Double x:Key="ScopeDialogMaxHeight">760</system:Double>
+    <system:Double x:Key="ProgressBarHeight">8</system:Double>
+    <system:Double x:Key="PageDetailLabelWidth">180</system:Double>
 
     <Thickness x:Key="SpacingXs">4</Thickness>
     <Thickness x:Key="SpacingSm">8</Thickness>
@@ -43,6 +47,12 @@
     <Thickness x:Key="MarginLabelBottom">0,0,0,4</Thickness>
     <Thickness x:Key="MarginSectionSeparator">0,0,0,16</Thickness>
     <Thickness x:Key="MarginNone">0</Thickness>
+    <Thickness x:Key="MarginCardBottom">0,0,0,16</Thickness>
+    <Thickness x:Key="MarginChoiceBottom">0,0,0,12</Thickness>
+    <Thickness x:Key="MarginBlockAbove">0,16,0,8</Thickness>
+    <Thickness x:Key="MarginInlineField">0,8,12,0</Thickness>
+    <Thickness x:Key="MarginDetailRow">0,8,0,4</Thickness>
+    <Thickness x:Key="MarginInlineControlSpaced">0,0,16,0</Thickness>
 
     <CornerRadius x:Key="CornerRadiusCard">10</CornerRadius>
     <CornerRadius x:Key="CornerRadiusControl">8</CornerRadius>
@@ -173,7 +183,7 @@
     <Style x:Key="PageCardStyle" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource SpacingXs}" />
+        <Setter Property="BorderThickness" Value="{StaticResource BorderThin}" />
         <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusCard}" />
         <Setter Property="Padding" Value="{StaticResource PaddingSectionCard}" />
     </Style>

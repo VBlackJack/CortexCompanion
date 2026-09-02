@@ -5,6 +5,9 @@
              xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
              xmlns:localization="clr-namespace:CortexCompanion.Localization"
              xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels">
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
@@ -18,6 +21,7 @@
                 <Button Grid.Column="1"
                         Content="{x:Static localization:UiStrings.SyncRefresh}"
                         AutomationProperties.Name="{x:Static localization:UiStrings.SyncRefresh}"
+                        ToolTip="{x:Static localization:UiStrings.ShortcutRefreshHint}"
                         Command="{Binding RefreshCommand}"
                         Style="{StaticResource SecondaryButtonStyle}" />
             </Grid>
@@ -49,6 +53,16 @@
                                 Command="{Binding SyncCommand}"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 Margin="{StaticResource MarginInlineSm}" />
+                        <Button Content="{x:Static localization:UiStrings.ConfluenceSyncNow}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncNow}"
+                                Command="{Binding ConfluenceSyncCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Margin="{StaticResource MarginInlineSm}" />
+                        <Button Content="{x:Static localization:UiStrings.SyncCancel}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.SyncCancel}"
+                                Command="{Binding CancelCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Visibility="{Binding CanCancelRun, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </WrapPanel>
                     <TextBlock Text="{Binding StateMessage}"
                                accessibility:LiveRegionBehavior.Announcement="{Binding StateMessage}"
@@ -71,7 +85,7 @@
                                      Maximum="{Binding ProgressMaximum}"
                                      Value="{Binding ProgressCurrent}"
                                      IsIndeterminate="{Binding IsProgressIndeterminate}"
-                                     Height="8"
+                                     Height="{StaticResource ProgressBarHeight}"
                                      Margin="{StaticResource MarginStackItem}" />
                     </StackPanel>
                 </StackPanel>
@@ -87,11 +101,6 @@
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
                     <WrapPanel Margin="{StaticResource MarginStackItem}">
-                        <Button Content="{x:Static localization:UiStrings.ConfluenceSyncNow}"
-                                AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncNow}"
-                                Command="{Binding ConfluenceSyncCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Margin="{StaticResource MarginInlineSm}" />
                         <Button Content="{x:Static localization:UiStrings.StoreCredential}"
                                 AutomationProperties.Name="{x:Static localization:UiStrings.StoreCredential}"
                                 Command="{Binding StoreCredentialCommand}"
@@ -255,6 +264,10 @@
                         <StackPanel>
                             <TextBlock Text="{x:Static localization:UiStrings.SyncRawOutputTitle}"
                                        FontWeight="SemiBold"
+                                       Margin="{StaticResource MarginStackItem}" />
+                            <TextBlock Text="{x:Static localization:UiStrings.SyncDiagnosticsLanguageNote}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextWrapping="Wrap"
                                        Margin="{StaticResource MarginStackItem}" />
                             <TextBlock x:Name="StandardErrorLabel"
                                        Text="{x:Static localization:UiStrings.SyncDiagnosticsLabel}"

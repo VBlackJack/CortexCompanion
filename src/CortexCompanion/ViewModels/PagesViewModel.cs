@@ -104,6 +104,10 @@ public sealed class PagesViewModel : ViewModelBase
     /// <summary>Gets the displayed path origin.</summary>
     public string ConfigOrigin { get; }
 
+    /// <summary>Gets the origin label and value as one unbreakable run.</summary>
+    public string ConfigOriginSummary =>
+        UiStrings.FormatLabelledValue(UiStrings.ConfigOriginLabel, ConfigOrigin);
+
     /// <summary>Gets or sets the pasted URL or numeric page ID.</summary>
     public string PageReference
     {

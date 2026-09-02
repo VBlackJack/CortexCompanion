@@ -3,6 +3,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:localization="clr-namespace:CortexCompanion.Localization">
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
@@ -16,6 +19,7 @@
                 <Button Grid.Column="1"
                         Content="{x:Static localization:UiStrings.SchedulingRefresh}"
                         AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingRefresh}"
+                        ToolTip="{x:Static localization:UiStrings.ShortcutRefreshHint}"
                         Command="{Binding RefreshCommand}"
                         Style="{StaticResource SecondaryButtonStyle}" />
             </Grid>
@@ -42,7 +46,7 @@
 
             <Border Background="{DynamicResource HighlightBrush}"
                     BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1"
+                    BorderThickness="{StaticResource BorderThin}"
                     Padding="{StaticResource SpacingSm}"
                     Margin="{StaticResource MarginSectionBottom}">
                 <TextBlock Text="{x:Static localization:UiStrings.SchedulingSessionRequired}"

@@ -15,6 +15,9 @@ public sealed record ConfiguredPageViewModel(
     /// <summary>Gets the primary title or the explicit unknown-title state.</summary>
     public string DisplayTitle => Title ?? UiStrings.PageTitleUnknown;
 
+    /// <summary>Gets the page-identifier label and value as one unbreakable run.</summary>
+    public string PageIdSummary => UiStrings.FormatLabelledValue(UiStrings.PageIdLabel, PageId);
+
     /// <summary>Gets the stale-title provenance shown beside a known title.</summary>
     public string TitleProvenance => Title is null
         ? UiStrings.PageTitleUnknownUntilSync

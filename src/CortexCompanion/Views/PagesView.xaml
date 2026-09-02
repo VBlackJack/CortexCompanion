@@ -4,6 +4,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:localization="clr-namespace:CortexCompanion.Localization"
              xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels">
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
             <Grid Margin="{StaticResource MarginHeadingBottom}">
@@ -15,37 +18,35 @@
                            Style="{StaticResource PageTitleStyle}" />
                 <Button Grid.Column="1"
                         Content="{x:Static localization:UiStrings.PagesRefresh}"
+                        AutomationProperties.Name="{x:Static localization:UiStrings.PagesRefresh}"
+                        ToolTip="{x:Static localization:UiStrings.ShortcutRefreshHint}"
                         Command="{Binding RefreshCommand}"
                         Style="{StaticResource SecondaryButtonStyle}" />
             </Grid>
 
-            <Border Style="{StaticResource PageCardStyle}" Margin="0,0,0,16">
+            <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginCardBottom}">
                 <StackPanel>
                     <TextBlock Text="{x:Static localization:UiStrings.ConfigPathLabel}"
                                Foreground="{DynamicResource TextSecondaryBrush}" />
                     <TextBlock Text="{Binding ConfigPath}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock>
-                        <Run Text="{x:Static localization:UiStrings.ConfigOriginLabel}" />
-                        <Run Text=" : " />
-                        <Run Text="{Binding ConfigOrigin, Mode=OneWay}" />
-                    </TextBlock>
+                    <TextBlock Text="{Binding ConfigOriginSummary}" TextWrapping="Wrap" />
                     <StackPanel Visibility="{Binding HasOverrides, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock Text="{x:Static localization:UiStrings.EnvironmentOverridesTitle}"
                                    FontWeight="SemiBold"
-                                   Margin="0,16,0,8" />
+                                   Margin="{StaticResource MarginBlockAbove}" />
                         <ItemsControl ItemsSource="{Binding Overrides}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type viewModels:EnvironmentOverrideViewModel}">
                                 <Border Background="{DynamicResource HighlightBrush}"
                                         BorderBrush="{DynamicResource BorderBrush}"
-                                        BorderThickness="1"
+                                        BorderThickness="{StaticResource BorderThin}"
                                         Padding="{StaticResource SpacingSm}"
                                         Margin="{StaticResource MarginStackItem}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="{StaticResource PageDetailLabelWidth}" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="{Binding FieldName}" FontWeight="SemiBold" />
@@ -169,7 +170,7 @@
                                  AutomationProperties.LabeledBy="{Binding ElementName=PageReferenceLabel}"
                                  ToolTip="{x:Static localization:UiStrings.PagesAddReferenceHint}"
                                  MinHeight="{StaticResource ControlMinHeight}"
-                                 Margin="0,8,12,0"
+                                 Margin="{StaticResource MarginInlineField}"
                                  Padding="{StaticResource SpacingSm}"
                                  Background="{DynamicResource BackgroundBrush}"
                                  Foreground="{DynamicResource TextPrimaryBrush}"
@@ -186,7 +187,7 @@
 
             <Border Background="{DynamicResource WarningBrush}"
                     Padding="{StaticResource SpacingSm}"
-                    Margin="0,0,0,16"
+                    Margin="{StaticResource MarginCardBottom}"
                     Visibility="{Binding IsReadOnly, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{x:Static localization:UiStrings.PagesReadOnly}"
                            Foreground="{DynamicResource BackgroundBrush}"
@@ -195,13 +196,13 @@
 
             <TextBlock Text="{Binding StateMessage}"
                        Foreground="{DynamicResource TextSecondaryBrush}"
-                       Margin="0,0,0,12"
+                       Margin="{StaticResource MarginSectionBottom}"
                        TextWrapping="Wrap" />
 
             <ItemsControl ItemsSource="{Binding Spaces}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:ConfiguredSpaceViewModel}">
-                        <Border Style="{StaticResource PageCardStyle}" Margin="0,0,0,16">
+                        <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginCardBottom}">
                             <StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -217,18 +218,13 @@
                                             CommandParameter="{Binding}"
                                             Style="{StaticResource SecondaryButtonStyle}" />
                                 </Grid>
-                                <WrapPanel Margin="0,8,0,4">
-                                    <TextBlock Text="{x:Static localization:UiStrings.SpaceModeLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                    <TextBlock Text=" : " />
-                                    <TextBlock Text="{Binding SelectionName}" FontWeight="SemiBold" />
-                                    <TextBlock Text="  ·  " />
-                                    <TextBlock Text="{x:Static localization:UiStrings.SpaceTargetLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                    <TextBlock Text=" : " />
-                                    <TextBlock Text="{Binding Target}" />
-                                    <TextBlock Text="  ·  " />
-                                    <TextBlock Text="{x:Static localization:UiStrings.SpaceClassificationLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                    <TextBlock Text=" : " />
-                                    <TextBlock Text="{Binding Classification}" />
+                                <WrapPanel Margin="{StaticResource MarginDetailRow}">
+                                    <TextBlock Text="{Binding ModeSummary}"
+                                               FontWeight="SemiBold"
+                                               Margin="{StaticResource MarginInlineControlSpaced}" />
+                                    <TextBlock Text="{Binding TargetSummary}"
+                                               Margin="{StaticResource MarginInlineControlSpaced}" />
+                                    <TextBlock Text="{Binding ClassificationSummary}" />
                                 </WrapPanel>
                                 <TextBlock Text="{Binding SelectionDescription}"
                                            Foreground="{DynamicResource TextSecondaryBrush}"
@@ -265,7 +261,7 @@
                                         <DataTemplate DataType="{x:Type viewModels:ConfiguredPageViewModel}">
                                             <Border Background="{DynamicResource HighlightBrush}"
                                                     BorderBrush="{DynamicResource BorderBrush}"
-                                                    BorderThickness="1"
+                                                    BorderThickness="{StaticResource BorderThin}"
                                                     Padding="{StaticResource SpacingMd}"
                                                     Margin="{StaticResource MarginStackItem}">
                                                 <Grid>
@@ -278,11 +274,8 @@
                                                         <TextBlock Text="{Binding TitleProvenance}"
                                                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                                                    FontSize="{StaticResource FontSizeCaption}" />
-                                                        <TextBlock Foreground="{DynamicResource TextSecondaryBrush}">
-                                                            <Run Text="{x:Static localization:UiStrings.PageIdLabel}" />
-                                                            <Run Text=" : " />
-                                                            <Run Text="{Binding PageId, Mode=OneWay}" />
-                                                        </TextBlock>
+                                                        <TextBlock Text="{Binding PageIdSummary}"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
                                                     </StackPanel>
                                                     <Button Grid.Column="1"
                                                             Content="{x:Static localization:UiStrings.PagesRemove}"
