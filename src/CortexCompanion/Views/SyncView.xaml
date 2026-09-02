@@ -83,7 +83,7 @@
                                    FontWeight="SemiBold" />
                         <ProgressBar Minimum="0"
                                      Maximum="{Binding ProgressMaximum}"
-                                     Value="{Binding ProgressCurrent}"
+                                     Value="{Binding ProgressCurrent, Mode=OneWay}"
                                      IsIndeterminate="{Binding IsProgressIndeterminate}"
                                      Height="{StaticResource ProgressBarHeight}"
                                      Margin="{StaticResource MarginStackItem}" />

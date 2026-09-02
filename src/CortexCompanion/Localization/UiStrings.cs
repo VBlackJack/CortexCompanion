@@ -80,9 +80,19 @@ public static class UiStrings
     /// <summary>Gets the application title.</summary>
     public static string AppTitle => GetString(nameof(AppTitle));
 
-    /// <summary>Formats the fatal startup error with its exact local log directory.</summary>
-    public static string FormatFatalStartupError(string logDirectory) =>
-        string.Format(CultureInfo.CurrentCulture, FatalStartupErrorFormat, logDirectory);
+    /// <summary>Formats the fatal startup error with its exception details and exact local log directory.</summary>
+    public static string FormatFatalStartupError(string logDirectory, Exception exception)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(logDirectory);
+        ArgumentNullException.ThrowIfNull(exception);
+
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            FatalStartupErrorFormat,
+            logDirectory,
+            exception.GetType().Name,
+            exception.Message);
+    }
 
     /// <summary>Gets the navigation accessibility label.</summary>
     public static string NavigationLabel => GetString(nameof(NavigationLabel));

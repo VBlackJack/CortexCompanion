@@ -94,7 +94,10 @@ The application shows its window before it performs the bounded Cortex handshake
 Cortex is absent, incompatible, or unavailable, the Settings screen stays actionable
 while mutation commands remain disabled.
 Unexpected startup diagnostics are written under
-`%LOCALAPPDATA%\CortexCompanion\logs`.
+`%LOCALAPPDATA%\CortexCompanion\logs`. If the shell cannot be created, the fatal
+dialog also displays the exception type and message so support can identify the
+failure without first locating the log file. The release gate opens the complete
+main window to catch invalid WPF bindings before publication.
 
 ## Slow Cortex commands
 

@@ -82,7 +82,7 @@ public partial class App : Application, IDisposable
             FileLogger.Error("Cortex Companion shell composition failed", exception);
             FileLogger.Flush();
             MessageBox.Show(
-                UiStrings.FormatFatalStartupError(paths.LogsDirectory),
+                UiStrings.FormatFatalStartupError(paths.LogsDirectory, exception),
                 UiStrings.AppTitle,
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

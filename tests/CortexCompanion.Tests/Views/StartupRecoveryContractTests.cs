@@ -9,13 +9,17 @@ namespace CortexCompanion.Tests.Views;
 public sealed class StartupRecoveryContractTests
 {
     [TestMethod]
-    public void FatalMessageNamesTheExactLogDirectoryWithoutClaimingAWriteSucceeded()
+    public void FatalMessageNamesTheExceptionAndExactLogDirectoryWithoutClaimingAWriteSucceeded()
     {
         const string LogDirectory = @"C:\Users\Example\AppData\Local\CortexCompanion\logs";
+        const string ExceptionMessage = "Read-only progress binding.";
+        InvalidOperationException exception = new(ExceptionMessage);
 
-        string message = UiStrings.FormatFatalStartupError(LogDirectory);
+        string message = UiStrings.FormatFatalStartupError(LogDirectory, exception);
 
         Assert.Contains(LogDirectory, message, StringComparison.Ordinal);
+        Assert.Contains(nameof(InvalidOperationException), message, StringComparison.Ordinal);
+        Assert.Contains(ExceptionMessage, message, StringComparison.Ordinal);
         Assert.Contains("s'ils sont disponibles", message, StringComparison.Ordinal);
         Assert.DoesNotContain("a été écrit", message, StringComparison.OrdinalIgnoreCase);
     }

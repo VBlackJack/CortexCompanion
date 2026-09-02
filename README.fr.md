@@ -107,7 +107,11 @@ L'application affiche sa fenetre avant d'executer la poignee de main bornee avec
 Cortex. Si Cortex est absent, incompatible ou indisponible, l'ecran Reglages reste
 actionnable tandis que les commandes de mutation restent desactivees. Les
 diagnostics de demarrage inattendus sont ecrits sous
-`%LOCALAPPDATA%\CortexCompanion\logs`.
+`%LOCALAPPDATA%\CortexCompanion\logs`. Si la fenetre ne peut pas etre creee, la
+boite de dialogue fatale affiche aussi le type et le message de l'exception afin
+que le support puisse identifier l'echec sans devoir d'abord retrouver le journal.
+La barriere de release ouvre la fenetre principale complete pour detecter les
+liaisons WPF invalides avant publication.
 
 ## Commandes Cortex lentes
 
