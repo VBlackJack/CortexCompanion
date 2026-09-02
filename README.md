@@ -1,5 +1,7 @@
 # Cortex Companion
 
+**English** | [Francais](README.fr.md)
+
 Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
@@ -18,7 +20,10 @@ synchronization, or scheduling.
 4. To use Confluence, enter the PAT under **Réglages > Authentification
    Confluence** and select **Enregistrer le PAT**. On a new installation,
    Companion uses Cortex's default Windows credential target, `cortex-spike`.
-5. Open **Pages Confluence** and paste the full URL of the first page. Companion
+5. Open **Pages Confluence** and paste the full URL of the first page. The URL must
+   be `https`; a cleartext `http` instance is refused because the personal access
+   token travels as a bearer header on every request. Loopback addresses stay
+   allowed for local test instances. Companion
    detects the instance and space whenever the URL contains them. Choose the PAT
    expiry date and classification, then select **Initialiser et ajouter la page**.
    Companion counts page-only, subtree, and whole-space scope before writing the
@@ -31,10 +36,10 @@ synchronization, or scheduling.
    converter. No path is required. The developer override remains under the
    collapsed advanced options and is accepted only after a five-second machine
    capability probe; the windowed `ConfluenceRAGBuilder.exe` is rejected.
-8. Open **Base locale** and select **Collecter Confluence**. A
-   manual collection always runs immediately and displays phase plus numeric
-   progress. Then select **Synchroniser les documents locaux** to index the local
-   knowledge base and the current published ingestion generation.
+8. Open **Base locale**. **Synchroniser les documents locaux** indexes the local
+   knowledge base and the current published ingestion generation; **Collecter
+   Confluence** runs a manual collection immediately and displays phase plus
+   numeric progress. Both actions sit on the main card, next to each other.
 9. Use **Ouvrir la génération courante** to inspect the immutable published
    documents. A narrow successful scope reports excluded descendants and offers
    a one-click switch to subtree collection.
@@ -49,6 +54,29 @@ values and continue through the compare-and-swap mutation path.
 Configurations created by releases that omitted `console_path` are repaired
 atomically on first load, after the embedded converter passes the same probe.
 
+## Stopping a run
+
+While a run is alive, **Interrompre** appears next to the two collection actions.
+It asks for confirmation, states the exact consequence, then stops the detached
+worker and the Cortex process it owns. A stopped run is recorded as stopped, not
+as a failure: the previously published generation stays intact and the local index
+is completed by the next synchronization. The stop only ever reaches the worker
+whose recorded process identity still matches, so a reused process identifier is
+never killed.
+
+Closing the window during a run does not stop it. Companion says so and asks for
+confirmation first, because the worker outlives the window and only the progress
+display is lost.
+
+## Keyboard
+
+| Shortcut | Action |
+|---|---|
+| `F5` | Reload the current screen |
+| `Ctrl+S` | Save and connect, on the Settings screen |
+| `Tab` / `Shift+Tab` | Move between controls; the focused control is outlined |
+| `Esc` | Cancel the open confirmation dialog |
+
 ## What users can do
 
 - connect to `cortex.exe` through automatic first-run discovery or a native file picker;
@@ -58,6 +86,7 @@ atomically on first load, after the embedded converter passes the same probe.
 - compare page-only, subtree, and whole-space scope before saving it;
 - follow long collections through enumeration, staging, conversion, and publication;
 - open the current generation and see the configured storage retention;
+- stop a running collection, with the consequence stated before it happens;
 - optionally review configured Confluence pages, store a Confluence credential, run
   Confluence collection, and manage its owned Windows scheduled task.
 
@@ -95,6 +124,10 @@ file that appeared concurrently. The file contains the inferred base URL, declar
 expiry, explicit space allowlist, local target, classification, and the validated
 embedded converter path. It never contains the PAT.
 
+Companion refuses to write a `base_url` that is not `https` outside loopback, the
+same rule Cortex enforces when it reads the file, so the two never disagree about
+what a valid configuration is.
+
 The Confluence PAT is never written to `settings.json` or `CONFLUENCE.toml`. The
 masked Settings field writes it directly to the `credential_target` declared by the
 validated Confluence configuration, or to Cortex's `cortex-spike` default when that
@@ -108,10 +141,16 @@ Requirements: Windows and the .NET 10 SDK.
 
 ```powershell
 dotnet restore CortexCompanion.sln --locked-mode
+dotnet list CortexCompanion.sln package --vulnerable --include-transitive
 dotnet format CortexCompanion.sln --verify-no-changes --no-restore
 dotnet build CortexCompanion.sln -c Release --no-restore -warnaserror
 dotnet test CortexCompanion.sln -c Release --no-build --no-restore
 ```
+
+Layout values, colors, and user-facing text are guarded by tests: views may not
+carry raw sizes or hex colors, every theme resource a view names must exist, every
+exposed string must resolve to a real resource, and every text pair must clear
+WCAG AA while borders and focus rings clear the 3:1 non-text floor.
 
 The repository rejects implicit C# `var` declarations. Enable the local pre-push gate
 once per clone:
