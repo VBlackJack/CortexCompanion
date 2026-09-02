@@ -59,6 +59,10 @@ public sealed record SyncWorkerResult
     /// <summary>Gets the terminal timestamp.</summary>
     [JsonPropertyName("completed_at")]
     public required DateTimeOffset CompletedAt { get; init; }
+
+    /// <summary>Gets whether the user stopped this run before Cortex finished it.</summary>
+    [JsonPropertyName("cancelled")]
+    public bool Cancelled { get; init; }
 }
 
 /// <summary>Represents one observable detached run without inferring success.</summary>
@@ -70,7 +74,8 @@ public sealed record SyncRunSnapshot(
     bool IsCompleted,
     bool IsUnknown,
     int? ExitCode,
-    string? LaunchError);
+    string? LaunchError,
+    bool IsCancelled = false);
 
 /// <summary>Captures the terminal result of a visible interactive child process.</summary>
 public sealed record InteractiveProcessResult(int? ExitCode, string? LaunchError);

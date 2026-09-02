@@ -26,4 +26,8 @@ public interface ISyncRunCoordinator
 
     /// <summary>Observes one run without taking ownership of its worker process.</summary>
     Task<SyncRunSnapshot> ObserveAsync(SyncRunHandle handle, CancellationToken cancellationToken);
+
+    /// <summary>Stops one identified live worker and records the cancellation durably.</summary>
+    /// <returns>True when a live worker matching the handle identity was stopped.</returns>
+    Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken);
 }

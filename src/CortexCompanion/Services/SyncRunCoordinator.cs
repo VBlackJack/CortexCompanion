@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Logging;
 using CortexCompanion.Models;
@@ -180,7 +181,8 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
                 true,
                 false,
                 result.ExitCode,
-                result.LaunchError);
+                result.LaunchError,
+                result.Cancelled);
         }
 
         bool running = IsProcessAlive(handle.WorkerProcessId, handle.WorkerStartedAt);
@@ -193,6 +195,75 @@ public sealed class SyncRunCoordinator : ISyncRunCoordinator
             !running,
             null,
             null);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(handle);
+        string runDirectory = ConfineRunDirectory(handle.RunId);
+        if (!string.Equals(runDirectory, Path.GetFullPath(handle.RunDirectory), StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("The sync run directory escaped the application-owned root.");
+        }
+
+        string resultPath = Path.Combine(runDirectory, SyncRunPersistence.ResultFileName);
+        if (File.Exists(resultPath))
+        {
+            return false;
+        }
+
+        bool stopped = TryStopIdentifiedWorker(handle);
+        if (!stopped)
+        {
+            return false;
+        }
+
+        // The worker died before it could write its own terminal file, so the
+        // coordinator records the cancelled outcome to keep observation honest.
+        await SyncRunPersistence.WriteJsonAtomicAsync(
+            resultPath,
+            new SyncWorkerResult
+            {
+                ExitCode = null,
+                LaunchError = null,
+                CompletedAt = DateTimeOffset.UtcNow,
+                Cancelled = true,
+            },
+            cancellationToken);
+        string activePath = Path.Combine(_runsRoot, SyncRunPersistence.ActiveRunFileName);
+        if (File.Exists(activePath))
+        {
+            File.Delete(activePath);
+        }
+
+        FileLogger.Info($"Detached sync worker stopped on request run_id={handle.RunId}");
+        return true;
+    }
+
+    private static bool TryStopIdentifiedWorker(SyncRunHandle handle)
+    {
+        try
+        {
+            using Process process = Process.GetProcessById(handle.WorkerProcessId);
+            DateTimeOffset actualStartedAt = process.StartTime.ToUniversalTime();
+            if (process.HasExited ||
+                Math.Abs((actualStartedAt - handle.WorkerStartedAt).TotalSeconds) >= 1)
+            {
+                return false;
+            }
+
+            // The Cortex child is the process doing the work, so the whole tree goes.
+            process.Kill(entireProcessTree: true);
+            process.WaitForExit((int)AppConstants.ProcessTerminationGracePeriod.TotalMilliseconds);
+            return true;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException or
+                                          Win32Exception or NotSupportedException or AggregateException)
+        {
+            FileLogger.Error("A detached sync worker could not be stopped", exception);
+            return false;
+        }
     }
 
     private async Task RefuseLiveActiveRunAsync(CancellationToken cancellationToken)

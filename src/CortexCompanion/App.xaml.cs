@@ -55,7 +55,7 @@ public partial class App : Application, IDisposable
                 new ConfluenceCredentialTargetProvider(),
                 new WindowsCredentialManagerStore());
             MainViewModel viewModel = new(runtimeCoordinator, settings);
-            MainWindow window = new(viewModel);
+            MainWindow window = new(viewModel, new RunInterruptionConfirmationService());
             MainWindow = window;
             window.Show();
             FileLogger.Info("Cortex Companion shell displayed");

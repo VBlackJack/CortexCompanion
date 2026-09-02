@@ -264,12 +264,95 @@ public sealed class SyncViewModelTests
         Assert.AreEqual(Path.GetFullPath(configPath), coordinator.LastConfigPath);
     }
 
+    [TestMethod]
+    public async Task CancelCommandStaysUnavailableWhenNoWorkerIsAlive()
+    {
+        using TemporaryDirectory temporary = new();
+        SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(),
+            CreateConfig(temporary),
+            CreateHealth(temporary, null),
+            new StubSyncRunCoordinator(),
+            new StubInteractiveLauncher(),
+            new StubInterruptionConfirmation(true));
+
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+
+        Assert.IsFalse(viewModel.CanCancelRun);
+        Assert.IsFalse(viewModel.CancelCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task CancelCommandStopsTheLiveWorkerOnlyAfterConfirmation()
+    {
+        using TemporaryDirectory temporary = new();
+        CancellableRunCoordinator coordinator = new();
+        StubInterruptionConfirmation refused = new(false);
+        SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(),
+            CreateConfig(temporary),
+            CreateHealth(temporary, null),
+            coordinator,
+            new StubInteractiveLauncher(),
+            refused);
+
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+
+        Assert.IsTrue(viewModel.CanCancelRun);
+        viewModel.CancelCommand.Execute(null);
+        await WaitUntilAsync(() => refused.StopRequests == 1);
+        Assert.AreEqual(0, coordinator.CancelCallCount, "A refused confirmation must not stop the run.");
+        Assert.AreEqual(SyncRunKind.Confluence, refused.LastRunKind);
+    }
+
+    [TestMethod]
+    public async Task ConfirmedCancelStopsTheWorkerAndReportsTheStoppedState()
+    {
+        using TemporaryDirectory temporary = new();
+        CancellableRunCoordinator coordinator = new();
+        SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(),
+            CreateConfig(temporary),
+            CreateHealth(temporary, null),
+            coordinator,
+            new StubInteractiveLauncher(),
+            new StubInterruptionConfirmation(true));
+
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        viewModel.CancelCommand.Execute(null);
+
+        await WaitUntilAsync(() => coordinator.CancelCallCount == 1);
+        await WaitUntilAsync(() => viewModel.RunResult == UiStrings.SyncCancelled);
+        Assert.IsFalse(viewModel.IsSyncRunning);
+        Assert.IsFalse(viewModel.CanCancelRun);
+    }
+
+    [TestMethod]
+    public async Task CancelReportsHonestlyWhenNoLiveWorkerRemained()
+    {
+        using TemporaryDirectory temporary = new();
+        CancellableRunCoordinator coordinator = new() { CancelResult = false };
+        SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(),
+            CreateConfig(temporary),
+            CreateHealth(temporary, null),
+            coordinator,
+            new StubInteractiveLauncher(),
+            new StubInterruptionConfirmation(true));
+
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        viewModel.CancelCommand.Execute(null);
+
+        await WaitUntilAsync(() => viewModel.StateMessage == UiStrings.SyncCancelFailed);
+    }
+
     private static SyncViewModel CreateViewModel(
         string cliPath,
         string configPath,
         string healthPath,
         ISyncRunCoordinator coordinator,
-        IInteractiveProcessLauncher interactive) =>
+        IInteractiveProcessLauncher interactive,
+        IRunInterruptionConfirmationService? interruption = null) =>
         new(
             coordinator,
             interactive,
@@ -283,7 +366,8 @@ public sealed class SyncViewModelTests
                 IngestionPathOrigin.Default,
                 "LOCALAPPDATA",
                 healthPath),
-            []);
+            [],
+            interruption);
 
     private static string CreateConfig(TemporaryDirectory temporary)
     {
@@ -334,6 +418,9 @@ public sealed class SyncViewModelTests
             SyncRunHandle handle,
             CancellationToken cancellationToken) =>
             Task.FromException<SyncRunSnapshot>(new AssertFailedException("Unexpected sync observation."));
+
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
+            Task.FromException<bool>(new AssertFailedException("Unexpected cancellation."));
     }
 
     private sealed class BlockingSyncRunCoordinator : ISyncRunCoordinator
@@ -380,6 +467,9 @@ public sealed class SyncViewModelTests
                 false,
                 0,
                 null));
+
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
+            Task.FromException<bool>(new AssertFailedException("Unexpected cancellation."));
     }
 
     private sealed class LatestRunCoordinator(SyncRunSnapshot latest) : ISyncRunCoordinator
@@ -403,6 +493,9 @@ public sealed class SyncViewModelTests
             SyncRunHandle handle,
             CancellationToken cancellationToken) =>
             Task.FromResult(latest);
+
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
+            Task.FromException<bool>(new AssertFailedException("Unexpected cancellation."));
     }
 
     private sealed class ImmediateRunCoordinator(int exitCode) : ISyncRunCoordinator
@@ -446,6 +539,9 @@ public sealed class SyncViewModelTests
                 false,
                 exitCode,
                 null));
+
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
+            Task.FromException<bool>(new AssertFailedException("Unexpected cancellation."));
     }
 
     private sealed class RecordingConfluenceCoordinator : ISyncRunCoordinator
@@ -492,6 +588,9 @@ public sealed class SyncViewModelTests
                 false,
                 0,
                 null));
+
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
+            Task.FromException<bool>(new AssertFailedException("Unexpected cancellation."));
     }
 
     private sealed class StubInteractiveLauncher : IInteractiveProcessLauncher
@@ -511,5 +610,68 @@ public sealed class SyncViewModelTests
             BeforeReturn?.Invoke();
             return Task.FromResult(Result);
         }
+    }
+
+    private sealed class StubInterruptionConfirmation(bool confirms) : IRunInterruptionConfirmationService
+    {
+        public int StopRequests { get; private set; }
+
+        public SyncRunKind? LastRunKind { get; private set; }
+
+        public bool ConfirmStop(SyncRunKind runKind)
+        {
+            StopRequests++;
+            LastRunKind = runKind;
+            return confirms;
+        }
+
+        public bool ConfirmCloseWhileRunning() => confirms;
+    }
+
+    private sealed class CancellableRunCoordinator : ISyncRunCoordinator
+    {
+        private readonly SyncRunHandle _handle = new(
+            "run",
+            Path.Combine(Path.GetTempPath(), "run"),
+            Environment.ProcessId,
+            DateTimeOffset.UtcNow,
+            SyncRunKind.Confluence);
+
+        private bool _cancelled;
+
+        public int CancelCallCount { get; private set; }
+
+        public bool CancelResult { get; init; } = true;
+
+        public Task<SyncRunHandle> StartLocalDocumentsAsync(
+            string cliPath,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(_handle);
+
+        public Task<SyncRunHandle> StartConfluenceAsync(
+            string cliPath,
+            string confluenceConfigPath,
+            bool force,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(_handle);
+
+        public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) =>
+            Task.FromResult<SyncRunSnapshot?>(Snapshot());
+
+        public Task<SyncRunSnapshot> ObserveAsync(
+            SyncRunHandle handle,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(Snapshot());
+
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken)
+        {
+            CancelCallCount++;
+            _cancelled = CancelResult;
+            return Task.FromResult(CancelResult);
+        }
+
+        private SyncRunSnapshot Snapshot() => _cancelled
+            ? new SyncRunSnapshot(_handle, string.Empty, string.Empty, false, true, false, null, null, true)
+            : new SyncRunSnapshot(_handle, string.Empty, string.Empty, true, false, false, null, null);
     }
 }

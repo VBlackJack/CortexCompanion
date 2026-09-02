@@ -35,7 +35,7 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
     public CompanionRuntime CreatePending()
     {
         PagesViewModel pages = new(null, null, null, null, null, []);
-        SyncViewModel sync = new(null, null, null, null, null, []);
+        SyncViewModel sync = new(null, null, null, null, null, [], null);
         SchedulingViewModel scheduling = new(
             new TaskSchedulerComAdapter(),
             new SchedulingConfirmationService(),
@@ -132,7 +132,8 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             cliValidation.AbsolutePath,
             configPath?.AbsolutePath,
             ingestionPath,
-            ConfluenceEnvironmentInspector.GetActiveOverrides());
+            ConfluenceEnvironmentInspector.GetActiveOverrides(),
+            new RunInterruptionConfirmationService());
         ScheduledTaskContract? scheduledTaskContract = BuildScheduledTaskContract(
             cliValidation,
             configPath,

@@ -19,6 +19,7 @@ public sealed class SyncViewModel : ViewModelBase
 {
     private readonly ISyncRunCoordinator? _runCoordinator;
     private readonly IInteractiveProcessLauncher? _interactiveLauncher;
+    private readonly IRunInterruptionConfirmationService? _interruptionConfirmation;
     private readonly string? _cliPath;
     private readonly string? _configPath;
     private readonly IngestionPathResolution? _ingestionPath;
@@ -27,6 +28,8 @@ public sealed class SyncViewModel : ViewModelBase
     private readonly AsyncRelayCommand _confluenceSyncCommand;
     private readonly AsyncRelayCommand _storeCredentialCommand;
     private readonly AsyncRelayCommand _openCurrentGenerationCommand;
+    private readonly AsyncRelayCommand _cancelCommand;
+    private SyncRunHandle? _liveRunHandle;
     private CancellationToken _applicationCancellation;
     private CancellationTokenSource? _monitorCancellation;
     private string _stateMessage = UiStrings.SyncLoading;
@@ -63,10 +66,12 @@ public sealed class SyncViewModel : ViewModelBase
         string? cliPath,
         string? configPath,
         IngestionPathResolution? ingestionPath,
-        IReadOnlyList<ConfluenceEnvironmentOverride> overrides)
+        IReadOnlyList<ConfluenceEnvironmentOverride> overrides,
+        IRunInterruptionConfirmationService? interruptionConfirmation = null)
     {
         _runCoordinator = runCoordinator;
         _interactiveLauncher = interactiveLauncher;
+        _interruptionConfirmation = interruptionConfirmation;
         _cliPath = cliPath;
         _configPath = configPath;
         _ingestionPath = ingestionPath;
@@ -97,6 +102,7 @@ public sealed class SyncViewModel : ViewModelBase
         _openCurrentGenerationCommand = new AsyncRelayCommand(
             OpenCurrentGenerationAsync,
             () => _ingestionPath is not null && !IsBusy);
+        _cancelCommand = new AsyncRelayCommand(CancelRunAsync, () => CanCancelRun);
     }
 
     /// <summary>Gets active supported Confluence environment overrides.</summary>
@@ -324,6 +330,15 @@ public sealed class SyncViewModel : ViewModelBase
     /// <summary>Gets the current immutable generation open command.</summary>
     public ICommand OpenCurrentGenerationCommand => _openCurrentGenerationCommand;
 
+    /// <summary>Gets the command that stops the live worker after explicit confirmation.</summary>
+    public ICommand CancelCommand => _cancelCommand;
+
+    /// <summary>Gets whether a live worker identity is available to stop.</summary>
+    public bool CanCancelRun => _runCoordinator is not null &&
+        _interruptionConfirmation is not null &&
+        _liveRunHandle is not null &&
+        IsSyncRunning;
+
     /// <summary>Applies the handshake mode and reads local state in every mode.</summary>
     public async Task InitializeAsync(bool isReadOnly, CancellationToken cancellationToken)
     {
@@ -346,6 +361,7 @@ public sealed class SyncViewModel : ViewModelBase
                     ApplyRun(latest);
                     if (latest.IsRunning)
                     {
+                        _liveRunHandle = latest.Handle;
                         StartBackgroundMonitor(latest.Handle);
                     }
                 }
@@ -417,6 +433,7 @@ public sealed class SyncViewModel : ViewModelBase
         try
         {
             SyncRunHandle handle = await start();
+            _liveRunHandle = handle;
             IsSyncRunning = true;
             IsBusy = false;
             await MonitorRunAsync(handle, _applicationCancellation);
@@ -498,6 +515,39 @@ public sealed class SyncViewModel : ViewModelBase
         }
     }
 
+    private async Task CancelRunAsync()
+    {
+        SyncRunHandle? handle = _liveRunHandle;
+        if (_runCoordinator is null || _interruptionConfirmation is null || handle is null)
+        {
+            return;
+        }
+
+        if (!_interruptionConfirmation.ConfirmStop(handle.RunKind))
+        {
+            return;
+        }
+
+        try
+        {
+            bool stopped = await _runCoordinator.CancelAsync(handle, _applicationCancellation);
+            if (!stopped)
+            {
+                StateMessage = UiStrings.SyncCancelFailed;
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
+                                          InvalidOperationException or System.Text.Json.JsonException)
+        {
+            FileLogger.Error("A detached sync run could not be stopped", exception);
+            StateMessage = UiStrings.SyncCancelFailed;
+        }
+        catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
+        {
+            StateMessage = UiStrings.SyncContinuesAfterClose;
+        }
+    }
+
     private void StartBackgroundMonitor(SyncRunHandle handle)
     {
         _monitorCancellation?.Cancel();
@@ -553,16 +603,19 @@ public sealed class SyncViewModel : ViewModelBase
             : UiStrings.ConfluenceSyncRunTitle;
         StandardError = snapshot.StandardError;
         StandardOutput = snapshot.StandardOutput;
+        _liveRunHandle = snapshot.IsRunning ? snapshot.Handle : null;
         IsSyncRunning = snapshot.IsRunning;
         ApplyProgress(snapshot);
-        RunResult = snapshot.IsUnknown
-            ? UiStrings.SyncRunUnknown
-            : snapshot.IsRunning
-                ? UiStrings.SyncRunning
-                : FormatExitCode(
-                    snapshot.Handle.RunKind,
-                    snapshot.ExitCode,
-                    snapshot.LaunchError);
+        RunResult = snapshot.IsCancelled
+            ? UiStrings.SyncCancelled
+            : snapshot.IsUnknown
+                ? UiStrings.SyncRunUnknown
+                : snapshot.IsRunning
+                    ? UiStrings.SyncRunning
+                    : FormatExitCode(
+                        snapshot.Handle.RunKind,
+                        snapshot.ExitCode,
+                        snapshot.LaunchError);
     }
 
     private void ApplyProgress(SyncRunSnapshot snapshot)
@@ -703,7 +756,9 @@ public sealed class SyncViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanRunActions));
         OnPropertyChanged(nameof(CanRunLocalDocuments));
         OnPropertyChanged(nameof(CanRunConfluenceActions));
+        OnPropertyChanged(nameof(CanCancelRun));
         _refreshCommand.RaiseCanExecuteChanged();
+        _cancelCommand.RaiseCanExecuteChanged();
         _syncCommand.RaiseCanExecuteChanged();
         _confluenceSyncCommand.RaiseCanExecuteChanged();
         _storeCredentialCommand.RaiseCanExecuteChanged();
