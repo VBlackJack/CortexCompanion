@@ -9,8 +9,3 @@ artifacts/
 *.suo
 
 # Local automation artifacts
-.claude/
-.codex/
-CLAUDE.md
-AGENTS.md
-codex_task.md
