@@ -299,6 +299,151 @@ public sealed class PagesMutationServiceTests
     private static ConfluenceCliResult<ResolvedPageContract> Success(ResolvedPageContract value) =>
         new(CortexExitCode.Ok, value, string.Empty, false, null);
 
+    [TestMethod]
+    public async Task AddSpaceInfersTheKeyAndAllowlistsItEmpty()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        FakeConfirmations confirmations = new() { AddSpaceAccepted = true };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+
+        bool added = await service.AddSpaceAsync(
+            "https://raw.example.test/spaces/ANSSIWS/pages/1683736048/ADSEC+Platform",
+            "pro-confidentiel",
+            false,
+            CancellationToken.None);
+
+        Assert.IsTrue(added);
+        Assert.AreEqual("ANSSIWS", confirmations.LastSpaceKey);
+        Assert.AreEqual("pro-confidentiel", confirmations.LastClassification);
+        Assert.HasCount(2, store.WrittenConfiguration!.Spaces);
+        ConfluenceSpaceConfiguration created = store.WrittenConfiguration.Spaces[1];
+        Assert.AreEqual("ANSSIWS", created.SpaceKey);
+        Assert.AreEqual("confluence/ANSSIWS", created.Target);
+        Assert.AreEqual("pro-confidentiel", created.Classification);
+        Assert.AreEqual(ConfluenceSelection.Pages, created.Selection);
+        Assert.IsEmpty(created.PageIds);
+    }
+
+    [TestMethod]
+    public async Task AddSpaceLeavesEveryAllowlistedSpaceUntouched()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { AddSpaceAccepted = true });
+
+        await service.AddSpaceAsync(
+            "https://raw.example.test/spaces/ANSSIWS/pages/1/T",
+            "perso-non-sensible",
+            false,
+            CancellationToken.None);
+
+        ConfluenceSpaceConfiguration untouched = store.WrittenConfiguration!.Spaces[0];
+        Assert.AreEqual("DOC", untouched.SpaceKey);
+        Assert.AreEqual("docs", untouched.Target);
+        Assert.AreEqual("pro-confidentiel", untouched.Classification);
+    }
+
+    [TestMethod]
+    public async Task AddSpaceRejectsAnAlreadyAllowlistedSpace()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { AddSpaceAccepted = true });
+
+        PageMutationRejectedException exception = await Assert.ThrowsAsync<PageMutationRejectedException>(() =>
+            service.AddSpaceAsync(
+                "https://raw.example.test/spaces/doc/pages/1/T",
+                "pro-confidentiel",
+                false,
+                CancellationToken.None));
+
+        Assert.AreEqual(UiStrings.PagesRejectSpaceAlreadyAllowlisted, exception.Message);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public async Task AddSpaceRejectsAReferenceThatCarriesNoSpaceKey()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { AddSpaceAccepted = true });
+
+        PageMutationRejectedException exception = await Assert.ThrowsAsync<PageMutationRejectedException>(() =>
+            service.AddSpaceAsync(
+                "https://raw.example.test/pages/viewpage.action?pageId=1683736048",
+                "pro-confidentiel",
+                false,
+                CancellationToken.None));
+
+        Assert.AreEqual(UiStrings.PagesRejectSpaceKeyNotInferable, exception.Message);
+        Assert.AreEqual(0, store.ReadCalls);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public async Task AddSpaceRejectsAReferenceFromAnotherConfluenceServer()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { AddSpaceAccepted = true });
+
+        PageMutationRejectedException exception = await Assert.ThrowsAsync<PageMutationRejectedException>(() =>
+            service.AddSpaceAsync(
+                "https://other.example.test/spaces/ANSSIWS/pages/1/T",
+                "pro-confidentiel",
+                false,
+                CancellationToken.None));
+
+        Assert.AreEqual(UiStrings.PagesRejectSpaceForeignBaseUrl, exception.Message);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public async Task DeclinedSpaceConfirmationWritesNothing()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { AddSpaceAccepted = false });
+
+        bool added = await service.AddSpaceAsync(
+            "https://raw.example.test/spaces/ANSSIWS/pages/1/T",
+            "pro-confidentiel",
+            false,
+            CancellationToken.None);
+
+        Assert.IsFalse(added);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public async Task AddSpaceRefusesInReadOnlyMode()
+    {
+        FakeConfigStore store = new(PagesSnapshot());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { AddSpaceAccepted = true });
+
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() =>
+            service.AddSpaceAsync(
+                "https://raw.example.test/spaces/ANSSIWS/pages/1/T",
+                "pro-confidentiel",
+                true,
+                CancellationToken.None));
+
+        Assert.AreEqual(0, store.ReadCalls);
+    }
+
     private static ConfluenceConfigSnapshot PagesSnapshot() => Snapshot(
         new ConfluenceConfiguration(
             2,
@@ -433,10 +578,23 @@ public sealed class PagesMutationServiceTests
 
         public ResolvedPageContract? LastResolvedPage { get; private set; }
 
+        public bool AddSpaceAccepted { get; init; }
+
+        public string? LastSpaceKey { get; private set; }
+
+        public string? LastClassification { get; private set; }
+
         public bool ConfirmAdd(ResolvedPageContract page)
         {
             LastResolvedPage = page;
             return AddAccepted;
+        }
+
+        public bool ConfirmAddSpace(string spaceKey, string classification)
+        {
+            LastSpaceKey = spaceKey;
+            LastClassification = classification;
+            return AddSpaceAccepted;
         }
 
         public ConfluenceSelection? ChooseScope(ScopePreviewContract preview)

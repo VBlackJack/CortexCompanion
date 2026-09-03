@@ -78,6 +78,67 @@ public sealed class PagesMutationService
         return true;
     }
 
+    /// <summary>Allowlists the space a page URL points at, so its pages become configurable.</summary>
+    public async Task<bool> AddSpaceAsync(
+        string reference,
+        string classification,
+        bool isReadOnly,
+        CancellationToken cancellationToken)
+    {
+        EnsureMutable(isReadOnly);
+        if (classification is not "pro-confidentiel" and not "perso-non-sensible")
+        {
+            throw new PageMutationRejectedException(UiStrings.ConfluenceSetupInvalidClassification);
+        }
+
+        ConfluencePageUrlAnalysis analysis = ConfluencePageUrlAnalyzer.Analyze(reference);
+        if (analysis.InferredSpaceKey is null)
+        {
+            throw new PageMutationRejectedException(UiStrings.PagesRejectSpaceKeyNotInferable);
+        }
+
+        string spaceKey = analysis.InferredSpaceKey;
+        if (!ConfluenceSetupService.SpaceKeyPattern().IsMatch(spaceKey))
+        {
+            throw new PageMutationRejectedException(UiStrings.ConfluenceSetupInvalidSpaceKey);
+        }
+
+        ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
+
+        // A URL from another Confluence server would allowlist a space this configuration
+        // can never reach, so the origin is checked before anything is written.
+        if (snapshot.Configuration.BaseUrl is not null &&
+            !string.Equals(snapshot.Configuration.BaseUrl, analysis.BaseUrl, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new PageMutationRejectedException(UiStrings.PagesRejectSpaceForeignBaseUrl);
+        }
+
+        if (snapshot.Configuration.Spaces.Any(space =>
+            string.Equals(space.SpaceKey, spaceKey, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new PageMutationRejectedException(UiStrings.PagesRejectSpaceAlreadyAllowlisted);
+        }
+
+        if (!_confirmations.ConfirmAddSpace(spaceKey, classification))
+        {
+            return false;
+        }
+
+        // The space enters empty in explicit-pages mode: allowlisting authorizes nothing
+        // on its own, and the caller adds the page that motivated it right after.
+        ConfluenceSpaceConfiguration created = new(
+            spaceKey,
+            $"{ConfluenceSetupService.TargetRoot}/{spaceKey}",
+            classification,
+            ConfluenceSelection.Pages,
+            Array.Empty<string>());
+        await WriteOrRefreshAsync(
+            snapshot.Configuration.MigrateToVersionTwo().AddSpace(created),
+            snapshot.ContentHash,
+            cancellationToken);
+        return true;
+    }
+
     /// <summary>Removes one configured ID only after the explicit tombstone reminder is accepted.</summary>
     public async Task<bool> RemovePageAsync(
         string spaceKey,

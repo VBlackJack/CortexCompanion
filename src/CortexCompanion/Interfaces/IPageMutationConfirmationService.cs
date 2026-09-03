@@ -14,6 +14,9 @@ public interface IPageMutationConfirmationService
     /// <summary>Returns the explicit measured collection choice, or null when cancelled.</summary>
     ConfluenceSelection? ChooseScope(ScopePreviewContract preview);
 
+    /// <summary>Confirms the collection consequence before a space enters the allowlist.</summary>
+    bool ConfirmAddSpace(string spaceKey, string classification);
+
     /// <summary>Confirms the tombstone consequence before removing a configured page.</summary>
     bool ConfirmRemove(string spaceKey, string pageId, string? title);
 

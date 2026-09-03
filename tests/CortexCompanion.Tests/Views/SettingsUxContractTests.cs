@@ -176,19 +176,24 @@ public sealed partial class SettingsUxContractTests
             .Single(element => element.Attribute("Visibility")?.Value.Contains(
                 "NeedsConfluenceConfiguration",
                 StringComparison.Ordinal) == true);
-        XElement addCard = document
+
+        // Two cards answer to a configured Confluence: adding a page, and allowlisting the
+        // space a page belongs to. Both are the counterpart of the first-run card.
+        XElement[] configuredCards = document
             .Descendants()
-            .Single(element => element.Attribute("Visibility")?.Value.Contains(
+            .Where(element => element.Attribute("Visibility")?.Value.Contains(
                 "HasConfluenceConfiguration",
-                StringComparison.Ordinal) == true);
+                StringComparison.Ordinal) == true)
+            .ToArray();
         XElement[] interactiveControls = setupCard
             .Descendants()
+            .Concat(configuredCards.SelectMany(card => card.Descendants()))
             .Where(element =>
                 element.Name.LocalName is "Button" or "TextBox" or "DatePicker" or "ComboBox")
             .ToArray();
 
-        Assert.IsNotNull(addCard);
-        Assert.HasCount(7, interactiveControls);
+        Assert.HasCount(2, configuredCards);
+        Assert.HasCount(12, interactiveControls);
         foreach (XElement control in interactiveControls)
         {
             bool accessible = control.Attribute("AutomationProperties.Name") is not null ||

@@ -16,7 +16,7 @@ public sealed partial class ConfluenceSetupService
     private const int InitialSchemaVersion = 2;
     private const int DefaultMaxAttachmentSizeMb = 50;
     private const double DefaultFailureThreshold = 0.1;
-    private const string TargetRoot = "confluence";
+    internal const string TargetRoot = "confluence";
     private readonly IConfluenceConfigStore _configStore;
     private readonly ConfluenceConverterProbe _converterProbe;
     private readonly string _defaultConsolePath;
@@ -173,7 +173,7 @@ public sealed partial class ConfluenceSetupService
             StringComparison.OrdinalIgnoreCase);
 
     [GeneratedRegex("^[A-Za-z0-9._-]+$", RegexOptions.CultureInvariant)]
-    private static partial Regex SpaceKeyPattern();
+    internal static partial Regex SpaceKeyPattern();
 }
 
 /// <summary>Infers the instance context and optional space from Cortex-supported page URLs.</summary>

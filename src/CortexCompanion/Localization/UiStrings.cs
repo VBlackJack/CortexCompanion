@@ -28,6 +28,12 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("PageTitleLastSync"));
     private static readonly CompositeFormat ConfirmAddMessageFormat =
         CompositeFormat.Parse(GetString("ConfirmAddMessage"));
+    private static readonly CompositeFormat ConfirmAddSpaceMessageFormat =
+        CompositeFormat.Parse(GetString("ConfirmAddSpaceMessage"));
+    private static readonly CompositeFormat PagesAddSpaceInferredKeyFormat =
+        CompositeFormat.Parse(GetString("PagesAddSpaceInferredKey"));
+    private static readonly CompositeFormat PagesSpaceNotAllowlistedFormat =
+        CompositeFormat.Parse(GetString("PagesSpaceNotAllowlisted"));
     private static readonly CompositeFormat ScopeRootDetailsFormat =
         CompositeFormat.Parse(GetString("ScopeRootDetails"));
     private static readonly CompositeFormat ScopeChoiceWholeSpaceFormat =
@@ -322,6 +328,37 @@ public static class UiStrings
     /// <summary>Formats the add confirmation.</summary>
     public static string FormatConfirmAdd(string title, string pageId, string spaceKey) =>
         string.Format(CultureInfo.CurrentCulture, ConfirmAddMessageFormat, title, pageId, spaceKey);
+    /// <summary>Gets the space allowlisting card title.</summary>
+    public static string PagesAddSpaceTitle => GetString(nameof(PagesAddSpaceTitle));
+    /// <summary>Gets the space allowlisting card description.</summary>
+    public static string PagesAddSpaceDescription => GetString(nameof(PagesAddSpaceDescription));
+    /// <summary>Gets the space reference field label.</summary>
+    public static string PagesAddSpaceReferenceLabel => GetString(nameof(PagesAddSpaceReferenceLabel));
+    /// <summary>Gets the space reference field hint.</summary>
+    public static string PagesAddSpaceReferenceHint => GetString(nameof(PagesAddSpaceReferenceHint));
+    /// <summary>Gets the space classification field label.</summary>
+    public static string PagesAddSpaceClassificationLabel => GetString(nameof(PagesAddSpaceClassificationLabel));
+    /// <summary>Gets the message shown when no space key can be inferred.</summary>
+    public static string PagesAddSpaceNoInferredKey => GetString(nameof(PagesAddSpaceNoInferredKey));
+    /// <summary>Gets the space allowlisting button caption.</summary>
+    public static string PagesAddSpaceButton => GetString(nameof(PagesAddSpaceButton));
+    /// <summary>Gets the space-already-allowlisted refusal.</summary>
+    public static string PagesRejectSpaceAlreadyAllowlisted => GetString(nameof(PagesRejectSpaceAlreadyAllowlisted));
+    /// <summary>Gets the refusal for a reference carrying no space key.</summary>
+    public static string PagesRejectSpaceKeyNotInferable => GetString(nameof(PagesRejectSpaceKeyNotInferable));
+    /// <summary>Gets the refusal for a reference pointing at another Confluence server.</summary>
+    public static string PagesRejectSpaceForeignBaseUrl => GetString(nameof(PagesRejectSpaceForeignBaseUrl));
+    /// <summary>Gets the space allowlisting confirmation title.</summary>
+    public static string ConfirmAddSpaceTitle => GetString(nameof(ConfirmAddSpaceTitle));
+    /// <summary>Formats the inferred space key.</summary>
+    public static string FormatPagesAddSpaceInferredKey(string spaceKey) =>
+        string.Format(CultureInfo.CurrentCulture, PagesAddSpaceInferredKeyFormat, spaceKey);
+    /// <summary>Formats the not-allowlisted guidance for one space.</summary>
+    public static string FormatPagesSpaceNotAllowlisted(string spaceKey) =>
+        string.Format(CultureInfo.CurrentCulture, PagesSpaceNotAllowlistedFormat, spaceKey);
+    /// <summary>Formats the space allowlisting consequence.</summary>
+    public static string FormatConfirmAddSpace(string spaceKey, string classification) =>
+        string.Format(CultureInfo.CurrentCulture, ConfirmAddSpaceMessageFormat, spaceKey, classification);
     /// <summary>Gets the removal confirmation title.</summary>
     public static string ConfirmRemoveTitle => GetString(nameof(ConfirmRemoveTitle));
     /// <summary>Formats the removal consequence.</summary>

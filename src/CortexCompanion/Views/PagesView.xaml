@@ -185,6 +185,56 @@
                 </Grid>
             </Border>
 
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionSeparator}"
+                    Visibility="{Binding HasConfluenceConfiguration, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel MaxWidth="{StaticResource SettingsContentMaxWidth}"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock Text="{x:Static localization:UiStrings.PagesAddSpaceTitle}"
+                               FontSize="{StaticResource FontSizeTitle}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.PagesAddSpaceDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginSectionBottom}" />
+
+                    <TextBlock x:Name="NewSpaceReferenceLabel"
+                               Text="{x:Static localization:UiStrings.PagesAddSpaceReferenceLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBox Text="{Binding NewSpaceReference, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.LabeledBy="{Binding ElementName=NewSpaceReferenceLabel}"
+                             ToolTip="{x:Static localization:UiStrings.PagesAddSpaceReferenceHint}"
+                             MinHeight="{StaticResource ControlMinHeight}"
+                             Padding="{StaticResource SpacingSm}"
+                             Background="{DynamicResource BackgroundBrush}"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}"
+                             Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{Binding NewSpaceKeyMessage}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+
+                    <TextBlock x:Name="NewSpaceClassificationLabel"
+                               Text="{x:Static localization:UiStrings.PagesAddSpaceClassificationLabel}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <ComboBox ItemsSource="{Binding ClassificationOptions}"
+                              SelectedItem="{Binding SelectedClassification, Mode=TwoWay}"
+                              DisplayMemberPath="DisplayName"
+                              AutomationProperties.LabeledBy="{Binding ElementName=NewSpaceClassificationLabel}"
+                              Margin="{StaticResource MarginSectionBottom}" />
+
+                    <Button Content="{x:Static localization:UiStrings.PagesAddSpaceButton}"
+                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesAddSpaceButton}"
+                            Command="{Binding AddSpaceCommand}"
+                            HorizontalAlignment="Left"
+                            Style="{StaticResource PrimaryButtonStyle}" />
+                </StackPanel>
+            </Border>
+
             <Border Background="{DynamicResource WarningBrush}"
                     Padding="{StaticResource SpacingSm}"
                     Margin="{StaticResource MarginCardBottom}"

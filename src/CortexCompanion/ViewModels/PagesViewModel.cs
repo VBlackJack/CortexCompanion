@@ -21,12 +21,15 @@ public sealed class PagesViewModel : ViewModelBase
     private readonly string? _configurationPath;
     private readonly AsyncRelayCommand _refreshCommand;
     private readonly AsyncRelayCommand _addCommand;
+    private readonly AsyncRelayCommand _addSpaceCommand;
     private readonly AsyncRelayCommand _initializeConfluenceCommand;
     private readonly AsyncRelayCommand _browseConverterCommand;
     private readonly AsyncRelayCommand<ConfiguredSpaceViewModel> _switchModeCommand;
     private readonly AsyncRelayCommand<ConfiguredSpaceViewModel> _expandSubtreeCommand;
     private readonly AsyncRelayCommand<ConfiguredPageViewModel> _removeCommand;
     private string _pageReference = string.Empty;
+    private string _newSpaceReference = string.Empty;
+    private string? _newSpaceKey;
     private string _setupPageUrl = string.Empty;
     private string _setupSpaceKey = string.Empty;
     private string? _lastInferredSpaceKey;
@@ -84,6 +87,7 @@ public sealed class PagesViewModel : ViewModelBase
             ExpandSubtreeAsync,
             space => CanMutate && space?.HasScopeWarning == true);
         _removeCommand = new AsyncRelayCommand<ConfiguredPageViewModel>(RemoveAsync, _ => CanMutate);
+        _addSpaceCommand = new AsyncRelayCommand(AddSpaceAsync, () => CanAddSpace);
     }
 
     /// <summary>Gets the current spaces projection.</summary>
@@ -120,6 +124,49 @@ public sealed class PagesViewModel : ViewModelBase
             }
         }
     }
+
+    /// <summary>Gets or sets the page URL whose space is to be allowlisted.</summary>
+    public string NewSpaceReference
+    {
+        get => _newSpaceReference;
+        set
+        {
+            if (!SetProperty(ref _newSpaceReference, value))
+            {
+                return;
+            }
+
+            NewSpaceKey = InferSpaceKeyOrNull(value);
+            _addSpaceCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    /// <summary>Gets the space key read from the pending reference, or null when unreadable.</summary>
+    public string? NewSpaceKey
+    {
+        get => _newSpaceKey;
+        private set
+        {
+            if (SetProperty(ref _newSpaceKey, value))
+            {
+                OnPropertyChanged(nameof(NewSpaceKeyMessage));
+                OnPropertyChanged(nameof(CanAddSpace));
+            }
+        }
+    }
+
+    /// <summary>Gets the sentence naming the space that allowlisting would authorize.</summary>
+    public string NewSpaceKeyMessage => string.IsNullOrWhiteSpace(NewSpaceReference)
+        ? string.Empty
+        : NewSpaceKey is null
+            ? UiStrings.PagesAddSpaceNoInferredKey
+            : UiStrings.FormatPagesAddSpaceInferredKey(NewSpaceKey);
+
+    /// <summary>Gets whether an allowlisting write can be attempted right now.</summary>
+    public bool CanAddSpace => CanMutate && NewSpaceKey is not null;
+
+    /// <summary>Gets the space allowlisting command.</summary>
+    public ICommand AddSpaceCommand => _addSpaceCommand;
 
     /// <summary>Gets or sets the full page URL used by first-run setup.</summary>
     public string SetupPageUrl
@@ -367,16 +414,79 @@ public sealed class PagesViewModel : ViewModelBase
             return;
         }
 
+        await RunMutationAsync(
+            async () =>
+            {
+                bool changed = await _mutations.AddPageAsync(PageReference, IsReadOnly, CancellationToken.None);
+                if (changed)
+                {
+                    PageReference = string.Empty;
+                }
+
+                return changed;
+            },
+            OfferToAllowlistRefusedSpace);
+    }
+
+    private string? OfferToAllowlistRefusedSpace(ConfluenceCliOperationException exception)
+    {
+        if (exception.ExitCode != CortexExitCode.OutsideAllowlist)
+        {
+            return null;
+        }
+
+        // The CLI refuses before it reveals the space, so the key comes from the
+        // reference the user just pasted; the card is filled in so one click is enough.
+        NewSpaceReference = PageReference;
+        return NewSpaceKey is null
+            ? null
+            : UiStrings.FormatPagesSpaceNotAllowlisted(NewSpaceKey);
+    }
+
+    private async Task AddSpaceAsync()
+    {
+        if (_mutations is null)
+        {
+            return;
+        }
+
         await RunMutationAsync(async () =>
         {
-            bool changed = await _mutations.AddPageAsync(PageReference, IsReadOnly, CancellationToken.None);
-            if (changed)
+            bool added = await _mutations.AddSpaceAsync(
+                NewSpaceReference,
+                SelectedClassification.Code,
+                IsReadOnly,
+                CancellationToken.None);
+            if (!added)
+            {
+                return false;
+            }
+
+            string reference = NewSpaceReference;
+            NewSpaceReference = string.Empty;
+
+            // Allowlisting alone collects nothing, so the page that motivated it is added
+            // in the same gesture rather than left for the user to paste a second time.
+            bool pageAdded = await _mutations.AddPageAsync(reference, IsReadOnly, CancellationToken.None);
+            if (pageAdded && string.Equals(PageReference, reference, StringComparison.Ordinal))
             {
                 PageReference = string.Empty;
             }
 
-            return changed;
+            return true;
         });
+    }
+
+    private static string? InferSpaceKeyOrNull(string reference)
+    {
+        try
+        {
+            return ConfluencePageUrlAnalyzer.Analyze(reference).InferredSpaceKey;
+        }
+        catch (ConfluenceSetupValidationException)
+        {
+            return null;
+        }
     }
 
     private async Task InitializeConfluenceAsync()
@@ -506,7 +616,9 @@ public sealed class PagesViewModel : ViewModelBase
     private Task RemoveAsync(ConfiguredPageViewModel page) => RunMutationAsync(() =>
         _mutations!.RemovePageAsync(page.SpaceKey, page.PageId, page.Title, IsReadOnly, CancellationToken.None));
 
-    private async Task RunMutationAsync(Func<Task<bool>> action)
+    private async Task RunMutationAsync(
+        Func<Task<bool>> action,
+        Func<ConfluenceCliOperationException, string?>? cliFailureOverride = null)
     {
         IsBusy = true;
         string terminalMessage;
@@ -521,7 +633,8 @@ public sealed class PagesViewModel : ViewModelBase
         }
         catch (ConfluenceCliOperationException exception)
         {
-            terminalMessage = FormatCliFailure(exception.ExitCode, exception.Message, false, null);
+            terminalMessage = cliFailureOverride?.Invoke(exception)
+                ?? FormatCliFailure(exception.ExitCode, exception.Message, false, null);
         }
         catch (Exception exception) when (exception is PageMutationRejectedException or
                                           ConfluenceConfigLockedException or
@@ -596,7 +709,8 @@ public sealed class PagesViewModel : ViewModelBase
             CortexExitCode.OutsideAllowlist => UiStrings.PagesCliOutsideAllowlist,
             _ => UiStrings.PagesCliError,
         };
-        return string.IsNullOrWhiteSpace(detail) ? stable : $"{stable} {detail}";
+        string sentence = CliStandardErrorPresenter.UserFacing(detail);
+        return sentence.Length == 0 ? stable : $"{stable} {sentence}";
     }
 
     private void NotifyCommandAvailability()
@@ -607,6 +721,8 @@ public sealed class PagesViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanBrowseConverter));
         _refreshCommand.RaiseCanExecuteChanged();
         _addCommand.RaiseCanExecuteChanged();
+        OnPropertyChanged(nameof(CanAddSpace));
+        _addSpaceCommand.RaiseCanExecuteChanged();
         _initializeConfluenceCommand.RaiseCanExecuteChanged();
         _browseConverterCommand.RaiseCanExecuteChanged();
         _switchModeCommand.RaiseCanExecuteChanged();

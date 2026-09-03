@@ -159,9 +159,90 @@ public sealed class PagesViewModelTests
         Assert.AreEqual(UiStrings.PagesSetupCompleted, viewModel.StateMessage);
     }
 
+    [TestMethod]
+    public async Task ARefusedSpaceFillsTheAllowlistingCardAndNamesTheSpace()
+    {
+        using TemporaryDirectory temporary = new();
+        string configPath = Path.Combine(temporary.Path, "confluence.toml");
+        File.WriteAllText(configPath, string.Empty);
+        StubCliClient cliClient = new()
+        {
+            PreviewExitCode = CortexExitCode.OutsideAllowlist,
+            PreviewStandardError = string.Join(
+                '\n',
+                "2026-09-03T11:44:05+0200 INFO cortex.ingestion.credentials credential_read_succeeded target=spike",
+                "Cortex Confluence error: Resolved page belongs to a space outside the allowlist."),
+        };
+        PagesMutationService mutations = new(
+            cliClient,
+            new StubConfigStore(),
+            new RejectingConfirmationService());
+        PagesViewModel viewModel = new(
+            cliClient,
+            mutations,
+            null,
+            null,
+            new ConfluenceConfigPathResolution(
+                configPath,
+                ConfluenceConfigPathOrigin.Default,
+                "APPDATA"),
+            []);
+
+        await viewModel.InitializeAsync(isReadOnly: false);
+        viewModel.PageReference = "https://wiki.example.test/spaces/ANSSIWS/pages/1683736048/ADSEC+Platform";
+        await ((AsyncRelayCommand)viewModel.AddCommand).ExecuteAsync(parameter: null);
+
+        Assert.AreEqual("ANSSIWS", viewModel.NewSpaceKey);
+        Assert.AreEqual(viewModel.PageReference, viewModel.NewSpaceReference);
+        Assert.IsTrue(viewModel.CanAddSpace);
+        Assert.AreEqual(UiStrings.FormatPagesSpaceNotAllowlisted("ANSSIWS"), viewModel.StateMessage);
+    }
+
+    [TestMethod]
+    public async Task ACliFailureNeverShowsItsLogRecordsOnScreen()
+    {
+        using TemporaryDirectory temporary = new();
+        string configPath = Path.Combine(temporary.Path, "confluence.toml");
+        File.WriteAllText(configPath, string.Empty);
+        StubCliClient cliClient = new()
+        {
+            PreviewExitCode = CortexExitCode.NotFound,
+            PreviewStandardError = string.Join(
+                '\n',
+                "2026-09-03T11:44:05+0200 ERROR cortex.confluence_writer.cli confluence_resolve_not_found",
+                "Cortex Confluence error: page absente."),
+        };
+        PagesMutationService mutations = new(
+            cliClient,
+            new StubConfigStore(),
+            new RejectingConfirmationService());
+        PagesViewModel viewModel = new(
+            cliClient,
+            mutations,
+            null,
+            null,
+            new ConfluenceConfigPathResolution(
+                configPath,
+                ConfluenceConfigPathOrigin.Default,
+                "APPDATA"),
+            []);
+
+        await viewModel.InitializeAsync(isReadOnly: false);
+        viewModel.PageReference = "1683736048";
+        await ((AsyncRelayCommand)viewModel.AddCommand).ExecuteAsync(parameter: null);
+
+        Assert.DoesNotContain("cortex.confluence_writer.cli", viewModel.StateMessage);
+        Assert.DoesNotContain("2026-09-03T11:44:05", viewModel.StateMessage);
+        Assert.Contains("page absente.", viewModel.StateMessage);
+    }
+
     private sealed class StubCliClient : IConfluenceCliClient
     {
         public ConfluenceCliResult<PagesContract>? PagesResult { get; init; }
+
+        public CortexExitCode PreviewExitCode { get; init; } = CortexExitCode.Ok;
+
+        public string PreviewStandardError { get; init; } = string.Empty;
 
         public int GetPagesCount { get; private set; }
 
@@ -211,6 +292,16 @@ public sealed class PagesViewModelTests
             ConfluenceCliResult<ResolvedPageContract> resolved = await ResolveAsync(
                 reference,
                 cancellationToken);
+            if (PreviewExitCode != CortexExitCode.Ok)
+            {
+                return new ConfluenceCliResult<ScopePreviewContract>(
+                    PreviewExitCode,
+                    null,
+                    PreviewStandardError,
+                    false,
+                    null);
+            }
+
             return new ConfluenceCliResult<ScopePreviewContract>(
                 resolved.ExitCode,
                 new ScopePreviewContract
@@ -248,6 +339,8 @@ public sealed class PagesViewModelTests
     {
         public bool ConfirmAdd(ResolvedPageContract page) => false;
 
+        public bool ConfirmAddSpace(string spaceKey, string classification) => false;
+
         public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) => null;
 
         public bool ConfirmRemove(string spaceKey, string pageId, string? title) => false;
@@ -261,6 +354,8 @@ public sealed class PagesViewModelTests
     private sealed class AcceptingConfirmationService : IPageMutationConfirmationService
     {
         public bool ConfirmAdd(ResolvedPageContract page) => true;
+
+        public bool ConfirmAddSpace(string spaceKey, string classification) => true;
 
         public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) =>
             ConfluenceSelection.Subtree;

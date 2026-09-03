@@ -118,6 +118,20 @@
   <data name="PagesCliInvalidInput" xml:space="preserve"><value>La configuration Confluence ou la référence de page est invalide.</value></data>
   <data name="PagesCliNotFound" xml:space="preserve"><value>La page n'existe pas.</value></data>
   <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>La page appartient à un espace hors allowlist.</value></data>
+  <data name="PagesAddSpaceTitle" xml:space="preserve"><value>Autoriser un nouvel espace</value></data>
+  <data name="PagesAddSpaceDescription" xml:space="preserve"><value>Un espace doit être autorisé avant que ses pages puissent être collectées. Collez l'URL d'une page de cet espace : sa clé en est déduite.</value></data>
+  <data name="PagesAddSpaceReferenceLabel" xml:space="preserve"><value>URL d'une page de l'espace</value></data>
+  <data name="PagesAddSpaceReferenceHint" xml:space="preserve"><value>Exemple : https://votre-confluence/spaces/ANSSIWS/pages/123456/Titre. Un lien court ne permet pas de déduire l'espace.</value></data>
+  <data name="PagesAddSpaceClassificationLabel" xml:space="preserve"><value>Classification de l'espace</value></data>
+  <data name="PagesAddSpaceInferredKey" xml:space="preserve"><value>Espace déduit : {0}</value></data>
+  <data name="PagesAddSpaceNoInferredKey" xml:space="preserve"><value>Aucun espace n'a pu être déduit de cette URL.</value></data>
+  <data name="PagesAddSpaceButton" xml:space="preserve"><value>Autoriser l'espace</value></data>
+  <data name="PagesSpaceNotAllowlisted" xml:space="preserve"><value>L'espace {0} n'est pas autorisé. Autorisez-le ci-dessous, la page sera ajoutée dans la foulée.</value></data>
+  <data name="PagesRejectSpaceAlreadyAllowlisted" xml:space="preserve"><value>Cet espace est déjà autorisé.</value></data>
+  <data name="PagesRejectSpaceKeyNotInferable" xml:space="preserve"><value>Cette URL ne porte pas d'espace. Ouvrez la page dans Confluence et copiez l'URL complète depuis la barre d'adresse.</value></data>
+  <data name="PagesRejectSpaceForeignBaseUrl" xml:space="preserve"><value>Cette URL ne pointe pas vers le serveur Confluence configuré.</value></data>
+  <data name="ConfirmAddSpaceTitle" xml:space="preserve"><value>Autoriser un espace</value></data>
+  <data name="ConfirmAddSpaceMessage" xml:space="preserve"><value>L'espace {0} sera autorisé en classification {1}. Aucune page n'est collectée tant que vous n'en ajoutez pas explicitement.</value></data>
   <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré. Augmentez-le dans Réglages, choisissez Enregistrer et connecter, puis réessayez.</value></data>
   <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu être lancé.</value></data>
   <data name="PagesCliInvalidJson" xml:space="preserve"><value>La réponse JSON du CLI est invalide.</value></data>

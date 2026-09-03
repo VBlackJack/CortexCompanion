@@ -45,6 +45,19 @@ public sealed record ConfluenceConfiguration(
             : migrated with { SchemaVersion = targetVersion };
     }
 
+    /// <summary>Appends one space to the allowlist without changing any unrelated value.</summary>
+    public ConfluenceConfiguration AddSpace(ConfluenceSpaceConfiguration space)
+    {
+        ArgumentNullException.ThrowIfNull(space);
+        if (Spaces.Any(existing =>
+            string.Equals(existing.SpaceKey, space.SpaceKey, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new ArgumentException("The space is already allowlisted.", nameof(space));
+        }
+
+        return this with { Spaces = Spaces.Append(space).ToArray() };
+    }
+
     /// <summary>Replaces one space without changing any unrelated configuration value.</summary>
     public ConfluenceConfiguration ReplaceSpace(ConfluenceSpaceConfiguration replacement)
     {
