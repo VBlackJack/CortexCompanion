@@ -1,9 +1,9 @@
 <Project>
   <PropertyGroup>
-    <Version>2026.0903.01</Version>
-    <AssemblyVersion>2026.0903.01.0</AssemblyVersion>
-    <FileVersion>2026.0903.01.0</FileVersion>
-    <InformationalVersion>2026.0903.01</InformationalVersion>
+    <Version>2026.0903.02</Version>
+    <AssemblyVersion>2026.0903.02.0</AssemblyVersion>
+    <FileVersion>2026.0903.02.0</FileVersion>
+    <InformationalVersion>2026.0903.02</InformationalVersion>
     <Authors>Julien Bombled</Authors>
     <Copyright>Copyright 2026 Julien Bombled</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
