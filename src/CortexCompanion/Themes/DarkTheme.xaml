@@ -5,9 +5,9 @@
         <ResourceDictionary Source="CommonControls.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Color x:Key="PrimaryColor">#282A36</Color>
-    <Color x:Key="SecondaryColor">#21222C</Color>
-    <Color x:Key="SurfaceColor">#44475A</Color>
+    <Color x:Key="BackgroundColor">#282A36</Color>
+    <Color x:Key="SurfaceColor">#21222C</Color>
+    <Color x:Key="CardColor">#44475A</Color>
     <Color x:Key="AccentColor">#BD93F9</Color>
     <Color x:Key="AccentHoverColor">#CAA9FA</Color>
     <Color x:Key="AccentPressedColor">#A67AF7</Color>
@@ -20,9 +20,9 @@
     <Color x:Key="ErrorColor">#FF5555</Color>
     <Color x:Key="InfoColor">#8BE9FD</Color>
 
-    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource PrimaryColor}" />
-    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SecondaryColor}" />
-    <SolidColorBrush x:Key="CardBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="CardBrush" Color="{StaticResource CardColor}" />
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
     <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
     <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />

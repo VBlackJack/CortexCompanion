@@ -18,6 +18,12 @@ public sealed class ThemeContrastTests
     private const double MinimumNonTextContrastRatio = 3.0;
     private static readonly Regex HexColorPattern = new("#[0-9A-Fa-f]{6,8}", RegexOptions.CultureInvariant);
 
+    // A focus ring is deliberately the info color: it is a semantic alias, not a naming slip.
+    private static readonly Dictionary<string, string> DeliberateBrushColorAliases = new(StringComparer.Ordinal)
+    {
+        ["FocusIndicatorBrush"] = "InfoColor",
+    };
+
     private static readonly ThemeContrastCase[] ContrastCases =
     [
         new("Primary button rest", "BackgroundBrush", "AccentBrush"),
@@ -185,6 +191,38 @@ public sealed class ThemeContrastTests
         }
     }
 
+    /// <summary>Ensures every brush is named after the color key it actually reads.</summary>
+    [TestMethod]
+    public void ThemeBrushNamesMatchTheirColorKeys()
+    {
+        XDocument theme = XDocument.Load(GetDarkThemePath());
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        foreach (XElement brush in theme.Descendants(presentation + "SolidColorBrush"))
+        {
+            string key = (string?)brush.Attribute(xaml + "Key")
+                ?? throw new AssertFailedException("A SolidColorBrush declares no x:Key.");
+            string color = (string?)brush.Attribute("Color")
+                ?? throw new AssertFailedException($"{key} declares no Color.");
+            if (DeliberateBrushColorAliases.TryGetValue(key, out string? aliased))
+            {
+                Assert.AreEqual($"{{StaticResource {aliased}}}", color);
+                continue;
+            }
+
+            Assert.EndsWith(
+                "Brush",
+                key,
+                $"Theme brush {key} does not follow the <Name>Brush convention.");
+            string expected = string.Concat(key.AsSpan(0, key.Length - "Brush".Length), "Color");
+            Assert.AreEqual(
+                $"{{StaticResource {expected}}}",
+                color,
+                $"Theme brush {key} reads {color} instead of {expected}; the name misleads every caller.");
+        }
+    }
+
     private static ResourceDictionary LoadTheme()
     {
         string themePath = Path.Combine(
@@ -287,6 +325,13 @@ public sealed class ThemeContrastTests
         "CortexCompanion",
         "Themes",
         "CommonControls.xaml");
+
+    private static string GetDarkThemePath() => Path.Combine(
+        FindRepositoryRoot(),
+        "src",
+        "CortexCompanion",
+        "Themes",
+        "DarkTheme.xaml");
 
     private static string FindRepositoryRoot()
     {
