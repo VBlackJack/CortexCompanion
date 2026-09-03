@@ -25,7 +25,7 @@ public sealed class SyncViewModelTests
         byte[] before = SHA256.HashData(File.ReadAllBytes(healthPath));
         StubSyncRunCoordinator coordinator = new();
         StubInteractiveLauncher interactive = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             healthPath,
@@ -50,7 +50,7 @@ public sealed class SyncViewModelTests
         string configPath = CreateConfig(temporary);
         string healthPath = Path.Combine(temporary.Path, "source-health.json");
         BlockingSyncRunCoordinator coordinator = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             healthPath,
@@ -84,7 +84,7 @@ public sealed class SyncViewModelTests
                 healthPath,
                 IngestionHealthReaderTests.ValidJson("ok", null)),
         };
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             healthPath,
@@ -110,7 +110,7 @@ public sealed class SyncViewModelTests
     {
         using TemporaryDirectory temporary = new();
         string healthPath = Path.Combine(temporary.Path, "source-health.json");
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             healthPath,
@@ -147,10 +147,10 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
-    public void EmptyEnvironmentOverridesHaveOneExplicitVisibilityState()
+    public async Task EmptyEnvironmentOverridesHaveOneExplicitVisibilityState()
     {
         using TemporaryDirectory temporary = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             Path.Combine(temporary.Path, "source-health.json"),
@@ -164,7 +164,7 @@ public sealed class SyncViewModelTests
     public async Task MissingConfluenceConfigurationKeepsLocalSyncActionable()
     {
         using TemporaryDirectory temporary = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             Path.Combine(temporary.Path, "missing.toml"),
             Path.Combine(temporary.Path, "source-health.json"),
@@ -205,7 +205,7 @@ public sealed class SyncViewModelTests
             false,
             exitCode,
             null));
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             Path.Combine(temporary.Path, "source-health.json"),
@@ -226,7 +226,7 @@ public sealed class SyncViewModelTests
         string configPath = CreateConfig(temporary);
         byte[] before = SHA256.HashData(File.ReadAllBytes(configPath));
         ImmediateRunCoordinator coordinator = new(2);
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             Path.Combine(temporary.Path, "source-health.json"),
@@ -251,7 +251,7 @@ public sealed class SyncViewModelTests
         string cliPath = temporary.CreateFakeCli();
         string configPath = CreateConfig(temporary);
         RecordingConfluenceCoordinator coordinator = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             Path.Combine(temporary.Path, "source-health.json"),
@@ -268,7 +268,7 @@ public sealed class SyncViewModelTests
     public async Task CancelCommandStaysUnavailableWhenNoWorkerIsAlive()
     {
         using TemporaryDirectory temporary = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             CreateHealth(temporary, null),
@@ -288,7 +288,7 @@ public sealed class SyncViewModelTests
         using TemporaryDirectory temporary = new();
         CancellableRunCoordinator coordinator = new();
         StubInterruptionConfirmation refused = new(false);
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             CreateHealth(temporary, null),
@@ -310,7 +310,7 @@ public sealed class SyncViewModelTests
     {
         using TemporaryDirectory temporary = new();
         CancellableRunCoordinator coordinator = new();
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             CreateHealth(temporary, null),
@@ -328,11 +328,35 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
+    public async Task DisposeAsyncReleasesTheLocalStateFilesTheObserverReads()
+    {
+        using TemporaryDirectory temporary = new();
+        CancellableRunCoordinator coordinator = new();
+        string configPath = CreateConfig(temporary);
+        SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(),
+            configPath,
+            CreateHealth(temporary, null),
+            coordinator,
+            new StubInteractiveLauncher(),
+            new StubInterruptionConfirmation(true));
+
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        viewModel.CancelCommand.Execute(null);
+        await WaitUntilAsync(() => coordinator.CancelCallCount == 1);
+
+        await viewModel.DisposeAsync();
+
+        // The observer refreshes local state once the run stops; disposal must outlive that read.
+        File.Delete(configPath);
+    }
+
+    [TestMethod]
     public async Task CancelReportsHonestlyWhenNoLiveWorkerRemained()
     {
         using TemporaryDirectory temporary = new();
         CancellableRunCoordinator coordinator = new() { CancelResult = false };
-        SyncViewModel viewModel = CreateViewModel(
+        await using SyncViewModel viewModel = CreateViewModel(
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             CreateHealth(temporary, null),

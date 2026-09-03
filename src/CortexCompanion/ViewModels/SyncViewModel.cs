@@ -15,7 +15,7 @@ using CortexCompanion.Services;
 namespace CortexCompanion.ViewModels;
 
 /// <summary>Coordinates direct local state reads and explicitly user-triggered sync processes.</summary>
-public sealed class SyncViewModel : ViewModelBase
+public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 {
     private readonly ISyncRunCoordinator? _runCoordinator;
     private readonly IInteractiveProcessLauncher? _interactiveLauncher;
@@ -32,6 +32,7 @@ public sealed class SyncViewModel : ViewModelBase
     private SyncRunHandle? _liveRunHandle;
     private CancellationToken _applicationCancellation;
     private CancellationTokenSource? _monitorCancellation;
+    private Task? _monitorTask;
     private string _stateMessage = UiStrings.SyncLoading;
     private string _healthStatus = UiStrings.SyncNeverRun;
     private string _lastAttempt = UiStrings.ValueUnknown;
@@ -550,10 +551,29 @@ public sealed class SyncViewModel : ViewModelBase
 
     private void StartBackgroundMonitor(SyncRunHandle handle)
     {
+        StopBackgroundMonitor();
+        _monitorCancellation = CancellationTokenSource.CreateLinkedTokenSource(_applicationCancellation);
+        _monitorTask = MonitorRunSafelyAsync(handle, _monitorCancellation.Token);
+    }
+
+    /// <summary>Cancels the detached run observer without waiting for it to unwind.</summary>
+    public void StopBackgroundMonitor()
+    {
         _monitorCancellation?.Cancel();
         _monitorCancellation?.Dispose();
-        _monitorCancellation = CancellationTokenSource.CreateLinkedTokenSource(_applicationCancellation);
-        _ = MonitorRunSafelyAsync(handle, _monitorCancellation.Token);
+        _monitorCancellation = null;
+    }
+
+    /// <summary>Cancels the observer and waits until it has released the local state files it reads.</summary>
+    public async ValueTask DisposeAsync()
+    {
+        StopBackgroundMonitor();
+        Task? monitor = _monitorTask;
+        _monitorTask = null;
+        if (monitor is not null)
+        {
+            await monitor.ConfigureAwait(false);
+        }
     }
 
     private async Task MonitorRunSafelyAsync(SyncRunHandle handle, CancellationToken cancellationToken)

@@ -204,6 +204,12 @@ public sealed class MainViewModel : ViewModelBase
     {
         CompanionRuntime runtime = eventArgs.Runtime;
         Pages = runtime.Pages;
+        if (!ReferenceEquals(_sync, runtime.Sync))
+        {
+            // The replaced screen keeps observing a detached run until its monitor is stopped.
+            _sync.StopBackgroundMonitor();
+        }
+
         Sync = runtime.Sync;
         Scheduling = runtime.Scheduling;
         IsReadOnly = runtime.Handshake.IsReadOnly;
