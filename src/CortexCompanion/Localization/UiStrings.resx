@@ -34,9 +34,6 @@
   <data name="PagesTitle" xml:space="preserve">
     <value>Pages</value>
   </data>
-  <data name="PagesPlaceholder" xml:space="preserve">
-    <value>La gestion des pages sera ajoutée dans un prochain palier.</value>
-  </data>
   <data name="PagesRefresh" xml:space="preserve"><value>Recharger</value></data>
   <data name="PagesAddReferenceLabel" xml:space="preserve"><value>URL ou ID de page</value></data>
   <data name="PagesAddReferenceHint" xml:space="preserve"><value>Collez une URL Confluence ou un ID numérique</value></data>
@@ -144,14 +141,8 @@
   <data name="SyncTitle" xml:space="preserve">
     <value>Base locale</value>
   </data>
-  <data name="SyncPlaceholder" xml:space="preserve">
-    <value>La synchronisation sera ajoutée dans un prochain palier.</value>
-  </data>
   <data name="SchedulingTitle" xml:space="preserve">
     <value>Programmation</value>
-  </data>
-  <data name="SchedulingPlaceholder" xml:space="preserve">
-    <value>La programmation sera ajoutée dans un prochain palier.</value>
   </data>
   <data name="HandshakePending" xml:space="preserve">
     <value>CLI : vérification en cours - lecture seule</value>
@@ -195,8 +186,6 @@
   <data name="IngestionStorageSummary" xml:space="preserve"><value>{0}&#xA;Rétention : {1:N0} génération(s) maximum.</value></data>
   <data name="OpenCurrentGeneration" xml:space="preserve"><value>Ouvrir la génération courante</value></data>
   <data name="CurrentGenerationUnavailable" xml:space="preserve"><value>Aucune génération courante lisible n'est disponible.</value></data>
-  <data name="SyncHealthPathLabel" xml:space="preserve"><value>Fichier source-health.json</value></data>
-  <data name="SyncHealthPathOriginLabel" xml:space="preserve"><value>Résolution</value></data>
   <data name="HealthPathOrigin" xml:space="preserve"><value>data_root : {0} ; fichier de configuration : {1}</value></data>
   <data name="SyncHealthTitle" xml:space="preserve"><value>Dernière tentative enregistrée</value></data>
   <data name="SyncHealthStatusLabel" xml:space="preserve"><value>État</value></data>
@@ -218,8 +207,6 @@
   <data name="ValueUnknown" xml:space="preserve"><value>inconnu</value></data>
   <data name="ValueNone" xml:space="preserve"><value>aucun</value></data>
   <data name="PatTitle" xml:space="preserve"><value>Badge PAT</value></data>
-  <data name="PatStatusLabel" xml:space="preserve"><value>Échéance effective</value></data>
-  <data name="PatOriginLabel" xml:space="preserve"><value>Origine</value></data>
   <data name="PatUnknown" xml:space="preserve"><value>Inconnue : aucune échéance configurée.</value></data>
   <data name="PatInvalid" xml:space="preserve"><value>Invalide : l'échéance configurée ne peut pas être lue.</value></data>
   <data name="PatOk" xml:space="preserve"><value>OK - expire le {0}</value></data>
@@ -228,7 +215,6 @@
   <data name="SyncRunTitle" xml:space="preserve"><value>Dernière synchronisation</value></data>
   <data name="LocalSyncRunTitle" xml:space="preserve"><value>Dernière synchronisation locale</value></data>
   <data name="ConfluenceSyncRunTitle" xml:space="preserve"><value>Dernière collecte Confluence</value></data>
-  <data name="SyncRunResultLabel" xml:space="preserve"><value>Résultat</value></data>
   <data name="SyncDiagnosticsLabel" xml:space="preserve"><value>Diagnostics Cortex en direct (stderr)</value></data>
   <data name="SyncFinalOutputLabel" xml:space="preserve"><value>Sortie finale Cortex (stdout)</value></data>
   <data name="SyncNoRunResult" xml:space="preserve"><value>Aucun run Companion enregistré.</value></data>
@@ -244,7 +230,6 @@
   <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminée avec succès (code 0).</value></data>
   <data name="SyncLocked" xml:space="preserve"><value>Un sync est déjà en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
   <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Cochez "Forcer la collecte" puis relancez pour l'exécuter tout de suite.</value></data>
-  <data name="ConfluenceSyncForce" xml:space="preserve"><value>Forcer la collecte</value></data>
   <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>Cette action manuelle collecte toujours immédiatement. La cadence reste réservée aux exécutions automatiques.</value></data>
   <data name="SyncAuthFailed" xml:space="preserve"><value>Credential absent, expiré ou refusé (code 4).</value></data>
   <data name="SyncRemoteFailed" xml:space="preserve"><value>Le service distant est indisponible (code 5).</value></data>

@@ -109,9 +109,6 @@ public static class UiStrings
     /// <summary>Gets the Pages screen title.</summary>
     public static string PagesTitle => GetString(nameof(PagesTitle));
 
-    /// <summary>Gets the Pages placeholder text.</summary>
-    public static string PagesPlaceholder => GetString(nameof(PagesPlaceholder));
-
     /// <summary>Gets a Pages UI resource by its public property name.</summary>
     public static string PagesRefresh => GetString(nameof(PagesRefresh));
     /// <summary>Gets a Pages UI resource.</summary>
@@ -354,9 +351,6 @@ public static class UiStrings
     /// <summary>Gets the Sync screen title.</summary>
     public static string SyncTitle => GetString(nameof(SyncTitle));
 
-    /// <summary>Gets the Sync placeholder text.</summary>
-    public static string SyncPlaceholder => GetString(nameof(SyncPlaceholder));
-
     /// <summary>Gets a Sync UI resource.</summary>
     public static string SyncRefresh => GetString(nameof(SyncRefresh));
     /// <summary>Gets a Sync UI resource.</summary>
@@ -371,8 +365,6 @@ public static class UiStrings
     public static string ConfluenceSyncAdvancedDescription => GetString(nameof(ConfluenceSyncAdvancedDescription));
     /// <summary>Gets the optional Confluence collection action.</summary>
     public static string ConfluenceSyncNow => GetString(nameof(ConfluenceSyncNow));
-    /// <summary>Gets the schedule-bypass toggle label.</summary>
-    public static string ConfluenceSyncForce => GetString(nameof(ConfluenceSyncForce));
     /// <summary>Gets the schedule-bypass toggle explanation.</summary>
     public static string ConfluenceSyncForceHint => GetString(nameof(ConfluenceSyncForceHint));
     /// <summary>Gets a Sync UI resource.</summary>
@@ -402,10 +394,6 @@ public static class UiStrings
             IngestionStorageSummaryFormat,
             dataRoot,
             retentionGenerations);
-    /// <summary>Gets a Sync UI resource.</summary>
-    public static string SyncHealthPathLabel => GetString(nameof(SyncHealthPathLabel));
-    /// <summary>Gets a Sync UI resource.</summary>
-    public static string SyncHealthPathOriginLabel => GetString(nameof(SyncHealthPathOriginLabel));
     /// <summary>Formats the two orthogonal source-health path origins.</summary>
     public static string FormatHealthPathOrigin(string dataRootOrigin, string configPathOrigin) =>
         string.Format(CultureInfo.CurrentCulture, HealthPathOriginFormat, dataRootOrigin, configPathOrigin);
@@ -449,10 +437,6 @@ public static class UiStrings
     public static string ValueNone => GetString(nameof(ValueNone));
     /// <summary>Gets the PAT section title.</summary>
     public static string PatTitle => GetString(nameof(PatTitle));
-    /// <summary>Gets the PAT status label.</summary>
-    public static string PatStatusLabel => GetString(nameof(PatStatusLabel));
-    /// <summary>Gets the PAT origin label.</summary>
-    public static string PatOriginLabel => GetString(nameof(PatOriginLabel));
     /// <summary>Gets the unknown PAT state.</summary>
     public static string PatUnknown => GetString(nameof(PatUnknown));
     /// <summary>Gets the invalid PAT expiry state.</summary>
@@ -472,8 +456,6 @@ public static class UiStrings
     public static string LocalSyncRunTitle => GetString(nameof(LocalSyncRunTitle));
     /// <summary>Gets the latest Confluence collection title.</summary>
     public static string ConfluenceSyncRunTitle => GetString(nameof(ConfluenceSyncRunTitle));
-    /// <summary>Gets the run-result label.</summary>
-    public static string SyncRunResultLabel => GetString(nameof(SyncRunResultLabel));
     /// <summary>Gets the streamed diagnostics label.</summary>
     public static string SyncDiagnosticsLabel => GetString(nameof(SyncDiagnosticsLabel));
     /// <summary>Gets the final output label.</summary>
@@ -535,9 +517,6 @@ public static class UiStrings
 
     /// <summary>Gets the stable French scheduled-task contract description.</summary>
     public static string SchedulingTaskContractDescription => GetString(nameof(SchedulingTaskContractDescription));
-
-    /// <summary>Gets the Scheduling placeholder text.</summary>
-    public static string SchedulingPlaceholder => GetString(nameof(SchedulingPlaceholder));
 
     /// <summary>Gets the scheduling refresh action.</summary>
     public static string SchedulingRefresh => GetString(nameof(SchedulingRefresh));
