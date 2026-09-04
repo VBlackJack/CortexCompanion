@@ -63,8 +63,6 @@ public static class UiStrings
     private static readonly CompositeFormat PatOkFormat = CompositeFormat.Parse(GetString("PatOk"));
     private static readonly CompositeFormat PatWarningFormat = CompositeFormat.Parse(GetString("PatWarning"));
     private static readonly CompositeFormat PatExpiredFormat = CompositeFormat.Parse(GetString("PatExpired"));
-    private static readonly CompositeFormat CredentialFailedFormat =
-        CompositeFormat.Parse(GetString("CredentialFailed"));
     private static readonly CompositeFormat SyncUnexpectedExitFormat =
         CompositeFormat.Parse(GetString("SyncUnexpectedExit"));
     private static readonly CompositeFormat ProgressCounterFormat =
@@ -135,6 +133,8 @@ public static class UiStrings
     public static string ScopeChoiceSubtree => GetString(nameof(ScopeChoiceSubtree));
     /// <summary>Gets the recommended badge.</summary>
     public static string ScopeRecommended => GetString(nameof(ScopeRecommended));
+    /// <summary>Gets the separator between a scope label and its recommended badge.</summary>
+    public static string ScopeRecommendedSeparator => GetString(nameof(ScopeRecommendedSeparator));
     /// <summary>Formats the measured root and descendant count.</summary>
     public static string FormatScopeRoot(string title, int descendantCount) =>
         string.Format(CultureInfo.CurrentCulture, ScopeRootDetailsFormat, title, descendantCount);
@@ -421,8 +421,6 @@ public static class UiStrings
     /// <summary>Gets the schedule-bypass toggle explanation.</summary>
     public static string ConfluenceSyncForceHint => GetString(nameof(ConfluenceSyncForceHint));
     /// <summary>Gets a Sync UI resource.</summary>
-    public static string StoreCredential => GetString(nameof(StoreCredential));
-    /// <summary>Gets a Sync UI resource.</summary>
     public static string SyncLoading => GetString(nameof(SyncLoading));
     /// <summary>Gets a Sync UI resource.</summary>
     public static string SyncStateReady => GetString(nameof(SyncStateReady));
@@ -557,14 +555,6 @@ public static class UiStrings
     /// <summary>Formats one non-nominal frozen exit code.</summary>
     public static string FormatSyncUnexpectedExit(int? exitCode) =>
         string.Format(CultureInfo.CurrentCulture, SyncUnexpectedExitFormat, exitCode);
-    /// <summary>Gets the successful credential-storage result.</summary>
-    public static string CredentialStored => GetString(nameof(CredentialStored));
-    /// <summary>Gets the interactive launch failure.</summary>
-    public static string CredentialLaunchFailed => GetString(nameof(CredentialLaunchFailed));
-    /// <summary>Formats one nonzero credential-storage result.</summary>
-    public static string FormatCredentialFailed(int? exitCode) =>
-        string.Format(CultureInfo.CurrentCulture, CredentialFailedFormat, exitCode);
-
     /// <summary>Gets the Scheduling screen title.</summary>
     public static string SchedulingTitle => GetString(nameof(SchedulingTitle));
 

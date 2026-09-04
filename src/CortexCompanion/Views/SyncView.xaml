@@ -100,12 +100,6 @@
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
-                    <WrapPanel Margin="{StaticResource MarginStackItem}">
-                        <Button Content="{x:Static localization:UiStrings.StoreCredential}"
-                                AutomationProperties.Name="{x:Static localization:UiStrings.StoreCredential}"
-                                Command="{Binding StoreCredentialCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}" />
-                    </WrapPanel>
                     <TextBlock Text="{x:Static localization:UiStrings.ConfluenceSyncForceHint}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"

@@ -86,7 +86,11 @@
                     <TextBox Text="{Binding SetupPageUrl, UpdateSourceTrigger=PropertyChanged}"
                              AutomationProperties.LabeledBy="{Binding ElementName=SetupPageUrlLabel}"
                              ToolTip="{x:Static localization:UiStrings.PagesSetupPageUrlHint}"
-                             Margin="{StaticResource MarginStackItem}" />
+                             Margin="{StaticResource MarginStackItem}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding InitializeConfluenceCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
 
                     <TextBlock x:Name="SetupSpaceKeyLabel"
                                Text="{x:Static localization:UiStrings.PagesSetupSpaceKeyLabel}"
@@ -95,7 +99,11 @@
                     <TextBox Text="{Binding SetupSpaceKey, UpdateSourceTrigger=PropertyChanged}"
                              AutomationProperties.LabeledBy="{Binding ElementName=SetupSpaceKeyLabel}"
                              ToolTip="{x:Static localization:UiStrings.PagesSetupSpaceKeyHint}"
-                             Margin="{StaticResource MarginStackItem}" />
+                             Margin="{StaticResource MarginStackItem}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding InitializeConfluenceCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
 
                     <TextBlock x:Name="SetupExpiryLabel"
                                Text="{x:Static localization:UiStrings.PagesSetupExpiryLabel}"
@@ -104,8 +112,11 @@
                     <DatePicker SelectedDate="{Binding SetupExpiryDate, Mode=TwoWay}"
                                 SelectedDateFormat="Long"
                                 AutomationProperties.LabeledBy="{Binding ElementName=SetupExpiryLabel}"
-                                ToolTip="{x:Static localization:UiStrings.PagesSetupExpiryHint}"
-                                Margin="{StaticResource MarginStackItem}" />
+                                Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.PagesSetupExpiryHint}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
 
                     <TextBlock x:Name="SetupClassificationLabel"
                                Text="{x:Static localization:UiStrings.PagesSetupClassificationLabel}"
@@ -174,7 +185,11 @@
                                  Padding="{StaticResource SpacingSm}"
                                  Background="{DynamicResource BackgroundBrush}"
                                  Foreground="{DynamicResource TextPrimaryBrush}"
-                                 BorderBrush="{DynamicResource BorderBrush}" />
+                                 BorderBrush="{DynamicResource BorderBrush}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding AddCommand}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
                     </StackPanel>
                     <Button Grid.Column="1"
                             Content="{x:Static localization:UiStrings.PagesResolveAndAdd}"
@@ -211,7 +226,11 @@
                              Background="{DynamicResource BackgroundBrush}"
                              Foreground="{DynamicResource TextPrimaryBrush}"
                              BorderBrush="{DynamicResource BorderBrush}"
-                             Margin="{StaticResource MarginStackItem}" />
+                             Margin="{StaticResource MarginStackItem}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding AddSpaceCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
                     <TextBlock Text="{Binding NewSpaceKeyMessage}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"

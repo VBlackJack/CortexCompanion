@@ -84,7 +84,11 @@
                              Width="{StaticResource SchedulingInputWidth}"
                              HorizontalAlignment="Left"
                              AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingStartTimeLabel}"
-                             Margin="{StaticResource MarginSectionBottom}" />
+                             Margin="{StaticResource MarginSectionBottom}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding CreateOrUpdateCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
                     <WrapPanel>
                         <Button Content="{x:Static localization:UiStrings.SchedulingCreateOrUpdate}"
                                 AutomationProperties.Name="{x:Static localization:UiStrings.SchedulingCreateOrUpdate}"
@@ -97,9 +101,19 @@
                                 Style="{StaticResource SecondaryButtonStyle}" />
                     </WrapPanel>
                     <TextBlock Text="{Binding OperationMessage}"
-                               Foreground="{DynamicResource WarningBrush}"
                                TextWrapping="Wrap"
-                               Margin="{StaticResource MarginSectionTop}" />
+                               Margin="{StaticResource MarginSectionTop}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOperationMessageError}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
             </Border>
 

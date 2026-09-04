@@ -31,4 +31,16 @@ public sealed class SyncProgressParserTests
         Assert.IsNull(SyncProgressParser.ReadLatest(
             "CORTEX_PROGRESS {\"contract_version\":1,\"current\":3,\"phase\":\"other\",\"total\":2}"));
     }
+
+    [TestMethod]
+    public void LocalIndexationPhaseIsAccepted()
+    {
+        SyncProgressRecord? progress = SyncProgressParser.ReadLatest(
+            "CORTEX_PROGRESS {\"contract_version\":1,\"current\":12,\"phase\":\"indexation\",\"total\":340}");
+
+        Assert.IsNotNull(progress);
+        Assert.AreEqual("indexation", progress.Phase);
+        Assert.AreEqual(12, progress.Current);
+        Assert.AreEqual(340, progress.Total);
+    }
 }

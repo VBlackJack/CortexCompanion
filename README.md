@@ -76,6 +76,7 @@ display is lost.
 | `Ctrl+S` | Save and connect, on the Settings screen |
 | `Tab` / `Shift+Tab` | Move between controls; the focused control is outlined |
 | `Esc` | Cancel the open confirmation dialog |
+| `Enter` | Submit the field being edited: page URL, space URL, PAT, folder, path, start time |
 
 ## What users can do
 

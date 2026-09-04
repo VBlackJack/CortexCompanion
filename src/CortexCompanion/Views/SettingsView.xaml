@@ -50,7 +50,11 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBox Text="{Binding CliPath, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.LabeledBy="{Binding ElementName=CliPathLabel}" />
+                                 AutomationProperties.LabeledBy="{Binding ElementName=CliPathLabel}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding SaveCliCommand}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
                         <Button Grid.Column="1"
                                 Content="{x:Static localization:UiStrings.BrowseButton}"
                                 AutomationProperties.Name="{x:Static localization:UiStrings.SettingsBrowseCliAccessibleName}"
@@ -111,7 +115,11 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBox Text="{Binding KnowledgeBasePath, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.LabeledBy="{Binding ElementName=KnowledgeBasePathLabel}" />
+                                 AutomationProperties.LabeledBy="{Binding ElementName=KnowledgeBasePathLabel}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding SaveKnowledgeBaseCommand}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
                         <Button Grid.Column="1"
                                 Content="{x:Static localization:UiStrings.BrowseButton}"
                                 AutomationProperties.Name="{x:Static localization:UiStrings.SettingsBrowseKnowledgeBaseAccessibleName}"
@@ -156,6 +164,7 @@
                                Margin="{StaticResource MarginLabelBottom}" />
                     <PasswordBox x:Name="ConfluencePatInput"
                                  AutomationProperties.LabeledBy="{Binding ElementName=ConfluencePatLabel}"
+                                 KeyDown="ConfluencePatKeyDown"
                                  MaxLength="1280"
                                  Width="{StaticResource SettingsInputWidth}"
                                  HorizontalAlignment="Left"

@@ -83,6 +83,7 @@ progression est perdu.
 |---|---|
 | `F5` | Recharger l'ecran courant |
 | `Ctrl+S` | Enregistrer et connecter, sur l'ecran Reglages |
+| `Entree` | Valide le champ en cours de saisie : URL de page ou d'espace, PAT, dossier, chemin, heure |
 | `Tab` / `Maj+Tab` | Passer d'un controle a l'autre ; le controle actif est entoure |
 | `Echap` | Annuler la boite de dialogue de confirmation ouverte |
 
