@@ -452,8 +452,11 @@ public sealed class PagesViewModel : ViewModelBase
 
         await RunMutationAsync(async () =>
         {
+            // The service allowlists the space and adds this page in one gesture, and
+            // never leaves an empty space behind without asking.
+            string reference = NewSpaceReference;
             bool added = await _mutations.AddSpaceAsync(
-                NewSpaceReference,
+                reference,
                 SelectedClassification.Code,
                 IsReadOnly,
                 CancellationToken.None);
@@ -462,13 +465,8 @@ public sealed class PagesViewModel : ViewModelBase
                 return false;
             }
 
-            string reference = NewSpaceReference;
             NewSpaceReference = string.Empty;
-
-            // Allowlisting alone collects nothing, so the page that motivated it is added
-            // in the same gesture rather than left for the user to paste a second time.
-            bool pageAdded = await _mutations.AddPageAsync(reference, IsReadOnly, CancellationToken.None);
-            if (pageAdded && string.Equals(PageReference, reference, StringComparison.Ordinal))
+            if (string.Equals(PageReference, reference, StringComparison.Ordinal))
             {
                 PageReference = string.Empty;
             }
@@ -522,6 +520,12 @@ public sealed class PagesViewModel : ViewModelBase
             if (changed)
             {
                 PageReference = string.Empty;
+            }
+            else
+            {
+                await _mutations.ConfirmOrDiscardEmptySpaceAsync(
+                    SetupSpaceKey.Trim(),
+                    CancellationToken.None);
             }
         }
         catch (ConfluenceConfigConflictException)

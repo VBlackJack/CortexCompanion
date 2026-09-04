@@ -341,6 +341,8 @@ public sealed class PagesViewModelTests
 
         public bool ConfirmAddSpace(string spaceKey, string classification) => false;
 
+        public bool ConfirmKeepEmptySpace(string spaceKey) => false;
+
         public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) => null;
 
         public bool ConfirmRemove(string spaceKey, string pageId, string? title) => false;
@@ -356,6 +358,8 @@ public sealed class PagesViewModelTests
         public bool ConfirmAdd(ResolvedPageContract page) => true;
 
         public bool ConfirmAddSpace(string spaceKey, string classification) => true;
+
+        public bool ConfirmKeepEmptySpace(string spaceKey) => true;
 
         public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) =>
             ConfluenceSelection.Subtree;

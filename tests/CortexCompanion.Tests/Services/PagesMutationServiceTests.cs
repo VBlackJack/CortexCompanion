@@ -12,6 +12,7 @@ namespace CortexCompanion.Tests.Services;
 public sealed class PagesMutationServiceTests
 {
     private static readonly string[] SinglePage = ["123"];
+    private static readonly string[] AnssiwsPage = ["1683736048"];
 
     [TestMethod]
     public async Task AddRequiresSuccessfulResolveAndDoesNotPersistTitle()
@@ -208,7 +209,10 @@ public sealed class PagesMutationServiceTests
     {
         FakeConfigStore store = new(
             SelectionSnapshot(ConfluenceSelection.Subtree, SinglePage, schemaVersion: 3));
-        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations());
+        PagesMutationService service = new(
+            new FakeCliClient(),
+            store,
+            new FakeConfirmations { KeepEmptySpaceAccepted = true });
 
         bool changed = await service.RemovePageAsync(
             "DOC",
@@ -300,11 +304,16 @@ public sealed class PagesMutationServiceTests
         new(CortexExitCode.Ok, value, string.Empty, false, null);
 
     [TestMethod]
-    public async Task AddSpaceInfersTheKeyAndAllowlistsItEmpty()
+    public async Task AddSpaceAllowlistsTheSpaceAndAddsThePageItCameFrom()
     {
-        FakeConfigStore store = new(PagesSnapshot());
-        FakeConfirmations confirmations = new() { AddSpaceAccepted = true };
-        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+        FakeConfigStore store = new(PagesSnapshot()) { ReflectWrites = true };
+        FakeConfirmations confirmations = new()
+        {
+            AddSpaceAccepted = true,
+            AddAccepted = true,
+            SelectedScope = ConfluenceSelection.Subtree,
+        };
+        PagesMutationService service = new(AnssiwsCliClient(), store, confirmations);
 
         bool added = await service.AddSpaceAsync(
             "https://raw.example.test/spaces/ANSSIWS/pages/1683736048/ADSEC+Platform",
@@ -313,37 +322,95 @@ public sealed class PagesMutationServiceTests
             CancellationToken.None);
 
         Assert.IsTrue(added);
-        Assert.AreEqual("ANSSIWS", confirmations.LastSpaceKey);
         Assert.AreEqual("pro-confidentiel", confirmations.LastClassification);
+        Assert.AreEqual(0, confirmations.KeepEmptySpaceCalls);
         Assert.HasCount(2, store.WrittenConfiguration!.Spaces);
         ConfluenceSpaceConfiguration created = store.WrittenConfiguration.Spaces[1];
         Assert.AreEqual("ANSSIWS", created.SpaceKey);
         Assert.AreEqual("confluence/ANSSIWS", created.Target);
         Assert.AreEqual("pro-confidentiel", created.Classification);
-        Assert.AreEqual(ConfluenceSelection.Pages, created.Selection);
-        Assert.IsEmpty(created.PageIds);
+        CollectionAssert.AreEqual(AnssiwsPage, created.PageIds.ToArray());
+        Assert.AreEqual("DOC", store.WrittenConfiguration.Spaces[0].SpaceKey);
+        Assert.AreEqual("docs", store.WrittenConfiguration.Spaces[0].Target);
     }
 
     [TestMethod]
-    public async Task AddSpaceLeavesEveryAllowlistedSpaceUntouched()
+    public async Task ACancelledPageChoiceRemovesTheSpaceItJustAllowlisted()
     {
-        FakeConfigStore store = new(PagesSnapshot());
-        PagesMutationService service = new(
-            new FakeCliClient(),
-            store,
-            new FakeConfirmations { AddSpaceAccepted = true });
+        FakeConfigStore store = new(PagesSnapshot()) { ReflectWrites = true };
+        FakeConfirmations confirmations = new()
+        {
+            AddSpaceAccepted = true,
+            AddAccepted = false,
+            KeepEmptySpaceAccepted = false,
+        };
+        PagesMutationService service = new(AnssiwsCliClient(), store, confirmations);
 
-        await service.AddSpaceAsync(
-            "https://raw.example.test/spaces/ANSSIWS/pages/1/T",
-            "perso-non-sensible",
+        bool added = await service.AddSpaceAsync(
+            "https://raw.example.test/spaces/ANSSIWS/pages/1683736048/ADSEC+Platform",
+            "pro-confidentiel",
             false,
             CancellationToken.None);
 
-        ConfluenceSpaceConfiguration untouched = store.WrittenConfiguration!.Spaces[0];
-        Assert.AreEqual("DOC", untouched.SpaceKey);
-        Assert.AreEqual("docs", untouched.Target);
-        Assert.AreEqual("pro-confidentiel", untouched.Classification);
+        Assert.IsFalse(added);
+        Assert.AreEqual(1, confirmations.KeepEmptySpaceCalls);
+        Assert.HasCount(1, store.WrittenConfiguration!.Spaces);
+        Assert.AreEqual("DOC", store.WrittenConfiguration.Spaces[0].SpaceKey);
     }
+
+    [TestMethod]
+    public async Task AnEmptySpaceSurvivesWhenTheUserChoosesToKeepIt()
+    {
+        FakeConfigStore store = new(PagesSnapshot()) { ReflectWrites = true };
+        FakeConfirmations confirmations = new()
+        {
+            AddSpaceAccepted = true,
+            AddAccepted = false,
+            KeepEmptySpaceAccepted = true,
+        };
+        PagesMutationService service = new(AnssiwsCliClient(), store, confirmations);
+
+        Assert.IsFalse(await service.AddSpaceAsync(
+            "https://raw.example.test/spaces/ANSSIWS/pages/1683736048/ADSEC+Platform",
+            "pro-confidentiel",
+            false,
+            CancellationToken.None));
+
+        Assert.AreEqual(1, confirmations.KeepEmptySpaceCalls);
+        Assert.HasCount(2, store.WrittenConfiguration!.Spaces);
+        Assert.IsEmpty(store.WrittenConfiguration.Spaces[1].PageIds);
+    }
+
+    [TestMethod]
+    public async Task RemovingTheLastPageAsksBeforeLeavingTheSpaceEmpty()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+        FakeConfirmations confirmations = new() { KeepEmptySpaceAccepted = false };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+
+        bool changed = await service.RemovePageAsync(
+            "DOC",
+            "123",
+            "Titre",
+            false,
+            CancellationToken.None);
+
+        Assert.IsFalse(changed);
+        Assert.AreEqual(1, confirmations.KeepEmptySpaceCalls);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    private static FakeCliClient AnssiwsCliClient() => new()
+    {
+        ResolveResult = Success(new ResolvedPageContract
+        {
+            ContractVersion = 1,
+            PageId = "1683736048",
+            Title = "ADSEC Platform",
+            SpaceKey = "ANSSIWS",
+            Configured = false,
+        }),
+    };
 
     [TestMethod]
     public async Task AddSpaceRejectsAnAlreadyAllowlistedSpace()
@@ -537,6 +604,8 @@ public sealed class PagesMutationServiceTests
     {
         public bool ConflictOnWrite { get; init; }
 
+        public bool ReflectWrites { get; init; }
+
         public ConfluenceConfigSnapshot? ReloadedSnapshot { get; init; }
 
         public int ReadCalls { get; private set; }
@@ -548,6 +617,14 @@ public sealed class PagesMutationServiceTests
         public Task<ConfluenceConfigSnapshot> ReadAsync(CancellationToken cancellationToken)
         {
             ReadCalls++;
+            if (ReflectWrites && WrittenConfiguration is not null)
+            {
+                return Task.FromResult(new ConfluenceConfigSnapshot(
+                    snapshot.Content,
+                    snapshot.ContentHash,
+                    WrittenConfiguration));
+            }
+
             return Task.FromResult(ReadCalls > 1 && ReloadedSnapshot is not null ? ReloadedSnapshot : snapshot);
         }
 
@@ -588,6 +665,17 @@ public sealed class PagesMutationServiceTests
         {
             LastResolvedPage = page;
             return AddAccepted;
+        }
+
+        public bool KeepEmptySpaceAccepted { get; init; }
+
+        public int KeepEmptySpaceCalls { get; private set; }
+
+        public bool ConfirmKeepEmptySpace(string spaceKey)
+        {
+            KeepEmptySpaceCalls++;
+            LastSpaceKey = spaceKey;
+            return KeepEmptySpaceAccepted;
         }
 
         public bool ConfirmAddSpace(string spaceKey, string classification)

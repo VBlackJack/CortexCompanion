@@ -47,6 +47,17 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
     }
 
     /// <inheritdoc />
+    public bool ConfirmKeepEmptySpace(string spaceKey)
+    {
+        ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(
+            UiStrings.ConfirmKeepEmptySpaceTitle,
+            UiStrings.FormatConfirmKeepEmptySpace(spaceKey),
+            true);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
+
+    /// <inheritdoc />
     public bool ConfirmRemove(string spaceKey, string pageId, string? title)
     {
         ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(

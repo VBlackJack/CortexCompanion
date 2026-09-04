@@ -30,6 +30,10 @@ public static class UiStrings
         CompositeFormat.Parse(GetString("ConfirmAddMessage"));
     private static readonly CompositeFormat ConfirmAddSpaceMessageFormat =
         CompositeFormat.Parse(GetString("ConfirmAddSpaceMessage"));
+    private static readonly CompositeFormat ConfirmKeepEmptySpaceMessageFormat =
+        CompositeFormat.Parse(GetString("ConfirmKeepEmptySpaceMessage"));
+    private static readonly CompositeFormat SpaceCoverageFormat =
+        CompositeFormat.Parse(GetString("SpaceCoverage"));
     private static readonly CompositeFormat PagesAddSpaceInferredKeyFormat =
         CompositeFormat.Parse(GetString("PagesAddSpaceInferredKey"));
     private static readonly CompositeFormat PagesSpaceNotAllowlistedFormat =
@@ -348,6 +352,18 @@ public static class UiStrings
     public static string PagesRejectSpaceKeyNotInferable => GetString(nameof(PagesRejectSpaceKeyNotInferable));
     /// <summary>Gets the refusal for a reference pointing at another Confluence server.</summary>
     public static string PagesRejectSpaceForeignBaseUrl => GetString(nameof(PagesRejectSpaceForeignBaseUrl));
+    /// <summary>Gets the coverage label shown on every space card.</summary>
+    public static string SpaceCoverageLabel => GetString(nameof(SpaceCoverageLabel));
+    /// <summary>Gets the coverage value used before any collection was measured.</summary>
+    public static string SpaceCoverageUnknown => GetString(nameof(SpaceCoverageUnknown));
+    /// <summary>Formats the measured coverage of one space.</summary>
+    public static string FormatSpaceCoverage(int selectedPageCount) =>
+        string.Format(CultureInfo.CurrentCulture, SpaceCoverageFormat, selectedPageCount);
+    /// <summary>Gets the empty-space confirmation title.</summary>
+    public static string ConfirmKeepEmptySpaceTitle => GetString(nameof(ConfirmKeepEmptySpaceTitle));
+    /// <summary>Formats the consequence of keeping a space that collects nothing.</summary>
+    public static string FormatConfirmKeepEmptySpace(string spaceKey) =>
+        string.Format(CultureInfo.CurrentCulture, ConfirmKeepEmptySpaceMessageFormat, spaceKey);
     /// <summary>Gets the space allowlisting confirmation title.</summary>
     public static string ConfirmAddSpaceTitle => GetString(nameof(ConfirmAddSpaceTitle));
     /// <summary>Formats the inferred space key.</summary>

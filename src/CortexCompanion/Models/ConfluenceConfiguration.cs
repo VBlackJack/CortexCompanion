@@ -58,6 +58,21 @@ public sealed record ConfluenceConfiguration(
         return this with { Spaces = Spaces.Append(space).ToArray() };
     }
 
+    /// <summary>Removes one allowlisted space, so an incomplete gesture leaves no trace.</summary>
+    public ConfluenceConfiguration RemoveSpace(string spaceKey)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(spaceKey);
+        ConfluenceSpaceConfiguration[] remaining = Spaces
+            .Where(space => !string.Equals(space.SpaceKey, spaceKey, StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        if (remaining.Length == Spaces.Count)
+        {
+            throw new ArgumentException("The space is not allowlisted.", nameof(spaceKey));
+        }
+
+        return this with { Spaces = remaining };
+    }
+
     /// <summary>Replaces one space without changing any unrelated configuration value.</summary>
     public ConfluenceConfiguration ReplaceSpace(ConfluenceSpaceConfiguration replacement)
     {

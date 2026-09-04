@@ -79,6 +79,11 @@
   <data name="ConfluenceConverterFileDialogTitle" xml:space="preserve"><value>Choisir le convertisseur Confluence</value></data>
   <data name="ConfluenceConverterFileDialogFilter" xml:space="preserve"><value>Convertisseur Confluence (ConfluenceRAGBuilder.Console.exe)|ConfluenceRAGBuilder.Console.exe|Exécutables (*.exe)|*.exe</value></data>
   <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configuré.</value></data>
+  <data name="SpaceCoverageLabel" xml:space="preserve"><value>Couverture</value></data>
+  <data name="SpaceCoverageUnknown" xml:space="preserve"><value>inconnue, aucune collecte mesurée</value></data>
+  <data name="SpaceCoverage" xml:space="preserve"><value>{0:N0} page(s) a la dernière collecte</value></data>
+  <data name="ConfirmKeepEmptySpaceTitle" xml:space="preserve"><value>Espace sans aucune page</value></data>
+  <data name="ConfirmKeepEmptySpaceMessage" xml:space="preserve"><value>L'espace {0} est autorisé mais sa sélection est vide : aucune page ne sera collectée, et rien ne vous le rappellera lors des synchronisations. Choisissez Confirmer pour le garder tel quel et choisir ses pages plus tard, ou Annuler pour retirer l'espace.</value></data>
   <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectée.</value></data>
   <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listées sont collectées.</value></data>
   <data name="PagesModeName" xml:space="preserve"><value>Cette page seule</value></data>

@@ -300,6 +300,10 @@
                                                 Style="{StaticResource SecondaryButtonStyle}" />
                                     </StackPanel>
                                 </Border>
+                                <TextBlock Text="{Binding CoverageSummary}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="{StaticResource MarginStackItem}"
+                                           TextWrapping="Wrap" />
                                 <TextBlock Text="{x:Static localization:UiStrings.PagesEmptySelection}"
                                            Foreground="{DynamicResource WarningBrush}"
                                            FontWeight="SemiBold"

@@ -33,6 +33,13 @@ public sealed record ConfiguredSpaceViewModel(
     public string ClassificationSummary =>
         UiStrings.FormatLabelledValue(UiStrings.SpaceClassificationLabel, Classification);
 
+    /// <summary>Gets what the last collection actually covered for this space.</summary>
+    public string CoverageSummary => ScopeSummary is null
+        ? UiStrings.FormatLabelledValue(UiStrings.SpaceCoverageLabel, UiStrings.SpaceCoverageUnknown)
+        : UiStrings.FormatLabelledValue(
+            UiStrings.SpaceCoverageLabel,
+            UiStrings.FormatSpaceCoverage(ScopeSummary.SelectedPageCount));
+
     /// <summary>Gets whether an explicit page list is meaningful.</summary>
     public bool IsPagesSelection => Selection != ConfluenceSelection.WholeSpace;
 

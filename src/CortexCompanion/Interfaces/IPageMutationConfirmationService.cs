@@ -17,6 +17,9 @@ public interface IPageMutationConfirmationService
     /// <summary>Confirms the collection consequence before a space enters the allowlist.</summary>
     bool ConfirmAddSpace(string spaceKey, string classification);
 
+    /// <summary>Asks whether a space that would collect nothing should stay allowlisted.</summary>
+    bool ConfirmKeepEmptySpace(string spaceKey);
+
     /// <summary>Confirms the tombstone consequence before removing a configured page.</summary>
     bool ConfirmRemove(string spaceKey, string pageId, string? title);
 

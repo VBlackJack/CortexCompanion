@@ -136,7 +136,49 @@ public sealed class PagesMutationService
             snapshot.Configuration.MigrateToVersionTwo().AddSpace(created),
             snapshot.ContentHash,
             cancellationToken);
-        return true;
+
+        // Allowlisting is a step, not the goal. If the page this space came from is not
+        // added, the space would collect nothing and nothing downstream would say so:
+        // the CLI logs no line for a selection it never enumerates, and the health stays
+        // ok because a space with no page has no document to fail over.
+        bool pageAdded;
+        try
+        {
+            pageAdded = await AddPageAsync(reference, isReadOnly, cancellationToken);
+        }
+        catch
+        {
+            await ConfirmOrDiscardEmptySpaceAsync(spaceKey, cancellationToken);
+            throw;
+        }
+
+        if (!pageAdded)
+        {
+            await ConfirmOrDiscardEmptySpaceAsync(spaceKey, cancellationToken);
+        }
+
+        return pageAdded;
+    }
+
+    /// <summary>Asks whether a space that collects nothing should stay, and removes it otherwise.</summary>
+    public async Task ConfirmOrDiscardEmptySpaceAsync(string spaceKey, CancellationToken cancellationToken)
+    {
+        if (_confirmations.ConfirmKeepEmptySpace(spaceKey))
+        {
+            return;
+        }
+
+        ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
+        if (!snapshot.Configuration.Spaces.Any(space =>
+            string.Equals(space.SpaceKey, spaceKey, StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        await WriteOrRefreshAsync(
+            snapshot.Configuration.RemoveSpace(spaceKey),
+            snapshot.ContentHash,
+            cancellationToken);
     }
 
     /// <summary>Removes one configured ID only after the explicit tombstone reminder is accepted.</summary>
@@ -157,6 +199,11 @@ public sealed class PagesMutationService
         }
 
         if (!_confirmations.ConfirmRemove(spaceKey, pageId, title))
+        {
+            return false;
+        }
+
+        if (space.PageIds.Count == 1 && !_confirmations.ConfirmKeepEmptySpace(spaceKey))
         {
             return false;
         }
