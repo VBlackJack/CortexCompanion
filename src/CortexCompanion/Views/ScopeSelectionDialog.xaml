@@ -30,7 +30,7 @@
                     <WrapPanel>
                         <TextBlock Text="{x:Static localization:UiStrings.ScopeChoicePageOnly}" FontWeight="SemiBold" />
                         <TextBlock x:Name="PageOnlyRecommended"
-                                   Text="  ·  " />
+                                   Text="{x:Static localization:UiStrings.ScopeRecommendedSeparator}" />
                         <TextBlock x:Name="PageOnlyRecommendedLabel"
                                    Text="{x:Static localization:UiStrings.ScopeRecommended}"
                                    Foreground="{DynamicResource AccentBrush}"
@@ -44,7 +44,7 @@
                     <WrapPanel>
                         <TextBlock Text="{x:Static localization:UiStrings.ScopeChoiceSubtree}" FontWeight="SemiBold" />
                         <TextBlock x:Name="SubtreeRecommended"
-                                   Text="  ·  " />
+                                   Text="{x:Static localization:UiStrings.ScopeRecommendedSeparator}" />
                         <TextBlock x:Name="SubtreeRecommendedLabel"
                                    Text="{x:Static localization:UiStrings.ScopeRecommended}"
                                    Foreground="{DynamicResource AccentBrush}"

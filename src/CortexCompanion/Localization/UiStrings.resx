@@ -29,10 +29,10 @@
     <value>Base locale</value>
   </data>
   <data name="SchedulingNavigation" xml:space="preserve">
-    <value>Planification Confluence</value>
+    <value>Programmation Confluence</value>
   </data>
   <data name="PagesTitle" xml:space="preserve">
-    <value>Pages</value>
+    <value>Pages Confluence</value>
   </data>
   <data name="PagesRefresh" xml:space="preserve"><value>Recharger</value></data>
   <data name="PagesAddReferenceLabel" xml:space="preserve"><value>URL ou ID de page</value></data>
@@ -45,10 +45,11 @@
   <data name="ScopeChoiceWholeSpace" xml:space="preserve"><value>Tout l'espace {0}</value></data>
   <data name="ScopeChoiceDetails" xml:space="preserve"><value>{0:N0} page(s) - environ {1:N1} Mo</value></data>
   <data name="ScopeRecommended" xml:space="preserve"><value>Recommandé</value></data>
+  <data name="ScopeRecommendedSeparator" xml:space="preserve"><value> - </value></data>
   <data name="ScopeStorageDetails" xml:space="preserve"><value>Stockage des générations : {0}&#xA;Rétention bornée : {1:N0} génération(s).</value></data>
   <data name="PagesLoading" xml:space="preserve"><value>Chargement local des espaces...</value></data>
   <data name="PagesReady" xml:space="preserve"><value>Configuration Pages chargée.</value></data>
-  <data name="PagesNotConfigured" xml:space="preserve"><value>CLI non configuré : aucune configuration Pages ne peut être lue.</value></data>
+  <data name="PagesNotConfigured" xml:space="preserve"><value>Cortex n'est pas connecté : aucune configuration Pages ne peut être lue. Ouvrez Réglages pour sélectionner cortex.exe.</value></data>
   <data name="PagesConfigurationRequired" xml:space="preserve"><value>Initialisez Confluence ci-dessous pour activer l'ajout de pages. Aucun fichier TOML n'est à modifier manuellement.</value></data>
   <data name="PagesSetupTitle" xml:space="preserve"><value>Première configuration Confluence</value></data>
   <data name="PagesSetupDescription" xml:space="preserve"><value>Collez l'URL d'une page. Companion mesure son arborescence et son coût, recommande de l'inclure, puis enregistre votre choix explicite.</value></data>
@@ -57,7 +58,7 @@
   <data name="PagesSetupSpaceKeyLabel" xml:space="preserve"><value>Clé de l'espace</value></data>
   <data name="PagesSetupSpaceKeyHint" xml:space="preserve"><value>Détectée automatiquement quand l'URL la contient</value></data>
   <data name="PagesSetupExpiryLabel" xml:space="preserve"><value>Date d'expiration du PAT</value></data>
-  <data name="PagesSetupExpiryHint" xml:space="preserve"><value>Choisissez la date déclarée lors de la création du PAT</value></data>
+  <data name="PagesSetupExpiryHint" xml:space="preserve"><value>Date déclarée lors de la création du PAT. Le bouton Initialiser reste inactif tant qu'elle n'est pas choisie.</value></data>
   <data name="PagesSetupClassificationLabel" xml:space="preserve"><value>Classification locale</value></data>
   <data name="PagesSetupConverterLabel" xml:space="preserve"><value>Convertisseur Confluence</value></data>
   <data name="PagesSetupConverterHint" xml:space="preserve"><value>Fourni automatiquement avec Cortex. À modifier uniquement pour le développement.</value></data>
@@ -192,9 +193,8 @@
   <data name="SyncNow" xml:space="preserve"><value>Synchroniser les documents locaux</value></data>
   <data name="LocalSyncDescription" xml:space="preserve"><value>Indexez maintenant les documents du dossier configuré dans votre base de connaissances Cortex. Cette action ne dépend pas de Confluence.</value></data>
   <data name="ConfluenceSyncAdvancedTitle" xml:space="preserve"><value>Intégration Confluence avancée</value></data>
-  <data name="ConfluenceSyncAdvancedDescription" xml:space="preserve"><value>Collectez d'abord les pages Confluence configurées ou enregistrez leur credential. Cette intégration reste facultative pour les documents locaux.</value></data>
+  <data name="ConfluenceSyncAdvancedDescription" xml:space="preserve"><value>Collectez les pages configurées dans l'écran Pages Confluence ; le PAT s'enregistre dans Réglages. Cette intégration reste facultative pour les documents locaux.</value></data>
   <data name="ConfluenceSyncNow" xml:space="preserve"><value>Collecter Confluence</value></data>
-  <data name="StoreCredential" xml:space="preserve"><value>Enregistrer le credential</value></data>
   <data name="SyncLoading" xml:space="preserve"><value>Lecture du dernier état local...</value></data>
   <data name="SyncStateReady" xml:space="preserve"><value>Dernier état local rechargé.</value></data>
   <data name="SyncStateCancelled" xml:space="preserve"><value>Observation interrompue par la fermeture de l'application.</value></data>
@@ -248,21 +248,18 @@
   <data name="SyncLaunchFailed" xml:space="preserve"><value>Le worker de synchronisation n'a pas pu être lancé.</value></data>
   <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminée avec succès (code 0).</value></data>
   <data name="SyncLocked" xml:space="preserve"><value>Un sync est déjà en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
-  <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Cochez "Forcer la collecte" puis relancez pour l'exécuter tout de suite.</value></data>
+  <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Choisissez Collecter Confluence pour forcer une collecte immédiate.</value></data>
   <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>Cette action manuelle collecte toujours immédiatement. La cadence reste réservée aux exécutions automatiques.</value></data>
   <data name="SyncAuthFailed" xml:space="preserve"><value>Credential absent, expiré ou refusé (code 4).</value></data>
   <data name="SyncRemoteFailed" xml:space="preserve"><value>Le service distant est indisponible (code 5).</value></data>
   <data name="SyncFailed" xml:space="preserve"><value>La synchronisation a échoué (code 1).</value></data>
   <data name="LocalSyncConfigurationInvalid" xml:space="preserve"><value>La base locale n'est pas encore configurée correctement (code 6). Ouvrez Réglages, vérifiez le dossier, puis réessayez.</value></data>
   <data name="SyncUnexpectedExit" xml:space="preserve"><value>Le CLI a retourné le code non nominal {0}.</value></data>
-  <data name="CredentialStored" xml:space="preserve"><value>Credential enregistré ; validité confirmée au prochain sync.</value></data>
-  <data name="CredentialLaunchFailed" xml:space="preserve"><value>La console d'enregistrement du credential n'a pas pu être ouverte.</value></data>
-  <data name="CredentialFailed" xml:space="preserve"><value>L'enregistrement du credential a échoué (code {0}).</value></data>
   <data name="SchedulingRefresh" xml:space="preserve"><value>Recharger</value></data>
   <data name="SchedulingTaskContractDescription" xml:space="preserve"><value>Cortex Companion - programmation ingestion - contrat 1</value></data>
   <data name="SchedulingReadOnly" xml:space="preserve"><value>Lecture seule : la création, la modification et la suppression sont désactivées. L'état de la tâche reste lisible.</value></data>
   <data name="SchedulingSessionRequired" xml:space="preserve"><value>La tâche s'exécute uniquement lorsque votre session Windows est ouverte. Elle ne demande aucune élévation.</value></data>
-  <data name="SchedulingNotConfigured" xml:space="preserve"><value>Le chemin de Cortex ou la configuration Confluence n'est pas disponible. Les actions sont désactivées, mais l'état existant reste lisible.</value></data>
+  <data name="SchedulingNotConfigured" xml:space="preserve"><value>Le chemin de Cortex ou la configuration Confluence n'est pas disponible : connectez Cortex dans Réglages, puis initialisez Confluence dans Pages Confluence. Les actions sont désactivées, mais l'état existant reste lisible.</value></data>
   <data name="SchedulingPresetLabel" xml:space="preserve"><value>Fréquence</value></data>
   <data name="SchedulingPresetDaily" xml:space="preserve"><value>Quotidienne</value></data>
   <data name="SchedulingPresetHourly" xml:space="preserve"><value>Horaire</value></data>
@@ -307,7 +304,7 @@
   <data name="SettingsNavigation" xml:space="preserve"><value>Réglages</value></data>
   <data name="StartupInitializationError" xml:space="preserve"><value>L'initialisation de Cortex a échoué. La fenêtre reste ouverte afin que vous puissiez corriger le chemin dans Réglages ou consulter les journaux locaux.</value></data>
   <data name="BrowseButton" xml:space="preserve"><value>Parcourir</value></data>
-  <data name="RefreshButton" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="RefreshButton" xml:space="preserve"><value>Recharger</value></data>
   <data name="SettingsTitle" xml:space="preserve"><value>Réglages</value></data>
   <data name="SettingsIntroduction" xml:space="preserve"><value>Connectez Cortex Companion à Cortex, choisissez votre base de connaissances et gérez vos réglages sans modifier les fichiers de configuration à la main.</value></data>
   <data name="SettingsCurrentStateTitle" xml:space="preserve"><value>État actuel</value></data>
@@ -330,13 +327,13 @@
   <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Enregistrer le PAT</value></data>
   <data name="SettingsConfluenceCredentialUnavailable" xml:space="preserve"><value>Connectez d'abord Cortex pour charger la cible d'identifiant Confluence.</value></data>
   <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Aucune configuration Confluence valide n'a été trouvée. Configurez CONFLUENCE.toml avant d'enregistrer le PAT.</value></data>
-  <data name="SettingsConfluenceCredentialConfigInvalid" xml:space="preserve"><value>La cible d'identifiant Confluence n'a pas pu être validée. Corrigez CONFLUENCE.toml, puis actualisez.</value></data>
+  <data name="SettingsConfluenceCredentialConfigInvalid" xml:space="preserve"><value>La cible d'identifiant Confluence n'a pas pu être validée. Corrigez CONFLUENCE.toml, puis rechargez.</value></data>
   <data name="SettingsConfluenceCredentialReadyFormat" xml:space="preserve"><value>Le PAT sera enregistré pour la cible Windows : {0}</value></data>
   <data name="SettingsConfluenceCredentialEmpty" xml:space="preserve"><value>Saisissez un PAT avant de l'enregistrer.</value></data>
   <data name="SettingsConfluenceCredentialSaving" xml:space="preserve"><value>Enregistrement sécurisé du PAT dans Windows...</value></data>
   <data name="SettingsConfluenceCredentialStored" xml:space="preserve"><value>Le PAT Confluence a été enregistré pour le compte Windows courant.</value></data>
   <data name="SettingsConfluenceCredentialSaveFailed" xml:space="preserve"><value>Windows n'a pas pu enregistrer le PAT. Le secret n'a été écrit ni dans les réglages ni dans les journaux.</value></data>
-  <data name="SettingsRefreshAccessibleName" xml:space="preserve"><value>Actualiser la configuration Cortex</value></data>
+  <data name="SettingsRefreshAccessibleName" xml:space="preserve"><value>Recharger la configuration Cortex</value></data>
   <data name="SettingsCliNotConfigured" xml:space="preserve"><value>Aucun exécutable Cortex valide n'est configuré.</value></data>
   <data name="SettingsFirstRun" xml:space="preserve"><value>Bienvenue. Sélectionnez cortex.exe, puis choisissez Enregistrer et connecter.</value></data>
   <data name="SettingsFileCorrupt" xml:space="preserve"><value>Les réglages locaux étaient illisibles. Sélectionnez à nouveau cortex.exe pour les reconstruire.</value></data>
@@ -350,8 +347,8 @@
   <data name="SettingsCliReplacementFailedPreviousRetained" xml:space="preserve"><value>Le nouveau Cortex n'a pas pu être préparé. Le Cortex précédemment connecté reste actif ; son chemin n'a pas été remplacé.</value></data>
   <data name="SettingsCheckingCli" xml:space="preserve"><value>Vérification de la version de Cortex et chargement des fonctions...</value></data>
   <data name="SettingsCliHandshakeFailed" xml:space="preserve"><value>Cortex n'est pas compatible ou n'a pas répondu. Les actions restent désactivées. Vérifiez le chemin ou augmentez le délai sur un ordinateur lent, puis réessayez.</value></data>
-  <data name="SettingsRefreshing" xml:space="preserve"><value>Actualisation de la configuration Cortex...</value></data>
-  <data name="SettingsRefreshed" xml:space="preserve"><value>La configuration Cortex a été actualisée.</value></data>
+  <data name="SettingsRefreshing" xml:space="preserve"><value>Rechargement de la configuration Cortex...</value></data>
+  <data name="SettingsRefreshed" xml:space="preserve"><value>La configuration Cortex a été rechargée.</value></data>
   <data name="SettingsConfigUnavailable" xml:space="preserve"><value>Configuration indisponible tant que Cortex n'est pas connecté.</value></data>
   <data name="SettingsConfigLoaded" xml:space="preserve"><value>Configuration Cortex valide chargée.</value></data>
   <data name="SettingsConfigDefaults" xml:space="preserve"><value>Aucun fichier utilisateur n'existe encore. Cortex utilise ses valeurs par défaut.</value></data>
@@ -361,7 +358,7 @@
   <data name="SettingsConfigOutcomeUnknown" xml:space="preserve"><value>Cortex n'a pas terminé la lecture de la configuration locale. Ne lancez aucune modification. Redémarrez Cortex Companion avant de réessayer.</value></data>
   <data name="SettingsKnowledgeBaseSelectionPending" xml:space="preserve"><value>Dossier sélectionné. Enregistrez-le pour appliquer le changement à Cortex.</value></data>
   <data name="SettingsKnowledgeBaseInvalid" xml:space="preserve"><value>Choisissez un dossier existant avec un chemin absolu.</value></data>
-  <data name="SettingsConfigRefreshRequired" xml:space="preserve"><value>Actualisez la configuration avant de modifier le dossier.</value></data>
+  <data name="SettingsConfigRefreshRequired" xml:space="preserve"><value>Rechargez la configuration avant de modifier le dossier.</value></data>
   <data name="SettingsSavingKnowledgeBase" xml:space="preserve"><value>Enregistrement du dossier par Cortex...</value></data>
   <data name="SettingsKnowledgeBaseSaved" xml:space="preserve"><value>Le dossier a été enregistré.</value></data>
   <data name="SettingsKnowledgeBaseSavedReindex" xml:space="preserve"><value>Le dossier a été enregistré. Relancez une synchronisation pour reconstruire l'index avec ce nouvel emplacement.</value></data>

@@ -36,6 +36,7 @@ public sealed class SchedulingViewModel : ViewModelBase
     private string _lastResultText = UiStrings.ValueUnknown;
     private string _executionText = UiStrings.ValueNone;
     private string _operationMessage = string.Empty;
+    private bool _isOperationMessageError;
     private bool _isBusy;
     private bool _isReadOnly = true;
     private bool _targetAllowsMutation;
@@ -144,6 +145,13 @@ public sealed class SchedulingViewModel : ViewModelBase
         private set => SetProperty(ref _operationMessage, value);
     }
 
+    /// <summary>Gets whether the operation message reports a failure rather than an outcome.</summary>
+    public bool IsOperationMessageError
+    {
+        get => _isOperationMessageError;
+        private set => SetProperty(ref _isOperationMessageError, value);
+    }
+
     /// <summary>Gets whether one scheduler operation is active.</summary>
     public bool IsBusy
     {
@@ -232,7 +240,7 @@ public sealed class SchedulingViewModel : ViewModelBase
 
             if (clearOperationMessage)
             {
-                OperationMessage = string.Empty;
+                SetOperationMessage(string.Empty, isError: false);
             }
         }
         catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
@@ -249,9 +257,11 @@ public sealed class SchedulingViewModel : ViewModelBase
             LastRunText = UiStrings.ValueUnknown;
             LastResultText = UiStrings.ValueUnknown;
             ExecutionText = UiStrings.ValueNone;
-            OperationMessage = exception is TaskSchedulerCollisionException
-                ? UiStrings.SchedulingStateCollision
-                : TaskSchedulerErrorFormatter.Format(exception);
+            SetOperationMessage(
+                exception is TaskSchedulerCollisionException
+                    ? UiStrings.SchedulingStateCollision
+                    : TaskSchedulerErrorFormatter.Format(exception),
+                isError: true);
         }
         finally
         {
@@ -270,7 +280,7 @@ public sealed class SchedulingViewModel : ViewModelBase
                 DateTimeStyles.None,
                 out TimeOnly startTime))
         {
-            OperationMessage = UiStrings.SchedulingInvalidTime;
+            SetOperationMessage(UiStrings.SchedulingInvalidTime, isError: true);
             return;
         }
 
@@ -282,7 +292,7 @@ public sealed class SchedulingViewModel : ViewModelBase
                 SelectedPreset.Value,
                 startTime);
             await _taskScheduler.CreateOrUpdateAsync(registration, _applicationCancellation);
-            OperationMessage = UiStrings.SchedulingSaved;
+            SetOperationMessage(UiStrings.SchedulingSaved, isError: false);
         }
         catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
         {
@@ -291,9 +301,11 @@ public sealed class SchedulingViewModel : ViewModelBase
         catch (Exception exception) when (exception is TaskSchedulerServiceException or TaskSchedulerCollisionException)
         {
             FileLogger.Error("Scheduling task could not be created or updated", exception);
-            OperationMessage = exception is TaskSchedulerCollisionException
-                ? UiStrings.SchedulingStateCollision
-                : TaskSchedulerErrorFormatter.Format(exception);
+            SetOperationMessage(
+                exception is TaskSchedulerCollisionException
+                    ? UiStrings.SchedulingStateCollision
+                    : TaskSchedulerErrorFormatter.Format(exception),
+                isError: true);
         }
         finally
         {
@@ -307,7 +319,7 @@ public sealed class SchedulingViewModel : ViewModelBase
     {
         if (!_confirmation.ConfirmDelete())
         {
-            OperationMessage = UiStrings.SchedulingDeleteCancelled;
+            SetOperationMessage(UiStrings.SchedulingDeleteCancelled, isError: false);
             return;
         }
 
@@ -315,7 +327,7 @@ public sealed class SchedulingViewModel : ViewModelBase
         try
         {
             await _taskScheduler.DeleteAsync(_applicationCancellation);
-            OperationMessage = UiStrings.SchedulingDeleted;
+            SetOperationMessage(UiStrings.SchedulingDeleted, isError: false);
         }
         catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
         {
@@ -324,9 +336,11 @@ public sealed class SchedulingViewModel : ViewModelBase
         catch (Exception exception) when (exception is TaskSchedulerServiceException or TaskSchedulerCollisionException)
         {
             FileLogger.Error("Scheduling task could not be deleted", exception);
-            OperationMessage = exception is TaskSchedulerCollisionException
-                ? UiStrings.SchedulingStateCollision
-                : TaskSchedulerErrorFormatter.Format(exception);
+            SetOperationMessage(
+                exception is TaskSchedulerCollisionException
+                    ? UiStrings.SchedulingStateCollision
+                    : TaskSchedulerErrorFormatter.Format(exception),
+                isError: true);
         }
         finally
         {
@@ -405,5 +419,11 @@ public sealed class SchedulingViewModel : ViewModelBase
         _refreshCommand.RaiseCanExecuteChanged();
         _createOrUpdateCommand.RaiseCanExecuteChanged();
         _deleteCommand.RaiseCanExecuteChanged();
+    }
+
+    private void SetOperationMessage(string message, bool isError)
+    {
+        OperationMessage = message;
+        IsOperationMessageError = isError;
     }
 }

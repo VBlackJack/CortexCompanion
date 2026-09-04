@@ -141,6 +141,7 @@ public sealed class SchedulingViewModelTests
         Assert.AreEqual(0, scheduler.CreateOrUpdateCallCount);
         Assert.AreEqual(0, scheduler.DeleteCallCount);
         Assert.AreEqual(UiStrings.SchedulingStateCollision, viewModel.OperationMessage);
+        Assert.IsTrue(viewModel.IsOperationMessageError);
     }
 
     [TestMethod]
@@ -166,6 +167,8 @@ public sealed class SchedulingViewModelTests
         Assert.AreEqual(contract.IngestionConfigPath, scheduler.LastRegistration.Contract.IngestionConfigPath);
         CollectionAssert.AreEqual(ingestionBefore, SHA256.HashData(File.ReadAllBytes(contract.IngestionConfigPath)));
         CollectionAssert.AreEqual(confluenceBefore, SHA256.HashData(File.ReadAllBytes(contract.ConfluenceConfigPath)));
+        Assert.AreEqual(UiStrings.SchedulingSaved, viewModel.OperationMessage);
+        Assert.IsFalse(viewModel.IsOperationMessageError);
     }
 
     [TestMethod]

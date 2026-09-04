@@ -4,6 +4,7 @@
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using CortexCompanion.ViewModels;
 
 namespace CortexCompanion.Views;
@@ -17,7 +18,25 @@ public partial class SettingsView : UserControl
         InitializeComponent();
     }
 
-    private async void StoreConfluenceCredentialClick(object sender, RoutedEventArgs eventArgs)
+    private async void StoreConfluenceCredentialClick(object sender, RoutedEventArgs eventArgs) =>
+        await StoreConfluenceCredentialAsync();
+
+    /// <summary>
+    /// Enter in the PAT field submits it, like the button, when the field is usable.
+    /// </summary>
+    private async void ConfluencePatKeyDown(object sender, KeyEventArgs eventArgs)
+    {
+        if (eventArgs.Key != Key.Enter ||
+            DataContext is not SettingsViewModel { CanStoreConfluenceCredential: true })
+        {
+            return;
+        }
+
+        eventArgs.Handled = true;
+        await StoreConfluenceCredentialAsync();
+    }
+
+    private async Task StoreConfluenceCredentialAsync()
     {
         if (DataContext is not SettingsViewModel viewModel)
         {
