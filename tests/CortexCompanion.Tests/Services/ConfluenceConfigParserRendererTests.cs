@@ -69,7 +69,6 @@ public sealed class ConfluenceConfigParserRendererTests
             target = "empty"
             classification = "perso-non-sensible"
             selection = "pages"
-            pages = []
 
             [[spaces]]
             space_key = "ALL"
@@ -157,6 +156,50 @@ public sealed class ConfluenceConfigParserRendererTests
         Assert.IsTrue(ConfluenceConfigParser
             .Parse(Encoding.UTF8.GetBytes(rendered), "subtree.toml")
             .SemanticallyEquals(parsed));
+    }
+
+    [TestMethod]
+    public void AnEmptyExplicitSelectionOmitsTheKeyAndStillReadsBackEmpty()
+    {
+        ConfluenceConfiguration configuration = new(
+            2,
+            "https://wiki.example.test",
+            "target",
+            null,
+            null,
+            50,
+            0.1,
+            [new ConfluenceSpaceConfiguration("DOC", "docs", "pro-confidentiel", ConfluenceSelection.Pages, [])]);
+
+        byte[] rendered = ConfluenceConfigRenderer.Render(configuration);
+        string text = Encoding.UTF8.GetString(rendered);
+
+        Assert.DoesNotContain("pages = ", text);
+        Assert.DoesNotContain("[[spaces.pages]]", text);
+        ConfluenceConfiguration parsed = ConfluenceConfigParser.Parse(rendered, "roundtrip.toml");
+        Assert.AreEqual(ConfluenceSelection.Pages, parsed.Spaces[0].Selection);
+        Assert.IsEmpty(parsed.Spaces[0].PageIds);
+    }
+
+    [TestMethod]
+    public void ASubtreeWithoutARootKeepsTheOnlyInlineFormTomlAllows()
+    {
+        ConfluenceConfiguration configuration = new(
+            3,
+            "https://wiki.example.test",
+            "target",
+            null,
+            null,
+            50,
+            0.1,
+            [new ConfluenceSpaceConfiguration("DOC", "docs", "pro-confidentiel", ConfluenceSelection.Subtree, [])]);
+
+        byte[] rendered = ConfluenceConfigRenderer.Render(configuration);
+
+        Assert.Contains("pages = []", Encoding.UTF8.GetString(rendered));
+        ConfluenceConfiguration parsed = ConfluenceConfigParser.Parse(rendered, "subtree-roundtrip.toml");
+        Assert.AreEqual(ConfluenceSelection.Subtree, parsed.Spaces[0].Selection);
+        Assert.IsEmpty(parsed.Spaces[0].PageIds);
     }
 
     [TestMethod]
