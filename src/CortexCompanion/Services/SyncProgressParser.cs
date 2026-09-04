@@ -35,7 +35,8 @@ public static class SyncProgressParser
                     JsonOptions);
                 if (progress is not null &&
                     progress.ContractVersion == 1 &&
-                    progress.Phase is "enumeration" or "staging" or "conversion" or "publication" &&
+                    progress.Phase is "enumeration" or "staging" or "conversion" or "publication"
+                        or "indexation" &&
                     progress.Current >= 0 &&
                     progress.Total >= 0 &&
                     progress.Current <= progress.Total)

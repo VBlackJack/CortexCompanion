@@ -648,6 +648,7 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
                 "enumeration" => UiStrings.ProgressEnumeration,
                 "staging" => UiStrings.ProgressStaging,
                 "conversion" => UiStrings.ProgressConversion,
+                "indexation" => UiStrings.ProgressIndexation,
                 _ => UiStrings.ProgressPublication,
             };
             ProgressCurrent = progress.Current;
