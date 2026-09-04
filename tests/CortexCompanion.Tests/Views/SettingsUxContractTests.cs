@@ -244,7 +244,6 @@ public sealed partial class SettingsUxContractTests
                 ["PatExpired"] = "Expiré",
                 ["SyncAuthFailed"] = "expiré ou refusé",
                 ["SyncUnexpectedExit"] = "a retourné",
-                ["CredentialStored"] = "enregistré",
             };
 
         foreach (KeyValuePair<string, string> expectedSpelling in reviewedContextualSpellings)

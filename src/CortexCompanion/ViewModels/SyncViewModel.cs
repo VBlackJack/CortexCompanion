@@ -18,7 +18,6 @@ namespace CortexCompanion.ViewModels;
 public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 {
     private readonly ISyncRunCoordinator? _runCoordinator;
-    private readonly IInteractiveProcessLauncher? _interactiveLauncher;
     private readonly IRunInterruptionConfirmationService? _interruptionConfirmation;
     private readonly string? _cliPath;
     private readonly string? _configPath;
@@ -26,7 +25,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
     private readonly AsyncRelayCommand _refreshCommand;
     private readonly AsyncRelayCommand _syncCommand;
     private readonly AsyncRelayCommand _confluenceSyncCommand;
-    private readonly AsyncRelayCommand _storeCredentialCommand;
     private readonly AsyncRelayCommand _openCurrentGenerationCommand;
     private readonly AsyncRelayCommand _cancelCommand;
     private SyncRunHandle? _liveRunHandle;
@@ -63,7 +61,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
     /// <summary>Initializes a Sync projection whose read channel remains independent from the handshake.</summary>
     public SyncViewModel(
         ISyncRunCoordinator? runCoordinator,
-        IInteractiveProcessLauncher? interactiveLauncher,
         string? cliPath,
         string? configPath,
         IngestionPathResolution? ingestionPath,
@@ -71,7 +68,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
         IRunInterruptionConfirmationService? interruptionConfirmation = null)
     {
         _runCoordinator = runCoordinator;
-        _interactiveLauncher = interactiveLauncher;
         _interruptionConfirmation = interruptionConfirmation;
         _cliPath = cliPath;
         _configPath = configPath;
@@ -96,9 +92,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
             () => CanRunLocalDocuments && !IsSyncRunning);
         _confluenceSyncCommand = new AsyncRelayCommand(
             SyncConfluenceAsync,
-            () => CanRunConfluenceActions && !IsSyncRunning);
-        _storeCredentialCommand = new AsyncRelayCommand(
-            StoreCredentialAsync,
             () => CanRunConfluenceActions && !IsSyncRunning);
         _openCurrentGenerationCommand = new AsyncRelayCommand(
             OpenCurrentGenerationAsync,
@@ -309,7 +302,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 
     /// <summary>Gets whether the optional Confluence integration is fully configured.</summary>
     public bool CanRunConfluenceActions => CanRunLocalDocuments &&
-        _interactiveLauncher is not null &&
         !string.IsNullOrWhiteSpace(_configPath) &&
         File.Exists(_configPath);
 
@@ -324,9 +316,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 
     /// <summary>Gets the optional Confluence collection command.</summary>
     public ICommand ConfluenceSyncCommand => _confluenceSyncCommand;
-
-    /// <summary>Gets the visible credential console command.</summary>
-    public ICommand StoreCredentialCommand => _storeCredentialCommand;
 
     /// <summary>Gets the current immutable generation open command.</summary>
     public ICommand OpenCurrentGenerationCommand => _openCurrentGenerationCommand;
@@ -456,37 +445,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
         catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
         {
             StateMessage = UiStrings.SyncContinuesAfterClose;
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    private async Task StoreCredentialAsync()
-    {
-        if (_interactiveLauncher is null || _cliPath is null || _configPath is null)
-        {
-            return;
-        }
-
-        IsBusy = true;
-        try
-        {
-            InteractiveProcessResult result = await _interactiveLauncher.RunAsync(
-                _cliPath,
-                ["confluence", "--config", _configPath, "store-credential"],
-                _applicationCancellation);
-            await RefreshHealthAndPatAsync(_applicationCancellation);
-            StateMessage = result.LaunchError is not null
-                ? UiStrings.CredentialLaunchFailed
-                : result.ExitCode == 0
-                    ? UiStrings.CredentialStored
-                    : UiStrings.FormatCredentialFailed(result.ExitCode);
-        }
-        catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)
-        {
-            StateMessage = UiStrings.SyncStateCancelled;
         }
         finally
         {
@@ -782,7 +740,6 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
         _cancelCommand.RaiseCanExecuteChanged();
         _syncCommand.RaiseCanExecuteChanged();
         _confluenceSyncCommand.RaiseCanExecuteChanged();
-        _storeCredentialCommand.RaiseCanExecuteChanged();
         _openCurrentGenerationCommand.RaiseCanExecuteChanged();
     }
 }

@@ -77,5 +77,3 @@ public sealed record SyncRunSnapshot(
     string? LaunchError,
     bool IsCancelled = false);
 
-/// <summary>Captures the terminal result of a visible interactive child process.</summary>
-public sealed record InteractiveProcessResult(int? ExitCode, string? LaunchError);

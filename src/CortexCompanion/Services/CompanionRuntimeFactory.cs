@@ -35,7 +35,7 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
     public CompanionRuntime CreatePending()
     {
         PagesViewModel pages = new(null, null, null, null, null, []);
-        SyncViewModel sync = new(null, null, null, null, null, [], null);
+        SyncViewModel sync = new(null, null, null, null, [], null);
         SchedulingViewModel scheduling = new(
             new TaskSchedulerComAdapter(),
             new SchedulingConfirmationService(),
@@ -116,19 +116,16 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
         }
 
         ISyncRunCoordinator? syncCoordinator = null;
-        IInteractiveProcessLauncher? interactiveLauncher = null;
         if (cliValidation.IsValid &&
             cliValidation.AbsolutePath is not null &&
             configPath is not null &&
             Environment.ProcessPath is not null)
         {
             syncCoordinator = new SyncRunCoordinator(_paths.SyncRunsDirectory, Environment.ProcessPath);
-            interactiveLauncher = new InteractiveProcessLauncher();
         }
 
         SyncViewModel sync = new(
             syncCoordinator,
-            interactiveLauncher,
             cliValidation.AbsolutePath,
             configPath?.AbsolutePath,
             ingestionPath,

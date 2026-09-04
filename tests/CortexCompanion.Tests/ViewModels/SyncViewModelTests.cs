@@ -24,13 +24,11 @@ public sealed class SyncViewModelTests
         string healthPath = CreateHealth(temporary, "sync_already_running");
         byte[] before = SHA256.HashData(File.ReadAllBytes(healthPath));
         StubSyncRunCoordinator coordinator = new();
-        StubInteractiveLauncher interactive = new();
         await using SyncViewModel viewModel = CreateViewModel(
             cliPath,
             configPath,
             healthPath,
-            coordinator,
-            interactive);
+            coordinator);
 
         await viewModel.InitializeAsync(isReadOnly: true, CancellationToken.None);
 
@@ -38,7 +36,6 @@ public sealed class SyncViewModelTests
         Assert.AreEqual(UiStrings.SyncHealthLockedInformation, viewModel.HealthStatus);
         Assert.IsFalse(viewModel.CanRunActions);
         Assert.IsFalse(viewModel.SyncCommand.CanExecute(null));
-        Assert.IsFalse(viewModel.StoreCredentialCommand.CanExecute(null));
         CollectionAssert.AreEqual(before, SHA256.HashData(File.ReadAllBytes(healthPath)));
     }
 
@@ -54,8 +51,7 @@ public sealed class SyncViewModelTests
             cliPath,
             configPath,
             healthPath,
-            coordinator,
-            new StubInteractiveLauncher());
+            coordinator);
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
         viewModel.SyncCommand.Execute(null);
@@ -71,41 +67,6 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
-    public async Task CredentialExitZeroMakesNoValidityClaim()
-    {
-        using TemporaryDirectory temporary = new();
-        string cliPath = temporary.CreateFakeCli();
-        string configPath = CreateConfig(temporary);
-        string healthPath = CreateHealth(temporary, "remote_failure");
-        StubInteractiveLauncher interactive = new()
-        {
-            Result = new InteractiveProcessResult(0, null),
-            BeforeReturn = () => File.WriteAllText(
-                healthPath,
-                IngestionHealthReaderTests.ValidJson("ok", null)),
-        };
-        await using SyncViewModel viewModel = CreateViewModel(
-            cliPath,
-            configPath,
-            healthPath,
-            new StubSyncRunCoordinator(),
-            interactive);
-        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
-        Assert.AreEqual(UiStrings.SyncHealthError, viewModel.HealthStatus);
-
-        viewModel.StoreCredentialCommand.Execute(null);
-        await WaitUntilAsync(() =>
-            viewModel.StateMessage == UiStrings.CredentialStored &&
-            viewModel.HealthStatus == UiStrings.SyncHealthOk);
-
-        Assert.AreEqual(1, interactive.CallCount);
-        CollectionAssert.AreEqual(
-            new[] { "confluence", "--config", Path.GetFullPath(configPath), "store-credential" },
-            interactive.LastArguments!.ToArray());
-        StringAssert.Contains(viewModel.StateMessage, "prochain sync");
-    }
-
-    [TestMethod]
     public async Task ManifestPresentationCoversMissingUnreadableOkAndError()
     {
         using TemporaryDirectory temporary = new();
@@ -114,8 +75,7 @@ public sealed class SyncViewModelTests
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             healthPath,
-            new StubSyncRunCoordinator(),
-            new StubInteractiveLauncher());
+            new StubSyncRunCoordinator());
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
         Assert.AreEqual(UiStrings.SyncNeverRun, viewModel.HealthStatus);
@@ -154,8 +114,7 @@ public sealed class SyncViewModelTests
             temporary.CreateFakeCli(),
             CreateConfig(temporary),
             Path.Combine(temporary.Path, "source-health.json"),
-            new StubSyncRunCoordinator(),
-            new StubInteractiveLauncher());
+            new StubSyncRunCoordinator());
 
         Assert.IsFalse(viewModel.HasOverrides);
     }
@@ -168,8 +127,7 @@ public sealed class SyncViewModelTests
             temporary.CreateFakeCli(),
             Path.Combine(temporary.Path, "missing.toml"),
             Path.Combine(temporary.Path, "source-health.json"),
-            new StubSyncRunCoordinator(),
-            new StubInteractiveLauncher());
+            new StubSyncRunCoordinator());
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
@@ -177,7 +135,6 @@ public sealed class SyncViewModelTests
         Assert.IsTrue(viewModel.SyncCommand.CanExecute(null));
         Assert.IsFalse(viewModel.CanRunConfluenceActions);
         Assert.IsFalse(viewModel.ConfluenceSyncCommand.CanExecute(null));
-        Assert.IsFalse(viewModel.StoreCredentialCommand.CanExecute(null));
     }
 
     [TestMethod]
@@ -209,8 +166,7 @@ public sealed class SyncViewModelTests
             cliPath,
             configPath,
             Path.Combine(temporary.Path, "source-health.json"),
-            coordinator,
-            new StubInteractiveLauncher());
+            coordinator);
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
@@ -230,8 +186,7 @@ public sealed class SyncViewModelTests
             cliPath,
             configPath,
             Path.Combine(temporary.Path, "source-health.json"),
-            coordinator,
-            new StubInteractiveLauncher());
+            coordinator);
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
         viewModel.SyncCommand.Execute(null);
@@ -255,8 +210,7 @@ public sealed class SyncViewModelTests
             cliPath,
             configPath,
             Path.Combine(temporary.Path, "source-health.json"),
-            coordinator,
-            new StubInteractiveLauncher());
+            coordinator);
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
         await ((AsyncRelayCommand)viewModel.ConfluenceSyncCommand).ExecuteAsync(parameter: null);
 
@@ -273,7 +227,6 @@ public sealed class SyncViewModelTests
             CreateConfig(temporary),
             CreateHealth(temporary, null),
             new StubSyncRunCoordinator(),
-            new StubInteractiveLauncher(),
             new StubInterruptionConfirmation(true));
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
@@ -293,7 +246,6 @@ public sealed class SyncViewModelTests
             CreateConfig(temporary),
             CreateHealth(temporary, null),
             coordinator,
-            new StubInteractiveLauncher(),
             refused);
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
@@ -315,7 +267,6 @@ public sealed class SyncViewModelTests
             CreateConfig(temporary),
             CreateHealth(temporary, null),
             coordinator,
-            new StubInteractiveLauncher(),
             new StubInterruptionConfirmation(true));
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
@@ -338,7 +289,6 @@ public sealed class SyncViewModelTests
             configPath,
             CreateHealth(temporary, null),
             coordinator,
-            new StubInteractiveLauncher(),
             new StubInterruptionConfirmation(true));
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
@@ -361,7 +311,6 @@ public sealed class SyncViewModelTests
             CreateConfig(temporary),
             CreateHealth(temporary, null),
             coordinator,
-            new StubInteractiveLauncher(),
             new StubInterruptionConfirmation(true));
 
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
@@ -375,11 +324,9 @@ public sealed class SyncViewModelTests
         string configPath,
         string healthPath,
         ISyncRunCoordinator coordinator,
-        IInteractiveProcessLauncher interactive,
         IRunInterruptionConfirmationService? interruption = null) =>
         new(
             coordinator,
-            interactive,
             cliPath,
             configPath,
             new IngestionPathResolution(
@@ -615,25 +562,6 @@ public sealed class SyncViewModelTests
 
         public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
             Task.FromException<bool>(new AssertFailedException("Unexpected cancellation."));
-    }
-
-    private sealed class StubInteractiveLauncher : IInteractiveProcessLauncher
-    {
-        public InteractiveProcessResult Result { get; init; } = new(1, null);
-        public Action? BeforeReturn { get; init; }
-        public int CallCount { get; private set; }
-        public IReadOnlyList<string>? LastArguments { get; private set; }
-
-        public Task<InteractiveProcessResult> RunAsync(
-            string filePath,
-            IReadOnlyList<string> arguments,
-            CancellationToken cancellationToken)
-        {
-            CallCount++;
-            LastArguments = arguments;
-            BeforeReturn?.Invoke();
-            return Task.FromResult(Result);
-        }
     }
 
     private sealed class StubInterruptionConfirmation(bool confirms) : IRunInterruptionConfirmationService
