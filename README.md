@@ -163,6 +163,29 @@ once per clone:
 git config core.hooksPath .githooks
 ```
 
+### Interoperability proofs
+
+Two Python scripts under `tests/interop/` prove the contract Companion shares with
+the Cortex CLI on one machine. They are not part of the CI gate: run them by hand
+when the configuration lock or the TOML renderer changes on either side.
+
+- `lock_interop_proof.py` takes the configuration lock from each side in turn and
+  expects the other side to be refused (the C# probe exits with code `2`, the
+  Python `filelock` times out).
+- `renderer_differential_proof.py` renders the same configuration through the C#
+  probe and the Python `confluence_writer` renderer and compares the bytes.
+
+Both need `dotnet` on the PATH, a Debug build of `tests/CortexCompanion.LockProbe`
+and a Python interpreter with the Cortex dependencies installed; the renderer proof
+also expects a Cortex checkout next to this repository, in `../Cortex`. Each script
+prints `PROOF RESULT=PASS` and exits `0` on success.
+
+```powershell
+dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj
+python tests/interop/lock_interop_proof.py
+python tests/interop/renderer_differential_proof.py
+```
+
 ## Windows release payload
 
 The canonical self-contained payload used by the combined Cortex installer is:

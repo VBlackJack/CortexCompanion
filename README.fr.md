@@ -182,6 +182,31 @@ pre-push une fois par clone :
 git config core.hooksPath .githooks
 ```
 
+### Preuves d'interoperabilite
+
+Deux scripts Python sous `tests/interop/` prouvent le contrat que Companion partage
+avec la CLI Cortex sur une meme machine. Ils ne font pas partie de la barriere CI :
+les lancer a la main quand le verrou de configuration ou le rendu TOML change d'un
+cote ou de l'autre.
+
+- `lock_interop_proof.py` prend le verrou de configuration depuis chaque cote a tour
+  de role et attend que l'autre cote soit refuse (la sonde C# sort avec le code `2`,
+  le `filelock` Python expire).
+- `renderer_differential_proof.py` rend la meme configuration par la sonde C# et par
+  le rendu Python de `confluence_writer`, puis compare les octets.
+
+Les deux exigent `dotnet` dans le PATH, une compilation Debug de
+`tests/CortexCompanion.LockProbe` et un interpreteur Python avec les dependances de
+Cortex installees ; la preuve du rendu attend en plus un clone de Cortex a cote de ce
+depot, dans `../Cortex`. Chaque script affiche `PROOF RESULT=PASS` et sort avec `0`
+en cas de succes.
+
+```powershell
+dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj
+python tests/interop/lock_interop_proof.py
+python tests/interop/renderer_differential_proof.py
+```
+
 ## Charge utile de release Windows
 
 La charge utile autonome canonique utilisee par l'installeur Cortex combine est :
