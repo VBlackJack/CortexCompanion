@@ -57,6 +57,14 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
     private bool _isBusy;
     private bool _isSyncRunning;
     private bool _isReadOnly = true;
+    private IndexFreshness _freshness = new(UiStrings.ValueUnknown, UiStrings.ValueUnknown,
+        UiStrings.ValueUnknown, UiStrings.FreshnessUnknown);
+
+    /// <summary>Gets the optional durable observation reader for this runtime.</summary>
+    public IndexFreshnessReader? FreshnessReader { get; init; }
+
+    /// <summary>Gets separate publication and successful index observations.</summary>
+    public IndexFreshness Freshness { get => _freshness; private set => SetProperty(ref _freshness, value); }
 
     /// <summary>Initializes a Sync projection whose read channel remains independent from the handshake.</summary>
     public SyncViewModel(
@@ -371,6 +379,10 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 
     private async Task RefreshHealthAndPatAsync(CancellationToken cancellationToken)
     {
+        if (FreshnessReader is not null)
+        {
+            Freshness = await FreshnessReader.ReadAsync(cancellationToken);
+        }
         if (_ingestionPath is null)
         {
             ClearHealth(UiStrings.SyncHealthUnreadable);

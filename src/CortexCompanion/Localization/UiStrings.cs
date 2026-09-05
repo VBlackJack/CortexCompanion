@@ -12,6 +12,84 @@ namespace CortexCompanion.Localization;
 /// </summary>
 public static class UiStrings
 {
+    /// <summary>Gets the localized SearchNavigation text.</summary>
+    public static string SearchNavigation => GetString(nameof(SearchNavigation));
+
+    /// <summary>Gets the localized SearchQuery text.</summary>
+    public static string SearchQuery => GetString(nameof(SearchQuery));
+
+    /// <summary>Gets the localized SearchSection text.</summary>
+    public static string SearchSection => GetString(nameof(SearchSection));
+
+    /// <summary>Gets the localized SearchSource text.</summary>
+    public static string SearchSource => GetString(nameof(SearchSource));
+
+    /// <summary>Gets the localized SearchAll text.</summary>
+    public static string SearchAll => GetString(nameof(SearchAll));
+
+    /// <summary>Gets the localized SearchNotes text.</summary>
+    public static string SearchNotes => GetString(nameof(SearchNotes));
+
+    /// <summary>Gets the localized SearchDocuments text.</summary>
+    public static string SearchDocuments => GetString(nameof(SearchDocuments));
+
+    /// <summary>Gets the localized SearchSubmit text.</summary>
+    public static string SearchSubmit => GetString(nameof(SearchSubmit));
+
+    /// <summary>Gets the localized SearchOpen text.</summary>
+    public static string SearchOpen => GetString(nameof(SearchOpen));
+
+    /// <summary>Gets the localized SearchResults text.</summary>
+    public static string SearchResults => GetString(nameof(SearchResults));
+
+    /// <summary>Gets the localized SearchReady text.</summary>
+    public static string SearchReady => GetString(nameof(SearchReady));
+
+    /// <summary>Gets the localized SearchRunning text.</summary>
+    public static string SearchRunning => GetString(nameof(SearchRunning));
+
+    /// <summary>Gets the localized SearchComplete text.</summary>
+    public static string SearchComplete => GetString(nameof(SearchComplete));
+
+    /// <summary>Gets the localized SearchEmpty text.</summary>
+    public static string SearchEmpty => GetString(nameof(SearchEmpty));
+
+    /// <summary>Gets the localized SearchDegraded text.</summary>
+    public static string SearchDegraded => GetString(nameof(SearchDegraded));
+
+    /// <summary>Gets the localized SearchFailed text.</summary>
+    public static string SearchFailed => GetString(nameof(SearchFailed));
+
+    /// <summary>Gets the localized SearchTimeout text.</summary>
+    public static string SearchTimeout => GetString(nameof(SearchTimeout));
+
+    /// <summary>Gets the localized SearchCancelled text.</summary>
+    public static string SearchCancelled => GetString(nameof(SearchCancelled));
+
+    /// <summary>Gets the localized SearchOpenFailed text.</summary>
+    public static string SearchOpenFailed => GetString(nameof(SearchOpenFailed));
+
+    /// <summary>Gets the localized FreshnessPublished text.</summary>
+    public static string FreshnessPublished => GetString(nameof(FreshnessPublished));
+
+    /// <summary>Gets the localized FreshnessIndexed text.</summary>
+    public static string FreshnessIndexed => GetString(nameof(FreshnessIndexed));
+
+    /// <summary>Gets the localized FreshnessLastIndex text.</summary>
+    public static string FreshnessLastIndex => GetString(nameof(FreshnessLastIndex));
+
+    /// <summary>Gets the localized FreshnessCurrent text.</summary>
+    public static string FreshnessCurrent => GetString(nameof(FreshnessCurrent));
+
+    /// <summary>Gets the localized FreshnessPending text.</summary>
+    public static string FreshnessPending => GetString(nameof(FreshnessPending));
+
+    /// <summary>Gets the localized FreshnessUnknown text.</summary>
+    public static string FreshnessUnknown => GetString(nameof(FreshnessUnknown));
+
+    /// <summary>Gets the connection guidance for unavailable search.</summary>
+    public static string SearchUnavailable => GetString(nameof(SearchUnavailable));
+
     private static readonly ResourceManager ResourceManager = new(
         "CortexCompanion.Localization.UiStrings",
         typeof(UiStrings).Assembly);

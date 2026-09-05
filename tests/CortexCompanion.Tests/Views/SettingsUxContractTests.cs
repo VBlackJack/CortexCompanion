@@ -265,7 +265,7 @@ public sealed partial class SettingsUxContractTests
             .Where(element => element.Name.LocalName == "RadioButton")
             .ToArray();
 
-        Assert.HasCount(4, navigationItems);
+        Assert.HasCount(5, navigationItems);
         foreach (XElement navigationItem in navigationItems)
         {
             XAttribute? checkedBinding = navigationItem.Attribute("IsChecked");

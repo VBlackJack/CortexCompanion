@@ -3,6 +3,8 @@
 
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
+using CortexCompanion.Interfaces;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 
@@ -85,8 +87,24 @@ internal static class Program
             "hold" => await HoldAsync(arguments),
             "mutate" => await MutateAsync(arguments[1]),
             "render-golden" => await RenderGoldenAsync(arguments),
+            "validate-search" => await ValidateSearchAsync(arguments[1]),
             _ => UsageExitCode,
         };
+    }
+
+    private static async Task<int> ValidateSearchAsync(string path)
+    {
+        string payload = await File.ReadAllTextAsync(path);
+        SearchClient client = new(new SearchFixtureRunner(payload), "fixture", TimeSpan.FromSeconds(5));
+        SearchResponse result = await client.SearchAsync("fixture", "", "", CancellationToken.None);
+        Console.WriteLine(JsonSerializer.Serialize(result));
+        return 0;
+    }
+
+    private sealed class SearchFixtureRunner(string payload) : IProcessRunner
+    {
+        public Task<ProcessRunResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken) =>
+            Task.FromResult(ProcessRunResult.Completed(0, payload, string.Empty));
     }
 
     private static async Task<int> RunSyncProbeAsync()

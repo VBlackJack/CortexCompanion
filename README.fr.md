@@ -184,7 +184,7 @@ git config core.hooksPath .githooks
 
 ### Preuves d'interoperabilite
 
-Deux scripts Python sous `tests/interop/` prouvent le contrat que Companion partage
+Trois scripts Python sous `tests/interop/` prouvent le contrat que Companion partage
 avec la CLI Cortex sur une meme machine. Le workflow `interoperability` des deux
 depots les execute contre `main` du depot partenaire a chaque push et pull request.
 Pour un changement coordonne, son parametre manuel `peer_ref` permet de choisir la
@@ -196,10 +196,12 @@ les deux depots cote a cote et couvrent les schemas TOML v1, v2 et v3.
   le `filelock` Python expire).
 - `renderer_differential_proof.py` rend la meme configuration par la sonde C# et par
   le rendu Python de `confluence_writer`, puis compare les octets.
+- `search_contract_proof.py` transmet les resultats JSON Python au vrai parseur C#
+  et verifie les trois modes de recherche, y compris le texte Unicode.
 
-Les deux exigent `dotnet` dans le PATH, une compilation Debug de
+Les trois exigent `dotnet` dans le PATH, une compilation Debug de
 `tests/CortexCompanion.LockProbe` et un interpreteur Python avec les dependances de
-Cortex installees ; la preuve du rendu attend en plus un clone de Cortex a cote de ce
+Cortex installees ; les preuves du rendu et de recherche attendent en plus un clone de Cortex a cote de ce
 depot, dans `../Cortex`. Chaque script affiche `PROOF RESULT=PASS` et sort avec `0`
 en cas de succes.
 
@@ -207,7 +209,12 @@ en cas de succes.
 dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj
 python tests/interop/lock_interop_proof.py
 python tests/interop/renderer_differential_proof.py
+python tests/interop/search_contract_proof.py
 ```
+
+Le workflow manuel `release-pair` valide une paire exacte de commits sources.
+Fournir les SHA complets de 40 caracteres `cortex_sha` et `companion_sha` ; cette
+preuve ne certifie pas un installeur. Voir le [guide de validation](docs/validation.fr.md).
 
 ## Charge utile de release Windows
 
@@ -247,3 +254,7 @@ l'interruption d'une operation en cours et la suppression de la tache planifiee.
 Annuler et fermer la fenetre restent des actions non autorisantes.
 
 Sous licence Apache 2.0.
+
+## Recherche et fraîcheur
+
+L’écran **Recherche** affiche les extraits indexés et propose des filtres et l’ouverture de la source. **Base locale** distingue la génération publiée de la dernière indexation réussie observée. Voir [les limites et les commandes de validation](docs/validation.fr.md).

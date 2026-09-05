@@ -106,6 +106,15 @@
                                Margin="{StaticResource MarginStackItem}" />
                     <Border Style="{StaticResource PageCardStyle}">
                         <StackPanel>
+                    <StackPanel Margin="{StaticResource MarginSectionBottom}">
+                        <TextBlock Text="{Binding Freshness.Status}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.FreshnessPublished}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Freshness.Published}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.FreshnessIndexed}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Freshness.Indexed}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UiStrings.FreshnessLastIndex}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Freshness.LastIndex}" />
+                    </StackPanel>
                     <TextBlock Text="{x:Static localization:UiStrings.SyncHealthTitle}"
                                FontSize="{StaticResource FontSizeTitle}"
                                FontWeight="SemiBold"

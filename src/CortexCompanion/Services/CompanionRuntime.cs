@@ -12,7 +12,11 @@ public sealed record CompanionRuntime(
     SyncViewModel Sync,
     SchedulingViewModel Scheduling,
     CliHandshakeResult Handshake,
-    string? CliPath);
+    string? CliPath)
+{
+    /// <summary>Gets the optional search screen for this validated runtime.</summary>
+    public SearchViewModel Search { get; init; } = new(null);
+}
 
 /// <summary>Carries a newly applied runtime to the visible shell.</summary>
 public sealed class CompanionRuntimeChangedEventArgs : EventArgs

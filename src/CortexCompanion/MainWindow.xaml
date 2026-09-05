@@ -44,6 +44,12 @@
                              CommandParameter="{x:Static models:NavigationPage.LocalKnowledgeBase}"
                              IsChecked="{Binding IsLocalKnowledgeBaseSelected, Mode=TwoWay}"
                              Style="{StaticResource NavigationRadioButtonStyle}" />
+                <RadioButton Content="{x:Static localization:UiStrings.SearchNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.SearchNavigation}"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="{x:Static models:NavigationPage.Search}"
+                             IsChecked="{Binding IsSearchSelected, Mode=TwoWay}"
+                             Style="{StaticResource NavigationRadioButtonStyle}" />
                 <RadioButton Content="{x:Static localization:UiStrings.PagesNavigation}"
                              AutomationProperties.Name="{x:Static localization:UiStrings.PagesNavigation}"
                              Command="{Binding NavigateCommand}"
@@ -95,6 +101,9 @@
             <Grid Grid.Row="1"
                   Visibility="{Binding IsConfluenceSchedulingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <views:SchedulingView DataContext="{Binding Scheduling}" />
+            </Grid>
+            <Grid Grid.Row="1" Visibility="{Binding IsSearchVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:SearchView DataContext="{Binding Search}" />
             </Grid>
             <Grid Grid.Row="1"
                   Visibility="{Binding IsSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">

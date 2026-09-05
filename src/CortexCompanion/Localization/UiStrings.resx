@@ -391,4 +391,30 @@
   <data name="SyncDiagnosticsLanguageNote" xml:space="preserve"><value>Sortie brute de la ligne de commande Cortex. Ces messages sont en anglais.</value></data>
   <data name="ShortcutRefreshHint" xml:space="preserve"><value>Raccourci : F5</value></data>
   <data name="ShortcutSaveHint" xml:space="preserve"><value>Raccourci : Ctrl+S</value></data>
+  <data name="SearchNavigation" xml:space="preserve"><value>Recherche</value></data>
+  <data name="SearchQuery" xml:space="preserve"><value>Question ou mots-clés</value></data>
+  <data name="SearchSection" xml:space="preserve"><value>Section (facultatif)</value></data>
+  <data name="SearchSource" xml:space="preserve"><value>Source</value></data>
+  <data name="SearchAll" xml:space="preserve"><value>Toutes les sources</value></data>
+  <data name="SearchNotes" xml:space="preserve"><value>Documents locaux</value></data>
+  <data name="SearchDocuments" xml:space="preserve"><value>Documents collectés</value></data>
+  <data name="SearchSubmit" xml:space="preserve"><value>Rechercher</value></data>
+  <data name="SearchOpen" xml:space="preserve"><value>Ouvrir la source</value></data>
+  <data name="SearchResults" xml:space="preserve"><value>Résultats de recherche</value></data>
+  <data name="SearchReady" xml:space="preserve"><value>Saisissez une question pour rechercher dans les documents indexés.</value></data>
+  <data name="SearchRunning" xml:space="preserve"><value>Recherche en cours...</value></data>
+  <data name="SearchComplete" xml:space="preserve"><value>Résultats disponibles. Sélectionnez un document pour ouvrir sa source.</value></data>
+  <data name="SearchEmpty" xml:space="preserve"><value>Aucun résultat pour cette recherche et ces filtres.</value></data>
+  <data name="SearchDegraded" xml:space="preserve"><value>Résultats disponibles avec un classement dégradé. Consultez les diagnostics de Cortex.</value></data>
+  <data name="SearchFailed" xml:space="preserve"><value>Recherche indisponible. Vérifiez la compatibilité de Cortex et les diagnostics.</value></data>
+  <data name="SearchTimeout" xml:space="preserve"><value>Le délai de recherche est dépassé. Vous pouvez augmenter le délai CLI dans Réglages.</value></data>
+  <data name="SearchCancelled" xml:space="preserve"><value>Recherche interrompue.</value></data>
+  <data name="SearchOpenFailed" xml:space="preserve"><value>Impossible d'ouvrir cette source.</value></data>
+  <data name="FreshnessPublished" xml:space="preserve"><value>Génération publiée</value></data>
+  <data name="FreshnessIndexed" xml:space="preserve"><value>Génération indexée confirmée</value></data>
+  <data name="FreshnessLastIndex" xml:space="preserve"><value>Dernière indexation réussie observée</value></data>
+  <data name="FreshnessCurrent" xml:space="preserve"><value>La génération publiée correspond à la dernière indexation réussie observée.</value></data>
+  <data name="FreshnessPending" xml:space="preserve"><value>La génération publiée attend une indexation réussie confirmée.</value></data>
+  <data name="FreshnessUnknown" xml:space="preserve"><value>Correspondance entre publication et indexation non confirmée.</value></data>
+  <data name="SearchUnavailable" xml:space="preserve"><value>Connectez une version compatible de Cortex dans Réglages pour activer la recherche.</value></data>
 </root>

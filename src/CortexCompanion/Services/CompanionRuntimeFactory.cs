@@ -130,7 +130,10 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             configPath?.AbsolutePath,
             ingestionPath,
             ConfluenceEnvironmentInspector.GetActiveOverrides(),
-            new RunInterruptionConfirmationService());
+            new RunInterruptionConfirmationService())
+        {
+            FreshnessReader = new IndexFreshnessReader(_paths.SyncRunsDirectory, ingestionPath),
+        };
         ScheduledTaskContract? scheduledTaskContract = BuildScheduledTaskContract(
             cliValidation,
             configPath,
@@ -150,7 +153,12 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             sync,
             scheduling,
             handshake,
-            cliValidation.AbsolutePath);
+            cliValidation.AbsolutePath)
+        {
+            Search = new SearchViewModel(!handshake.IsReadOnly && cliValidation.AbsolutePath is not null
+                ? new SearchClient(_processRunner, cliValidation.AbsolutePath, settings.EffectiveCliTimeout)
+                : null),
+        };
     }
 
     private ScheduledTaskContract? BuildScheduledTaskContract(

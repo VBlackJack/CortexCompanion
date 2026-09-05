@@ -10,7 +10,7 @@ using CortexCompanion.ViewModels;
 namespace CortexCompanion;
 
 /// <summary>
-/// Hosts the four-destination navigation shell.
+/// Hosts the persistent navigation shell.
 /// </summary>
 public partial class MainWindow : Window
 {
@@ -49,5 +49,11 @@ public partial class MainWindow : Window
 
         e.Cancel = !_interruptionConfirmation.ConfirmCloseWhileRunning();
     }
-}
 
+    /// <summary>Stops a read-only query when its owning window closes.</summary>
+    protected override void OnClosed(EventArgs e)
+    {
+        _viewModel.Search.Stop();
+        base.OnClosed(e);
+    }
+}

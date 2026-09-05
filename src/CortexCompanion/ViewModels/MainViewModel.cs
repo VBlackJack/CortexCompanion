@@ -61,6 +61,19 @@ public sealed class MainViewModel : ViewModelBase
     /// <summary>Gets the first-run and configuration settings screen.</summary>
     public SettingsViewModel Settings { get; }
 
+    /// <summary>Gets the read-only indexed search screen.</summary>
+    public SearchViewModel Search { get; private set; } = new(null);
+
+    /// <summary>Gets whether search is the visible destination.</summary>
+    public bool IsSearchVisible => CurrentPage == NavigationPage.Search;
+
+    /// <summary>Gets the persistent search navigation marker.</summary>
+    public bool IsSearchSelected
+    {
+        get => IsSearchVisible;
+        set => SelectFromBinding(value, NavigationPage.Search);
+    }
+
     /// <summary>Gets the navigation command for all functional destinations.</summary>
     public ICommand NavigateCommand { get; }
 
@@ -76,6 +89,8 @@ public sealed class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsLocalKnowledgeBaseVisible));
                 OnPropertyChanged(nameof(IsConfluenceSchedulingVisible));
                 OnPropertyChanged(nameof(IsSettingsVisible));
+                OnPropertyChanged(nameof(IsSearchVisible));
+                OnPropertyChanged(nameof(IsSearchSelected));
                 OnPropertyChanged(nameof(IsConfluencePagesSelected));
                 OnPropertyChanged(nameof(IsLocalKnowledgeBaseSelected));
                 OnPropertyChanged(nameof(IsConfluenceSchedulingSelected));
@@ -204,6 +219,9 @@ public sealed class MainViewModel : ViewModelBase
     {
         CompanionRuntime runtime = eventArgs.Runtime;
         Pages = runtime.Pages;
+        Search.Stop();
+        Search = runtime.Search;
+        OnPropertyChanged(nameof(Search));
         if (!ReferenceEquals(_sync, runtime.Sync))
         {
             // The replaced screen keeps observing a detached run until its monitor is stopped.

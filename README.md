@@ -165,7 +165,7 @@ git config core.hooksPath .githooks
 
 ### Interoperability proofs
 
-Two Python scripts under `tests/interop/` prove the contract Companion shares with
+Three Python scripts under `tests/interop/` prove the contract Companion shares with
 the Cortex CLI on one machine. The `interoperability` workflow in both repositories
 runs them against the peer repository's `main` on every push and pull request.
 For coordinated changes, its manual `peer_ref` input selects the matching peer
@@ -177,17 +177,24 @@ branch or commit. The scripts can also be run locally against sibling checkouts.
 - `renderer_differential_proof.py` renders the same configuration through the C#
   probe and the Python `confluence_writer` renderer and compares the bytes for
   schemas v1, v2, and v3, including empty selections and subtree roots.
+- `search_contract_proof.py` passes Python JSON search results through the real C#
+  parser and checks the three retrieval modes, including Unicode text.
 
-Both need `dotnet` on the PATH, a Debug build of `tests/CortexCompanion.LockProbe`
+All three need `dotnet` on the PATH, a Debug build of `tests/CortexCompanion.LockProbe`
 and a Python interpreter with the Cortex dependencies installed; the renderer proof
-also expects a Cortex checkout next to this repository, in `../Cortex`. Each script
+and search proofs also expect a Cortex checkout next to this repository, in `../Cortex`. Each script
 prints `PROOF RESULT=PASS` and exits `0` on success.
 
 ```powershell
 dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj
 python tests/interop/lock_interop_proof.py
 python tests/interop/renderer_differential_proof.py
+python tests/interop/search_contract_proof.py
 ```
+
+The manual `release-pair` workflow validates an exact pair of source commits.
+Supply full 40-character `cortex_sha` and `companion_sha` values; it does not
+certify an installer. See the [validation guide](docs/validation.md).
 
 ## Windows release payload
 
@@ -224,3 +231,7 @@ including page removal, collection-mode changes, and scheduled-task deletion. Ca
 and window close remain non-authorizing actions.
 
 Licensed under the Apache License 2.0.
+
+## Search and freshness
+
+The **Recherche** screen provides indexed excerpts, filters and source opening. **Base locale** distinguishes the published generation from the latest observed successful index run. See [validation commands and coverage limits](docs/validation.md).

@@ -19,5 +19,6 @@ public enum NavigationPage
 
     /// <summary>The first-run and configuration destination.</summary>
     Settings,
+    /// <summary>The read-only indexed document search destination.</summary>
+    Search,
 }
-

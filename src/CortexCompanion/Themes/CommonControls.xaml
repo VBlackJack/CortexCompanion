@@ -248,6 +248,9 @@
     </Style>
 
     <Style x:Key="NavigationRadioButtonStyle" TargetType="RadioButton">
+        <Setter Property="ContentTemplate">
+            <Setter.Value><DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap" /></DataTemplate></Setter.Value>
+        </Setter>
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />

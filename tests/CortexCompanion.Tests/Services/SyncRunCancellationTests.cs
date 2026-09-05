@@ -14,6 +14,33 @@ namespace CortexCompanion.Tests.Services;
 public sealed class SyncRunCancellationTests
 {
     [TestMethod]
+    public async Task RestartRecoversADeadWorkerAsUnknownWithoutLosingItsLogs()
+    {
+        using TemporaryDirectory temporary = new();
+        using Process worker = StartLongLivedProcess();
+        SyncRunHandle handle = CreateRun(temporary, worker);
+        await SyncRunPersistence.WriteJsonAtomicAsync(
+            Path.Combine(handle.RunDirectory, SyncRunPersistence.WorkerStateFileName),
+            new SyncWorkerState
+            {
+                RunId = handle.RunId,
+                WorkerProcessId = handle.WorkerProcessId,
+                WorkerStartedAt = handle.WorkerStartedAt,
+                RunKind = handle.RunKind,
+            }, CancellationToken.None);
+        await File.WriteAllTextAsync(Path.Combine(handle.RunDirectory, "stdout.log"), "partial output");
+        worker.Kill(entireProcessTree: true);
+        await worker.WaitForExitAsync();
+        SyncRunCoordinator restarted = new(RunsRoot(temporary), FakeCompanion(temporary));
+        SyncRunSnapshot? snapshot = await restarted.GetLatestAsync(CancellationToken.None);
+        Assert.IsNotNull(snapshot);
+        Assert.IsTrue(snapshot.IsUnknown);
+        Assert.IsFalse(snapshot.IsCompleted);
+        Assert.AreEqual("partial output", snapshot.StandardOutput);
+        Assert.IsNull(snapshot.ExitCode);
+    }
+
+    [TestMethod]
     public async Task CancelStopsTheLiveWorkerAndRecordsTheCancelledResult()
     {
         using TemporaryDirectory temporary = new();
