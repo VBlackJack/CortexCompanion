@@ -538,6 +538,9 @@ public static class UiStrings
     public static string SyncRawOutputTitle => GetString(nameof(SyncRawOutputTitle));
     /// <summary>Gets the worker launch failure.</summary>
     public static string SyncLaunchFailed => GetString(nameof(SyncLaunchFailed));
+
+    /// <summary>Reports incomplete logs without claiming the completed process never started.</summary>
+    public static string SyncOutputPersistenceFailed => GetString(nameof(SyncOutputPersistenceFailed));
     /// <summary>Gets the successful sync result.</summary>
     public static string SyncSucceeded => GetString(nameof(SyncSucceeded));
     /// <summary>Gets the lock contention result.</summary>

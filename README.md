@@ -166,14 +166,17 @@ git config core.hooksPath .githooks
 ### Interoperability proofs
 
 Two Python scripts under `tests/interop/` prove the contract Companion shares with
-the Cortex CLI on one machine. They are not part of the CI gate: run them by hand
-when the configuration lock or the TOML renderer changes on either side.
+the Cortex CLI on one machine. The `interoperability` workflow in both repositories
+runs them against the peer repository's `main` on every push and pull request.
+For coordinated changes, its manual `peer_ref` input selects the matching peer
+branch or commit. The scripts can also be run locally against sibling checkouts.
 
 - `lock_interop_proof.py` takes the configuration lock from each side in turn and
   expects the other side to be refused (the C# probe exits with code `2`, the
   Python `filelock` times out).
 - `renderer_differential_proof.py` renders the same configuration through the C#
-  probe and the Python `confluence_writer` renderer and compares the bytes.
+  probe and the Python `confluence_writer` renderer and compares the bytes for
+  schemas v1, v2, and v3, including empty selections and subtree roots.
 
 Both need `dotnet` on the PATH, a Debug build of `tests/CortexCompanion.LockProbe`
 and a Python interpreter with the Cortex dependencies installed; the renderer proof

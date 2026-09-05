@@ -23,6 +23,15 @@ internal static class Program
             return 0;
         }
 
+        if (arguments is ["sync", "--json"])
+        {
+            // Enough data on each pipe to expose a stopped capture consumer.
+            byte[] payload = Encoding.UTF8.GetBytes(new string('x', 1_000_000));
+            await Console.OpenStandardOutput().WriteAsync(payload);
+            await Console.OpenStandardError().WriteAsync(payload);
+            return 0;
+        }
+
         if (arguments is ["unicode-output"])
         {
             byte[] responseBytes = new UTF8Encoding(false, true).GetBytes(
@@ -174,14 +183,17 @@ internal static class Program
 
     private static async Task<int> RenderGoldenAsync(string[] arguments)
     {
-        if (arguments.Length != 3 || arguments[2] is not "v1" and not "v2")
+        if (arguments.Length != 3 || arguments[2] is not "v1" and not "v2" and not "v3")
         {
             return UsageExitCode;
         }
 
-        ConfluenceConfiguration configuration = arguments[2] == "v1"
-            ? GoldenVersionOne()
-            : GoldenVersionTwo();
+        ConfluenceConfiguration configuration = arguments[2] switch
+        {
+            "v1" => GoldenVersionOne(),
+            "v2" => GoldenVersionTwo(),
+            _ => GoldenVersionThree(),
+        };
         await File.WriteAllBytesAsync(arguments[1], ConfluenceConfigRenderer.Render(configuration));
         return 0;
     }
@@ -213,4 +225,17 @@ internal static class Program
             new ConfluenceSpaceConfiguration(
                 "ALL", "all", "pro-confidentiel", ConfluenceSelection.WholeSpace, []),
         ]);
+
+    private static ConfluenceConfiguration GoldenVersionThree() => GoldenVersionTwo() with
+    {
+        SchemaVersion = 3,
+        FailureThreshold = 0.1,
+        Spaces =
+        [
+            new ConfluenceSpaceConfiguration(
+                "TREE", "tree", "pro-confidentiel", ConfluenceSelection.Subtree, ["123"]),
+            new ConfluenceSpaceConfiguration(
+                "EMPTY", "empty", "perso-non-sensible", ConfluenceSelection.Subtree, []),
+        ],
+    };
 }

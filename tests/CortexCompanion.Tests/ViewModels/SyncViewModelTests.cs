@@ -175,6 +175,20 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
+    public async Task CompletedProcessWithMissingLogsIsNotPresentedAsALaunchFailure()
+    {
+        using TemporaryDirectory temporary = new();
+        SyncRunHandle handle = new("run", temporary.Path, Environment.ProcessId, DateTimeOffset.UtcNow);
+        LatestRunCoordinator coordinator = new(new SyncRunSnapshot(
+            handle, string.Empty, string.Empty, false, true, false, 0, "OutputPersistenceFailed"));
+        await using SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(), CreateConfig(temporary),
+            Path.Combine(temporary.Path, "source-health.json"), coordinator);
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        Assert.AreEqual(UiStrings.SyncOutputPersistenceFailed, viewModel.RunResult);
+    }
+
+    [TestMethod]
     public async Task LockedResultDoesNotRetryAndNeverWritesConfluenceToml()
     {
         using TemporaryDirectory temporary = new();

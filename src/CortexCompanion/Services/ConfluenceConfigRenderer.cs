@@ -65,17 +65,8 @@ public sealed class ConfluenceConfigRenderer
 
             if (space.PageIds.Count == 0)
             {
-                // One notion, one spelling: page identifiers are [[spaces.pages]] tables.
-                // TOML cannot write "no tables", so an explicit page selection with nothing
-                // in it omits the key entirely, which both readers already treat as empty.
-                // selection='subtree' is the single exception, because both readers require
-                // the key to be present there; the inline empty array marks a subtree that
-                // has no root yet, and means nothing else anywhere in the file.
-                if (space.Selection == ConfluenceSelection.Subtree)
-                {
-                    lines.Add("pages = []");
-                }
-
+                // Match Cortex's canonical spelling for every empty explicit selection.
+                lines.Add("pages = []");
                 continue;
             }
 

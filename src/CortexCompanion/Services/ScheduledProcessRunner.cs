@@ -48,47 +48,18 @@ public sealed class ScheduledProcessRunner : IScheduledProcessRunner
                 return ScheduledProcessResult.FailedToLaunch("ProcessStartReturnedFalse");
             }
 
-            Task standardOutputTask = CopyStreamingAsync(process.StandardOutput, standardOutputPath);
-            Task standardErrorTask = CopyStreamingAsync(process.StandardError, standardErrorPath);
+            Task<bool> standardOutputTask = WorkerOutputCapture.CopyAsync(process.StandardOutput, standardOutputPath);
+            Task<bool> standardErrorTask = WorkerOutputCapture.CopyAsync(process.StandardError, standardErrorPath);
             await process.WaitForExitAsync(CancellationToken.None);
-            await Task.WhenAll(standardOutputTask, standardErrorTask);
-            return ScheduledProcessResult.Completed(process.ExitCode);
+            bool[] captured = await Task.WhenAll(standardOutputTask, standardErrorTask);
+            return captured.All(success => success)
+                ? ScheduledProcessResult.Completed(process.ExitCode)
+                : new ScheduledProcessResult(process.ExitCode, WorkerOutputCapture.FailureKind);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
             FileLogger.Error("Scheduled Cortex process could not be started", exception);
             return ScheduledProcessResult.FailedToLaunch(exception.GetType().Name);
-        }
-    }
-
-    private static async Task CopyStreamingAsync(StreamReader source, string destinationPath)
-    {
-        const int BufferLength = 1_024;
-        char[] buffer = new char[BufferLength];
-        await using FileStream stream = new(
-            destinationPath,
-            FileMode.Create,
-            FileAccess.Write,
-            FileShare.ReadWrite | FileShare.Delete,
-            bufferSize: 4_096,
-            FileOptions.Asynchronous | FileOptions.WriteThrough);
-        await using StreamWriter destination = new(
-            stream,
-            Utf8WithoutBom,
-            bufferSize: 4_096,
-            leaveOpen: false)
-        {
-            AutoFlush = true,
-        };
-        while (true)
-        {
-            int read = await source.ReadAsync(buffer.AsMemory(), CancellationToken.None);
-            if (read == 0)
-            {
-                return;
-            }
-
-            await destination.WriteAsync(buffer.AsMemory(0, read), CancellationToken.None);
         }
     }
 }

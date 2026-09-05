@@ -185,9 +185,11 @@ git config core.hooksPath .githooks
 ### Preuves d'interoperabilite
 
 Deux scripts Python sous `tests/interop/` prouvent le contrat que Companion partage
-avec la CLI Cortex sur une meme machine. Ils ne font pas partie de la barriere CI :
-les lancer a la main quand le verrou de configuration ou le rendu TOML change d'un
-cote ou de l'autre.
+avec la CLI Cortex sur une meme machine. Le workflow `interoperability` des deux
+depots les execute contre `main` du depot partenaire a chaque push et pull request.
+Pour un changement coordonne, son parametre manuel `peer_ref` permet de choisir la
+branche ou le commit partenaire. Les scripts restent executables localement avec
+les deux depots cote a cote et couvrent les schemas TOML v1, v2 et v3.
 
 - `lock_interop_proof.py` prend le verrou de configuration depuis chaque cote a tour
   de role et attend que l'autre cote soit refuse (la sonde C# sort avec le code `2`,

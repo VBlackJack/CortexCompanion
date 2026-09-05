@@ -702,7 +702,9 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
     {
         if (launchError is not null)
         {
-            return UiStrings.SyncLaunchFailed;
+            return launchError == WorkerOutputCapture.FailureKind
+                ? UiStrings.SyncOutputPersistenceFailed
+                : UiStrings.SyncLaunchFailed;
         }
 
         return runKind == SyncRunKind.LocalDocuments

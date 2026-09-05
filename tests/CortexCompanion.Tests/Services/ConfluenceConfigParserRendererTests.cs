@@ -69,6 +69,7 @@ public sealed class ConfluenceConfigParserRendererTests
             target = "empty"
             classification = "perso-non-sensible"
             selection = "pages"
+            pages = []
 
             [[spaces]]
             space_key = "ALL"
@@ -159,7 +160,7 @@ public sealed class ConfluenceConfigParserRendererTests
     }
 
     [TestMethod]
-    public void AnEmptyExplicitSelectionOmitsTheKeyAndStillReadsBackEmpty()
+    public void AnEmptyExplicitSelectionUsesTheCanonicalEmptyArray()
     {
         ConfluenceConfiguration configuration = new(
             2,
@@ -174,7 +175,7 @@ public sealed class ConfluenceConfigParserRendererTests
         byte[] rendered = ConfluenceConfigRenderer.Render(configuration);
         string text = Encoding.UTF8.GetString(rendered);
 
-        Assert.DoesNotContain("pages = ", text);
+        Assert.Contains("pages = []", text);
         Assert.DoesNotContain("[[spaces.pages]]", text);
         ConfluenceConfiguration parsed = ConfluenceConfigParser.Parse(rendered, "roundtrip.toml");
         Assert.AreEqual(ConfluenceSelection.Pages, parsed.Spaces[0].Selection);

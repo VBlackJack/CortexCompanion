@@ -50,6 +50,21 @@ def _settings(version: int):
                 ),
             ),
         )
+    if version == 3:
+        return ConfluenceSettings(
+            **common,
+            failure_threshold=0.1,
+            spaces=(
+                SpaceMapping(
+                    space_key="TREE", target="tree", classification="pro-confidentiel",
+                    selection="subtree", pages=(PageSelection(page_id="123"),),
+                ),
+                SpaceMapping(
+                    space_key="EMPTY", target="empty", classification="perso-non-sensible",
+                    selection="subtree", pages=(),
+                ),
+            ),
+        )
     return ConfluenceSettings(
         **common,
         failure_threshold=0.0000001,
@@ -95,7 +110,7 @@ def main() -> int:
     )
     with tempfile.TemporaryDirectory(prefix="CortexCompanion.RendererDiff.") as raw_temp:
         temp = Path(raw_temp)
-        for version in (1, 2):
+        for version in (1, 2, 3):
             csharp_path = temp / f"csharp-v{version}.toml"
             subprocess.run(
                 ["dotnet", str(probe), "render-golden", str(csharp_path), f"v{version}"],

@@ -62,14 +62,14 @@ public static class SyncWorker
             }
             else
             {
-                Task standardErrorTask = CopyStreamingAsync(process.StandardError, standardErrorPath);
-                Task standardOutputTask = CopyStreamingAsync(process.StandardOutput, standardOutputPath);
+                Task<bool> standardErrorTask = WorkerOutputCapture.CopyAsync(process.StandardError, standardErrorPath);
+                Task<bool> standardOutputTask = WorkerOutputCapture.CopyAsync(process.StandardOutput, standardOutputPath);
                 await process.WaitForExitAsync(CancellationToken.None);
-                await Task.WhenAll(standardErrorTask, standardOutputTask);
+                bool[] captured = await Task.WhenAll(standardErrorTask, standardOutputTask);
                 terminal = new SyncWorkerResult
                 {
                     ExitCode = process.ExitCode,
-                    LaunchError = null,
+                    LaunchError = captured.All(success => success) ? null : WorkerOutputCapture.FailureKind,
                     CompletedAt = DateTimeOffset.UtcNow,
                 };
             }
@@ -89,34 +89,7 @@ public static class SyncWorker
             Path.Combine(arguments.RunDirectory, SyncRunPersistence.ResultFileName),
             terminal,
             CancellationToken.None);
-        return terminal.ExitCode ?? 1;
-    }
-
-    private static async Task CopyStreamingAsync(StreamReader source, string destinationPath)
-    {
-        const int BufferLength = 1_024;
-        char[] buffer = new char[BufferLength];
-        await using FileStream stream = new(
-            destinationPath,
-            FileMode.Create,
-            FileAccess.Write,
-            FileShare.ReadWrite | FileShare.Delete,
-            bufferSize: 4_096,
-            FileOptions.Asynchronous | FileOptions.WriteThrough);
-        await using StreamWriter destination = new(stream, Utf8WithoutBom, bufferSize: 4_096, leaveOpen: false)
-        {
-            AutoFlush = true,
-        };
-        while (true)
-        {
-            int read = await source.ReadAsync(buffer.AsMemory(), CancellationToken.None);
-            if (read == 0)
-            {
-                return;
-            }
-
-            await destination.WriteAsync(buffer.AsMemory(0, read), CancellationToken.None);
-        }
+        return terminal.LaunchError is null ? terminal.ExitCode ?? 1 : 1;
     }
 
     private static Task PruneCompletedRunsAsync(string currentRunDirectory)

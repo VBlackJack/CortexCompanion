@@ -246,6 +246,7 @@
   <data name="ProgressCounter" xml:space="preserve"><value>{0} - {1:N0}/{2:N0}</value></data>
   <data name="SyncRunUnknown" xml:space="preserve"><value>Résultat inconnu ; l'état est relu depuis source-health.json.</value></data>
   <data name="SyncLaunchFailed" xml:space="preserve"><value>Le worker de synchronisation n'a pas pu être lancé.</value></data>
+  <data name="SyncOutputPersistenceFailed" xml:space="preserve"><value>Le processus est terminé, mais ses journaux n'ont pas pu être enregistrés complètement. Vérifiez l'espace disque et les droits du dossier des journaux, puis consultez l'état de la synchronisation avant de relancer.</value></data>
   <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminée avec succès (code 0).</value></data>
   <data name="SyncLocked" xml:space="preserve"><value>Un sync est déjà en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
   <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Choisissez Collecter Confluence pour forcer une collecte immédiate.</value></data>
