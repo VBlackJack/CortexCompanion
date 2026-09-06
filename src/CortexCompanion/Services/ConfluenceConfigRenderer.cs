@@ -40,6 +40,11 @@ public sealed class ConfluenceConfigRenderer
 
         lines.Add($"max_attachment_size_mb = {configuration.MaxAttachmentSizeMb.ToString(CultureInfo.InvariantCulture)}");
         lines.Add($"failure_threshold = {FormatFloat(configuration.FailureThreshold)}");
+        if (configuration.Spaces.Count == 0 && configuration.SchemaVersion >= 2 && configuration.HasExplicitSpaceList)
+        {
+            lines.Add("spaces = []");
+        }
+
         foreach (ConfluenceSpaceConfiguration space in configuration.Spaces)
         {
             lines.Add(string.Empty);

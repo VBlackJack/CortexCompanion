@@ -123,6 +123,56 @@ public sealed class MainWindowSmokeTests
             viewModel.Pages.SourceUrl = "https://wiki.example.test/spaces/DOC/overview";
             window.UpdateLayout();
             Capture(window, "confluence");
+            viewModel.Pages.Spaces.Add(new ConfiguredSpaceViewModel("DOC", "confluence/DOC", "pro-confidentiel",
+                ConfluenceSelection.Subtree, [new ConfiguredPageViewModel("DOC", "100", "Installation et administration des serveurs Windows", null)]));
+            window.UpdateLayout();
+            PagesView pagesView = Descendants(window).OfType<PagesView>().Single();
+            ScrollViewer sourceScroll = Descendants(pagesView).OfType<ScrollViewer>().First();
+            sourceScroll.ScrollToTop();
+            window.UpdateLayout();
+            Assert.IsTrue(Descendants(pagesView).OfType<Button>().Any(button => Equals(button.Content, UiStrings.ManageEdit)));
+            Capture(window, "my-sources");
+            SourceSelectionDialog editor = new(new ConfluenceSpaceConfiguration("DOC", "confluence/DOC", "pro-confidentiel",
+                ConfluenceSelection.Subtree, ["100"]), [new ConfiguredPageContract { PageId = "100", Title = "Installation et administration des serveurs Windows" }], () => Task.FromResult(
+                    new ConfluenceCliResult<SourceCatalogContract>(CortexExitCode.Ok, new SourceCatalogContract
+                    {
+                        ContractVersion = 1,
+                        SpaceKey = "DOC",
+                        Pages = [
+                            new CatalogPageContract { PageId = "100", Title = "Installation et administration des serveurs Windows", AncestorIds = [] },
+                            new CatalogPageContract { PageId = "101", Title = "Configurer WinRM", AncestorIds = ["100"] },
+                            new CatalogPageContract { PageId = "102", Title = "Tester la connexion", AncestorIds = ["100", "101"] }],
+                    }, string.Empty, false, null)))
+            { Owner = window, ShowInTaskbar = false };
+            try
+            {
+                editor.Show();
+                editor.UpdateLayout();
+                Assert.IsTrue(((RadioButton)editor.FindName("SubtreeOption")).IsChecked);
+                Assert.IsTrue(Descendants(editor).OfType<CheckBox>().Single().IsChecked);
+                ((Button)editor.FindName("LoadTreeButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                editor.UpdateLayout();
+                Assert.HasCount(3, Descendants(editor).OfType<CheckBox>());
+                Capture(editor, "source-editor");
+                ((TextBox)editor.FindName("TreeSearch")).Text = "Tester";
+                editor.UpdateLayout();
+                Capture(editor, "source-tree-filtered");
+            }
+            finally { editor.Close(); }
+            SourceChangeReview review = SourceChangeReview.Create(
+                new ConfluenceSpaceConfiguration("DOC", "doc", "pro-confidentiel", ConfluenceSelection.WholeSpace, []),
+                new ConfluenceSpaceConfiguration("DOC", "doc", "pro-confidentiel", ConfluenceSelection.Pages, ["100"]),
+                new SourceCatalogContract
+                {
+                    ContractVersion = 1,
+                    SpaceKey = "DOC",
+                    Pages = [
+                    new CatalogPageContract { PageId = "100", Title = "Documentation Windows", AncestorIds = [] },
+                    new CatalogPageContract { PageId = "101", Title = "Configurer WinRM", AncestorIds = ["100"] }]
+                }, []);
+            SourceChangeReviewDialog reviewDialog = new(review) { Owner = window, ShowInTaskbar = false };
+            try { reviewDialog.Show(); reviewDialog.UpdateLayout(); Capture(reviewDialog, "source-review"); }
+            finally { reviewDialog.Close(); }
             ScopeSelectionDialog scope = new(new ScopePreviewContract
             {
                 ContractVersion = 1,
@@ -142,9 +192,10 @@ public sealed class MainWindowSmokeTests
                 scope.Show();
                 scope.UpdateLayout();
                 Button confirm = (Button)scope.FindName("AddSelectionButton");
-                Assert.AreEqual(UiStrings.FormatFlowConfirmCount(12), confirm.Content);
+                Assert.AreEqual(UiStrings.SourcesSaveUpdate, confirm.Content);
+                Assert.AreEqual(UiStrings.FormatFlowConfirmCount(12), confirm.ToolTip);
                 ((RadioButton)scope.FindName("WholeSpaceOption")).IsChecked = true;
-                Assert.AreEqual(UiStrings.FormatFlowConfirmCount(200), confirm.Content);
+                Assert.AreEqual(UiStrings.FormatFlowConfirmCount(200), confirm.ToolTip);
                 scope.UpdateLayout();
                 Capture(scope, "confluence-scope");
             }

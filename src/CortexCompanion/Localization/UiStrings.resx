@@ -96,7 +96,7 @@
   <data name="WholeSpaceModeDescription" xml:space="preserve"><value>L'espace entier est collecté ; aucune liste de pages n'est applicable.</value></data>
   <data name="SubtreeModeDescription" xml:space="preserve"><value>Chaque page listée est une racine : elle est collectée avec toutes ses pages descendantes.</value></data>
   <data name="PagesSwitchMode" xml:space="preserve"><value>Changer de mode</value></data>
-  <data name="PagesRemove" xml:space="preserve"><value>Retirer</value></data>
+  <data name="PagesRemove" xml:space="preserve"><value>Retirer de Cortex</value></data>
   <data name="PagesReadOnly" xml:space="preserve"><value>Lecture seule : les mutations sont désactivées.</value></data>
   <data name="PagesMutationCommitted" xml:space="preserve"><value>Configuration mise à jour.</value></data>
   <data name="PagesMutationCancelled" xml:space="preserve"><value>Opération annulée ; aucune écriture.</value></data>
@@ -141,7 +141,7 @@
   <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré. Augmentez-le dans Réglages, choisissez Enregistrer et connecter, puis réessayez.</value></data>
   <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu être lancé.</value></data>
   <data name="PagesCliInvalidJson" xml:space="preserve"><value>La réponse JSON du CLI est invalide.</value></data>
-  <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>L'espace entier est déjà couvert. Basculez explicitement en mode pages avant tout ajout.</value></data>
+  <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>Cette page est déjà incluse dans l'espace entier. Vous pouvez collecter maintenant ou modifier sa sélection dans Mes sources ci-dessous.</value></data>
   <data name="PagesRejectPageAlreadyConfigured" xml:space="preserve"><value>Cette page est déjà configurée.</value></data>
   <data name="PagesRejectPageNotConfigured" xml:space="preserve"><value>Cette page n'est pas configurée dans ce mode.</value></data>
   <data name="PagesRejectSpaceNotAllowlisted" xml:space="preserve"><value>L'espace de cette page n'est plus déclaré dans la configuration Confluence. Rechargez l'écran, puis autorisez-le avec la carte "Autoriser un nouvel espace" avant de recommencer.</value></data>
@@ -517,16 +517,72 @@
   <data name="FlowIndex" xml:space="preserve"><value>2. Indexer les documents collectés</value></data>
   <data name="FlowSearch" xml:space="preserve"><value>3. Rechercher un document</value></data>
   <data name="FlowNextHelp" xml:space="preserve"><value>Les sources configurées seront collectées, puis indexées si la collecte réussit. La progression distingue les documents récupérés et leur disponibilité dans la recherche.</value></data>
-  <data name="FlowSources" xml:space="preserve"><value>Sources configurées</value></data>
+  <data name="FlowSources" xml:space="preserve"><value>Mes sources</value></data>
   <data name="FlowAdvanced" xml:space="preserve"><value>Détails techniques et options avancées</value></data>
   <data name="FlowConfirmCount" xml:space="preserve"><value>Ajouter ces {0} pages</value></data>
   <data name="FlowScopeHelp" xml:space="preserve"><value>Choisissez ce que Cortex pourra rechercher. Tout l'espace inclut aussi les pages hors de cette arborescence.</value></data>
   <data name="FlowScopeIdentity" xml:space="preserve"><value>{0} - espace {1}</value></data>
   <data name="FlowSpaceHomepage" xml:space="preserve"><value>Le lien d'espace est présenté à partir de sa page d'accueil.</value></data>
   <data name="FlowCollectionUnavailable" xml:space="preserve"><value>La collecte n'est pas disponible. Vérifiez les réglages ou attendez la fin de l'opération en cours.</value></data>
-  <data name="FlowCollecting" xml:space="preserve"><value>Source ajoutée - collecte des documents en cours.</value></data>
+  <data name="FlowCollecting" xml:space="preserve"><value>Application des sources - collecte des documents en cours.</value></data>
   <data name="FlowCollectionUnconfirmed" xml:space="preserve"><value>Collecte non confirmée. L'indexation automatique n'a pas été lancée. Consultez le résultat ci-dessous.</value></data>
   <data name="FlowIndexing" xml:space="preserve"><value>Documents collectés - indexation en cours.</value></data>
   <data name="FlowIndexUnconfirmed" xml:space="preserve"><value>Disponibilité dans la recherche non confirmée. Consultez le résultat de l'indexation ci-dessous.</value></data>
   <data name="FlowSearchReady" xml:space="preserve"><value>Documents collectés et indexés. Vous pouvez maintenant rechercher un document.</value></data>
+  <data name="ManageEdit" xml:space="preserve"><value>Modifier la sélection</value></data>
+  <data name="ManageRemove" xml:space="preserve"><value>Retirer de Cortex</value></data>
+  <data name="ManageOpen" xml:space="preserve"><value>Ouvrir dans Confluence</value></data>
+  <data name="ManageHelp" xml:space="preserve"><value>Modifiez les documents suivis par Cortex. Les pages originales restent dans Confluence.</value></data>
+  <data name="ManageScopeHelp" xml:space="preserve"><value>La portée choisie s'applique à toutes les pages cochées de cet espace. Décochez une page pour ne plus la suivre directement.</value></data>
+  <data name="ManagePages" xml:space="preserve"><value>Les pages cochées uniquement</value></data>
+  <data name="ManageSubtree" xml:space="preserve"><value>Les pages cochées et leurs sous-pages</value></data>
+  <data name="ManageWhole" xml:space="preserve"><value>Tout l'espace</value></data>
+  <data name="ManageLink" xml:space="preserve"><value>Ajouter une page à cette sélection (lien Confluence facultatif)</value></data>
+  <data name="ManageReview" xml:space="preserve"><value>Vérifier les changements</value></data>
+  <data name="ManageCancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="ManageConsequences" xml:space="preserve"><value>Enregistrer et mettre à jour applique le changement à la recherche après une collecte et une indexation réussies. Enregistrer pour plus tard conserve uniquement la sélection. Aucune page originale ne sera supprimée dans Confluence. Les documents encore couverts par une autre arborescence restent inclus.</value></data>
+  <data name="ManageEmpty" xml:space="preserve"><value>Sélectionnez au moins une page ou collez son lien. Pour retirer tout l'espace, utilisez &quot; Retirer de Cortex &quot;.</value></data>
+  <data name="ManageReviewTitle" xml:space="preserve"><value>Confirmer la nouvelle sélection</value></data>
+  <data name="ManageRemaining" xml:space="preserve"><value>Pages suivies directement :</value></data>
+  <data name="ManageBefore" xml:space="preserve"><value>Avant :</value></data>
+  <data name="ManageAfter" xml:space="preserve"><value>Après :</value></data>
+  <data name="ManageRemoveHelp" xml:space="preserve"><value>Retirer cette source du suivi Cortex ? Les documents qui ne sont plus couverts seront retirés de la recherche après une collecte et une indexation réussies. Aucune page originale ne sera supprimée dans Confluence. Les documents couverts par une autre arborescence resteront disponibles.</value></data>
+  <data name="ManageRefresh" xml:space="preserve"><value>Actualiser mes sources</value></data>
+  <data name="ManageStillCovered" xml:space="preserve"><value>Cette page reste incluse dans une autre arborescence sélectionnée. Ce retrait seul ne la fera pas disparaître de Cortex.</value></data>
+  <data name="ManageCoverageUnknown" xml:space="preserve"><value>La couverture par les autres arborescences n'a pas pu être vérifiée. Cette page pourrait rester incluse.</value></data>
+  <data name="SourcesAdd" xml:space="preserve"><value>Ajouter une source</value></data>
+  <data name="SourcesSearch" xml:space="preserve"><value>Rechercher un espace ou une page</value></data>
+  <data name="SourcesNoMatch" xml:space="preserve"><value>Aucune source ne correspond à cette recherche.</value></data>
+  <data name="SourcesPending" xml:space="preserve"><value>À appliquer</value></data>
+  <data name="SourcesUpdating" xml:space="preserve"><value>Mise à jour en cours</value></data>
+  <data name="SourcesAvailable" xml:space="preserve"><value>Disponible dans la recherche</value></data>
+  <data name="SourcesAttention" xml:space="preserve"><value>Action requise</value></data>
+  <data name="SourcesUnknown" xml:space="preserve"><value>Disponibilité à vérifier</value></data>
+  <data name="SourcesSaveUpdate" xml:space="preserve"><value>Enregistrer et mettre à jour</value></data>
+  <data name="SourcesSaveLater" xml:space="preserve"><value>Enregistrer pour plus tard</value></data>
+  <data name="SourcesApply" xml:space="preserve"><value>Mettre à jour la recherche</value></data>
+  <data name="SourcesUndo" xml:space="preserve"><value>Annuler le dernier retrait</value></data>
+  <data name="SourcesUndoHelp" xml:space="preserve"><value>Le dernier retrait de cette session peut être annulé tant que la configuration ne change pas. Une nouvelle mise à jour peut être nécessaire pour restaurer les résultats.</value></data>
+  <data name="SourcesRetry" xml:space="preserve"><value>Réessayer</value></data>
+  <data name="SourcesReconnect" xml:space="preserve"><value>Reconnecter Confluence</value></data>
+  <data name="SourcesError" xml:space="preserve"><value>Cette action a échoué. Votre source reste accessible ci-dessous.</value></data>
+  <data name="SourcesLoadTree" xml:space="preserve"><value>Charger les pages de cet espace</value></data>
+  <data name="SourcesTreeLoading" xml:space="preserve"><value>Lecture des pages et de leur arborescence...</value></data>
+  <data name="SourcesTreeError" xml:space="preserve"><value>Impossible de lire les pages. Vérifiez la connexion ou reconnectez Confluence, puis réessayez. Vos choix sont conservés.</value></data>
+  <data name="SourcesTreeSearch" xml:space="preserve"><value>Rechercher une page dans cet espace</value></data>
+  <data name="SourcesAddedPages" xml:space="preserve"><value>Documents ajoutés au périmètre</value></data>
+  <data name="SourcesRemovedPages" xml:space="preserve"><value>Documents retirés du périmètre</value></data>
+  <data name="SourcesImpactUnknown" xml:space="preserve"><value>Les sous-pages n'ont pas pu être mesurées. La liste ci-dessous montre uniquement les pages connues ; le nombre total de documents concernés reste inconnu.</value></data>
+  <data name="SourcesImpactMeasured" xml:space="preserve"><value>Les listes incluent les sous-pages et tiennent compte des arborescences qui se recouvrent. Elles reflètent la lecture actuelle de Confluence.</value></data>
+  <data name="SourcesNoChange" xml:space="preserve"><value>Aucun document dans cette liste.</value></data>
+  <data name="SourcesCovered" xml:space="preserve"><value>Incluse avec une page parente</value></data>
+  <data name="SourcesReview" xml:space="preserve"><value>Vérifier les changements</value></data>
+  <data name="SourcesConfirm" xml:space="preserve"><value>Confirmer</value></data>
+  <data name="SourcesSyncFailure" xml:space="preserve"><value>La mise à jour n'est pas confirmée. Les changements sont enregistrés ; vous pouvez réessayer ou consulter Base locale.</value></data>
+  <data name="SourcesViewDetails" xml:space="preserve"><value>Voir le résultat détaillé</value></data>
+  <data name="SourcesSaved" xml:space="preserve"><value>Changements enregistrés. La recherche sera mise à jour à la prochaine synchronisation.</value></data>
+  <data name="SourcesEmpty" xml:space="preserve"><value>Aucune source suivie. Utilisez Ajouter une source pour commencer.</value></data>
+  <data name="SourcesApplyHelp" xml:space="preserve"><value>La mise à jour collecte toutes les sources puis prépare leurs documents pour la recherche. La disponibilité est vérifiée pour cette génération commune.</value></data>
+  <data name="SourcesAddedRoots" xml:space="preserve"><value>Pages ajoutées au suivi direct</value></data>
+  <data name="SourcesRemovedRoots" xml:space="preserve"><value>Pages retirées du suivi direct</value></data>
 </root>

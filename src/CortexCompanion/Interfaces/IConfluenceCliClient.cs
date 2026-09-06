@@ -8,6 +8,14 @@ namespace CortexCompanion.Interfaces;
 /// <summary>Abstracts the frozen Cortex Pages and Resolve CLI surface.</summary>
 public interface IConfluenceCliClient
 {
+    /// <summary>Reads a complete allowlisted remote tree when supported by the paired CLI.</summary>
+    Task<ConfluenceCliResult<SourceCatalogContract>> GetCatalogAsync(string spaceKey, CancellationToken cancellationToken) =>
+        Task.FromResult(new ConfluenceCliResult<SourceCatalogContract>(CortexExitCode.Error, null, string.Empty, false, null));
+
+    /// <summary>Reads local publication evidence without remote access.</summary>
+    Task<ConfluenceCliResult<SourceStatusContract>> GetSourceStatusAsync(CancellationToken cancellationToken) =>
+        Task.FromResult(new ConfluenceCliResult<SourceStatusContract>(CortexExitCode.Error, null, string.Empty, false, null));
+
     /// <summary>Reads the local Pages contract without credential or network access.</summary>
     Task<ConfluenceCliResult<PagesContract>> GetPagesAsync(CancellationToken cancellationToken);
 

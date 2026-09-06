@@ -6,6 +6,40 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir a modifier un fichier TOML ni a ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
+## Gerer les sources Confluence (2026.0906.02)
+
+**Mes sources** apparait en premier. Recherchez un espace ou un titre de page,
+ouvrez l'original dans Confluence ou choisissez **Modifier la selection**.
+**Ajouter une source** ouvre le formulaire de lien lorsque vous en avez besoin.
+
+L'editeur conserve les pages cochees. **Charger les pages de cet espace** affiche
+l'arborescence distante avec recherche ; les pages implicitement incluses par
+une racine sont indiquees. La portee choisie s'applique a toutes les racines de
+cet espace. Le catalogue est limite a 10 000 pages et ne presente jamais une
+lecture partielle comme complete. En cas d'echec, les choix restent editables.
+
+Avant confirmation, le resume distingue les racines ajoutees/retirees et les
+documents reellement affectes, sous-pages et recouvrements compris. Une mesure
+indisponible est signalee ; aucun total de sous-pages n'est invente.
+**Enregistrer et mettre a jour** collecte toutes les sources puis indexe apres
+reussite. **Enregistrer pour plus tard** conserve seulement la selection.
+
+Les cartes indiquent **A appliquer**, **Mise a jour en cours**, **Disponible dans
+la recherche**, **Action requise** ou une disponibilite non verifiee. Ces etats
+sont conservateurs et concernent la generation commune aux sources : la
+selection publiee et l'identite de generation indexee doivent correspondre.
+Un succes de collecte seul ne signifie jamais que la recherche est a jour.
+
+**Retirer de Cortex** ne supprime aucun original Confluence. Le dernier retrait
+de la session peut etre annule si aucun octet de configuration n'a change ;
+une nouvelle mise a jour peut etre necessaire apres restauration. Les erreurs
+restent visibles avec **Reessayer**, **Reconnecter Confluence** et l'acces au
+resultat detaille. La reconnexion demande une date d'expiration valide et
+reprend l'action echouee sans ajouter une source en double.
+
+Ce parcours necessite Cortex et Companion 2026.0906.02 ou ulterieurs. La recette WPF et les tests
+automatiques ne remplacent pas une observation d'un nouvel utilisateur.
+
 ## Accueil et premiers pas
 
 Ces ameliorations sont disponibles dans la release appariee Cortex et Companion 2026.0906.01.
@@ -66,8 +100,8 @@ automatises et les scenarios de recette manuelle restants.
 7. Selectionner **Collecter maintenant**. Companion collecte toutes les sources
    Confluence configurees, puis indexe seulement apres une collecte reussie.
    Suivre le statut et utiliser **Rechercher un document** quand l'index est a jour.
-8. Les sources existantes et les options avancees du convertisseur restent dans
-   des sections repliees. L'installeur combine fournit le convertisseur.
+8. Les sources existantes sont visibles dans **Mes sources**. Seules les options
+   avancees du convertisseur restent repliees. L'installeur combine fournit le convertisseur.
    Les actions independantes restent accessibles dans **Base locale**.
 
 L'action de synchronisation locale execute `cortex sync --json` ; elle n'exige

@@ -8,6 +8,29 @@ namespace CortexCompanion.Interfaces;
 /// <summary>Abstracts the explicit confirmations required before every Pages mutation.</summary>
 public interface IPageMutationConfirmationService
 {
+    /// <summary>Gets the explicit save-and-update choice made in a scope dialog.</summary>
+    bool SaveRequestsUpdate => false;
+
+    /// <summary>Provides an optional remote catalogue loader without changing legacy confirmations.</summary>
+    SourceSelectionEdit? EditSelectionWithCatalog(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages,
+        Func<Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog) => EditSelection(space, pages);
+
+    /// <summary>Confirms the measured effective document difference.</summary>
+    bool ConfirmSelectionReview(SourceChangeReview review) => ConfirmSelection(review.Before, review.After);
+
+    /// <summary>Edits a previously loaded selection; dismissal never authorizes a write.</summary>
+    SourceSelectionEdit? EditSelection(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages) => null;
+
+    /// <summary>Confirms the exact replacement after validation.</summary>
+    bool ConfirmSelection(ConfluenceSpaceConfiguration before, ConfluenceSpaceConfiguration after) => false;
+
+    /// <summary>Confirms removal of an entire configured source.</summary>
+    bool ConfirmRemoveSource(string spaceKey) => false;
+
+    /// <summary>Confirms a page removal with a best-effort check of remaining root coverage.</summary>
+    bool ConfirmRemoveWithCoverage(string spaceKey, string pageId, string? title, bool? stillCovered) =>
+        ConfirmRemove(spaceKey, pageId, title);
+
     /// <summary>Confirms a resolved page identity before its numeric ID can be persisted.</summary>
     bool ConfirmAdd(ResolvedPageContract page);
 

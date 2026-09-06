@@ -13,6 +13,40 @@ public sealed class ConfluenceCliClientTests
     private static readonly TimeSpan ConfiguredTimeout = TimeSpan.FromSeconds(120);
 
     [TestMethod]
+    public async Task CatalogParsesVerifiedAncestryAndPassesSpaceAsOneArgument()
+    {
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            """{"contract_version":1,"space_key":"DOC","pages":[{"page_id":"2","title":"Child","ancestor_ids":["1"]}]}""", string.Empty));
+        ConfluenceCliClient client = new(runner, @"C:\tools\cortex.exe", @"C:\config\confluence.toml", ConfiguredTimeout);
+        ConfluenceCliResult<SourceCatalogContract> result = await client.GetCatalogAsync("DOC", CancellationToken.None);
+        Assert.IsTrue(result.IsSuccess);
+        Assert.AreEqual("1", result.Value!.Pages.Single().AncestorIds.Single());
+        Assert.AreEqual("catalog", runner.LastRequest!.Arguments[3]);
+        Assert.AreEqual("DOC", runner.LastRequest.Arguments[4]);
+    }
+
+    [TestMethod]
+    public async Task CatalogRejectsIncompleteAncestorData()
+    {
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            """{"contract_version":1,"space_key":"DOC","pages":[{"page_id":"2","title":"Child"}]}""", string.Empty));
+        ConfluenceCliClient client = new(runner, @"C:\tools\cortex.exe", @"C:\config\confluence.toml", ConfiguredTimeout);
+        Assert.IsFalse((await client.GetCatalogAsync("DOC", CancellationToken.None)).IsSuccess);
+    }
+
+    [TestMethod]
+    public async Task SourceStatusDoesNotInventAnIndexedState()
+    {
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            """{"contract_version":1,"selection_current":true,"generation_id":"g1","status":"ok"}""", string.Empty));
+        ConfluenceCliClient client = new(runner, @"C:\tools\cortex.exe", @"C:\config\confluence.toml", ConfiguredTimeout);
+        ConfluenceCliResult<SourceStatusContract> result = await client.GetSourceStatusAsync(CancellationToken.None);
+        Assert.IsTrue(result.IsSuccess);
+        Assert.AreEqual("g1", result.Value!.GenerationId);
+        Assert.AreEqual("source-status", runner.LastRequest!.Arguments[3]);
+    }
+
+    [TestMethod]
     public void MapExitCodeImplementsCompleteFrozenTable()
     {
         CortexExitCode[] expected =

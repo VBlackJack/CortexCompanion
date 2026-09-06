@@ -26,7 +26,7 @@ public sealed partial class PagesViewModel
         set
         {
             if (!SetProperty(ref _sourceUrl, value)) { return; }
-            SourceAdded = false;
+            // A new draft must not hide previously saved changes awaiting collection.
             SetupPageUrl = value;
             _inspectSourceCommand.RaiseCanExecuteChanged();
             OnPropertyChanged(nameof(ShowSourceClassification));
@@ -49,7 +49,7 @@ public sealed partial class PagesViewModel
     }
 
     /// <summary>Gets whether the source form can be edited during a network operation.</summary>
-    public bool CanEditSource => !IsBusy;
+    public bool CanEditSource => !IsBusy && !IsApplyingSources;
 
     /// <summary>Gets whether the inline credential help is needed.</summary>
     public bool NeedsCredential
@@ -80,6 +80,10 @@ public sealed partial class PagesViewModel
     private async Task InspectSourceAsync()
     {
         if (_sourceService is null) { return; }
+        _retryAction = InspectSourceAsync;
+        ErrorContext = SourceIdentity;
+        ClearSourceError();
+        bool apply = false;
         if (HasOverrides) { StateMessage = UiStrings.FlowOverrides; return; }
         try
         {
@@ -103,22 +107,30 @@ public sealed partial class PagesViewModel
                 SetupExpiryDate is DateTime date ? ToEndOfLocalDay(date) : default,
                 SetupConverterPath, SelectedClassification.Code), IsReadOnly, CancellationToken.None);
             await RefreshAsync();
-            SourceAdded = added;
-            if (added) { NeedsCredential = false; }
+            SourceAdded = SourceAdded || added;
+            if (added) { NeedsCredential = false; ShowAddSource = false; apply = _sourceService.LastSaveRequestsUpdate; }
             StateMessage = added ? UiStrings.FlowAdded : UiStrings.FlowCancelled;
         }
         catch (ConfluenceCliOperationException exception)
         {
+            HasSourceError = true;
             NeedsCredential = exception.ExitCode == CortexExitCode.Auth;
             StateMessage = NeedsCredential ? UiStrings.FlowAuthenticationRequired :
                 FormatCliFailure(exception.ExitCode, exception.Message, false, null);
         }
-        catch (ConfluenceConfigConflictException) { StateMessage = UiStrings.PagesCasConflict; }
+        catch (ConfluenceConfigConflictException) { SetSourceError(UiStrings.PagesCasConflict); }
         catch (Exception exception) when (exception is ConfluenceSetupValidationException or PageMutationRejectedException or
             ConfluenceConfigValidationException or ConfluenceConfigLockedException or ConfluenceConfigMutationException or IOException)
         {
-            StateMessage = exception.Message;
+            SetSourceError(exception.Message);
+            if (exception.Message == UiStrings.PagesRejectWholeSpaceCovered ||
+                exception.Message == UiStrings.PagesRejectPageAlreadyConfigured)
+            {
+                SourceAdded = true;
+            }
         }
         finally { IsBusy = false; }
+        NotifySourceState();
+        await ApplySavedChangesAsync(apply);
     }
 }

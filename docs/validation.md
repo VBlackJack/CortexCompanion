@@ -96,3 +96,30 @@ The automated suite does not claim those physical or screen-reader checks passed
 The source form accepts a page or space link. Inline authentication retains the link. Preview uses a disposable non-secret TOML; only the confirmed measured selection reaches the atomic CAS writer. Tests cover first setup, additional spaces, cancellation, authentication/remote failures, concurrent edits and foreign origins. Collection and indexing report separate outcomes; unsuccessful collection cannot authorize automatic indexing. Legacy links still require a space key. Existing roots retain their collection mode unless the whole space is explicitly selected.
 
 Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minimum-size window and scope confirmation at 100%, 150% and 200% raster scale. This is not a live Confluence account or native DPI test.
+
+## My sources - unreleased validation
+
+- Check visible cards, browser links and long titles.
+- Open the prefilled editor; cancellation must leave configuration bytes unchanged.
+- Change the common scope and uncheck a root; inspect the before/after review.
+- Remove a root covered elsewhere: confirmation reports coverage or an unavailable
+  check. Its temporary configuration is deleted.
+- Remove the final source, then collect and index with the paired Cortex build.
+  Originals remain in Confluence; search follows the indexed generation.
+- Service tests cover CAS, read-only mode, cancellation, foreign origins, last-source
+  removal and a missing allowlist. WPF smoke renders the editor and source cards.
+  100/150/200 percent images are renders, not native DPI or Narrator validation.
+
+## Source experience and recovery (unreleased)
+
+- Verify list-before-form ordering, title filtering and no-match feedback.
+- Load and search a page tree; ancestors remain visible and filtering preserves checks.
+- Compare changed roots with effective document differences in the confirmation.
+- Undo a removal, then provoke a concurrent edit and verify restoration is refused.
+- Save for later must not collect. Save-and-update must collect, then index only
+  after observed collection success.
+- A published but unindexed generation must remain pending.
+- Fail an action and exercise persistent feedback, retry and reconnection.
+  Reconnection validates expiry and preserves the source selection.
+- Human acceptance still covers keyboard, screen reader and native DPI. Automatic
+  100/150/200 percent renders only cover layout.

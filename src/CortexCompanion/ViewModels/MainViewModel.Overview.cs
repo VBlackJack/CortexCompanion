@@ -57,6 +57,7 @@ public sealed partial class MainViewModel
 
     private void InitializeOverview()
     {
+        ConfigureSourceExperience();
         AsyncRelayCommand collect = new(CollectSourceAsync);
         collect.ExecutionFailed += (_, _) => SourceProgress = UiStrings.FlowCollectionUnconfirmed;
         CollectSourceCommand = collect;
@@ -84,7 +85,29 @@ public sealed partial class MainViewModel
     /// <summary>Reports collection and indexing as separate observed stages.</summary>
     public string SourceProgress { get => _sourceProgress; private set => SetProperty(ref _sourceProgress, value); }
 
+    private void ConfigureSourceExperience()
+    {
+        PagesViewModel owner = Pages;
+        owner.ApplySourcesAsync = async () => { if (ReferenceEquals(owner, Pages)) { await CollectSourceAsync(); } };
+        owner.SetIndexEvidence(Sync.Freshness);
+    }
+
     private async Task CollectSourceAsync()
+    {
+        PagesViewModel owner = Pages;
+        if (owner.IsApplyingSources || Sync.IsSyncRunning) { return; }
+        SourceProgress = UiStrings.FlowCollecting;
+        owner.BeginSourceUpdate();
+        try { await CollectSourceCoreAsync(); }
+        finally
+        {
+            bool succeeded = ReferenceEquals(owner, Pages) && SourceProgress == UiStrings.FlowSearchReady;
+            owner.SetIndexEvidence(Sync.Freshness);
+            await owner.EndSourceUpdateAsync(succeeded);
+        }
+    }
+
+    private async Task CollectSourceCoreAsync()
     {
         SyncViewModel runtime = Sync;
         _sourceNavigation = true;
@@ -118,6 +141,8 @@ public sealed partial class MainViewModel
 
     private void RefreshOverview()
     {
+        Pages.SetIndexEvidence(Sync.Freshness);
+        Pages.SetRuntimeBusy(Sync.IsSyncRunning);
         OnPropertyChanged(nameof(RecommendedAction));
         OnPropertyChanged(nameof(SetupConfigurationState));
         OnPropertyChanged(nameof(SetupIndexState));

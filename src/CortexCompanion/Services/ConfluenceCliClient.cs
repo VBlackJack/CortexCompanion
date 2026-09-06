@@ -36,6 +36,14 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
     }
 
     /// <inheritdoc />
+    public Task<ConfluenceCliResult<SourceCatalogContract>> GetCatalogAsync(string spaceKey, CancellationToken cancellationToken) =>
+        RunAsync<SourceCatalogContract>(["confluence", "--config", _configPath, "catalog", spaceKey, "--json"], cancellationToken);
+
+    /// <inheritdoc />
+    public Task<ConfluenceCliResult<SourceStatusContract>> GetSourceStatusAsync(CancellationToken cancellationToken) =>
+        RunAsync<SourceStatusContract>(["confluence", "--config", _configPath, "source-status", "--json"], cancellationToken);
+
+    /// <inheritdoc />
     public Task<ConfluenceCliResult<PagesContract>> GetPagesAsync(CancellationToken cancellationToken) =>
         RunAsync<PagesContract>(["confluence", "--config", _configPath, "pages", "--json"], cancellationToken);
 
@@ -117,6 +125,12 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
 
     private static bool HasValidContract<T>(T value) => value switch
     {
+        SourceStatusContract status => status.ContractVersion == 1 && status.Status is null or "ok" or "degraded" or "error",
+        SourceCatalogContract catalog => catalog.ContractVersion == 1 && !string.IsNullOrWhiteSpace(catalog.SpaceKey) &&
+            catalog.Pages is not null && catalog.Pages.All(page => page is not null && !string.IsNullOrWhiteSpace(page.Title) &&
+                IsNumeric(page.PageId) && page.AncestorIds is not null && page.AncestorIds.All(IsNumeric) &&
+                !page.AncestorIds.Contains(page.PageId) && page.AncestorIds.Distinct().Count() == page.AncestorIds.Count) &&
+            catalog.Pages.Select(page => page.PageId).Distinct().Count() == catalog.Pages.Count,
         PagesContract pages => pages.ContractVersion == 2 && pages.Spaces is not null && pages.LastSync is not null &&
             pages.Spaces.All(space =>
                 space.SpaceKey is not null && space.Target is not null &&
@@ -136,6 +150,8 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             HasValidChoice(preview.WholeSpace),
         _ => false,
     };
+
+    private static bool IsNumeric(string? value) => !string.IsNullOrEmpty(value) && value.All(char.IsAsciiDigit);
 
     private static bool HasValidChoice(ScopeChoiceContract choice) =>
         choice is not null && choice.PageCount >= 0 && choice.EstimatedBytes >= 0;

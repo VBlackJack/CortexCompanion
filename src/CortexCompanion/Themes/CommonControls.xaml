@@ -47,6 +47,7 @@
     <Thickness x:Key="MarginLabelBottom">0,0,0,4</Thickness>
     <Thickness x:Key="MarginSectionSeparator">0,0,0,16</Thickness>
     <Thickness x:Key="MarginNone">0</Thickness>
+    <Thickness x:Key="BorderNone">0</Thickness>
     <Thickness x:Key="MarginCardBottom">0,0,0,16</Thickness>
     <Thickness x:Key="MarginChoiceBottom">0,0,0,12</Thickness>
     <Thickness x:Key="MarginBlockAbove">0,16,0,8</Thickness>

@@ -244,6 +244,7 @@ public sealed partial class MainViewModel : ViewModelBase
         }
 
         Sync = runtime.Sync;
+        ConfigureSourceExperience();
         Scheduling = runtime.Scheduling;
         IsReadOnly = runtime.Handshake.IsReadOnly;
         HandshakeStatusText = CliHandshakePresenter.Format(runtime.Handshake);

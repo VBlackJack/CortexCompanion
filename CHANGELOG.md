@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+## [2026.0906.02] - 2026-09-06
+
+- Put My sources first, add source/title filtering and searchable remote page trees.
+- Show conservative publication/index readiness and effective before/after document
+  differences, with explicit unavailable measurements.
+- Add save-and-update, save-for-later, CAS-protected session removal undo and
+  persistent recovery actions, including expiry validation during reconnection.
+
+- Visible My sources cards with a prefilled selection editor, explicit common
+  scope, confirmed page/space removal and browser links to original content.
+- Best-effort remaining subtree coverage check before individual root removal.
+- Collect/index follow-up for saved changes and a useful route for already covered pages.
+- Preserve the distinction between a missing allowlist and an explicitly emptied
+  allowlist, including last-source removal. Requires the paired Cortex change.
+
 ## [2026.0906.01] - 2026-09-06
 
 ### Added

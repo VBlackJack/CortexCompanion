@@ -236,8 +236,49 @@ public sealed class PagesViewModelTests
         Assert.Contains("page absente.", viewModel.StateMessage);
     }
 
+    [TestMethod]
+    public async Task SourceReadinessRequiresBothSelectionAndMatchingIndexEvidence()
+    {
+        using TemporaryDirectory temporary = new();
+        string configPath = Path.Combine(temporary.Path, "confluence.toml");
+        await File.WriteAllTextAsync(configPath, "schema_version = 2\n");
+        StubCliClient client = new() { SourceStatus = new SourceStatusContract { ContractVersion = 1, SelectionCurrent = true, GenerationId = "new", Status = "ok" } };
+        PagesViewModel model = new(client, new PagesMutationService(client, new StubConfigStore(), new RejectingConfirmationService()), null, null,
+            new ConfluenceConfigPathResolution(configPath, ConfluenceConfigPathOrigin.Default, "APPDATA"), []);
+        await model.InitializeAsync(false);
+        model.SetIndexEvidence(new IndexFreshness("new", "old", "today", UiStrings.FreshnessPending) { LatestLocalRunSucceeded = true });
+        Assert.AreEqual(UiStrings.SourcesPending, model.SourceReadiness);
+        model.SetIndexEvidence(new IndexFreshness("new", "new", "today", UiStrings.FreshnessCurrent) { LatestLocalRunSucceeded = true });
+        Assert.AreEqual(UiStrings.SourcesAvailable, model.SourceReadiness);
+        model.BeginSourceUpdate();
+        Assert.AreEqual(UiStrings.SourcesUpdating, model.SourceReadiness);
+        Assert.IsFalse(model.CanMutate);
+        await model.EndSourceUpdateAsync(false);
+        Assert.AreEqual(UiStrings.SourcesAttention, model.SourceReadiness);
+        client.SourceStatus = client.SourceStatus with { SelectionCurrent = false };
+        await model.EndSourceUpdateAsync(true);
+        Assert.AreNotEqual(UiStrings.SourcesAvailable, model.SourceReadiness);
+    }
+
+    [TestMethod]
+    public void SourceFilteringMatchesPageTitlesWithoutChangingSources()
+    {
+        PagesViewModel model = new(null, null, null, null, null, []);
+        model.Spaces.Add(new ConfiguredSpaceViewModel("DOC", "doc", "pro-confidentiel", ConfluenceSelection.Pages,
+            [new ConfiguredPageViewModel("DOC", "1", "Windows installation", null)]));
+        model.SourceSearch = "windows";
+        Assert.HasCount(1, model.VisibleSpaces);
+        model.SourceSearch = "missing";
+        Assert.IsTrue(model.NoMatchingSources);
+        Assert.HasCount(1, model.Spaces);
+    }
+
     private sealed class StubCliClient : IConfluenceCliClient
     {
+        public SourceStatusContract? SourceStatus { get; set; }
+        public Task<ConfluenceCliResult<SourceStatusContract>> GetSourceStatusAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(new ConfluenceCliResult<SourceStatusContract>(SourceStatus is null ? CortexExitCode.Error : CortexExitCode.Ok, SourceStatus, string.Empty, false, null));
+
         public ConfluenceCliResult<PagesContract>? PagesResult { get; init; }
 
         public CortexExitCode PreviewExitCode { get; init; } = CortexExitCode.Ok;

@@ -8,18 +8,21 @@ using CortexCompanion.Models;
 namespace CortexCompanion.Services;
 
 /// <summary>Coordinates resolve-first, confirmed, exact-byte CAS mutations for the Pages screen.</summary>
-public sealed class PagesMutationService
+public sealed partial class PagesMutationService
 {
     private readonly IConfluenceCliClient _cliClient;
     private readonly IConfluenceConfigStore _configStore;
     private readonly IPageMutationConfirmationService _confirmations;
+    private readonly Func<string, IConfluenceCliClient>? _candidateClient;
 
     /// <summary>Initializes the mutation workflow with mockable process, storage, and confirmation boundaries.</summary>
     public PagesMutationService(
         IConfluenceCliClient cliClient,
         IConfluenceConfigStore configStore,
-        IPageMutationConfirmationService confirmations)
+        IPageMutationConfirmationService confirmations,
+        Func<string, IConfluenceCliClient>? candidateClient = null)
     {
+        _candidateClient = candidateClient;
         _cliClient = cliClient ?? throw new ArgumentNullException(nameof(cliClient));
         _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
         _confirmations = confirmations ?? throw new ArgumentNullException(nameof(confirmations));
@@ -198,12 +201,10 @@ public sealed class PagesMutationService
             throw new PageMutationRejectedException(UiStrings.PagesRejectPageNotConfigured);
         }
 
-        if (!_confirmations.ConfirmRemove(spaceKey, pageId, title))
-        {
-            return false;
-        }
-
-        if (space.PageIds.Count == 1 && !_confirmations.ConfirmKeepEmptySpace(spaceKey))
+        bool? stillCovered = space.Selection == ConfluenceSelection.Subtree && space.PageIds.Count > 1
+            ? await CheckRemainingCoverageAsync(snapshot.Configuration, space, pageId, cancellationToken)
+            : false;
+        if (!_confirmations.ConfirmRemoveWithCoverage(spaceKey, pageId, title, stillCovered))
         {
             return false;
         }
@@ -212,10 +213,13 @@ public sealed class PagesMutationService
         {
             PageIds = space.PageIds.Where(candidate => candidate != pageId).ToArray(),
         };
-        await WriteOrRefreshAsync(
-            snapshot.Configuration.ReplaceSpace(replacement),
+        ConfluenceConfigSnapshot saved = await WriteOrRefreshAsync(
+            replacement.PageIds.Count == 0
+                ? snapshot.Configuration.RemoveSpace(spaceKey)
+                : snapshot.Configuration.ReplaceSpace(replacement),
             snapshot.ContentHash,
             cancellationToken);
+        _removalUndo = new(snapshot.Configuration, saved.ContentHash);
         return true;
     }
 
@@ -286,14 +290,14 @@ public sealed class PagesMutationService
         return true;
     }
 
-    private async Task WriteOrRefreshAsync(
+    private async Task<ConfluenceConfigSnapshot> WriteOrRefreshAsync(
         ConfluenceConfiguration configuration,
         string expectedHash,
         CancellationToken cancellationToken)
     {
         try
         {
-            await _configStore.WriteAsync(configuration, expectedHash, cancellationToken);
+            return await _configStore.WriteAsync(configuration, expectedHash, cancellationToken);
         }
         catch (ConfluenceConfigConflictException exception)
         {

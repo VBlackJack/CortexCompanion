@@ -75,7 +75,9 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             PagesMutationService mutations = new(
                 cliClient,
                 configStore,
-                new PageMutationConfirmationService());
+                new PageMutationConfirmationService(),
+                previewPath => new ConfluenceCliClient(_processRunner, cliValidation.AbsolutePath,
+                    previewPath, settings.EffectiveCliTimeout));
             string? consoleOverride = overrides
                 .SingleOrDefault(item => string.Equals(
                     item.FieldName,

@@ -14,6 +14,9 @@ public sealed class ConfluenceSourceService(
     Func<string, IConfluenceCliClient> previewClient,
     IPageMutationConfirmationService confirmations)
 {
+    /// <summary>Gets the explicit apply choice after the last successful save.</summary>
+    public bool LastSaveRequestsUpdate { get; private set; }
+
     /// <summary>Adds the measured selection atomically; cancellation leaves no empty allowlist entry.</summary>
     public async Task<bool> AddAsync(ConfluenceSetupRequest request, bool readOnly, CancellationToken token)
     {
@@ -109,6 +112,7 @@ public sealed class ConfluenceSourceService(
         };
         await store.WriteAsync(candidate.MigrateToSchema(selection == ConfluenceSelection.Subtree ? 3 : 2)
             .ReplaceSpace(selected), snapshot?.ContentHash, token);
+        LastSaveRequestsUpdate = confirmations.SaveRequestsUpdate;
         return true;
     }
 }

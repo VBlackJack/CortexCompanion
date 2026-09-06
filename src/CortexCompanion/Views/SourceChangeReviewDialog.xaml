@@ -1,0 +1,30 @@
+<!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
+<Window x:Class="CortexCompanion.Views.SourceChangeReviewDialog"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:localization="clr-namespace:CortexCompanion.Localization"
+ Width="{StaticResource ScopeDialogWidth}" Height="{StaticResource ScopeDialogMaxHeight}" WindowStartupLocation="CenterOwner"
+ Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+ FontFamily="{StaticResource AppFontFamily}" FontSize="{StaticResource FontSizeBody}" Title="{x:Static localization:UiStrings.SourcesReview}">
+ <Grid Margin="{StaticResource SpacingXl}">
+  <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+   <StackPanel>
+    <TextBlock x:Name="Summary" TextWrapping="Wrap" FontWeight="SemiBold" Margin="{StaticResource MarginSectionBottom}"/>
+    <TextBlock x:Name="Coverage" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+    <TextBlock Text="{x:Static localization:UiStrings.SourcesAddedRoots}" FontWeight="SemiBold"/>
+    <ItemsControl x:Name="AddedRoots"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+    <TextBlock Text="{x:Static localization:UiStrings.SourcesRemovedRoots}" FontWeight="SemiBold"/>
+    <ItemsControl x:Name="RemovedRoots"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+    <TextBlock x:Name="AddedHeading" FontWeight="SemiBold"/>
+    <ItemsControl x:Name="AddedPages"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+    <TextBlock x:Name="RemovedHeading" FontWeight="SemiBold" Margin="{StaticResource MarginSectionTop}"/>
+    <ItemsControl x:Name="RemovedPages"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+    <TextBlock Text="{x:Static localization:UiStrings.ManageConsequences}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionTop}"/>
+   </StackPanel>
+  </ScrollViewer>
+  <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="{StaticResource MarginSectionTop}">
+   <Button Content="{x:Static localization:UiStrings.ManageCancel}" AutomationProperties.Name="{x:Static localization:UiStrings.ManageCancel}" IsCancel="True" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+   <Button Content="{x:Static localization:UiStrings.SourcesConfirm}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesConfirm}" Click="ConfirmClick" IsDefault="True" Style="{StaticResource PrimaryButtonStyle}"/>
+  </WrapPanel>
+ </Grid>
+</Window>

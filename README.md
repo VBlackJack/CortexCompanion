@@ -6,6 +6,37 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
+## Manage Confluence sources (2026.0906.02)
+
+**Mes sources** appears first. Search by space or page title, open the original
+in Confluence, or select **Modifier la selection**. **Ajouter une source** opens
+the link form when needed.
+
+The editor preserves selected roots. **Charger les pages de cet espace** loads
+a searchable remote tree and identifies pages implicitly covered by a selected
+ancestor. Scope is shared by all roots in the space. The catalogue is bounded
+to 10,000 pages; partial reads are never presented as complete. Failed loading
+preserves the selection draft.
+
+The review distinguishes changed roots from effectively added/removed documents,
+including descendants and overlapping subtrees. Unavailable measurements are
+explicitly labelled. **Enregistrer et mettre a jour** collects all sources and
+indexes only after success. **Enregistrer pour plus tard** only saves selection.
+
+Cards show pending, updating, available, action required, or unverified status.
+Readiness is conservative for the shared source generation: both published
+selection and indexed generation identity must match. Collection success alone
+never implies that search is current.
+
+**Retirer de Cortex** never deletes remote originals. The last removal in the
+session can be undone only if no configuration byte has changed; applying again
+may be required after restoration. Persistent error feedback offers retry,
+Confluence reconnection and detailed results. Reconnection validates expiry and
+resumes the failed action without adding duplicate sources.
+
+Cortex and Companion 2026.0906.02 or newer are both required. WPF smoke and automated tests do not replace testing
+with a person discovering Cortex.
+
 ## Overview and getting started
 
 This experience is available in the paired Cortex and Companion 2026.0906.01 release.
@@ -62,7 +93,7 @@ remaining manual acceptance scenarios.
 7. Select **Collecter maintenant**. Companion collects all configured Confluence
    sources, then indexes only after confirmed collection success. Follow the
    resulting status and use **Rechercher un document** when indexing is current.
-8. Existing sources and advanced converter options remain in collapsed sections.
+8. Existing sources are visible in **Mes sources**. Advanced converter options remain collapsed.
    The combined installer supplies the converter; no manual path is needed.
    Independent collection and indexing actions remain available in **Base locale**.
 

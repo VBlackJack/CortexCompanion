@@ -14,7 +14,8 @@ public sealed record ConfluenceConfiguration(
     string? ConsolePath,
     int MaxAttachmentSizeMb,
     double FailureThreshold,
-    IReadOnlyList<ConfluenceSpaceConfiguration> Spaces)
+    IReadOnlyList<ConfluenceSpaceConfiguration> Spaces,
+    bool HasExplicitSpaceList = true)
 {
     /// <summary>Creates schema v2 while preserving every schema v1 space as whole-space collection.</summary>
     public ConfluenceConfiguration MigrateToVersionTwo() => MigrateToSchema(2);
@@ -55,7 +56,7 @@ public sealed record ConfluenceConfiguration(
             throw new ArgumentException("The space is already allowlisted.", nameof(space));
         }
 
-        return this with { Spaces = Spaces.Append(space).ToArray() };
+        return this with { Spaces = Spaces.Append(space).ToArray(), HasExplicitSpaceList = true };
     }
 
     /// <summary>Removes one allowlisted space, so an incomplete gesture leaves no trace.</summary>
@@ -70,7 +71,7 @@ public sealed record ConfluenceConfiguration(
             throw new ArgumentException("The space is not allowlisted.", nameof(spaceKey));
         }
 
-        return this with { Spaces = remaining };
+        return this with { Spaces = remaining, HasExplicitSpaceList = true };
     }
 
     /// <summary>Replaces one space without changing any unrelated configuration value.</summary>
@@ -110,7 +111,8 @@ public sealed record ConfluenceConfiguration(
             !string.Equals(ConsolePath, other.ConsolePath, StringComparison.Ordinal) ||
             MaxAttachmentSizeMb != other.MaxAttachmentSizeMb ||
             !FailureThreshold.Equals(other.FailureThreshold) ||
-            Spaces.Count != other.Spaces.Count)
+            Spaces.Count != other.Spaces.Count ||
+            (SchemaVersion >= 2 && Spaces.Count == 0 && HasExplicitSpaceList != other.HasExplicitSpaceList))
         {
             return false;
         }

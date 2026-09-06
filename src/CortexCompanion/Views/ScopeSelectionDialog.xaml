@@ -69,7 +69,7 @@
                 Margin="{StaticResource MarginSectionTop}">
             <TextBlock x:Name="StorageDetails" TextWrapping="Wrap" />
         </Border>
-        <StackPanel Grid.Row="3"
+        <WrapPanel Grid.Row="3"
                     Margin="{StaticResource MarginSectionTop}"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
@@ -77,11 +77,12 @@
                     IsCancel="True"
                     Style="{StaticResource SecondaryButtonStyle}"
                     Margin="{StaticResource MarginInlineSm}" />
+            <Button Content="{x:Static localization:UiStrings.SourcesSaveLater}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesSaveLater}" Click="SaveLaterClick" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
             <Button x:Name="AddSelectionButton"
                     AutomationProperties.Name="{x:Static localization:UiStrings.FlowInspect}"
                     Click="ConfirmClick"
                     IsDefault="True"
                     Style="{StaticResource PrimaryButtonStyle}" />
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </Window>

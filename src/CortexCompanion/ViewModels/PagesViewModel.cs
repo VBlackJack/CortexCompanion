@@ -87,12 +87,15 @@ public sealed partial class PagesViewModel : ViewModelBase
         _expandSubtreeCommand = new AsyncRelayCommand<ConfiguredSpaceViewModel>(
             ExpandSubtreeAsync,
             space => CanMutate && space?.HasScopeWarning == true);
-        _removeCommand = new AsyncRelayCommand<ConfiguredPageViewModel>(RemoveAsync, _ => CanMutate);
+        _removeCommand = new AsyncRelayCommand<ConfiguredPageViewModel>(RemoveAsync, _ => CanMutate && !HasOverrides);
         _addSpaceCommand = new AsyncRelayCommand(AddSpaceAsync, () => CanAddSpace);
+        InitializeSourceExperience();
+        InitializeManagementCommands();
         _sourceService = sourceService;
         _inspectSourceCommand = new AsyncRelayCommand(InspectSourceAsync, () =>
-            _sourceService is not null && !IsReadOnly && !IsBusy && !string.IsNullOrWhiteSpace(SourceUrl));
-        _inspectSourceCommand.ExecutionFailed += (_, _) => StateMessage = UiStrings.FlowUnexpectedFailure;
+            _sourceService is not null && !IsReadOnly && !IsBusy && !IsApplyingSources && !string.IsNullOrWhiteSpace(SourceUrl));
+        _inspectSourceCommand.ExecutionFailed += (_, _) => SetSourceError(UiStrings.FlowUnexpectedFailure);
+        _refreshCommand.ExecutionFailed += (_, _) => { _retryAction = RefreshAsync; SetSourceError(UiStrings.FlowUnexpectedFailure); };
     }
 
     /// <summary>Gets the current spaces projection.</summary>
@@ -276,7 +279,7 @@ public sealed partial class PagesViewModel : ViewModelBase
     /// <summary>Gets whether the configured mutation boundaries are currently enabled.</summary>
     public bool CanMutate =>
         _mutations is not null && HasConfluenceConfiguration &&
-        _isConfluenceConfigurationReady && !IsReadOnly && !IsBusy;
+        _isConfluenceConfigurationReady && !IsReadOnly && !IsBusy && !IsApplyingSources;
 
     /// <summary>Gets whether the novice first-run card must be shown.</summary>
     public bool NeedsConfluenceConfiguration => !HasConfluenceConfiguration;
@@ -364,6 +367,7 @@ public sealed partial class PagesViewModel : ViewModelBase
         if (!HasConfluenceConfiguration)
         {
             Spaces.Clear();
+            ShowAddSource = true;
             StateMessage = UiStrings.PagesConfigurationRequired;
             return;
         }
@@ -391,6 +395,7 @@ public sealed partial class PagesViewModel : ViewModelBase
             return;
         }
 
+        ClearSourceError();
         IsBusy = true;
         StateMessage = UiStrings.PagesLoading;
         try
@@ -398,12 +403,18 @@ public sealed partial class PagesViewModel : ViewModelBase
             ConfluenceCliResult<PagesContract> result = await _cliClient.GetPagesAsync(CancellationToken.None);
             if (!result.IsSuccess || result.Value is null)
             {
-                Spaces.Clear();
-                StateMessage = FormatCliFailure(result.ExitCode, result.StandardError, result.TimedOut, result.LaunchError);
+                _sourceStatus = null;
+                _retryAction = RefreshAsync;
+                SetSourceError(FormatCliFailure(result.ExitCode, result.StandardError, result.TimedOut, result.LaunchError));
                 return;
             }
 
             Project(result.Value);
+            ConfluenceCliResult<SourceStatusContract> status = await _cliClient.GetSourceStatusAsync(CancellationToken.None);
+            _sourceStatus = status.IsSuccess ? status.Value : null;
+            if (_sourceStatus?.SelectionCurrent == false) { SourceAdded = true; }
+            if (Spaces.Count == 0 && !SourceAdded) { ShowAddSource = true; }
+            NotifySourceState();
             StateMessage = Spaces.Count == 0 ? UiStrings.PagesNoSpaces : UiStrings.PagesReady;
         }
         finally
@@ -622,35 +633,45 @@ public sealed partial class PagesViewModel : ViewModelBase
     private Task ExpandSubtreeAsync(ConfiguredSpaceViewModel space) => RunMutationAsync(() =>
         _mutations!.ExpandToSubtreeAsync(space.SpaceKey, IsReadOnly, CancellationToken.None));
 
-    private Task RemoveAsync(ConfiguredPageViewModel page) => RunMutationAsync(() =>
-        _mutations!.RemovePageAsync(page.SpaceKey, page.PageId, page.Title, IsReadOnly, CancellationToken.None));
+    private Task RemoveAsync(ConfiguredPageViewModel page)
+    {
+        ErrorContext = page.DisplayTitle;
+        return RunMutationAsync(() => _mutations!.RemovePageAsync(page.SpaceKey, page.PageId, page.Title, IsReadOnly, CancellationToken.None));
+    }
 
     private async Task RunMutationAsync(
         Func<Task<bool>> action,
         Func<ConfluenceCliOperationException, string?>? cliFailureOverride = null)
     {
+        _retryAction = () => RunMutationAsync(action, cliFailureOverride);
+        ClearSourceError();
         IsBusy = true;
         string terminalMessage;
+        bool failed = false;
         try
         {
             bool changed = await action();
+            SourceAdded = SourceAdded || changed;
             terminalMessage = changed ? UiStrings.PagesMutationCommitted : UiStrings.PagesMutationCancelled;
         }
         catch (ConfluenceConfigRefreshRequiredException)
         {
+            failed = true;
             terminalMessage = UiStrings.PagesCasConflict;
         }
         catch (ConfluenceCliOperationException exception)
         {
+            failed = true;
             terminalMessage = cliFailureOverride?.Invoke(exception)
                 ?? FormatCliFailure(exception.ExitCode, exception.Message, false, null);
         }
-        catch (Exception exception) when (exception is PageMutationRejectedException or
+        catch (Exception exception) when (exception is ConfluenceSetupValidationException or PageMutationRejectedException or
                                           ConfluenceConfigLockedException or
                                           ConfluenceConfigMutationException or
                                           ConfluenceConfigValidationException or
                                           IOException)
         {
+            failed = true;
             terminalMessage = exception.Message;
         }
         finally
@@ -660,6 +681,8 @@ public sealed partial class PagesViewModel : ViewModelBase
 
         await RefreshAsync();
         StateMessage = terminalMessage;
+        HasSourceError = failed || HasSourceError;
+        NotifySourceState();
     }
 
     private void Project(PagesContract contract)
@@ -726,6 +749,16 @@ public sealed partial class PagesViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(CanEditSource));
         _inspectSourceCommand?.RaiseCanExecuteChanged();
+        _applyPendingSourcesCommand?.RaiseCanExecuteChanged();
+        _undoRemovalCommand?.RaiseCanExecuteChanged();
+        _retrySourceCommand?.RaiseCanExecuteChanged();
+        _showAddSourceCommand?.RaiseCanExecuteChanged();
+        _reconnectSourceCommand?.RaiseCanExecuteChanged();
+        OnPropertyChanged(nameof(CanUndoRemoval));
+        _editSelectionCommand?.RaiseCanExecuteChanged();
+        _removeSourceCommand?.RaiseCanExecuteChanged();
+        _openSourceCommand?.RaiseCanExecuteChanged();
+        _openPageCommand?.RaiseCanExecuteChanged();
         OnPropertyChanged(nameof(CanRead));
         OnPropertyChanged(nameof(CanMutate));
         OnPropertyChanged(nameof(CanInitializeConfluence));

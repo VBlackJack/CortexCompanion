@@ -61,7 +61,11 @@ public partial class ScopeSelectionDialog : Window
             ? ConfluenceSelection.Subtree
             : ConfluenceSelection.Pages;
 
-    private void ConfirmClick(object sender, RoutedEventArgs e) => DialogResult = true;
+    /// <summary>Gets whether the caller should update search after saving this scope.</summary>
+    public bool UpdateNow { get; private set; }
+
+    private void ConfirmClick(object sender, RoutedEventArgs e) { UpdateNow = true; DialogResult = true; }
+    private void SaveLaterClick(object sender, RoutedEventArgs e) { UpdateNow = false; DialogResult = true; }
 
     private void SelectionChanged(object sender, RoutedEventArgs e) => UpdateConfirmation();
 
@@ -73,7 +77,8 @@ public partial class ScopeSelectionDialog : Window
             ConfluenceSelection.Subtree => _preview.Subtree.PageCount,
             _ => _preview.PageOnly.PageCount,
         };
-        AddSelectionButton.Content = UiStrings.FormatFlowConfirmCount(count);
-        System.Windows.Automation.AutomationProperties.SetName(AddSelectionButton, UiStrings.FormatFlowConfirmCount(count));
+        AddSelectionButton.Content = UiStrings.SourcesSaveUpdate;
+        AddSelectionButton.ToolTip = UiStrings.FormatFlowConfirmCount(count);
+        System.Windows.Automation.AutomationProperties.SetName(AddSelectionButton, UiStrings.SourcesSaveUpdate);
     }
 }

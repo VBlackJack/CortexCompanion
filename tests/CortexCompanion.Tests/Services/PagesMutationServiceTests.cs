@@ -222,8 +222,7 @@ public sealed class PagesMutationServiceTests
             CancellationToken.None);
 
         Assert.IsTrue(changed);
-        Assert.IsEmpty(store.WrittenConfiguration!.Spaces[0].PageIds);
-        Assert.AreEqual(ConfluenceSelection.Subtree, store.WrittenConfiguration.Spaces[0].Selection);
+        Assert.IsEmpty(store.WrittenConfiguration!.Spaces);
     }
 
     [TestMethod]
@@ -382,7 +381,7 @@ public sealed class PagesMutationServiceTests
     }
 
     [TestMethod]
-    public async Task RemovingTheLastPageAsksBeforeLeavingTheSpaceEmpty()
+    public async Task RemovingTheLastPageRemovesItsSourceAfterConfirmation()
     {
         FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
         FakeConfirmations confirmations = new() { KeepEmptySpaceAccepted = false };
@@ -395,9 +394,204 @@ public sealed class PagesMutationServiceTests
             false,
             CancellationToken.None);
 
-        Assert.IsFalse(changed);
-        Assert.AreEqual(1, confirmations.KeepEmptySpaceCalls);
+        Assert.IsTrue(changed);
+        Assert.AreEqual(0, confirmations.KeepEmptySpaceCalls);
+        Assert.AreEqual(1, store.WriteCalls);
+        Assert.IsEmpty(store.WrittenConfiguration!.Spaces);
+    }
+
+    [TestMethod]
+    public async Task EditingPreservesOtherSettingsAndSelectedRoots()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123", "456"]));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations
+        {
+            Edit = new SourceSelectionEdit(ConfluenceSelection.Subtree, ["456"], string.Empty),
+            SelectionAccepted = true,
+        });
+        Assert.IsTrue(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.AreEqual(3, store.WrittenConfiguration!.SchemaVersion);
+        Assert.AreEqual("raw-target", store.WrittenConfiguration.CredentialTarget);
+        Assert.AreEqual("docs", store.WrittenConfiguration.Spaces[0].Target);
+        Assert.AreEqual(ConfluenceSelection.Subtree, store.WrittenConfiguration.Spaces[0].Selection);
+        Assert.AreEqual("456", store.WrittenConfiguration.Spaces[0].PageIds.Single());
+    }
+
+    [TestMethod]
+    public async Task CancelledEditorAndDeclinedReviewWriteNothing()
+    {
+        foreach (SourceSelectionEdit? edit in new SourceSelectionEdit?[] { null, new(ConfluenceSelection.WholeSpace, [], string.Empty) })
+        {
+            FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+            PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations { Edit = edit });
+            Assert.IsFalse(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+            Assert.AreEqual(0, store.WriteCalls);
+        }
+    }
+
+    [TestMethod]
+    public async Task EditorRejectsEmptySelectionAndUnknownIds()
+    {
+        foreach (string[] ids in new[] { Array.Empty<string>(), new[] { "999" } })
+        {
+            FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+            PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations
+            {
+                Edit = new SourceSelectionEdit(ConfluenceSelection.Pages, ids, string.Empty),
+                SelectionAccepted = true,
+            });
+            await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.EditSelectionAsync("DOC", false, CancellationToken.None));
+            Assert.AreEqual(0, store.WriteCalls);
+        }
+    }
+
+    [TestMethod]
+    public async Task EditorCannotOverwriteConcurrentChanges()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"])) { ConflictOnWrite = true };
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations
+        {
+            Edit = new SourceSelectionEdit(ConfluenceSelection.WholeSpace, [], string.Empty),
+            SelectionAccepted = true,
+        });
+        await Assert.ThrowsAsync<ConfluenceConfigRefreshRequiredException>(() => service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.IsNull(store.WrittenConfiguration);
+    }
+
+    [TestMethod]
+    public async Task WholeSourceRemovalRequiresConfirmationAndRoundTripsEmptyAllowlist()
+    {
+        FakeConfigStore store = new(WholeSpaceSnapshot(1));
+        PagesMutationService declined = new(new FakeCliClient(), store, new FakeConfirmations());
+        Assert.IsFalse(await declined.RemoveSourceAsync("DOC", false, CancellationToken.None));
         Assert.AreEqual(0, store.WriteCalls);
+        PagesMutationService accepted = new(new FakeCliClient(), store, new FakeConfirmations { SelectionAccepted = true });
+        Assert.IsTrue(await accepted.RemoveSourceAsync("DOC", false, CancellationToken.None));
+        byte[] rendered = ConfluenceConfigRenderer.Render(store.WrittenConfiguration!);
+        StringAssert.Contains(System.Text.Encoding.UTF8.GetString(rendered), "spaces = []");
+        Assert.IsEmpty(ConfluenceConfigParser.Parse(rendered, "fixture.toml").Spaces);
+    }
+
+    [TestMethod]
+    public async Task RemovalChecksCoverageAgainstRemainingRootsWithoutChangingTheCanonicalSnapshot()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Subtree, ["123", "456"], 3));
+        FakeConfirmations confirmations = new();
+        string? candidatePath = null;
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations, path =>
+        {
+            candidatePath = path;
+            ConfluenceConfiguration candidate = ConfluenceConfigParser.Parse(File.ReadAllBytes(path), path);
+            Assert.AreEqual("456", candidate.Spaces[0].PageIds.Single());
+            Assert.AreEqual(0, store.WriteCalls);
+            return new FakeCliClient
+            {
+                ResolveResult = Success(new ResolvedPageContract
+                {
+                    ContractVersion = 1,
+                    PageId = "123",
+                    Title = "Child",
+                    SpaceKey = "DOC",
+                    Configured = true,
+                }),
+            };
+        });
+        Assert.IsTrue(await service.RemovePageAsync("DOC", "123", "Child", false, CancellationToken.None));
+        Assert.IsTrue(confirmations.ObservedCoverage);
+        Assert.IsNotNull(candidatePath);
+        Assert.IsFalse(File.Exists(candidatePath));
+        Assert.AreEqual("456", store.WrittenConfiguration!.Spaces[0].PageIds.Single());
+    }
+
+    [TestMethod]
+    public async Task NewSourceManagementCommandsRespectReadOnly()
+    {
+        FakeConfigStore store = new(WholeSpaceSnapshot(2));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations { SelectionAccepted = true });
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.EditSelectionAsync("DOC", true, CancellationToken.None));
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.RemoveSourceAsync("DOC", true, CancellationToken.None));
+        Assert.AreEqual(0, store.ReadCalls);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public async Task EditorRejectsForeignServerBeforeResolving()
+    {
+        FakeConfigStore store = new(WholeSpaceSnapshot(2));
+        FakeCliClient client = new();
+        PagesMutationService service = new(client, store, new FakeConfirmations
+        {
+            Edit = new SourceSelectionEdit(ConfluenceSelection.Pages, [], "https://foreign.example.test/spaces/DOC/pages/123/Test"),
+            SelectionAccepted = true,
+        });
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.AreEqual(0, client.ResolveCalls);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
+    [TestMethod]
+    public void MissingAllowlistIsNotTurnedIntoAnExplicitPurgeByRenderingOrMigration()
+    {
+        byte[] raw = System.Text.Encoding.UTF8.GetBytes("schema_version = 2\ncredential_target = \"test\"\n");
+        ConfluenceConfiguration parsed = ConfluenceConfigParser.Parse(raw, "fixture.toml");
+        Assert.IsFalse(parsed.HasExplicitSpaceList);
+        string rendered = System.Text.Encoding.UTF8.GetString(ConfluenceConfigRenderer.Render(parsed.MigrateToSchema(3)));
+        Assert.IsFalse(rendered.Contains("spaces = []", StringComparison.Ordinal));
+        Assert.IsFalse(parsed.SemanticallyEquals(parsed with { HasExplicitSpaceList = true }));
+    }
+
+    [TestMethod]
+    public async Task UndoRemovalRestoresOnlyTheExactCommittedState()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"])) { ReflectWrites = true, ReturnedHash = new string('b', 64) };
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations { SelectionAccepted = true });
+        Assert.IsTrue(await service.RemoveSourceAsync("DOC", false, CancellationToken.None));
+        Assert.IsTrue(service.CanUndoRemoval);
+        Assert.IsTrue(await service.UndoRemovalAsync(false, CancellationToken.None));
+        Assert.AreEqual("123", store.WrittenConfiguration!.Spaces.Single().PageIds.Single());
+        Assert.IsFalse(service.CanUndoRemoval);
+        Assert.AreEqual(new string('b', 64), store.LastExpectedHash);
+    }
+
+    [TestMethod]
+    public async Task UndoRemovalRejectsConcurrentModification()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations { SelectionAccepted = true });
+        await service.RemoveSourceAsync("DOC", false, CancellationToken.None);
+        store.ConflictOnWrite = true;
+        await Assert.ThrowsAsync<ConfluenceConfigRefreshRequiredException>(() => service.UndoRemovalAsync(false, CancellationToken.None));
+        Assert.IsEmpty(store.WrittenConfiguration!.Spaces);
+        Assert.IsFalse(service.CanUndoRemoval);
+    }
+
+    [TestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task EditorExposesApplyChoiceOnlyAfterSuccessfulCommit(bool updateNow)
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations
+        {
+            SelectionAccepted = true,
+            Edit = new SourceSelectionEdit(ConfluenceSelection.Subtree, ["123"], string.Empty, updateNow),
+        });
+        Assert.IsTrue(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.AreEqual(updateNow, service.LastSaveRequestsUpdate);
+    }
+
+    [TestMethod]
+    public async Task ReconnectionChangesOnlyExpiryAndHonorsReadOnly()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+        PagesMutationService service = new(new FakeCliClient(), store, new FakeConfirmations());
+        DateTimeOffset expiry = new(2099, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.UpdateCredentialExpiryAsync(expiry, true, CancellationToken.None));
+        Assert.AreEqual(0, store.WriteCalls);
+        Assert.IsTrue(await service.UpdateCredentialExpiryAsync(expiry, false, CancellationToken.None));
+        Assert.AreEqual(expiry, store.WrittenConfiguration!.AuthExpiresAt);
+        Assert.AreEqual("raw-target", store.WrittenConfiguration.CredentialTarget);
+        Assert.AreEqual("123", store.WrittenConfiguration.Spaces.Single().PageIds.Single());
     }
 
     private static FakeCliClient AnssiwsCliClient() => new()
@@ -560,7 +754,9 @@ public sealed class PagesMutationServiceTests
         public int ResolveCalls { get; private set; }
 
         public Task<ConfluenceCliResult<PagesContract>> GetPagesAsync(CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
+            Task.FromResult(new ConfluenceCliResult<PagesContract>(CortexExitCode.Ok,
+                new PagesContract { ContractVersion = 1, Spaces = [], LastSync = new LastSyncContract() },
+                string.Empty, false, null));
 
         public Task<ConfluenceCliResult<ResolvedPageContract>> ResolveAsync(
             string reference,
@@ -602,7 +798,9 @@ public sealed class PagesMutationServiceTests
 
     private sealed class FakeConfigStore(ConfluenceConfigSnapshot snapshot) : IConfluenceConfigStore
     {
-        public bool ConflictOnWrite { get; init; }
+        public string? ReturnedHash { get; init; }
+        public string? LastExpectedHash { get; private set; }
+        public bool ConflictOnWrite { get; set; }
 
         public bool ReflectWrites { get; init; }
 
@@ -634,6 +832,7 @@ public sealed class PagesMutationServiceTests
             CancellationToken cancellationToken)
         {
             WriteCalls++;
+            LastExpectedHash = expectedHash;
             if (ConflictOnWrite)
             {
                 throw new ConfluenceConfigConflictException(
@@ -641,12 +840,24 @@ public sealed class PagesMutationServiceTests
             }
 
             WrittenConfiguration = configuration;
-            return Task.FromResult(new ConfluenceConfigSnapshot([], expectedHash ?? new string('0', 64), configuration));
+            return Task.FromResult(new ConfluenceConfigSnapshot([], ReturnedHash ?? expectedHash ?? new string('0', 64), configuration));
         }
     }
 
     private sealed class FakeConfirmations : IPageMutationConfirmationService
     {
+        public SourceSelectionEdit? Edit { get; init; }
+        public bool SelectionAccepted { get; init; }
+        public bool? ObservedCoverage { get; private set; }
+        public bool ConfirmRemoveWithCoverage(string spaceKey, string pageId, string? title, bool? stillCovered)
+        {
+            ObservedCoverage = stillCovered;
+            return ConfirmRemove(spaceKey, pageId, title);
+        }
+        public SourceSelectionEdit? EditSelection(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages) => Edit;
+        public bool ConfirmSelection(ConfluenceSpaceConfiguration before, ConfluenceSpaceConfiguration after) => SelectionAccepted;
+        public bool ConfirmRemoveSource(string spaceKey) => SelectionAccepted;
+
         public bool AddAccepted { get; init; }
 
         public ConfluenceSelection SelectedScope { get; init; } = ConfluenceSelection.Pages;

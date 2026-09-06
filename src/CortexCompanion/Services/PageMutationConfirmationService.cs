@@ -13,6 +13,57 @@ namespace CortexCompanion.Services;
 public sealed class PageMutationConfirmationService : IPageMutationConfirmationService
 {
     /// <inheritdoc />
+    public bool SaveRequestsUpdate { get; private set; }
+
+    /// <inheritdoc />
+    public SourceSelectionEdit? EditSelectionWithCatalog(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages,
+        Func<Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog)
+    {
+        SourceSelectionDialog dialog = new(space, pages, loadCatalog) { Owner = Application.Current.MainWindow };
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog()) ? dialog.SelectionEdit : null;
+    }
+
+    /// <inheritdoc />
+    public bool ConfirmSelectionReview(SourceChangeReview review)
+    {
+        SourceChangeReviewDialog dialog = new(review) { Owner = Application.Current.MainWindow };
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
+
+    /// <inheritdoc />
+    public SourceSelectionEdit? EditSelection(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages)
+    {
+        SourceSelectionDialog dialog = new(space, pages) { Owner = Application.Current.MainWindow };
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog()) ? dialog.SelectionEdit : null;
+    }
+
+    /// <inheritdoc />
+    public bool ConfirmSelection(ConfluenceSpaceConfiguration before, ConfluenceSpaceConfiguration after)
+    {
+        string message = before.SpaceKey + "\n\n" + UiStrings.ManageBefore + " " + Describe(before) +
+            "\n" + UiStrings.ManageAfter + " " + Describe(after) + "\n\n" + UiStrings.ManageConsequences;
+        ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(UiStrings.ManageReviewTitle, message, false);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
+
+    /// <inheritdoc />
+    public bool ConfirmRemoveSource(string spaceKey)
+    {
+        ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(UiStrings.ManageRemove,
+            spaceKey + "\n\n" + UiStrings.ManageRemoveHelp, true);
+        dialog.Owner = Application.Current.MainWindow;
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+    }
+
+    private static string Describe(ConfluenceSpaceConfiguration space) => space.Selection switch
+    {
+        ConfluenceSelection.WholeSpace => UiStrings.ManageWhole,
+        ConfluenceSelection.Subtree => UiStrings.ManageSubtree + " (" + space.PageIds.Count + ")",
+        _ => UiStrings.ManagePages + " (" + space.PageIds.Count + ")",
+    };
+
+    /// <inheritdoc />
     public bool ConfirmAdd(ResolvedPageContract page)
     {
         ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(
@@ -30,9 +81,9 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
         {
             Owner = Application.Current.MainWindow,
         };
-        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog())
-            ? dialog.SelectedSelection
-            : null;
+        bool confirmed = ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
+        SaveRequestsUpdate = confirmed && dialog.UpdateNow;
+        return confirmed ? dialog.SelectedSelection : null;
     }
 
     /// <inheritdoc />
@@ -58,11 +109,16 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
     }
 
     /// <inheritdoc />
-    public bool ConfirmRemove(string spaceKey, string pageId, string? title)
+    public bool ConfirmRemove(string spaceKey, string pageId, string? title) =>
+        ConfirmRemoveWithCoverage(spaceKey, pageId, title, null);
+
+    /// <inheritdoc />
+    public bool ConfirmRemoveWithCoverage(string spaceKey, string pageId, string? title, bool? stillCovered)
     {
         ConfirmationDialog dialog = ConfirmationDialog.CreateSimple(
             UiStrings.ConfirmRemoveTitle,
-            UiStrings.FormatConfirmRemove(pageId, spaceKey),
+            (title ?? UiStrings.PageTitleUnknown) + " (" + pageId + ") - " + spaceKey + "\n\n" + UiStrings.ManageRemoveHelp +
+                (stillCovered == true ? "\n\n" + UiStrings.ManageStillCovered : stillCovered is null ? "\n\n" + UiStrings.ManageCoverageUnknown : string.Empty),
             true);
         dialog.Owner = Application.Current.MainWindow;
         return ConfirmationDialog.IsConfirmed(dialog.ShowDialog());

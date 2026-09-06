@@ -92,7 +92,8 @@ public sealed partial class ConfluenceConfigParser
                 consolePath,
                 maxAttachmentSize,
                 failureThreshold,
-                spaces);
+                spaces,
+                root.ContainsKey("spaces"));
         }
         catch (DecoderFallbackException exception)
         {
@@ -110,6 +111,11 @@ public sealed partial class ConfluenceConfigParser
         string sourcePath)
     {
         if (!root.TryGetValue("spaces", out object? rawSpaces))
+        {
+            return Array.Empty<ConfluenceSpaceConfiguration>();
+        }
+
+        if (rawSpaces is TomlArray { Count: 0 })
         {
             return Array.Empty<ConfluenceSpaceConfiguration>();
         }
