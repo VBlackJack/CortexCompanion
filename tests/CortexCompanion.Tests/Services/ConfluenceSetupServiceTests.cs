@@ -32,6 +32,9 @@ public sealed class ConfluenceSetupServiceTests
     }
 
     [TestMethod]
+    [DataRow("https://kazan.example.test/spaces/DOC/overview", "https://kazan.example.test", "DOC")]
+    [DataRow("https://kazan.example.test/wiki/display/DOC", "https://kazan.example.test/wiki", "DOC")]
+    [DataRow("https://kazan.example.test/spaces/DOC", "https://kazan.example.test", "DOC")]
     [DataRow(
         "https://kazan.example.test/spaces/DOC/pages/1001/Run+Book",
         "https://kazan.example.test",
@@ -65,7 +68,6 @@ public sealed class ConfluenceSetupServiceTests
 
     [TestMethod]
     [DataRow("https://user@kazan.example.test/spaces/DOC/pages/1001")]
-    [DataRow("https://kazan.example.test/spaces/DOC/overview")]
     [DataRow("https://kazan.example.test/wiki")]
     [DataRow("not-a-url")]
     public void AnalyzeRejectsUnsafeOrUnsupportedReferences(string pageUrl)

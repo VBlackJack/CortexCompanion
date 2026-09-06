@@ -1,8 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [2026.0906.01] - 2026-09-06
 
 ### Added
+
+- Single page-or-space link flow with inline credential recovery, measured scope
+  confirmation, isolated preview settings and one atomic source write. Cancellation
+  and authentication errors leave configured sources unchanged.
+- Guided collection followed by indexing only after an observed successful run,
+  with separate progress and search navigation.
 
 - Home overview with observed indexing and collection times, next scheduled run,
   current activity, and a contextual next action.

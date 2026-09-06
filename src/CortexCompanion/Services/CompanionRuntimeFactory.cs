@@ -93,7 +93,11 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
                 setup,
                 _fileDialogs,
                 configPath,
-                overrides);
+                overrides,
+                new ConfluenceSourceService(configStore, setup,
+                    previewPath => new ConfluenceCliClient(_processRunner, cliValidation.AbsolutePath,
+                        previewPath, settings.EffectiveCliTimeout),
+                    new PageMutationConfirmationService()));
         }
         else
         {

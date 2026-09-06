@@ -126,14 +126,14 @@ public sealed partial class SettingsUxContractTests
             .Descendants()
             .Single(element =>
                 element.Name.LocalName == "TextBox" &&
-                element.Attribute("Text")?.Value.Contains("PageReference", StringComparison.Ordinal) == true);
+                element.Attribute("Text")?.Value.Contains("SourceUrl", StringComparison.Ordinal) == true);
 
         Assert.AreEqual(
-            "{Binding ElementName=PageReferenceLabel}",
+            "{Binding ElementName=SourceUrlLabel}",
             pageReference.Attribute("AutomationProperties.LabeledBy")?.Value);
         Assert.IsNotNull(pagesDocument
             .Descendants()
-            .SingleOrDefault(element => element.Attribute(xaml + "Name")?.Value == "PageReferenceLabel"));
+            .SingleOrDefault(element => element.Attribute(xaml + "Name")?.Value == "SourceUrlLabel"));
 
         XDocument syncDocument = XDocument.Load(Path.Combine(viewsDirectory, "SyncView.xaml"));
         Dictionary<string, string> expectedLabels = new(StringComparer.Ordinal)
@@ -163,7 +163,7 @@ public sealed partial class SettingsUxContractTests
     }
 
     [TestMethod]
-    public void ConfluenceFirstRunCardIsMutuallyExclusiveAndAccessible()
+    public void ConfluenceUsesOneAccessibleLinkFormWithInlineCredentials()
     {
         XDocument document = XDocument.Load(Path.Combine(
             FindRepositoryRoot(),
@@ -171,29 +171,13 @@ public sealed partial class SettingsUxContractTests
             "CortexCompanion",
             "Views",
             "PagesView.xaml"));
-        XElement setupCard = document
-            .Descendants()
-            .Single(element => element.Attribute("Visibility")?.Value.Contains(
-                "NeedsConfluenceConfiguration",
-                StringComparison.Ordinal) == true);
-
-        // Two cards answer to a configured Confluence: adding a page, and allowlisting the
-        // space a page belongs to. Both are the counterpart of the first-run card.
-        XElement[] configuredCards = document
-            .Descendants()
-            .Where(element => element.Attribute("Visibility")?.Value.Contains(
-                "HasConfluenceConfiguration",
-                StringComparison.Ordinal) == true)
-            .ToArray();
-        XElement[] interactiveControls = setupCard
-            .Descendants()
-            .Concat(configuredCards.SelectMany(card => card.Descendants()))
+        XElement[] interactiveControls = document.Descendants()
             .Where(element =>
-                element.Name.LocalName is "Button" or "TextBox" or "DatePicker" or "ComboBox")
+                element.Name.LocalName is "Button" or "TextBox" or "DatePicker" or "ComboBox" or "PasswordBox")
             .ToArray();
-
-        Assert.HasCount(2, configuredCards);
-        Assert.HasCount(12, interactiveControls);
+        Assert.HasCount(1, interactiveControls.Where(control =>
+            control.Attribute("Text")?.Value.Contains("SourceUrl", StringComparison.Ordinal) == true));
+        Assert.HasCount(1, interactiveControls.Where(control => control.Name.LocalName == "PasswordBox"));
         foreach (XElement control in interactiveControls)
         {
             bool accessible = control.Attribute("AutomationProperties.Name") is not null ||

@@ -319,6 +319,9 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
     /// <summary>Gets the direct-state refresh command.</summary>
     public ICommand RefreshCommand => _refreshCommand;
 
+    /// <summary>Reports the terminal outcome of the latest observed worker, never a prior success.</summary>
+    public bool LastRunSucceeded { get; private set; }
+
     /// <summary>Gets the detached sync launch command.</summary>
     public ICommand SyncCommand => _syncCommand;
 
@@ -430,6 +433,7 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 
     private async Task StartSyncAsync(Func<Task<SyncRunHandle>> start)
     {
+        LastRunSucceeded = false;
         IsBusy = true;
         StateMessage = UiStrings.SyncStarting;
         try
@@ -588,6 +592,8 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 
     private void ApplyRun(SyncRunSnapshot snapshot)
     {
+        LastRunSucceeded = snapshot.IsCompleted && !snapshot.IsRunning && !snapshot.IsUnknown &&
+            !snapshot.IsCancelled && snapshot.ExitCode == 0 && snapshot.LaunchError is null;
         RunTitle = snapshot.Handle.RunKind == SyncRunKind.LocalDocuments
             ? UiStrings.LocalSyncRunTitle
             : UiStrings.ConfluenceSyncRunTitle;

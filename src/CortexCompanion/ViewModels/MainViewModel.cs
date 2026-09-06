@@ -104,7 +104,7 @@ public sealed partial class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsHomeSelected));
                 OnPropertyChanged(nameof(IsHistoryVisible));
                 OnPropertyChanged(nameof(IsHistorySelected));
-                RefreshDestination(value);
+                if (!_sourceNavigation) { RefreshDestination(value); }
             }
         }
     }

@@ -1,29 +1,166 @@
 <!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
 <UserControl x:Class="CortexCompanion.Views.PagesView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:localization="clr-namespace:CortexCompanion.Localization"
-             xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels">
-    <UserControl.InputBindings>
-        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
-    </UserControl.InputBindings>
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel>
-            <Grid Margin="{StaticResource MarginHeadingBottom}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{x:Static localization:UiStrings.PagesTitle}"
-                           Style="{StaticResource PageTitleStyle}" />
-                <Button Grid.Column="1"
-                        Content="{x:Static localization:UiStrings.PagesRefresh}"
-                        AutomationProperties.Name="{x:Static localization:UiStrings.PagesRefresh}"
-                        ToolTip="{x:Static localization:UiStrings.ShortcutRefreshHint}"
-                        Command="{Binding RefreshCommand}"
-                        Style="{StaticResource SecondaryButtonStyle}" />
-            </Grid>
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:localization="clr-namespace:CortexCompanion.Localization"
+ xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels"
+ xmlns:models="clr-namespace:CortexCompanion.Models"
+ xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility">
+ <UserControl.InputBindings><KeyBinding Key="F5" Command="{Binding RefreshCommand}"/></UserControl.InputBindings>
+ <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+  <StackPanel>
+   <TextBlock Text="{x:Static localization:UiStrings.FlowTitle}" Style="{StaticResource PageTitleStyle}"/>
+   <TextBlock Text="{x:Static localization:UiStrings.FlowIntro}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+   <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}">
+    <StackPanel IsEnabled="{Binding CanEditSource}">
+     <TextBlock x:Name="SourceUrlLabel" Text="{x:Static localization:UiStrings.FlowLink}" Margin="{StaticResource MarginLabelBottom}"/>
+     <TextBox Text="{Binding SourceUrl, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.LabeledBy="{Binding ElementName=SourceUrlLabel}" Margin="{StaticResource MarginStackItem}">
+      <TextBox.InputBindings><KeyBinding Key="Return" Command="{Binding InspectSourceCommand}"/></TextBox.InputBindings>
+     </TextBox>
+     <TextBlock Text="{Binding SourceIdentity}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
+     <StackPanel Visibility="{Binding NeedsSpaceKey, Converter={StaticResource BooleanToVisibilityConverter}}">
+      <TextBlock Text="{x:Static localization:UiStrings.FlowSpaceHelp}" TextWrapping="Wrap"/>
+      <TextBox Text="{Binding SetupSpaceKey, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupSpaceKeyLabel}" Margin="{StaticResource MarginStackItem}"/>
+     </StackPanel>
+     <StackPanel Visibility="{Binding ShowSourceClassification, Converter={StaticResource BooleanToVisibilityConverter}}">
+      <TextBlock Text="{x:Static localization:UiStrings.PagesSetupClassificationLabel}" Margin="{StaticResource MarginLabelBottom}"/>
+      <ComboBox ItemsSource="{Binding ClassificationOptions}" SelectedItem="{Binding SelectedClassification}" DisplayMemberPath="DisplayName" AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupClassificationLabel}" Margin="{StaticResource MarginStackItem}"/>
+      <TextBlock Text="{x:Static localization:UiStrings.FlowClassificationHelp}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="{StaticResource MarginSectionBottom}"/>
+     </StackPanel>
+     <StackPanel Visibility="{Binding ShowSourceDetails, Converter={StaticResource BooleanToVisibilityConverter}}">
+      <TextBlock Text="{x:Static localization:UiStrings.PagesSetupExpiryLabel}" Margin="{StaticResource MarginLabelBottom}"/>
+      <DatePicker SelectedDate="{Binding SetupExpiryDate}" AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupExpiryLabel}" Margin="{StaticResource MarginStackItem}"/>
+      <TextBlock Text="{x:Static localization:UiStrings.FlowToken}" Margin="{StaticResource MarginLabelBottom}"/>
+      <PasswordBox x:Name="SourcePatInput" AutomationProperties.Name="{x:Static localization:UiStrings.FlowToken}" KeyDown="SourcePatKeyDown" Margin="{StaticResource MarginStackItem}"/>
+      <Expander Header="{x:Static localization:UiStrings.FlowTokenHelp}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowTokenHelp}" Margin="{StaticResource MarginStackItem}">
+       <TextBlock Text="{x:Static localization:UiStrings.FlowTokenInstructions}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionTop}"/>
+      </Expander>
+      <Button Content="{x:Static localization:UiStrings.FlowConnect}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowConnect}" Click="StoreSourceCredentialClick" IsEnabled="{Binding DataContext.Settings.CanStoreConfluenceCredential, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginStackItem}"/>
+      <TextBlock Text="{Binding DataContext.Settings.ConfluenceCredentialStateText, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
+     </StackPanel>
+     <Button Content="{x:Static localization:UiStrings.FlowInspect}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowInspect}" Command="{Binding InspectSourceCommand}" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left"/>
+    </StackPanel>
+   </Border>
+   <TextBlock Text="{Binding StateMessage}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding StateMessage}"/>
+   <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}" Visibility="{Binding SourceAdded, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <StackPanel>
+     <TextBlock Text="{x:Static localization:UiStrings.FlowNextTitle}" FontWeight="SemiBold" Margin="{StaticResource MarginStackItem}"/>
+     <TextBlock Text="{x:Static localization:UiStrings.FlowNextHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
+     <Button Content="{x:Static localization:UiStrings.FlowCollect}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowCollect}" Command="{Binding DataContext.CollectSourceCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left"/>
+    </StackPanel>
+   </Border>
+   <Expander Header="{x:Static localization:UiStrings.FlowSources}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowSources}" Margin="{StaticResource MarginSectionBottom}">
+    <StackPanel Margin="{StaticResource MarginSectionTop}">
+     <Button Content="{x:Static localization:UiStrings.PagesRefresh}" AutomationProperties.Name="{x:Static localization:UiStrings.PagesRefresh}" Command="{Binding RefreshCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginStackItem}"/>
+            <ItemsControl ItemsSource="{Binding Spaces}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:ConfiguredSpaceViewModel}">
+                        <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginCardBottom}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding SpaceKey}"
+                                               FontSize="{StaticResource FontSizeTitle}"
+                                               FontWeight="SemiBold" />
+                                    <Button Grid.Column="1"
+                                            Content="{x:Static localization:UiStrings.PagesSwitchMode}"
+                                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesSwitchMode}"
+                                            Command="{Binding DataContext.SwitchModeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource SecondaryButtonStyle}" />
+                                </Grid>
+                                <WrapPanel Margin="{StaticResource MarginDetailRow}">
+                                    <TextBlock Text="{Binding ModeSummary}"
+                                               FontWeight="SemiBold"
+                                               Margin="{StaticResource MarginInlineControlSpaced}" />
+                                    <TextBlock Text="{Binding TargetSummary}"
+                                               Margin="{StaticResource MarginInlineControlSpaced}" />
+                                    <TextBlock Text="{Binding ClassificationSummary}" />
+                                </WrapPanel>
+                                <TextBlock Text="{Binding SelectionDescription}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="{StaticResource MarginStackItem}" />
+                                <TextBlock Text="{x:Static localization:UiStrings.LogicalTargetExplanation}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource MarginStackItem}" />
+                                <Border Background="{DynamicResource WarningBrush}"
+                                        Padding="{StaticResource SpacingSm}"
+                                        Margin="{StaticResource MarginStackItem}"
+                                        Visibility="{Binding HasScopeWarning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ScopeWarning}"
+                                                   Foreground="{DynamicResource BackgroundBrush}"
+                                                   FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" />
+                                        <Button Content="{x:Static localization:UiStrings.ExpandToSubtree}"
+                                                AutomationProperties.Name="{x:Static localization:UiStrings.ExpandToSubtree}"
+                                                Command="{Binding DataContext.ExpandSubtreeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                HorizontalAlignment="Left"
+                                                Margin="{StaticResource MarginSectionTop}"
+                                                Style="{StaticResource SecondaryButtonStyle}" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="{Binding CoverageSummary}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="{StaticResource MarginStackItem}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="{x:Static localization:UiStrings.PagesEmptySelection}"
+                                           Foreground="{DynamicResource WarningBrush}"
+                                           FontWeight="SemiBold"
+                                           Margin="{StaticResource MarginStackItem}"
+                                           Visibility="{Binding IsEmptyPagesSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <ItemsControl ItemsSource="{Binding Pages}"
+                                              Visibility="{Binding IsPagesSelection, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type viewModels:ConfiguredPageViewModel}">
+                                            <Border Background="{DynamicResource HighlightBrush}"
+                                                    BorderBrush="{DynamicResource BorderBrush}"
+                                                    BorderThickness="{StaticResource BorderThin}"
+                                                    Padding="{StaticResource SpacingMd}"
+                                                    Margin="{StaticResource MarginStackItem}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding TitleProvenance}"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   FontSize="{StaticResource FontSizeCaption}" />
+                                                        <TextBlock Text="{Binding PageIdSummary}"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                    </StackPanel>
+                                                    <Button Grid.Column="1"
+                                                            Content="{x:Static localization:UiStrings.PagesRemove}"
+                                                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesRemove}"
+                                                            Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Style="{StaticResource SecondaryButtonStyle}"
+                                                            VerticalAlignment="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
+    </StackPanel>
+   </Expander>
+   <Expander Header="{x:Static localization:UiStrings.FlowAdvanced}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowAdvanced}">
+    <StackPanel Margin="{StaticResource MarginSectionTop}">
+     <TextBlock Text="{x:Static localization:UiStrings.PagesSetupConverterHint}" TextWrapping="Wrap"/>
+     <TextBox Text="{Binding SetupConverterPath}" AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupConverterLabel}" Margin="{StaticResource MarginStackItem}"/>
+     <Button Content="{x:Static localization:UiStrings.PagesSetupBrowse}" AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupBrowse}" Command="{Binding BrowseConverterCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left"/>
             <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginCardBottom}">
                 <StackPanel>
                     <TextBlock Text="{x:Static localization:UiStrings.ConfigPathLabel}"
@@ -65,307 +202,9 @@
                 </StackPanel>
             </Border>
 
-            <Border Style="{StaticResource PageCardStyle}"
-                    Margin="{StaticResource MarginSectionSeparator}"
-                    Visibility="{Binding NeedsConfluenceConfiguration, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel MaxWidth="{StaticResource SettingsContentMaxWidth}"
-                            HorizontalAlignment="Stretch">
-                    <TextBlock Text="{x:Static localization:UiStrings.PagesSetupTitle}"
-                               FontSize="{StaticResource FontSizeTitle}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.PagesSetupDescription}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginSectionBottom}" />
 
-                    <TextBlock x:Name="SetupPageUrlLabel"
-                               Text="{x:Static localization:UiStrings.PagesSetupPageUrlLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBox Text="{Binding SetupPageUrl, UpdateSourceTrigger=PropertyChanged}"
-                             AutomationProperties.LabeledBy="{Binding ElementName=SetupPageUrlLabel}"
-                             ToolTip="{x:Static localization:UiStrings.PagesSetupPageUrlHint}"
-                             Margin="{StaticResource MarginStackItem}">
-                        <TextBox.InputBindings>
-                            <KeyBinding Key="Return" Command="{Binding InitializeConfluenceCommand}" />
-                        </TextBox.InputBindings>
-                    </TextBox>
-
-                    <TextBlock x:Name="SetupSpaceKeyLabel"
-                               Text="{x:Static localization:UiStrings.PagesSetupSpaceKeyLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBox Text="{Binding SetupSpaceKey, UpdateSourceTrigger=PropertyChanged}"
-                             AutomationProperties.LabeledBy="{Binding ElementName=SetupSpaceKeyLabel}"
-                             ToolTip="{x:Static localization:UiStrings.PagesSetupSpaceKeyHint}"
-                             Margin="{StaticResource MarginStackItem}">
-                        <TextBox.InputBindings>
-                            <KeyBinding Key="Return" Command="{Binding InitializeConfluenceCommand}" />
-                        </TextBox.InputBindings>
-                    </TextBox>
-
-                    <TextBlock x:Name="SetupExpiryLabel"
-                               Text="{x:Static localization:UiStrings.PagesSetupExpiryLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <DatePicker SelectedDate="{Binding SetupExpiryDate, Mode=TwoWay}"
-                                SelectedDateFormat="Long"
-                                AutomationProperties.LabeledBy="{Binding ElementName=SetupExpiryLabel}"
-                                Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.PagesSetupExpiryHint}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginStackItem}" />
-
-                    <TextBlock x:Name="SetupClassificationLabel"
-                               Text="{x:Static localization:UiStrings.PagesSetupClassificationLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <ComboBox ItemsSource="{Binding ClassificationOptions}"
-                              SelectedItem="{Binding SelectedClassification, Mode=TwoWay}"
-                              DisplayMemberPath="DisplayName"
-                              AutomationProperties.LabeledBy="{Binding ElementName=SetupClassificationLabel}"
-                              Margin="{StaticResource MarginStackItem}" />
-
-                    <Expander Header="{x:Static localization:UiStrings.PagesSetupAdvanced}"
-                              Margin="{StaticResource MarginSectionBottom}">
-                        <StackPanel Margin="{StaticResource MarginStackItem}">
-                            <TextBlock x:Name="SetupConverterLabel"
-                                       Text="{x:Static localization:UiStrings.PagesSetupConverterLabel}"
-                                       FontWeight="SemiBold"
-                                       Margin="{StaticResource MarginLabelBottom}" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox Text="{Binding SetupConverterPath, UpdateSourceTrigger=PropertyChanged}"
-                                         AutomationProperties.LabeledBy="{Binding ElementName=SetupConverterLabel}"
-                                         ToolTip="{x:Static localization:UiStrings.PagesSetupConverterHint}" />
-                                <Button Grid.Column="1"
-                                        Content="{x:Static localization:UiStrings.PagesSetupBrowse}"
-                                        AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupBrowse}"
-                                        Command="{Binding BrowseConverterCommand}"
-                                        Margin="{StaticResource MarginInlineControl}"
-                                        Style="{StaticResource SecondaryButtonStyle}" />
-                            </Grid>
-                            <TextBlock Text="{x:Static localization:UiStrings.PagesSetupConverterHint}"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       TextWrapping="Wrap"
-                                       Margin="{StaticResource MarginStackItem}" />
-                        </StackPanel>
-                    </Expander>
-
-                    <Button Content="{x:Static localization:UiStrings.PagesSetupInitialize}"
-                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupInitialize}"
-                            Command="{Binding InitializeConfluenceCommand}"
-                            HorizontalAlignment="Left"
-                            Style="{StaticResource PrimaryButtonStyle}" />
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource PageCardStyle}"
-                    Margin="{StaticResource MarginSectionSeparator}"
-                    Visibility="{Binding HasConfluenceConfiguration, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock x:Name="PageReferenceLabel"
-                                   Text="{x:Static localization:UiStrings.PagesAddReferenceLabel}"
-                                   FontWeight="SemiBold" />
-                        <TextBox Text="{Binding PageReference, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.LabeledBy="{Binding ElementName=PageReferenceLabel}"
-                                 ToolTip="{x:Static localization:UiStrings.PagesAddReferenceHint}"
-                                 MinHeight="{StaticResource ControlMinHeight}"
-                                 Margin="{StaticResource MarginInlineField}"
-                                 Padding="{StaticResource SpacingSm}"
-                                 Background="{DynamicResource BackgroundBrush}"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"
-                                 BorderBrush="{DynamicResource BorderBrush}">
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding AddCommand}" />
-                            </TextBox.InputBindings>
-                        </TextBox>
-                    </StackPanel>
-                    <Button Grid.Column="1"
-                            Content="{x:Static localization:UiStrings.PagesResolveAndAdd}"
-                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesResolveAndAdd}"
-                            Command="{Binding AddCommand}"
-                            VerticalAlignment="Bottom"
-                            Style="{StaticResource PrimaryButtonStyle}" />
-                </Grid>
-            </Border>
-
-            <Border Style="{StaticResource PageCardStyle}"
-                    Margin="{StaticResource MarginSectionSeparator}"
-                    Visibility="{Binding HasConfluenceConfiguration, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel MaxWidth="{StaticResource SettingsContentMaxWidth}"
-                            HorizontalAlignment="Stretch">
-                    <TextBlock Text="{x:Static localization:UiStrings.PagesAddSpaceTitle}"
-                               FontSize="{StaticResource FontSizeTitle}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.PagesAddSpaceDescription}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginSectionBottom}" />
-
-                    <TextBlock x:Name="NewSpaceReferenceLabel"
-                               Text="{x:Static localization:UiStrings.PagesAddSpaceReferenceLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBox Text="{Binding NewSpaceReference, UpdateSourceTrigger=PropertyChanged}"
-                             AutomationProperties.LabeledBy="{Binding ElementName=NewSpaceReferenceLabel}"
-                             ToolTip="{x:Static localization:UiStrings.PagesAddSpaceReferenceHint}"
-                             MinHeight="{StaticResource ControlMinHeight}"
-                             Padding="{StaticResource SpacingSm}"
-                             Background="{DynamicResource BackgroundBrush}"
-                             Foreground="{DynamicResource TextPrimaryBrush}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             Margin="{StaticResource MarginStackItem}">
-                        <TextBox.InputBindings>
-                            <KeyBinding Key="Return" Command="{Binding AddSpaceCommand}" />
-                        </TextBox.InputBindings>
-                    </TextBox>
-                    <TextBlock Text="{Binding NewSpaceKeyMessage}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginStackItem}" />
-
-                    <TextBlock x:Name="NewSpaceClassificationLabel"
-                               Text="{x:Static localization:UiStrings.PagesAddSpaceClassificationLabel}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <ComboBox ItemsSource="{Binding ClassificationOptions}"
-                              SelectedItem="{Binding SelectedClassification, Mode=TwoWay}"
-                              DisplayMemberPath="DisplayName"
-                              AutomationProperties.LabeledBy="{Binding ElementName=NewSpaceClassificationLabel}"
-                              Margin="{StaticResource MarginSectionBottom}" />
-
-                    <Button Content="{x:Static localization:UiStrings.PagesAddSpaceButton}"
-                            AutomationProperties.Name="{x:Static localization:UiStrings.PagesAddSpaceButton}"
-                            Command="{Binding AddSpaceCommand}"
-                            HorizontalAlignment="Left"
-                            Style="{StaticResource PrimaryButtonStyle}" />
-                </StackPanel>
-            </Border>
-
-            <Border Background="{DynamicResource WarningBrush}"
-                    Padding="{StaticResource SpacingSm}"
-                    Margin="{StaticResource MarginCardBottom}"
-                    Visibility="{Binding IsReadOnly, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="{x:Static localization:UiStrings.PagesReadOnly}"
-                           Foreground="{DynamicResource BackgroundBrush}"
-                           FontWeight="SemiBold" />
-            </Border>
-
-            <TextBlock Text="{Binding StateMessage}"
-                       Foreground="{DynamicResource TextSecondaryBrush}"
-                       Margin="{StaticResource MarginSectionBottom}"
-                       TextWrapping="Wrap" />
-
-            <ItemsControl ItemsSource="{Binding Spaces}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type viewModels:ConfiguredSpaceViewModel}">
-                        <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginCardBottom}">
-                            <StackPanel>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding SpaceKey}"
-                                               FontSize="{StaticResource FontSizeTitle}"
-                                               FontWeight="SemiBold" />
-                                    <Button Grid.Column="1"
-                                            Content="{x:Static localization:UiStrings.PagesSwitchMode}"
-                                            Command="{Binding DataContext.SwitchModeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            Style="{StaticResource SecondaryButtonStyle}" />
-                                </Grid>
-                                <WrapPanel Margin="{StaticResource MarginDetailRow}">
-                                    <TextBlock Text="{Binding ModeSummary}"
-                                               FontWeight="SemiBold"
-                                               Margin="{StaticResource MarginInlineControlSpaced}" />
-                                    <TextBlock Text="{Binding TargetSummary}"
-                                               Margin="{StaticResource MarginInlineControlSpaced}" />
-                                    <TextBlock Text="{Binding ClassificationSummary}" />
-                                </WrapPanel>
-                                <TextBlock Text="{Binding SelectionDescription}"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="{StaticResource MarginStackItem}" />
-                                <TextBlock Text="{x:Static localization:UiStrings.LogicalTargetExplanation}"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           TextWrapping="Wrap"
-                                           Margin="{StaticResource MarginStackItem}" />
-                                <Border Background="{DynamicResource WarningBrush}"
-                                        Padding="{StaticResource SpacingSm}"
-                                        Margin="{StaticResource MarginStackItem}"
-                                        Visibility="{Binding HasScopeWarning, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding ScopeWarning}"
-                                                   Foreground="{DynamicResource BackgroundBrush}"
-                                                   FontWeight="SemiBold"
-                                                   TextWrapping="Wrap" />
-                                        <Button Content="{x:Static localization:UiStrings.ExpandToSubtree}"
-                                                Command="{Binding DataContext.ExpandSubtreeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding}"
-                                                HorizontalAlignment="Left"
-                                                Margin="{StaticResource MarginSectionTop}"
-                                                Style="{StaticResource SecondaryButtonStyle}" />
-                                    </StackPanel>
-                                </Border>
-                                <TextBlock Text="{Binding CoverageSummary}"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="{StaticResource MarginStackItem}"
-                                           TextWrapping="Wrap" />
-                                <TextBlock Text="{x:Static localization:UiStrings.PagesEmptySelection}"
-                                           Foreground="{DynamicResource WarningBrush}"
-                                           FontWeight="SemiBold"
-                                           Margin="{StaticResource MarginStackItem}"
-                                           Visibility="{Binding IsEmptyPagesSelection, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                <ItemsControl ItemsSource="{Binding Pages}"
-                                              Visibility="{Binding IsPagesSelection, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type viewModels:ConfiguredPageViewModel}">
-                                            <Border Background="{DynamicResource HighlightBrush}"
-                                                    BorderBrush="{DynamicResource BorderBrush}"
-                                                    BorderThickness="{StaticResource BorderThin}"
-                                                    Padding="{StaticResource SpacingMd}"
-                                                    Margin="{StaticResource MarginStackItem}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <StackPanel>
-                                                        <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" />
-                                                        <TextBlock Text="{Binding TitleProvenance}"
-                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                                                   FontSize="{StaticResource FontSizeCaption}" />
-                                                        <TextBlock Text="{Binding PageIdSummary}"
-                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
-                                                    </StackPanel>
-                                                    <Button Grid.Column="1"
-                                                            Content="{x:Static localization:UiStrings.PagesRemove}"
-                                                            Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}"
-                                                            Style="{StaticResource SecondaryButtonStyle}"
-                                                            VerticalAlignment="Center" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
-    </ScrollViewer>
+    </StackPanel>
+   </Expander>
+  </StackPanel>
+ </ScrollViewer>
 </UserControl>

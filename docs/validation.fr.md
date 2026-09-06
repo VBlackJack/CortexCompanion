@@ -6,7 +6,7 @@
 
 La recherche et la fraîcheur sont disponibles depuis la release 2026.0906.00.
 L'accueil, le guide de démarrage, l'historique, l'aperçu avec copie et les
-vérifications de mises à jour appartiennent à la prochaine version (**Unreleased**).
+vérifications de mises à jour sont disponibles depuis la version 2026.0906.01.
 **Recherche** exige Cortex 2026.0906.00 ou ultérieur. Avec une CLI compatible
 plus ancienne, les autres fonctions restent disponibles ; la recherche est
 désactivée avec une explication invitant à mettre à jour.
@@ -103,3 +103,10 @@ Windows. Avant de déclarer une couverture manuelle complète, vérifier encore 
 - le redimensionnement avec des titres, extraits et messages longs.
 
 La suite automatisée ne prétend pas avoir validé ces derniers parcours.
+
+
+## Ajout Confluence par lien (2026.0906.01)
+
+Le formulaire accepte une page ou un espace. La connexion dans le meme ecran conserve le lien. La previsualisation utilise un TOML temporaire sans secret ; seul le choix mesure et confirme passe au writer atomique CAS. Les tests couvrent la premiere configuration, un nouvel espace, l'annulation, les erreurs d'authentification et distantes, les editions concurrentes et les origines etrangeres. Collecte et indexation ont des statuts distincts ; une collecte non reussie interdit l'indexation automatique. Les liens anciens exigent encore une cle d'espace. Les racines existantes conservent leur mode sauf choix explicite de tout l'espace.
+
+Les liens d'espace exigent Cortex 2026.0906.01 ou ulterieur. Le smoke visuel rend la fenetre minimale et la confirmation a 100 %, 150 % et 200 % de resolution raster. Il ne remplace pas un essai avec un compte Confluence reel ni un changement natif de DPI.

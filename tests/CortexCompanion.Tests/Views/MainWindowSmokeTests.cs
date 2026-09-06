@@ -119,6 +119,36 @@ public sealed class MainWindowSmokeTests
                 UiStrings.HistoryRetry, "operations/document.md", NavigationPage.LocalKnowledgeBase));
             window.UpdateLayout();
             Capture(window, "history");
+            viewModel.NavigateCommand.Execute(NavigationPage.ConfluencePages);
+            viewModel.Pages.SourceUrl = "https://wiki.example.test/spaces/DOC/overview";
+            window.UpdateLayout();
+            Capture(window, "confluence");
+            ScopeSelectionDialog scope = new(new ScopePreviewContract
+            {
+                ContractVersion = 1,
+                PageId = "100",
+                Title = "Documentation de l'équipe",
+                SpaceKey = "DOC",
+                RecommendedSelection = "subtree",
+                StorageRoot = temporary.Path,
+                RetentionGenerations = 2,
+                PageOnly = new() { PageCount = 1, EstimatedBytes = 393216 },
+                Subtree = new() { PageCount = 12, EstimatedBytes = 4718592 },
+                WholeSpace = new() { PageCount = 200, EstimatedBytes = 78643200 },
+            })
+            { Owner = window, ShowInTaskbar = false };
+            try
+            {
+                scope.Show();
+                scope.UpdateLayout();
+                Button confirm = (Button)scope.FindName("AddSelectionButton");
+                Assert.AreEqual(UiStrings.FormatFlowConfirmCount(12), confirm.Content);
+                ((RadioButton)scope.FindName("WholeSpaceOption")).IsChecked = true;
+                Assert.AreEqual(UiStrings.FormatFlowConfirmCount(200), confirm.Content);
+                scope.UpdateLayout();
+                Capture(scope, "confluence-scope");
+            }
+            finally { scope.Close(); }
         }
         finally
         {

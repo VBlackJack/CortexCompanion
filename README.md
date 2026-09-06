@@ -8,8 +8,7 @@ synchronization, or scheduling.
 
 ## Overview and getting started
 
-This section describes the next release (the changelog's **Unreleased** entry).
-The published 2026.0906.00 installer does not yet include this experience update.
+This experience is available in the paired Cortex and Companion 2026.0906.01 release.
 
 **Home** shows observed indexing and Confluence collection times, the next
 scheduled collection, current activity and a contextual next step. Its four-step
@@ -50,32 +49,22 @@ remaining manual acceptance scenarios.
 3. Open **Réglages**. Companion normally detects the `cortex.exe` from the same
    Cortex installation, including the parent folder used by the combined installer.
    Choose an existing knowledge-base folder, then select **Enregistrer le dossier**.
-4. To use Confluence, enter the PAT under **Réglages > Authentification
-   Confluence** and select **Enregistrer le PAT**. On a new installation,
-   Companion uses Cortex's default Windows credential target, `cortex-spike`.
-5. Open **Pages Confluence** and paste the full URL of the first page. The URL must
-   be `https`; a cleartext `http` instance is refused because the personal access
-   token travels as a bearer header on every request. Loopback addresses stay
-   allowed for local test instances. Companion
-   detects the instance and space whenever the URL contains them. Choose the PAT
-   expiry date and classification, then select **Initialiser et ajouter la page**.
-   Companion counts page-only, subtree, and whole-space scope before writing the
-   choice. Subtree is preselected when the page has descendants. Legacy
-   `viewpage.action` and short URLs require the space key to be entered.
-6. Review the measured page count, approximate storage, physical ingestion root,
-   and generation retention. The configured `target` is a logical index prefix,
-   not a directory inside the selected knowledge-base folder.
-7. The combined Cortex installer already provides the windowless Confluence
-   converter. No path is required. The developer override remains under the
-   collapsed advanced options and is accepted only after a five-second machine
-   capability probe; the windowed `ConfluenceRAGBuilder.exe` is rejected.
-8. Open **Base locale**. **Synchroniser les documents locaux** indexes the local
-   knowledge base and the current published ingestion generation; **Collecter
-   Confluence** runs a manual collection immediately and displays phase plus
-   numeric progress. Both actions sit on the main card, next to each other.
-9. Use **Ouvrir la génération courante** to inspect the immutable published
-   documents. A narrow successful scope reports excluded descendants and offers
-   a one-click switch to subtree collection.
+4. Open **Pages Confluence** and paste the full HTTPS link of a page or space.
+   Select **Voir les documents a ajouter**. Companion infers the instance and
+   space. Legacy short links and `viewpage.action` require a space key.
+5. If connection details are missing or refused, enter the token and expiry date
+   in the same screen, then select **Enregistrer le jeton et continuer**. The pasted link
+   stays in place. The token goes directly to Windows Credential Manager.
+6. Choose this page, this page and its children, or the whole space. Review the
+   measured page count and approximate storage, then confirm the count. A space
+   link resolves its homepage; the whole-space choice also includes pages outside
+   that homepage tree. Cancelling leaves the active configuration unchanged.
+7. Select **Collecter maintenant**. Companion collects all configured Confluence
+   sources, then indexes only after confirmed collection success. Follow the
+   resulting status and use **Rechercher un document** when indexing is current.
+8. Existing sources and advanced converter options remain in collapsed sections.
+   The combined installer supplies the converter; no manual path is needed.
+   Independent collection and indexing actions remain available in **Base locale**.
 
 The local synchronization action runs `cortex sync --json`; it does not require
 Confluence. The Confluence collection action is distinct and always passes
@@ -155,7 +144,7 @@ Companion stores its `cortex.exe` path and bounded shared CLI timeout in
 changed exclusively through the versioned `cortex config get/set --json`
 compare-and-swap contract.
 
-The first-run Pages card creates `%APPDATA%\Cortex\confluence.toml` through the same
+The confirmed source selection creates `%APPDATA%\Cortex\confluence.toml` through the same
 locked, validated, atomic writer used by later page mutations. It refuses to overwrite a
 file that appeared concurrently. The file contains the inferred base URL, declared PAT
 expiry, explicit space allowlist, local target, classification, and the validated
@@ -277,4 +266,4 @@ Recherche and Base locale, with navigation to synchronization and settings.
 
 Refreshing or revisiting settings and scheduling preserves unsaved path, time and
 preset edits. To configure Confluence authentication for the first time, follow
-**Configurer dans Pages Confluence**, complete setup, then return to store the PAT.
+**Pages Confluence** and complete the inline connection form.

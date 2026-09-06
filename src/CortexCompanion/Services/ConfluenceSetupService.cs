@@ -63,6 +63,15 @@ public sealed partial class ConfluenceSetupService
         ConfluenceSetupRequest request,
         CancellationToken cancellationToken)
     {
+        ConfluenceConfiguration configuration = await BuildConfigurationAsync(request, cancellationToken);
+        return await _configStore.WriteAsync(configuration, expectedHash: null, cancellationToken);
+    }
+
+    /// <summary>Builds a validated setup candidate without changing the active configuration.</summary>
+    public async Task<ConfluenceConfiguration> BuildConfigurationAsync(
+        ConfluenceSetupRequest request,
+        CancellationToken cancellationToken)
+    {
         ArgumentNullException.ThrowIfNull(request);
         ConfluencePageUrlAnalysis analysis = ConfluencePageUrlAnalyzer.Analyze(request.PageUrl);
         string spaceKey = request.SpaceKey.Trim();
@@ -106,7 +115,7 @@ public sealed partial class ConfluenceSetupService
             DefaultMaxAttachmentSizeMb,
             DefaultFailureThreshold,
             [space]);
-        return await _configStore.WriteAsync(configuration, expectedHash: null, cancellationToken);
+        return configuration;
     }
 
     /// <summary>Validates and migrates an existing configuration before the CLI can read it.</summary>
@@ -212,9 +221,11 @@ public static class ConfluencePageUrlAnalyzer
         {
             string[] segments = path[(markerIndex + SpacesMarker.Length)..]
                 .Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (segments.Length < 3 ||
+            bool spaceHome = segments.Length == 1 ||
+                segments.Length == 2 && segments[1] is "overview" or "pages";
+            if (!spaceHome && (segments.Length < 3 ||
                 !string.Equals(segments[1], "pages", StringComparison.Ordinal) ||
-                !segments[2].All(char.IsAsciiDigit))
+                !segments[2].All(char.IsAsciiDigit)))
             {
                 throw InvalidPageUrl();
             }
@@ -225,7 +236,7 @@ public static class ConfluencePageUrlAnalyzer
         {
             string[] segments = path[(markerIndex + DisplayMarker.Length)..]
                 .Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (segments.Length < 2)
+            if (segments.Length < 1)
             {
                 throw InvalidPageUrl();
             }

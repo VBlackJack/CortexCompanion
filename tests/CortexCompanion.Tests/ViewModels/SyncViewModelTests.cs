@@ -171,6 +171,7 @@ public sealed class SyncViewModelTests
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
 
         StringAssert.Contains(viewModel.RunResult, expectedText);
+        Assert.AreEqual(exitCode == 0, viewModel.LastRunSucceeded);
         Assert.AreEqual(UiStrings.ConfluenceSyncRunTitle, viewModel.RunTitle);
     }
 
@@ -186,6 +187,7 @@ public sealed class SyncViewModelTests
             Path.Combine(temporary.Path, "source-health.json"), coordinator);
         await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
         Assert.AreEqual(UiStrings.SyncOutputPersistenceFailed, viewModel.RunResult);
+        Assert.IsFalse(viewModel.LastRunSucceeded);
     }
 
     [TestMethod]
@@ -288,6 +290,7 @@ public sealed class SyncViewModelTests
 
         await WaitUntilAsync(() => coordinator.CancelCallCount == 1);
         await WaitUntilAsync(() => viewModel.RunResult == UiStrings.SyncCancelled);
+        Assert.IsFalse(viewModel.LastRunSucceeded);
         Assert.IsFalse(viewModel.IsSyncRunning);
         Assert.IsFalse(viewModel.CanCancelRun);
     }

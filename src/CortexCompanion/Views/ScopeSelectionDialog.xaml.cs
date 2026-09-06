@@ -18,9 +18,7 @@ public partial class ScopeSelectionDialog : Window
     {
         _preview = preview ?? throw new ArgumentNullException(nameof(preview));
         InitializeComponent();
-        RootDetails.Text = UiStrings.FormatScopeRoot(
-            preview.Title,
-            Math.Max(0, preview.Subtree.PageCount - 1));
+        RootDetails.Text = UiStrings.FormatFlowScopeIdentity(preview.Title, preview.SpaceKey);
         PageOnlyDetails.Text = UiStrings.FormatScopeChoice(
             preview.PageOnly.PageCount,
             preview.PageOnly.EstimatedBytes);
@@ -49,6 +47,10 @@ public partial class ScopeSelectionDialog : Window
         PageOnlyRecommendedLabel.Visibility = pageRecommendationVisibility;
         SubtreeRecommended.Visibility = subtreeRecommendationVisibility;
         SubtreeRecommendedLabel.Visibility = subtreeRecommendationVisibility;
+        PageOnlyOption.Checked += SelectionChanged;
+        SubtreeOption.Checked += SelectionChanged;
+        WholeSpaceOption.Checked += SelectionChanged;
+        UpdateConfirmation();
         SourceInitialized += (_, _) => DarkTitleBarService.Apply(this);
     }
 
@@ -60,4 +62,18 @@ public partial class ScopeSelectionDialog : Window
             : ConfluenceSelection.Pages;
 
     private void ConfirmClick(object sender, RoutedEventArgs e) => DialogResult = true;
+
+    private void SelectionChanged(object sender, RoutedEventArgs e) => UpdateConfirmation();
+
+    private void UpdateConfirmation()
+    {
+        int count = SelectedSelection switch
+        {
+            ConfluenceSelection.WholeSpace => _preview.WholeSpace.PageCount,
+            ConfluenceSelection.Subtree => _preview.Subtree.PageCount,
+            _ => _preview.PageOnly.PageCount,
+        };
+        AddSelectionButton.Content = UiStrings.FormatFlowConfirmCount(count);
+        System.Windows.Automation.AutomationProperties.SetName(AddSelectionButton, UiStrings.FormatFlowConfirmCount(count));
+    }
 }

@@ -6,7 +6,7 @@
 
 Search and freshness are available starting with release 2026.0906.00.
 Home, the getting-started guide, history, the search preview/copy action and
-on-demand update checks belong to the next release (**Unreleased**).
+on-demand update checks are available starting with release 2026.0906.01.
 
 The **Recherche** destination queries the Cortex JSON search contract. It offers
 an exact section filter, a source-kind filter, bounded excerpts and explicit
@@ -34,7 +34,7 @@ Confluence freshness. Home recommends synchronization after a newer unsuccessful
 run or when publication and indexing do not match. The guide uses saved
 configuration, not an unsaved path, to validate the document-setup step.
 
-## Acceptance scenarios for the next release
+## Acceptance scenarios for 2026.0906.01
 
 | Area | Scenario | Expected behavior |
 |---|---|---|
@@ -89,3 +89,10 @@ Before claiming manual accessibility or multi-monitor coverage, still exercise:
 - resizing with long titles, excerpts and localized error messages.
 
 The automated suite does not claim those physical or screen-reader checks passed.
+
+
+## Link-first Confluence flow (2026.0906.01)
+
+The source form accepts a page or space link. Inline authentication retains the link. Preview uses a disposable non-secret TOML; only the confirmed measured selection reaches the atomic CAS writer. Tests cover first setup, additional spaces, cancellation, authentication/remote failures, concurrent edits and foreign origins. Collection and indexing report separate outcomes; unsuccessful collection cannot authorize automatic indexing. Legacy links still require a space key. Existing roots retain their collection mode unless the whole space is explicitly selected.
+
+Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minimum-size window and scope confirmation at 100%, 150% and 200% raster scale. This is not a live Confluence account or native DPI test.

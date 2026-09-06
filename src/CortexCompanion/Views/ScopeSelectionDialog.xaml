@@ -25,6 +25,7 @@
                    FontWeight="SemiBold"
                    Margin="{StaticResource MarginSectionBottom}" />
         <StackPanel Grid.Row="1">
+            <TextBlock Text="{x:Static localization:UiStrings.FlowScopeHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
             <RadioButton x:Name="PageOnlyOption" GroupName="Scope" Margin="{StaticResource MarginChoiceBottom}">
                 <StackPanel>
                     <WrapPanel>
@@ -76,7 +77,8 @@
                     IsCancel="True"
                     Style="{StaticResource SecondaryButtonStyle}"
                     Margin="{StaticResource MarginInlineSm}" />
-            <Button Content="{x:Static localization:UiStrings.ConfirmButton}"
+            <Button x:Name="AddSelectionButton"
+                    AutomationProperties.Name="{x:Static localization:UiStrings.FlowInspect}"
                     Click="ConfirmClick"
                     IsDefault="True"
                     Style="{StaticResource PrimaryButtonStyle}" />

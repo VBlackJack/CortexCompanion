@@ -4,13 +4,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
              xmlns:localization="clr-namespace:CortexCompanion.Localization"
-             xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels">
+             xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels"
+             xmlns:models="clr-namespace:CortexCompanion.Models">
     <UserControl.InputBindings>
         <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
     </UserControl.InputBindings>
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
+            <StackPanel Visibility="{Binding DataContext.Pages.SourceAdded, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="{StaticResource MarginSectionBottom}">
+                <TextBlock Text="{Binding DataContext.SourceProgress, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding DataContext.SourceProgress, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                <Button Content="{x:Static localization:UiStrings.FlowSearch}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowSearch}" Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.Search}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginSectionTop}"/>
+            </StackPanel>
             <Grid Margin="{StaticResource MarginHeadingBottom}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

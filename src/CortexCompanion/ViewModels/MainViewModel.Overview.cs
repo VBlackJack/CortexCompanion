@@ -57,6 +57,9 @@ public sealed partial class MainViewModel
 
     private void InitializeOverview()
     {
+        AsyncRelayCommand collect = new(CollectSourceAsync);
+        collect.ExecutionFailed += (_, _) => SourceProgress = UiStrings.FlowCollectionUnconfirmed;
+        CollectSourceCommand = collect;
         Settings.PropertyChanged += OnOverviewChanged;
         Sync.PropertyChanged += OnOverviewChanged;
         ContinueSetupCommand = new AsyncRelayCommand(() =>
@@ -71,6 +74,44 @@ public sealed partial class MainViewModel
             RefreshDestination(NavigationPage.Home);
             return Task.CompletedTask;
         });
+    }
+
+    /// <summary>Collects configured sources and indexes only after an observed successful collection.</summary>
+    public ICommand CollectSourceCommand { get; private set; } = null!;
+
+    private string _sourceProgress = string.Empty;
+    private bool _sourceNavigation;
+    /// <summary>Reports collection and indexing as separate observed stages.</summary>
+    public string SourceProgress { get => _sourceProgress; private set => SetProperty(ref _sourceProgress, value); }
+
+    private async Task CollectSourceAsync()
+    {
+        SyncViewModel runtime = Sync;
+        _sourceNavigation = true;
+        try { Navigate(NavigationPage.LocalKnowledgeBase); }
+        finally { _sourceNavigation = false; }
+        await ((AsyncRelayCommand)runtime.RefreshCommand).ExecuteAsync(null);
+        if (!ReferenceEquals(runtime, Sync) || !runtime.ConfluenceSyncCommand.CanExecute(null))
+        {
+            SourceProgress = UiStrings.FlowCollectionUnavailable;
+            return;
+        }
+        SourceProgress = UiStrings.FlowCollecting;
+        await ((AsyncRelayCommand)runtime.ConfluenceSyncCommand).ExecuteAsync(null);
+        if (!ReferenceEquals(runtime, Sync) || !runtime.LastRunSucceeded)
+        {
+            SourceProgress = UiStrings.FlowCollectionUnconfirmed;
+            return;
+        }
+        SourceProgress = UiStrings.FlowIndexing;
+        if (!runtime.SyncCommand.CanExecute(null))
+        {
+            SourceProgress = UiStrings.FlowIndexUnconfirmed;
+            return;
+        }
+        await ((AsyncRelayCommand)runtime.SyncCommand).ExecuteAsync(null);
+        SourceProgress = ReferenceEquals(runtime, Sync) && runtime.LastRunSucceeded &&
+            runtime.Freshness.Status == UiStrings.FreshnessCurrent ? UiStrings.FlowSearchReady : UiStrings.FlowIndexUnconfirmed;
     }
 
     private void OnOverviewChanged(object? sender, PropertyChangedEventArgs e) => RefreshOverview();

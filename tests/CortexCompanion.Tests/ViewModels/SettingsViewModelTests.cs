@@ -20,6 +20,50 @@ public sealed class SettingsViewModelTests
     private const string SnapshotHash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     [TestMethod]
+    [DataRow(0, 1)]
+    [DataRow(4, 0)]
+    [DataRow(5, 0)]
+    public async Task GuidedCollectionIndexesOnlyAfterObservedSuccess(int collectionExit, int expectedIndexes)
+    {
+        using TemporaryDirectory temporary = new();
+        string cli = temporary.CreateFakeCli();
+        string config = Path.Combine(temporary.Path, "confluence.toml");
+        File.WriteAllText(config, "schema_version = 1\nauth_expires_at = 2099-01-01T00:00:00Z\n");
+        GuidedRunCoordinator runs = new(temporary.Path, collectionExit);
+        await using SyncViewModel sync = new(runs, cli, config, null, []);
+        await sync.InitializeAsync(false, CancellationToken.None);
+        TestContext context = await CreateInitializedContextAsync(temporary, cli, sync);
+        MainViewModel main = new(context.Coordinator, context.ViewModel);
+        await ExecuteAsync(main.CollectSourceCommand);
+        Assert.AreEqual(1, runs.Collections);
+        Assert.AreEqual(expectedIndexes, runs.Indexes);
+        Assert.AreEqual(collectionExit == 0 ? UiStrings.FlowIndexUnconfirmed : UiStrings.FlowCollectionUnconfirmed,
+            main.SourceProgress);
+    }
+
+    private sealed class GuidedRunCoordinator(string root, int collectionExit) : ISyncRunCoordinator
+    {
+        public int Collections { get; private set; }
+        public int Indexes { get; private set; }
+        public Task<SyncRunHandle> StartConfluenceAsync(string cliPath, string confluenceConfigPath, bool force, CancellationToken cancellationToken)
+        {
+            Collections++;
+            Assert.IsTrue(force);
+            return Task.FromResult(new SyncRunHandle("collect", root, Environment.ProcessId, DateTimeOffset.UtcNow, SyncRunKind.Confluence));
+        }
+        public Task<SyncRunHandle> StartLocalDocumentsAsync(string cliPath, CancellationToken cancellationToken)
+        {
+            Indexes++;
+            return Task.FromResult(new SyncRunHandle("index", root, Environment.ProcessId, DateTimeOffset.UtcNow, SyncRunKind.LocalDocuments));
+        }
+        public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) => Task.FromResult<SyncRunSnapshot?>(null);
+        public Task<SyncRunSnapshot> ObserveAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
+            Task.FromResult(new SyncRunSnapshot(handle, string.Empty, "{}", false, true, false,
+                handle.RunKind == SyncRunKind.Confluence ? collectionExit : 0, null));
+        public Task<bool> CancelAsync(SyncRunHandle handle, CancellationToken cancellationToken) => throw new NotSupportedException();
+    }
+
+    [TestMethod]
     public async Task OverviewGuidesFromPersistedConfigurationAndFallsBackAfterAReadFailure()
     {
         using TemporaryDirectory temporary = new();
@@ -212,13 +256,15 @@ public sealed class SettingsViewModelTests
 
     private static async Task<TestContext> CreateInitializedContextAsync(
         TemporaryDirectory temporary,
-        string cliPath)
+        string cliPath,
+        SyncViewModel? sync = null)
     {
         string settingsPath = Path.Combine(temporary.Path, "state", "settings.json");
         SettingsStore store = new(settingsPath);
         AppSettings settings = new(cliPath);
         await store.SaveAsync(settings);
         CompanionRuntime runtime = CreateCompatibleRuntime(temporary.Path, cliPath);
+        if (sync is not null) { runtime = runtime with { Sync = sync }; }
         TestRuntimeCoordinator coordinator = new(runtime);
         TestConfigClient configClient = new(temporary.Path);
         TestCredentialTargetProvider credentialTargetProvider = new("cortex-confluence");

@@ -8,8 +8,7 @@ la configuration, la synchronisation ou la planification courantes.
 
 ## Accueil et premiers pas
 
-Cette section decrit la prochaine version (entree **Unreleased** du changelog).
-L'installeur publie 2026.0906.00 ne contient pas encore ces ameliorations.
+Ces ameliorations sont disponibles dans la release appariee Cortex et Companion 2026.0906.01.
 
 **Accueil** affiche les dates observees d'indexation et de collecte Confluence,
 la prochaine collecte planifiee, l'activite et la prochaine action utile. Le
@@ -54,36 +53,22 @@ automatises et les scenarios de recette manuelle restants.
    installation Cortex, y compris le dossier parent utilise par l'installeur
    combine. Choisir un dossier de base de connaissances existant, puis selectionner
    **Enregistrer le dossier**.
-4. Pour utiliser Confluence, saisir le PAT sous **Reglages > Authentification
-   Confluence** et selectionner **Enregistrer le PAT**. Sur une installation
-   neuve, Companion utilise la cible d'identifiant Windows par defaut de Cortex,
-   `cortex-spike`.
-5. Ouvrir **Pages Confluence** et coller l'URL complete de la premiere page.
-   L'URL doit etre en `https` : une instance `http` en clair est refusee, car le
-   jeton d'acces circule en en-tete sur chaque requete. Les adresses de bouclage
-   restent acceptees pour une instance de test locale. Companion detecte
-   l'instance et l'espace des que l'URL les contient. Choisir la date d'expiration
-   du PAT et la classification, puis selectionner **Initialiser et ajouter la
-   page**. Companion mesure les perimetres page seule, arborescence et espace
-   entier avant d'ecrire le choix. L'arborescence est preselectionnee quand la page
-   a des descendants. Les anciennes URL `viewpage.action` et les URL courtes
-   exigent la saisie de la cle d'espace.
-6. Verifier le nombre de pages mesure, le stockage approximatif, la racine
-   physique d'ingestion et la retention des generations. Le `target` configure est
-   un prefixe d'index logique, pas un dossier dans la base de connaissances
-   choisie.
-7. L'installeur Cortex combine fournit deja le convertisseur Confluence sans
-   fenetre. Aucun chemin n'est requis. La surcharge developpeur reste sous les
-   options avancees repliees et n'est acceptee qu'apres une sonde de capacite
-   machine de cinq secondes ; le `ConfluenceRAGBuilder.exe` fenetre est refuse.
-8. Ouvrir **Base locale**. **Synchroniser les documents locaux** indexe la base de
-   connaissances locale et la generation d'ingestion publiee courante ;
-   **Collecter Confluence** lance immediatement une collecte manuelle et affiche la
-   phase et la progression chiffree. Les deux actions sont cote a cote sur la carte
-   principale.
-9. Utiliser **Ouvrir la generation courante** pour inspecter les documents publies
-   immuables. Un perimetre etroit mais reussi signale les descendants exclus et
-   propose un basculement en un clic vers la collecte d'arborescence.
+4. Ouvrir **Pages Confluence** et coller le lien HTTPS d'une page ou d'un espace.
+   Selectionner **Voir les documents a ajouter**. Companion deduit l'instance et
+   l'espace. Les liens courts et `viewpage.action` necessitent une cle d'espace.
+5. Si la connexion manque ou est refusee, saisir le jeton et sa date d'expiration
+   dans le meme ecran, puis **Enregistrer le jeton et continuer**. Le lien reste saisi.
+   Le jeton est enregistre directement dans le Gestionnaire d'identifiants Windows.
+6. Choisir cette page, cette page et ses sous-pages, ou tout l'espace. Verifier le
+   nombre de pages mesure et le stockage approximatif, puis confirmer le nombre.
+   Un lien d'espace designe sa page d'accueil ; tout l'espace inclut aussi les pages
+   hors de son arborescence. Annuler laisse la configuration active intacte.
+7. Selectionner **Collecter maintenant**. Companion collecte toutes les sources
+   Confluence configurees, puis indexe seulement apres une collecte reussie.
+   Suivre le statut et utiliser **Rechercher un document** quand l'index est a jour.
+8. Les sources existantes et les options avancees du convertisseur restent dans
+   des sections repliees. L'installeur combine fournit le convertisseur.
+   Les actions independantes restent accessibles dans **Base locale**.
 
 L'action de synchronisation locale execute `cortex sync --json` ; elle n'exige
 aucune configuration Confluence. L'action de collecte Confluence est distincte et
@@ -172,7 +157,7 @@ Companion stocke le chemin de son `cortex.exe` et le delai CLI partage borne dan
 connaissances est lu et modifie exclusivement par le contrat versionne
 `cortex config get/set --json` en compare-and-swap.
 
-La carte Pages du premier lancement cree `%APPDATA%\Cortex\confluence.toml` par le
+Le choix de source confirme cree `%APPDATA%\Cortex\confluence.toml` par le
 meme ecrivain verrouille, valide et atomique que les mutations de pages ulterieures.
 Elle refuse d'ecraser un fichier apparu entre-temps. Le fichier contient l'URL de
 base inferee, l'expiration declaree du PAT, la liste blanche explicite d'espaces, la
@@ -303,5 +288,4 @@ avec un accès à la synchronisation et aux réglages.
 
 Recharger ou revisiter les réglages et la programmation conserve les saisies non
 enregistrées du dossier, de l'heure et de la fréquence. Pour la première authentification
-Confluence, suivre **Configurer dans Pages Confluence**, terminer la configuration,
-puis revenir enregistrer le PAT.
+Confluence, ouvrir **Pages Confluence** et remplir la connexion dans le meme ecran.

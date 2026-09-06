@@ -12,7 +12,7 @@ using CortexCompanion.Services;
 namespace CortexCompanion.ViewModels;
 
 /// <summary>Coordinates local Pages reads and explicit confirmed mutations.</summary>
-public sealed class PagesViewModel : ViewModelBase
+public sealed partial class PagesViewModel : ViewModelBase
 {
     private readonly IConfluenceCliClient? _cliClient;
     private readonly PagesMutationService? _mutations;
@@ -49,7 +49,8 @@ public sealed class PagesViewModel : ViewModelBase
         ConfluenceSetupService? setupService,
         IFileDialogService? fileDialogs,
         ConfluenceConfigPathResolution? pathResolution,
-        IReadOnlyList<ConfluenceEnvironmentOverride> overrides)
+        IReadOnlyList<ConfluenceEnvironmentOverride> overrides,
+        ConfluenceSourceService? sourceService = null)
     {
         _cliClient = cliClient;
         _mutations = mutations;
@@ -88,6 +89,10 @@ public sealed class PagesViewModel : ViewModelBase
             space => CanMutate && space?.HasScopeWarning == true);
         _removeCommand = new AsyncRelayCommand<ConfiguredPageViewModel>(RemoveAsync, _ => CanMutate);
         _addSpaceCommand = new AsyncRelayCommand(AddSpaceAsync, () => CanAddSpace);
+        _sourceService = sourceService;
+        _inspectSourceCommand = new AsyncRelayCommand(InspectSourceAsync, () =>
+            _sourceService is not null && !IsReadOnly && !IsBusy && !string.IsNullOrWhiteSpace(SourceUrl));
+        _inspectSourceCommand.ExecutionFailed += (_, _) => StateMessage = UiStrings.FlowUnexpectedFailure;
     }
 
     /// <summary>Gets the current spaces projection.</summary>
@@ -719,6 +724,8 @@ public sealed class PagesViewModel : ViewModelBase
 
     private void NotifyCommandAvailability()
     {
+        OnPropertyChanged(nameof(CanEditSource));
+        _inspectSourceCommand?.RaiseCanExecuteChanged();
         OnPropertyChanged(nameof(CanRead));
         OnPropertyChanged(nameof(CanMutate));
         OnPropertyChanged(nameof(CanInitializeConfluence));
@@ -736,6 +743,7 @@ public sealed class PagesViewModel : ViewModelBase
 
     private void NotifySetupAvailability()
     {
+        OnPropertyChanged(nameof(ShowSourceDetails));
         OnPropertyChanged(nameof(CanInitializeConfluence));
         _initializeConfluenceCommand.RaiseCanExecuteChanged();
     }

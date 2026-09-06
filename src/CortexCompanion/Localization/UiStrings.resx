@@ -41,7 +41,7 @@
   <data name="ScopeDialogTitle" xml:space="preserve"><value>Choisir le périmètre Confluence</value></data>
   <data name="ScopeRootDetails" xml:space="preserve"><value>Page racine : {0}&#xA;Cette page contient {1:N0} page(s) descendante(s).</value></data>
   <data name="ScopeChoicePageOnly" xml:space="preserve"><value>Cette page seule</value></data>
-  <data name="ScopeChoiceSubtree" xml:space="preserve"><value>Cette page et son arborescence</value></data>
+  <data name="ScopeChoiceSubtree" xml:space="preserve"><value>Cette page et ses sous-pages</value></data>
   <data name="ScopeChoiceWholeSpace" xml:space="preserve"><value>Tout l'espace {0}</value></data>
   <data name="ScopeChoiceDetails" xml:space="preserve"><value>{0:N0} page(s) - environ {1:N1} Mo</value></data>
   <data name="ScopeRecommended" xml:space="preserve"><value>Recommandé</value></data>
@@ -493,4 +493,40 @@
   <data name="SearchCopied" xml:space="preserve"><value>Extrait et référence copiés.</value></data>
   <data name="SearchCopyFailed" xml:space="preserve"><value>Le presse-papiers est indisponible. Réessayez.</value></data>
   <data name="SearchPreview" xml:space="preserve"><value>Aperçu du résultat sélectionné</value></data>
+  <data name="FlowTitle" xml:space="preserve"><value>Ajouter depuis Confluence</value></data>
+  <data name="FlowIntro" xml:space="preserve"><value>Collez le lien d'une page ou d'un espace. Vous choisirez ensuite les documents à ajouter.</value></data>
+  <data name="FlowLink" xml:space="preserve"><value>Lien Confluence</value></data>
+  <data name="FlowInspect" xml:space="preserve"><value>Voir les documents à ajouter</value></data>
+  <data name="FlowInspecting" xml:space="preserve"><value>Recherche de la page et mesure des périmètres...</value></data>
+  <data name="FlowNeedSpace" xml:space="preserve"><value>Ce lien ne contient pas la clé de l'espace. Renseignez-la ci-dessous ou collez un lien contenant /spaces/ ou /display/.</value></data>
+  <data name="FlowSpaceHelp" xml:space="preserve"><value>La clé identifie l'espace dans Confluence. Elle apparaît généralement dans son adresse.</value></data>
+  <data name="FlowConnectFirst" xml:space="preserve"><value>Pour continuer, indiquez la date d'expiration de votre accès Confluence. Si votre jeton n'est pas encore enregistré, saisissez-le ici.</value></data>
+  <data name="FlowAuthenticationRequired" xml:space="preserve"><value>Confluence n'a pas accepté la connexion. Vérifiez votre jeton, sa validité et vos droits sur cette page, puis réessayez.</value></data>
+  <data name="FlowConnect" xml:space="preserve"><value>Enregistrer le jeton et continuer</value></data>
+  <data name="FlowToken" xml:space="preserve"><value>Jeton d'accès personnel Confluence</value></data>
+  <data name="FlowTokenHelp" xml:space="preserve"><value>Où trouver mon jeton ?</value></data>
+  <data name="FlowTokenInstructions" xml:space="preserve"><value>Dans Confluence, ouvrez votre profil puis Jetons d'accès personnels. Créez un jeton et copiez-le ici. Si ce menu est absent, demandez à votre administrateur. Le jeton reste dans le Gestionnaire d'identification Windows et n'est pas écrit dans la configuration.</value></data>
+  <data name="FlowClassificationHelp" xml:space="preserve"><value>Choisissez la nature des documents. Cette classification sera conservée avec la source ; les sources déjà configurées gardent leur classification.</value></data>
+  <data name="FlowAdded" xml:space="preserve"><value>Source ajoutée. Les documents ne sont pas encore disponibles dans la recherche. Lancez la collecte, puis l'indexation.</value></data>
+  <data name="FlowCancelled" xml:space="preserve"><value>Ajout annulé. Votre lien est conservé et aucune source n'a été ajoutée.</value></data>
+  <data name="FlowUnexpectedFailure" xml:space="preserve"><value>L'ajout n'a pas abouti. Votre lien est conservé ; réessayez ou consultez les diagnostics.</value></data>
+  <data name="FlowExistingScope" xml:space="preserve"><value>Cet espace contient déjà des pages avec un autre périmètre. Choisissez le même périmètre pour les conserver, ou gérez son mode dans les sources configurées.</value></data>
+  <data name="FlowOverrides" xml:space="preserve"><value>Des paramètres Confluence sont imposés par l'environnement. Consultez les détails avancés avant d'utiliser l'ajout guidé.</value></data>
+  <data name="FlowNextTitle" xml:space="preserve"><value>Rendre les documents disponibles</value></data>
+  <data name="FlowCollect" xml:space="preserve"><value>Collecter maintenant</value></data>
+  <data name="FlowIndex" xml:space="preserve"><value>2. Indexer les documents collectés</value></data>
+  <data name="FlowSearch" xml:space="preserve"><value>3. Rechercher un document</value></data>
+  <data name="FlowNextHelp" xml:space="preserve"><value>Les sources configurées seront collectées, puis indexées si la collecte réussit. La progression distingue les documents récupérés et leur disponibilité dans la recherche.</value></data>
+  <data name="FlowSources" xml:space="preserve"><value>Sources configurées</value></data>
+  <data name="FlowAdvanced" xml:space="preserve"><value>Détails techniques et options avancées</value></data>
+  <data name="FlowConfirmCount" xml:space="preserve"><value>Ajouter ces {0} pages</value></data>
+  <data name="FlowScopeHelp" xml:space="preserve"><value>Choisissez ce que Cortex pourra rechercher. Tout l'espace inclut aussi les pages hors de cette arborescence.</value></data>
+  <data name="FlowScopeIdentity" xml:space="preserve"><value>{0} - espace {1}</value></data>
+  <data name="FlowSpaceHomepage" xml:space="preserve"><value>Le lien d'espace est présenté à partir de sa page d'accueil.</value></data>
+  <data name="FlowCollectionUnavailable" xml:space="preserve"><value>La collecte n'est pas disponible. Vérifiez les réglages ou attendez la fin de l'opération en cours.</value></data>
+  <data name="FlowCollecting" xml:space="preserve"><value>Source ajoutée - collecte des documents en cours.</value></data>
+  <data name="FlowCollectionUnconfirmed" xml:space="preserve"><value>Collecte non confirmée. L'indexation automatique n'a pas été lancée. Consultez le résultat ci-dessous.</value></data>
+  <data name="FlowIndexing" xml:space="preserve"><value>Documents collectés - indexation en cours.</value></data>
+  <data name="FlowIndexUnconfirmed" xml:space="preserve"><value>Disponibilité dans la recherche non confirmée. Consultez le résultat de l'indexation ci-dessous.</value></data>
+  <data name="FlowSearchReady" xml:space="preserve"><value>Documents collectés et indexés. Vous pouvez maintenant rechercher un document.</value></data>
 </root>

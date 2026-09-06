@@ -90,9 +90,11 @@ public static partial class UiStrings
     /// <summary>Gets the connection guidance for unavailable search.</summary>
     public static string SearchUnavailable => GetString(nameof(SearchUnavailable));
 
-    private static readonly ResourceManager ResourceManager = new(
-        "CortexCompanion.Localization.UiStrings",
-        typeof(UiStrings).Assembly);
+    private static class Resources
+    {
+        internal static readonly ResourceManager Manager = new(
+            "CortexCompanion.Localization.UiStrings", typeof(UiStrings).Assembly);
+    }
     private static readonly CompositeFormat HandshakeIncompatibleFormat =
         CompositeFormat.Parse(GetString("HandshakeIncompatible"));
     private static readonly CompositeFormat SearchVersionFormat = CompositeFormat.Parse(GetString("SearchVersionRequiredFormat"));
@@ -981,7 +983,7 @@ public static partial class UiStrings
     public static string ShortcutSaveHint => GetString(nameof(ShortcutSaveHint));
 
     private static string GetString(string name) =>
-        ResourceManager.GetString(name, CultureInfo.CurrentUICulture) ?? name;
+        Resources.Manager.GetString(name, CultureInfo.CurrentUICulture) ?? name;
 
     /// <summary>Gets the search capability upgrade guidance.</summary>
     public static string FormatSearchVersionRequired(string version) => string.Format(CultureInfo.CurrentCulture, SearchVersionFormat, version);
