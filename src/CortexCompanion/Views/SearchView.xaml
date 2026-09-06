@@ -5,12 +5,18 @@
  xmlns:localization="clr-namespace:CortexCompanion.Localization"
  xmlns:services="clr-namespace:CortexCompanion.Services"
  xmlns:vm="clr-namespace:CortexCompanion.ViewModels"
+ xmlns:models="clr-namespace:CortexCompanion.Models"
  xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility">
- <UserControl.InputBindings><KeyBinding Key="Return" Command="{Binding SearchCommand}" /></UserControl.InputBindings>
+ <UserControl.InputBindings>
+  <KeyBinding Key="Return" Command="{Binding SearchCommand}" />
+  <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+ </UserControl.InputBindings>
  <Grid>
-  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+  <Grid.RowDefinitions><RowDefinition Height="{StaticResource SearchFormHeight}"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
   <StackPanel>
    <TextBlock Text="{x:Static localization:UiStrings.SearchNavigation}" FontSize="{StaticResource FontSizeTitle}" Margin="{StaticResource MarginHeadingBottom}"/>
+   <TextBlock Text="{Binding DataContext.Sync.Freshness.Status, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
    <TextBlock Text="{x:Static localization:UiStrings.SearchQuery}" Margin="{StaticResource MarginLabelBottom}"/>
    <TextBox Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" MaxLength="{x:Static services:SearchClient.QueryLimit}"
     AutomationProperties.Name="{x:Static localization:UiStrings.SearchQuery}" Margin="{StaticResource MarginStackItem}"/>
@@ -23,12 +29,26 @@
      <TextBlock Text="{x:Static localization:UiStrings.SearchSource}"/>
      <ComboBox ItemsSource="{x:Static vm:SearchViewModel.Choices}" SelectedItem="{Binding Source}" DisplayMemberPath="Label" AutomationProperties.Name="{x:Static localization:UiStrings.SearchSource}"/>
     </StackPanel>
-    <Button Style="{StaticResource PrimaryButtonStyle}" VerticalAlignment="Bottom" Content="{x:Static localization:UiStrings.SearchSubmit}" Command="{Binding SearchCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.SearchSubmit}" Margin="{StaticResource MarginInlineField}"/>
-    <Button Style="{StaticResource SecondaryButtonStyle}" VerticalAlignment="Bottom" Content="{x:Static localization:UiStrings.SearchOpen}" Command="{Binding OpenCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.SearchOpen}" Margin="{StaticResource MarginInlineField}"/>
    </WrapPanel>
    <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding Status}"/>
+   <TextBlock Text="{Binding ExecutedCriteria}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"/>
+   <TextBlock Text="{Binding OpenStatus}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding OpenStatus}"/>
+   <WrapPanel Margin="{StaticResource MarginStackItem}">
+    <Button Content="{x:Static localization:UiStrings.SearchGoToSync}" Style="{StaticResource SecondaryButtonStyle}"
+     AutomationProperties.Name="{x:Static localization:UiStrings.SearchGoToSync}"
+     Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.LocalKnowledgeBase}"/>
+    <Button Content="{x:Static localization:UiStrings.SettingsNavigation}" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"
+     AutomationProperties.Name="{x:Static localization:UiStrings.SettingsNavigation}"
+     Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.Settings}"/>
+   </WrapPanel>
   </StackPanel>
-  <ListBox Grid.Row="1" ItemsSource="{Binding Results}" SelectedItem="{Binding Selected}" HorizontalContentAlignment="Stretch"
+  </ScrollViewer>
+  <WrapPanel Grid.Row="1" Margin="{StaticResource MarginStackItem}">
+   <Button Style="{StaticResource PrimaryButtonStyle}" Content="{x:Static localization:UiStrings.SearchSubmit}" Command="{Binding SearchCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.SearchSubmit}" Margin="{StaticResource MarginInlineField}"/>
+   <Button Style="{StaticResource SecondaryButtonStyle}" Content="{x:Static localization:UiStrings.SyncCancel}" Command="{Binding CancelCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.SyncCancel}" Margin="{StaticResource MarginInlineField}"/>
+   <Button Style="{StaticResource SecondaryButtonStyle}" Content="{x:Static localization:UiStrings.SearchOpen}" Command="{Binding OpenCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.SearchOpen}" Margin="{StaticResource MarginInlineField}"/>
+  </WrapPanel>
+  <ListBox Grid.Row="2" ItemsSource="{Binding Results}" SelectedItem="{Binding Selected}" HorizontalContentAlignment="Stretch"
    ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False"
    ScrollViewer.VerticalScrollBarVisibility="Auto" Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
    AutomationProperties.Name="{x:Static localization:UiStrings.SearchResults}">

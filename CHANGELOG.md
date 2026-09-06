@@ -2,8 +2,6 @@
 
 ## [2026.0906.00] - 2026-09-06
 
-Release candidate. Publication and installer validation are tracked separately.
-
 ### Added
 
 - Search destination with section/source filters, bounded excerpts and explicit
@@ -17,6 +15,12 @@ Release candidate. Publication and installer validation are tracked separately.
   clearing, plus keyboard traversal and WPF rasterization checks.
 
 ### Fixed
+
+- Keep unsaved knowledge-base and scheduling edits across refresh and navigation.
+- Gate desktop search on Cortex 2026.0906.00 or newer, independently of other features.
+- Support search cancellation, retain executed criteria and discard obsolete results.
+- Explain unavailable source opening, expose indexing freshness and link recovery actions.
+- Direct first-time Confluence authentication to the graphical configuration screen.
 
 - Continue draining process output after log persistence fails, preserving the
   child exit code and reporting capture failure separately.

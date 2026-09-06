@@ -28,6 +28,9 @@ public static class AppConstants
     /// </summary>
     public const string MinSupportedCliVersion = "2026.0808.00";
 
+    /// <summary>First distributed CLI version with the desktop JSON search contract.</summary>
+    public const string MinSearchCliVersion = "2026.0906.00";
+
     /// <summary>Gets the only argument used by the startup handshake.</summary>
     public const string CliVersionArgument = "--version";
 

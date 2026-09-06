@@ -75,6 +75,10 @@
                                TextWrapping="Wrap"
                                FontWeight="SemiBold"
                                AutomationProperties.LiveSetting="Assertive" />
+                    <TextBlock Text="{Binding Freshness.Status}" TextWrapping="Wrap"
+                               Margin="{StaticResource MarginSectionTop}"
+                               AutomationProperties.LiveSetting="Polite"
+                               accessibility:LiveRegionBehavior.Announcement="{Binding Freshness.Status}" />
                     <StackPanel Visibility="{Binding HasProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Margin="{StaticResource MarginSectionTop}">
                         <TextBlock Text="{Binding ProgressText}"
@@ -107,7 +111,6 @@
                     <Border Style="{StaticResource PageCardStyle}">
                         <StackPanel>
                     <StackPanel Margin="{StaticResource MarginSectionBottom}">
-                        <TextBlock Text="{Binding Freshness.Status}" TextWrapping="Wrap" />
                         <TextBlock Text="{x:Static localization:UiStrings.FreshnessPublished}" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding Freshness.Published}" TextWrapping="Wrap" />
                         <TextBlock Text="{x:Static localization:UiStrings.FreshnessIndexed}" FontWeight="SemiBold" />

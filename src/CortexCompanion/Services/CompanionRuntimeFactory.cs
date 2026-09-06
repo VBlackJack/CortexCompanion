@@ -4,6 +4,7 @@
 using System.Security.Principal;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
+using CortexCompanion.Localization;
 using CortexCompanion.Logging;
 using CortexCompanion.Models;
 using CortexCompanion.ViewModels;
@@ -155,11 +156,15 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             handshake,
             cliValidation.AbsolutePath)
         {
-            Search = new SearchViewModel(!handshake.IsReadOnly && cliValidation.AbsolutePath is not null
+            Search = new SearchViewModel(SupportsSearch(handshake) && cliValidation.AbsolutePath is not null
                 ? new SearchClient(_processRunner, cliValidation.AbsolutePath, settings.EffectiveCliTimeout)
-                : null),
+                : null, !handshake.IsReadOnly ? UiStrings.FormatSearchVersionRequired(AppConstants.MinSearchCliVersion) : null),
         };
     }
+
+    internal static bool SupportsSearch(CliHandshakeResult handshake) => !handshake.IsReadOnly &&
+        handshake.DetectedVersion is CliVersion detected &&
+        new CliVersionPolicy().TryParse(AppConstants.MinSearchCliVersion, out CliVersion minimum) && detected >= minimum;
 
     private ScheduledTaskContract? BuildScheduledTaskContract(
         CliPathValidationResult cliValidation,

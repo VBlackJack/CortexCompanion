@@ -17,6 +17,19 @@ namespace CortexCompanion.Tests.ViewModels;
 public sealed class SchedulingViewModelTests
 {
     [TestMethod]
+    public async Task RefreshPreservesUnsavedTimeAndPreset()
+    {
+        using TemporaryDirectory temporary = new();
+        SchedulingViewModel viewModel = CreateViewModel(temporary, new StubTaskScheduler(ActiveSnapshot(0)));
+        await viewModel.InitializeAsync(false, CancellationToken.None);
+        viewModel.StartTimeText = "17:45";
+        viewModel.SelectedPreset = viewModel.Presets.Single(option => option.Value == SchedulingPreset.Hourly);
+        await ((CortexCompanion.Commands.AsyncRelayCommand)viewModel.RefreshCommand).ExecuteAsync(null);
+        Assert.AreEqual("17:45", viewModel.StartTimeText);
+        Assert.AreEqual(SchedulingPreset.Hourly, viewModel.SelectedPreset.Value);
+    }
+
+    [TestMethod]
     public async Task ReadOnlyModeKeepsStateVisibleAndDisablesEveryMutation()
     {
         using TemporaryDirectory temporary = new();

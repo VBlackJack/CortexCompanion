@@ -34,6 +34,7 @@ public sealed class SettingsViewModel : ViewModelBase
     private string _cliPath = string.Empty;
     private int _cliTimeoutSeconds = AppConstants.DefaultCliTimeoutSeconds;
     private string _knowledgeBasePath = string.Empty;
+    private string _knowledgeBaseBaseline = string.Empty;
     private string _cliValidationMessage = UiStrings.SettingsCliNotConfigured;
     private string _statusMessage = UiStrings.SettingsLoading;
     private string _configStateText = UiStrings.SettingsConfigUnavailable;
@@ -451,7 +452,9 @@ public sealed class SettingsViewModel : ViewModelBase
             }
 
             _configSnapshot = snapshot;
-            KnowledgeBasePath = snapshot.KnowledgeBasePath ?? string.Empty;
+            bool hasDraft = KnowledgeBasePath != _knowledgeBaseBaseline;
+            _knowledgeBaseBaseline = snapshot.KnowledgeBasePath ?? string.Empty;
+            if (!hasDraft) { KnowledgeBasePath = _knowledgeBaseBaseline; }
             ConfigStateText = snapshot.IsValid
                 ? snapshot.Present
                     ? UiStrings.SettingsConfigLoaded
@@ -531,16 +534,21 @@ public sealed class SettingsViewModel : ViewModelBase
 
         IsBusy = true;
         StatusMessage = UiStrings.SettingsSavingKnowledgeBase;
+        string submittedPath = KnowledgeBasePath;
         try
         {
             CortexConfigMutationResult result = await _configClient.SetKnowledgeBasePathAsync(
                 cliPath,
-                Path.GetFullPath(KnowledgeBasePath),
+                Path.GetFullPath(submittedPath),
                 _configSnapshot.ContentHash,
                 !_configSnapshot.Present,
                 _activeSettings.EffectiveCliTimeout,
                 CancellationToken.None);
             LogCliOutcome("config_set", result.Status, result.Error);
+            if (result.Status is CortexConfigMutationStatus.Succeeded or CortexConfigMutationStatus.Unchanged)
+            {
+                _knowledgeBaseBaseline = submittedPath;
+            }
             StatusMessage = result.Status switch
             {
                 CortexConfigMutationStatus.Succeeded => result.ReindexRequired
@@ -592,7 +600,8 @@ public sealed class SettingsViewModel : ViewModelBase
     private void ClearConfigProjection()
     {
         _configSnapshot = null;
-        KnowledgeBasePath = string.Empty;
+        if (KnowledgeBasePath == _knowledgeBaseBaseline) { KnowledgeBasePath = string.Empty; }
+        _knowledgeBaseBaseline = string.Empty;
         ConfigStateText = UiStrings.SettingsConfigUnavailable;
         ConfluenceCredentialTarget = string.Empty;
         ConfluenceCredentialStateText = UiStrings.SettingsConfluenceCredentialUnavailable;

@@ -3,6 +3,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
+             xmlns:models="clr-namespace:CortexCompanion.Models"
              xmlns:localization="clr-namespace:CortexCompanion.Localization">
     <UserControl.InputBindings>
         <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
@@ -159,6 +160,11 @@
                                AutomationProperties.LiveSetting="Polite"
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
+                    <Button Content="{x:Static localization:UiStrings.SettingsGoToConfluence}" Style="{StaticResource SecondaryButtonStyle}"
+                            AutomationProperties.Name="{x:Static localization:UiStrings.SettingsGoToConfluence}"
+                            HorizontalAlignment="Left" Margin="{StaticResource MarginStackItem}"
+                            Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{x:Static models:NavigationPage.ConfluencePages}" />
                     <TextBlock x:Name="ConfluencePatLabel"
                                Text="{x:Static localization:UiStrings.SettingsConfluenceCredentialPatLabel}"
                                Margin="{StaticResource MarginLabelBottom}" />

@@ -77,6 +77,19 @@ public sealed class MainWindowSmokeTests
             Assert.AreEqual(UiStrings.SearchSection,
                 AutomationProperties.GetName((DependencyObject)Keyboard.FocusedElement));
             Capture(window);
+            ListBox results = Descendants(search).OfType<ListBox>().Single();
+            Assert.IsGreaterThanOrEqualTo(80.0, results.ActualHeight, "Search results must retain a usable viewport at minimum window size.");
+            Assert.IsTrue(Descendants(search).OfType<TextBlock>().Any(text => text.Text == viewModel.Sync.Freshness.Status));
+            Button syncLink = Descendants(search).OfType<Button>().Single(button =>
+                AutomationProperties.GetName(button) == UiStrings.SearchGoToSync);
+            Assert.IsNotNull(syncLink.Command);
+            syncLink.Command.Execute(syncLink.CommandParameter);
+            Assert.IsTrue(viewModel.IsLocalKnowledgeBaseVisible);
+            Button settingsLink = Descendants(search).OfType<Button>().Single(button =>
+                AutomationProperties.GetName(button) == UiStrings.SettingsNavigation);
+            Assert.IsNotNull(settingsLink.Command);
+            settingsLink.Command.Execute(settingsLink.CommandParameter);
+            Assert.IsTrue(viewModel.IsSettingsVisible);
         }
         finally
         {

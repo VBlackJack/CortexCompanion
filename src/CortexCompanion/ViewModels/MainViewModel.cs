@@ -199,7 +199,7 @@ public sealed class MainViewModel : ViewModelBase
 
     private void RefreshDestination(NavigationPage page)
     {
-        if (page == NavigationPage.LocalKnowledgeBase && Sync.RefreshCommand.CanExecute(null))
+        if (page is NavigationPage.LocalKnowledgeBase or NavigationPage.Search && Sync.RefreshCommand.CanExecute(null))
         {
             Sync.RefreshCommand.Execute(null);
         }

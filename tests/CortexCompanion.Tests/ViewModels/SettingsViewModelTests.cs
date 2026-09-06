@@ -18,6 +18,20 @@ namespace CortexCompanion.Tests.ViewModels;
 public sealed class SettingsViewModelTests
 {
     private const string SnapshotHash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+    [TestMethod]
+    public async Task RefreshPreservesUnsavedKnowledgeBasePathIncludingReadFailure()
+    {
+        using TemporaryDirectory temporary = new();
+        TestContext context = await CreateInitializedContextAsync(temporary, temporary.CreateFakeCli());
+        string draft = Path.Combine(temporary.Path, "draft");
+        context.ViewModel.KnowledgeBasePath = draft;
+        await ExecuteAsync(context.ViewModel.RefreshCommand);
+        Assert.AreEqual(draft, context.ViewModel.KnowledgeBasePath);
+        context.ConfigClient.GetException = new CortexCliContractException("test");
+        await ExecuteAsync(context.ViewModel.RefreshCommand);
+        Assert.AreEqual(draft, context.ViewModel.KnowledgeBasePath);
+    }
     private static readonly int[] ExpectedCliTimeoutOptions = [15, 30, 60, 120];
     private static readonly string[] ExpectedPersistedSettingsProperties =
         ["cliPath", "cliHandshakeTimeoutSeconds"];

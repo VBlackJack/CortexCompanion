@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Commands;
+using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
@@ -13,6 +14,92 @@ namespace CortexCompanion.Tests.Services;
 [TestClass]
 public sealed class SearchClientTests
 {
+    [TestMethod]
+    [DataRow(4, 2, false)]
+    [DataRow(6, 0, true)]
+    [DataRow(7, 0, true)]
+    public void SearchCapabilityHasItsOwnVersionBoundary(int day, int revision, bool expected)
+    {
+        CliHandshakeResult handshake = new(CliHandshakeStatus.Compatible, new CliVersion(2026, 9, day, revision));
+        Assert.AreEqual(expected, CompanionRuntimeFactory.SupportsSearch(handshake));
+        Assert.IsFalse(handshake.IsReadOnly);
+        Assert.IsFalse(CompanionRuntimeFactory.SupportsSearch(handshake with { Status = CliHandshakeStatus.LaunchFailed }));
+    }
+
+    [TestMethod]
+    [DataRow("query")]
+    [DataRow("section")]
+    [DataRow("source")]
+    public async Task EditedCriteriaDiscardLateResultsAndKeepExecutedCriteria(string field)
+    {
+        DelayedRunner runner = new();
+        SearchViewModel viewModel = new(new SearchClient(runner, "cortex.exe", TimeSpan.FromSeconds(30))) { Query = "original" };
+        Task search = ((AsyncRelayCommand)viewModel.SearchCommand).ExecuteAsync(null);
+        if (field == "query") { viewModel.Query = "changed"; }
+        if (field == "section") { viewModel.Section = "changed"; }
+        if (field == "source") { viewModel.Source = SearchViewModel.Choices[1]; }
+        runner.Completion.SetResult(ProcessRunResult.Completed(0, Valid, ""));
+        await search;
+        Assert.IsEmpty(viewModel.Results);
+        Assert.AreEqual(UiStrings.SearchCriteriaChanged, viewModel.Status);
+        Assert.Contains("original", viewModel.ExecutedCriteria, StringComparison.Ordinal);
+        Assert.IsTrue(viewModel.SearchCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task CancelPropagatesAndRejectsEvenAnUncooperativeLateResponse()
+    {
+        DelayedRunner runner = new();
+        SearchViewModel viewModel = new(new SearchClient(runner, "cortex.exe", TimeSpan.FromSeconds(30))) { Query = "original" };
+        Task search = ((AsyncRelayCommand)viewModel.SearchCommand).ExecuteAsync(null);
+        Assert.IsTrue(viewModel.CancelCommand.CanExecute(null));
+        await ((AsyncRelayCommand)viewModel.CancelCommand).ExecuteAsync(null);
+        Assert.IsTrue(runner.Token.IsCancellationRequested);
+        runner.Completion.SetResult(ProcessRunResult.Completed(0, Valid, ""));
+        await search;
+        Assert.IsEmpty(viewModel.Results);
+        Assert.AreEqual(UiStrings.SearchCancelled, viewModel.Status);
+        Assert.IsFalse(viewModel.CancelCommand.CanExecute(null));
+        Assert.IsTrue(viewModel.SearchCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task EditingCompletedSearchClearsItsResultsAndSelection()
+    {
+        SearchViewModel viewModel = new(new SearchClient(new StubProcessRunner(ProcessRunResult.Completed(0, Valid, "")),
+            "cortex.exe", TimeSpan.FromSeconds(30)))
+        { Query = "original" };
+        await ((AsyncRelayCommand)viewModel.SearchCommand).ExecuteAsync(null);
+        viewModel.Selected = viewModel.Results[0];
+        Assert.AreEqual(UiStrings.SearchSourceUnavailable, viewModel.OpenStatus);
+        viewModel.Query = "changed";
+        Assert.IsEmpty(viewModel.Results);
+        Assert.IsNull(viewModel.Selected);
+    }
+
+    [TestMethod]
+    public void RestrictedAndMissingSourcesExplainTheDisabledAction()
+    {
+        SearchViewModel viewModel = new(null);
+        viewModel.Selected = new("id", "title", "text", "path", "", "note", "", "javascript:alert(1)");
+        Assert.AreEqual(UiStrings.SearchSourceBlocked, viewModel.OpenStatus);
+        using TemporaryDirectory temporary = new();
+        viewModel.Selected = viewModel.Selected with { OpenTarget = Path.Combine(temporary.Path, "missing.md") };
+        Assert.AreEqual(UiStrings.SearchSourceMissing, viewModel.OpenStatus);
+        Assert.IsFalse(viewModel.OpenCommand.CanExecute(null));
+    }
+
+    private sealed class DelayedRunner : IProcessRunner
+    {
+        public TaskCompletionSource<ProcessRunResult> Completion { get; } = new();
+        public CancellationToken Token { get; private set; }
+        public Task<ProcessRunResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken)
+        {
+            Token = cancellationToken;
+            return Completion.Task;
+        }
+    }
+
     private const string Valid = """
         {"contract_version":1,"operation":"search","status":"succeeded","mode":"hybrid",
          "degraded":true,"results":[{"id":"a","title":"Title","excerpt":"Answer","path":"a.md",

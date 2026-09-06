@@ -30,6 +30,8 @@ public sealed class SchedulingViewModel : ViewModelBase
     private ScheduledTaskSnapshot _snapshot = ScheduledTaskSnapshot.Absent;
     private SchedulingPresetOption _selectedPreset;
     private string _startTimeText = AppConstants.ScheduledTaskDefaultStartTime;
+    private string _startTimeBaseline = AppConstants.ScheduledTaskDefaultStartTime;
+    private SchedulingPreset? _presetBaseline;
     private string _stateText = UiStrings.SchedulingLoading;
     private string _nextRunText = UiStrings.ValueUnknown;
     private string _lastRunText = UiStrings.ValueUnknown;
@@ -60,6 +62,7 @@ public sealed class SchedulingViewModel : ViewModelBase
             new SchedulingPresetOption(SchedulingPreset.Hourly, UiStrings.SchedulingPresetHourly),
         ]);
         _selectedPreset = Presets[0];
+        _presetBaseline = _selectedPreset.Value;
         BlockedEnvironmentNames = new ReadOnlyCollection<string>(blockedEnvironmentNames.ToArray());
         EnvironmentBlockMessage = BlockedEnvironmentNames.Count == 0
             ? string.Empty
@@ -230,12 +233,16 @@ public sealed class SchedulingViewModel : ViewModelBase
             await ApplySnapshotAsync(snapshot);
             if (snapshot.Preset is not null)
             {
-                SelectedPreset = Presets.Single(option => option.Value == snapshot.Preset.Value);
+                bool hasDraft = _presetBaseline is not null && SelectedPreset.Value != _presetBaseline;
+                _presetBaseline = snapshot.Preset;
+                if (!hasDraft) { SelectedPreset = Presets.Single(option => option.Value == snapshot.Preset.Value); }
             }
 
             if (snapshot.StartTime is not null)
             {
-                StartTimeText = snapshot.StartTime.Value.ToString(TimeFormat, CultureInfo.InvariantCulture);
+                bool hasDraft = StartTimeText != _startTimeBaseline;
+                _startTimeBaseline = snapshot.StartTime.Value.ToString(TimeFormat, CultureInfo.InvariantCulture);
+                if (!hasDraft) { StartTimeText = _startTimeBaseline; }
             }
 
             if (clearOperationMessage)
@@ -292,6 +299,8 @@ public sealed class SchedulingViewModel : ViewModelBase
                 SelectedPreset.Value,
                 startTime);
             await _taskScheduler.CreateOrUpdateAsync(registration, _applicationCancellation);
+            _startTimeBaseline = startTime.ToString(TimeFormat, CultureInfo.InvariantCulture);
+            _presetBaseline = registration.Preset;
             SetOperationMessage(UiStrings.SchedulingSaved, isError: false);
         }
         catch (OperationCanceledException) when (_applicationCancellation.IsCancellationRequested)

@@ -327,7 +327,7 @@
   <data name="SettingsConfluenceCredentialPatLabel" xml:space="preserve"><value>Personal Access Token (PAT)</value></data>
   <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Enregistrer le PAT</value></data>
   <data name="SettingsConfluenceCredentialUnavailable" xml:space="preserve"><value>Connectez d'abord Cortex pour charger la cible d'identifiant Confluence.</value></data>
-  <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Aucune configuration Confluence valide n'a été trouvée. Configurez CONFLUENCE.toml avant d'enregistrer le PAT.</value></data>
+  <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Ouvrez Pages Confluence et complétez Première configuration Confluence, puis revenez dans Réglages pour enregistrer le PAT.</value></data>
   <data name="SettingsConfluenceCredentialConfigInvalid" xml:space="preserve"><value>La cible d'identifiant Confluence n'a pas pu être validée. Corrigez CONFLUENCE.toml, puis rechargez.</value></data>
   <data name="SettingsConfluenceCredentialReadyFormat" xml:space="preserve"><value>Le PAT sera enregistré pour la cible Windows : {0}</value></data>
   <data name="SettingsConfluenceCredentialEmpty" xml:space="preserve"><value>Saisissez un PAT avant de l'enregistrer.</value></data>
@@ -364,7 +364,7 @@
   <data name="SettingsKnowledgeBaseSaved" xml:space="preserve"><value>Le dossier a été enregistré.</value></data>
   <data name="SettingsKnowledgeBaseSavedReindex" xml:space="preserve"><value>Le dossier a été enregistré. Relancez une synchronisation pour reconstruire l'index avec ce nouvel emplacement.</value></data>
   <data name="SettingsKnowledgeBaseUnchanged" xml:space="preserve"><value>Le dossier était déjà configuré. Aucun fichier n'a été modifié.</value></data>
-  <data name="SettingsConfigConflict" xml:space="preserve"><value>La configuration a changé depuis son affichage. Elle a été rechargée ; vérifiez la valeur puis recommencez.</value></data>
+  <data name="SettingsConfigConflict" xml:space="preserve"><value>La configuration a changé depuis son affichage. Son état a été rechargé et votre saisie conservée ; vérifiez-la puis recommencez.</value></data>
   <data name="SettingsConfigLocked" xml:space="preserve"><value>Une autre opération Cortex modifie la configuration. Attendez sa fin, actualisez, puis réessayez.</value></data>
   <data name="SettingsKnowledgeBaseSaveFailed" xml:space="preserve"><value>Cortex n'a pas pu enregistrer le dossier. La configuration a été rechargée sans écriture directe.</value></data>
   <data name="CliFileDialogTitle" xml:space="preserve"><value>Choisir cortex.exe</value></data>
@@ -417,4 +417,12 @@
   <data name="FreshnessPending" xml:space="preserve"><value>La génération publiée attend une indexation réussie confirmée.</value></data>
   <data name="FreshnessUnknown" xml:space="preserve"><value>Correspondance entre publication et indexation non confirmée.</value></data>
   <data name="SearchUnavailable" xml:space="preserve"><value>Connectez une version compatible de Cortex dans Réglages pour activer la recherche.</value></data>
+  <data name="SearchVersionRequiredFormat" xml:space="preserve"><value>La recherche nécessite Cortex {0} ou une version plus récente. Installez cette version, puis sélectionnez son exécutable dans Réglages. Les autres fonctions restent disponibles.</value></data>
+  <data name="SearchCriteriaChanged" xml:space="preserve"><value>Les critères ont changé. Relancez la recherche pour afficher les résultats correspondants.</value></data>
+  <data name="SearchExecutedFormat" xml:space="preserve"><value>Dernière recherche : {0} | Section : {1} | Source : {2}</value></data>
+  <data name="SearchSourceUnavailable" xml:space="preserve"><value>Ce résultat ne fournit pas de lien d'ouverture. Sa référence figure sous le titre.</value></data>
+  <data name="SearchSourceMissing" xml:space="preserve"><value>Le fichier source est introuvable. Vérifiez son emplacement, puis synchronisez la base locale.</value></data>
+  <data name="SearchSourceBlocked" xml:space="preserve"><value>L'ouverture de cette cible n'est pas autorisée. Consultez sa référence sous le titre.</value></data>
+  <data name="SearchGoToSync" xml:space="preserve"><value>Ouvrir Base locale pour synchroniser</value></data>
+  <data name="SettingsGoToConfluence" xml:space="preserve"><value>Configurer dans Pages Confluence</value></data>
 </root>

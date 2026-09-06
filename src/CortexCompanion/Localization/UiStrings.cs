@@ -95,6 +95,8 @@ public static class UiStrings
         typeof(UiStrings).Assembly);
     private static readonly CompositeFormat HandshakeIncompatibleFormat =
         CompositeFormat.Parse(GetString("HandshakeIncompatible"));
+    private static readonly CompositeFormat SearchVersionFormat = CompositeFormat.Parse(GetString("SearchVersionRequiredFormat"));
+    private static readonly CompositeFormat SearchCriteriaFormat = CompositeFormat.Parse(GetString("SearchExecutedFormat"));
     private static readonly CompositeFormat FatalStartupErrorFormat =
         CompositeFormat.Parse(GetString("FatalStartupErrorFormat"));
     private static readonly CompositeFormat HandshakeCompatibleFormat =
@@ -980,6 +982,24 @@ public static class UiStrings
 
     private static string GetString(string name) =>
         ResourceManager.GetString(name, CultureInfo.CurrentUICulture) ?? name;
+
+    /// <summary>Gets the search capability upgrade guidance.</summary>
+    public static string FormatSearchVersionRequired(string version) => string.Format(CultureInfo.CurrentCulture, SearchVersionFormat, version);
+    /// <summary>Gets the prompt to submit edited criteria.</summary>
+    public static string SearchCriteriaChanged => GetString(nameof(SearchCriteriaChanged));
+    /// <summary>Gets the immutable executed-criteria label.</summary>
+    public static string FormatSearchExecuted(string query, string section, string source) =>
+        string.Format(CultureInfo.CurrentCulture, SearchCriteriaFormat, query, section, source);
+    /// <summary>Gets the explanation for a result without an opening target.</summary>
+    public static string SearchSourceUnavailable => GetString(nameof(SearchSourceUnavailable));
+    /// <summary>Gets the explanation for a missing local source.</summary>
+    public static string SearchSourceMissing => GetString(nameof(SearchSourceMissing));
+    /// <summary>Gets the explanation for a restricted opening target.</summary>
+    public static string SearchSourceBlocked => GetString(nameof(SearchSourceBlocked));
+    /// <summary>Gets the navigation label for local indexing.</summary>
+    public static string SearchGoToSync => GetString(nameof(SearchGoToSync));
+    /// <summary>Gets the navigation label for Confluence setup.</summary>
+    public static string SettingsGoToConfluence => GetString(nameof(SettingsGoToConfluence));
 
     private static string FormatOptionalDate(DateTimeOffset? value) => value is null
         ? ValueUnknown
