@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## [2026.0906.00] - 2026-09-06
 
-These changes are available in source; no new release version is assigned here.
+Release candidate. Publication and installer validation are tracked separately.
 
 ### Added
 
