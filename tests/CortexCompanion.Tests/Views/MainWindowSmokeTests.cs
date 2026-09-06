@@ -50,7 +50,7 @@ public sealed class MainWindowSmokeTests
                 fileDialogs,
                 new ConfluenceCredentialTargetProvider(),
                 new WindowsCredentialManagerStore());
-            MainViewModel viewModel = new(runtimeCoordinator, settings);
+            MainViewModel viewModel = new(runtimeCoordinator, settings, new HistoryViewModel(new OperationHistoryReader(paths)));
             window = new MainWindow(viewModel, new RunInterruptionConfirmationService())
             {
                 ShowInTaskbar = false,
@@ -60,6 +60,16 @@ public sealed class MainWindowSmokeTests
             window.Show();
 
             Assert.IsTrue(window.IsVisible);
+            window.Width = window.MinWidth;
+            window.Height = window.MinHeight;
+            window.UpdateLayout();
+            Capture(window, "home");
+            Assert.IsTrue(viewModel.IsHomeVisible);
+            HomeView home = Descendants(window).OfType<HomeView>().Single();
+            Button next = Descendants(home).OfType<Button>().Single(button => ReferenceEquals(button.Command, viewModel.ContinueSetupCommand));
+            Assert.IsTrue(next.IsEnabled);
+            next.Command.Execute(next.CommandParameter);
+            Assert.IsTrue(viewModel.IsSettingsVisible);
             viewModel.NavigateCommand.Execute(NavigationPage.Search);
             Assert.IsTrue(viewModel.IsSearchVisible);
             viewModel.Search.Results.Add(new SearchHit("fixture", "Document de validation graphique",
@@ -73,10 +83,22 @@ public sealed class MainWindowSmokeTests
                 AutomationProperties.GetName(control) == UiStrings.SearchQuery);
             Assert.IsTrue(query.Focus());
             Assert.IsTrue(query.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)));
+            Assert.IsInstanceOfType<System.Windows.Controls.Primitives.ToggleButton>(Keyboard.FocusedElement);
+            Expander advanced = Descendants(search).OfType<Expander>().Single();
+            Assert.IsFalse(advanced.IsExpanded);
+            advanced.IsExpanded = true;
+            window.UpdateLayout();
+            query.Focus();
+            query.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            ((UIElement)Keyboard.FocusedElement).MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             Assert.IsInstanceOfType<TextBox>(Keyboard.FocusedElement);
             Assert.AreEqual(UiStrings.SearchSection,
                 AutomationProperties.GetName((DependencyObject)Keyboard.FocusedElement));
-            Capture(window);
+            viewModel.Search.Selected = viewModel.Search.Results[0];
+            advanced.IsExpanded = false;
+            query.Focus();
+            window.UpdateLayout();
+            Capture(window, "search");
             ListBox results = Descendants(search).OfType<ListBox>().Single();
             Assert.IsGreaterThanOrEqualTo(80.0, results.ActualHeight, "Search results must retain a usable viewport at minimum window size.");
             Assert.IsTrue(Descendants(search).OfType<TextBlock>().Any(text => text.Text == viewModel.Sync.Freshness.Status));
@@ -90,6 +112,13 @@ public sealed class MainWindowSmokeTests
             Assert.IsNotNull(settingsLink.Command);
             settingsLink.Command.Execute(settingsLink.CommandParameter);
             Assert.IsTrue(viewModel.IsSettingsVisible);
+            viewModel.NavigateCommand.Execute(NavigationPage.History);
+            Assert.IsTrue(viewModel.IsHistoryVisible);
+            viewModel.History.Entries.Add(new OperationHistoryEntry("fixture", DateTimeOffset.UtcNow,
+                UiStrings.HistoryLocal, UiStrings.HistoryPartial, UiStrings.FormatHistoryCounters(3, 0, 7, 0, 1),
+                UiStrings.HistoryRetry, "operations/document.md", NavigationPage.LocalKnowledgeBase));
+            window.UpdateLayout();
+            Capture(window, "history");
         }
         finally
         {
@@ -108,7 +137,7 @@ public sealed class MainWindowSmokeTests
         }
     }
 
-    private static void Capture(Window window)
+    private static void Capture(Window window, string name)
     {
         string? directory = Environment.GetEnvironmentVariable("CORTEX_VISUAL_ARTIFACTS");
         if (string.IsNullOrEmpty(directory)) { return; }
@@ -120,7 +149,7 @@ public sealed class MainWindowSmokeTests
             bitmap.Render(window);
             PngBitmapEncoder encoder = new();
             encoder.Frames.Add(BitmapFrame.Create(bitmap));
-            using FileStream stream = File.Create(Path.Combine(directory, $"search-{scale * 100:0}.png"));
+            using FileStream stream = File.Create(Path.Combine(directory, $"{name}-{scale * 100:0}.png"));
             encoder.Save(stream);
         }
     }

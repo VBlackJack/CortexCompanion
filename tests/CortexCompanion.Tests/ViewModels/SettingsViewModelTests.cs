@@ -20,6 +20,25 @@ public sealed class SettingsViewModelTests
     private const string SnapshotHash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     [TestMethod]
+    public async Task OverviewGuidesFromPersistedConfigurationAndFallsBackAfterAReadFailure()
+    {
+        using TemporaryDirectory temporary = new();
+        TestContext context = await CreateInitializedContextAsync(temporary, temporary.CreateFakeCli());
+        MainViewModel main = new(context.Coordinator, context.ViewModel);
+        Assert.AreEqual(UiStrings.GuideDone, main.SetupConfigurationState);
+        Assert.AreEqual(UiStrings.GuideSync, main.RecommendedAction);
+        await ExecuteAsync(main.ContinueSetupCommand);
+        Assert.AreEqual(NavigationPage.LocalKnowledgeBase, main.CurrentPage);
+        context.ConfigClient.GetException = new CortexCliContractException("Read failed.");
+        context.ViewModel.KnowledgeBasePath = Path.Combine(temporary.Path, "unsaved");
+        await ExecuteAsync(context.ViewModel.RefreshCommand);
+        Assert.AreEqual(UiStrings.GuidePending, main.SetupConfigurationState);
+        Assert.AreEqual(UiStrings.GuideConfigure, main.RecommendedAction);
+        await ExecuteAsync(main.ContinueSetupCommand);
+        Assert.AreEqual(NavigationPage.Settings, main.CurrentPage);
+    }
+
+    [TestMethod]
     public async Task RefreshPreservesUnsavedKnowledgeBasePathIncludingReadFailure()
     {
         using TemporaryDirectory temporary = new();
@@ -139,7 +158,7 @@ public sealed class SettingsViewModelTests
         TestContext context = await CreateInitializedContextAsync(temporary, cliPath);
         MainViewModel main = new(context.Coordinator, context.ViewModel);
 
-        Assert.AreEqual(NavigationPage.LocalKnowledgeBase, main.CurrentPage);
+        Assert.AreEqual(NavigationPage.Home, main.CurrentPage);
 
         main.ReportInitializationFailure();
 

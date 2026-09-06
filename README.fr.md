@@ -6,6 +6,41 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir a modifier un fichier TOML ni a ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
+## Accueil et premiers pas
+
+Cette section decrit la prochaine version (entree **Unreleased** du changelog).
+L'installeur publie 2026.0906.00 ne contient pas encore ces ameliorations.
+
+**Accueil** affiche les dates observees d'indexation et de collecte Confluence,
+la prochaine collecte planifiee, l'activite et la prochaine action utile. Le
+guide propose quatre etapes : choisir les documents, connecter eventuellement
+Confluence, synchroniser, puis essayer une recherche. La configuration est
+verifiee depuis son etat enregistre, jamais depuis un brouillon de chemin.
+L'indexation indique une reussite observee dans les operations conservees.
+
+**Recherche** replie initialement les filtres avances. Selectionner un resultat
+affiche son apercu et permet de copier l'extrait avec son titre et sa reference.
+Modifier les criteres efface la selection precedente et desactive sa copie.
+
+**Historique** presente les operations manuelles et planifiees conservees pour
+le compte Windows courant. Les commandes CLI externes et les operations deja
+purgees ne sont pas incluses. Les workers conservent normalement dix operations
+terminees par categorie ; la lecture est plafonnee a 100 dossiers par categorie.
+Une operation sans resultat final reste non confirmee. Les compteurs disponibles
+respectent le contrat Cortex : les fichiers publies regroupent ajouts et
+modifications. Les anciens resultats et les collectes Confluence peuvent ne pas
+contenir ces compteurs. Une liste d'erreurs echantillonnee est signalee.
+Les actions de reprise ouvrent l'ecran operationnel actuel sans relancer
+automatiquement une ancienne operation.
+
+La carte **Versions et mises a jour**, dans Accueil, contacte GitHub uniquement
+sur demande. Elle compare Companion en cours d'execution et Cortex connecte avec
+la release stable officielle. Le bouton de telechargement ouvre la page de
+l'installeur commun ; aucune installation n'est lancee automatiquement.
+
+Consulter le [guide de validation](docs/validation.fr.md) pour les controles
+automatises et les scenarios de recette manuelle restants.
+
 ## Installer et synchroniser les documents locaux
 
 1. Telecharger l'installeur Windows unique depuis la

@@ -57,7 +57,7 @@
     <CornerRadius x:Key="CornerRadiusCard">10</CornerRadius>
     <CornerRadius x:Key="CornerRadiusControl">8</CornerRadius>
     <GridLength x:Key="NavigationPaneWidth">220</GridLength>
-    <GridLength x:Key="SearchFormHeight">2*</GridLength>
+    <GridLength x:Key="SearchFormHeight">*</GridLength>
     <GridLength x:Key="StatusBarHeight">Auto</GridLength>
     <FontFamily x:Key="AppFontFamily">Segoe UI</FontFamily>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />

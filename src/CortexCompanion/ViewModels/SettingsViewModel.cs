@@ -609,6 +609,7 @@ public sealed class SettingsViewModel : ViewModelBase
 
     private void RaiseCommandStates()
     {
+        OnPropertyChanged(nameof(HasSavedKnowledgeBase));
         _saveCliCommand.RaiseCanExecuteChanged();
         _browseCliCommand.RaiseCanExecuteChanged();
         _refreshCommand.RaiseCanExecuteChanged();
@@ -616,6 +617,10 @@ public sealed class SettingsViewModel : ViewModelBase
         _saveKnowledgeBaseCommand.RaiseCanExecuteChanged();
         OnPropertyChanged(nameof(CanStoreConfluenceCredential));
     }
+
+    /// <summary>Reports validated persisted configuration, never an unsaved path draft.</summary>
+    public bool HasSavedKnowledgeBase => IsCliReady && _configSnapshot is { IsValid: true } &&
+        !string.IsNullOrWhiteSpace(_configSnapshot.KnowledgeBasePath);
 
     private static string FormatPathValidation(CliPathValidationResult validation) => validation.Status switch
     {

@@ -6,6 +6,39 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
+## Overview and getting started
+
+This section describes the next release (the changelog's **Unreleased** entry).
+The published 2026.0906.00 installer does not yet include this experience update.
+
+**Home** shows observed indexing and Confluence collection times, the next
+scheduled collection, current activity and a contextual next step. Its four-step
+guide links to document setup, optional Confluence setup, synchronization and a
+first search. Configuration completion uses the saved state, never an unsaved
+path draft. Indexing completion is an observation of a retained successful run.
+
+**Search** keeps advanced filters collapsed initially. Select a result to read
+its preview, open the source, or copy the excerpt with its title and reference.
+Changing the criteria clears the previous selection and disables copying it.
+
+**History** reads retained manual and scheduled runs for the current Windows
+account. It does not include external CLI runs or already pruned records. The
+normal worker retention is ten completed runs per category; the reader caps
+inspection at 100 directories per category. Missing terminal results remain
+unconfirmed. Available sync counters preserve the CLI meaning: published files
+combine additions and modifications. Older and Confluence collection records
+may lack these counters. Error lists may be sampled; the screen says when they
+are incomplete. Recovery buttons open the current operational screen without
+automatically rerunning an old operation.
+
+The **Versions and updates** card on Home contacts GitHub only when requested.
+It compares the running Companion version and connected Cortex version with the
+official stable release. The download action opens the official release page
+for the combined installer; no installation runs automatically.
+
+See the [validation guide](docs/validation.md) for automated checks and the
+remaining manual acceptance scenarios.
+
 ## Install and synchronize local documents
 
 1. Download the single Windows installer from the

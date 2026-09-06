@@ -425,4 +425,72 @@
   <data name="SearchSourceBlocked" xml:space="preserve"><value>L'ouverture de cette cible n'est pas autorisée. Consultez sa référence sous le titre.</value></data>
   <data name="SearchGoToSync" xml:space="preserve"><value>Ouvrir Base locale pour synchroniser</value></data>
   <data name="SettingsGoToConfluence" xml:space="preserve"><value>Configurer dans Pages Confluence</value></data>
+  <data name="HomeNavigation" xml:space="preserve"><value>Accueil</value></data>
+  <data name="HomeTitle" xml:space="preserve"><value>Votre base de connaissances</value></data>
+  <data name="HomeIntro" xml:space="preserve"><value>Retrouvez vos documents et voyez la prochaine action utile.</value></data>
+  <data name="HomeIndex" xml:space="preserve"><value>Dernière indexation observée</value></data>
+  <data name="HomeCollection" xml:space="preserve"><value>Dernière collecte Confluence réussie</value></data>
+  <data name="HomeNext" xml:space="preserve"><value>Prochaine collecte planifiée</value></data>
+  <data name="HomeActivity" xml:space="preserve"><value>Opération en cours ou dernier résultat</value></data>
+  <data name="HomeRefresh" xml:space="preserve"><value>Actualiser l'accueil</value></data>
+  <data name="GuideTitle" xml:space="preserve"><value>Premiers pas</value></data>
+  <data name="GuideIntro" xml:space="preserve"><value>Suivez ces étapes à votre rythme. Vous pouvez revenir ici après chaque action.</value></data>
+  <data name="GuideConfigure" xml:space="preserve"><value>Choisir et enregistrer mes documents</value></data>
+  <data name="GuideObserve" xml:space="preserve"><value>Suivre l'opération en cours</value></data>
+  <data name="GuideSync" xml:space="preserve"><value>Synchroniser mes documents</value></data>
+  <data name="GuideSearch" xml:space="preserve"><value>Rechercher dans mes documents</value></data>
+  <data name="GuideDone" xml:space="preserve"><value>Étape vérifiée</value></data>
+  <data name="GuidePending" xml:space="preserve"><value>À vérifier</value></data>
+  <data name="GuideDocuments" xml:space="preserve"><value>1. Choisir les documents</value></data>
+  <data name="GuideConfluence" xml:space="preserve"><value>2. Connecter Confluence (facultatif)</value></data>
+  <data name="GuideConfluenceHelp" xml:space="preserve"><value>Ajoutez une page Confluence si vous souhaitez aussi rechercher dans ses documents. Vous pouvez passer directement à la synchronisation.</value></data>
+  <data name="GuideIndex" xml:space="preserve"><value>3. Synchroniser</value></data>
+  <data name="GuideTry" xml:space="preserve"><value>4. Essayer une recherche</value></data>
+  <data name="GuideTryHelp" xml:space="preserve"><value>Recherchez un sujet présent dans vos documents, puis ouvrez une source pour vérifier le résultat.</value></data>
+  <data name="HistoryNavigation" xml:space="preserve"><value>Historique</value></data>
+  <data name="HistoryScope" xml:space="preserve"><value>Opérations conservées par Companion sur ce compte Windows (jusqu'à 100 par catégorie). Les exécutions externes et les opérations déjà purgées ne sont pas incluses.</value></data>
+  <data name="HistoryScheduled" xml:space="preserve"><value>Collecte planifiée</value></data>
+  <data name="HistoryManual" xml:space="preserve"><value>Opération manuelle</value></data>
+  <data name="HistoryLocal" xml:space="preserve"><value>Documents locaux</value></data>
+  <data name="HistoryConfluence" xml:space="preserve"><value>Collecte Confluence</value></data>
+  <data name="HistoryUnreadable" xml:space="preserve"><value>Données illisibles</value></data>
+  <data name="HistoryNoCounters" xml:space="preserve"><value>Compteurs détaillés non disponibles pour cette opération.</value></data>
+  <data name="HistoryInspect" xml:space="preserve"><value>Consultez l'état actuel et les diagnostics avant de relancer.</value></data>
+  <data name="HistoryCancelled" xml:space="preserve"><value>Interrompue</value></data>
+  <data name="HistoryUnconfirmed" xml:space="preserve"><value>Issue non confirmée (opération en cours ou arrêt sans résultat)</value></data>
+  <data name="HistorySucceeded" xml:space="preserve"><value>Réussie</value></data>
+  <data name="HistoryFailed" xml:space="preserve"><value>Échec</value></data>
+  <data name="HistoryPartial" xml:space="preserve"><value>Résultat partiel</value></data>
+  <data name="HistoryLocked" xml:space="preserve"><value>Une autre opération détient le verrou</value></data>
+  <data name="HistoryNoAction" xml:space="preserve"><value>Aucune action requise pour cette opération.</value></data>
+  <data name="HistoryRetry" xml:space="preserve"><value>Vérifiez les fichiers signalés, puis relancez la synchronisation depuis Base locale.</value></data>
+  <data name="HistoryRepair" xml:space="preserve"><value>L'index lexical doit être réparé. Consultez les diagnostics dans Base locale ; une synchronisation ordinaire ne garantit pas cette réparation.</value></data>
+  <data name="HistoryErrorsTruncated" xml:space="preserve"><value>La liste des erreurs est partielle.</value></data>
+  <data name="HistoryCounters" xml:space="preserve"><value>Fichiers publiés (ajoutés ou modifiés) : {0} · supprimés : {1} · ignorés : {2} · vides : {3} · erreurs : {4}</value></data>
+  <data name="HistoryReadFailed" xml:space="preserve"><value>Impossible de lire l'historique. Actualisez pour réessayer.</value></data>
+  <data name="HistoryLoading" xml:space="preserve"><value>Chargement de l'historique...</value></data>
+  <data name="HistoryEmpty" xml:space="preserve"><value>Aucune opération conservée par Companion. Lancez une synchronisation depuis Base locale.</value></data>
+  <data name="HistoryOpen" xml:space="preserve"><value>Consulter l'état actuel</value></data>
+  <data name="HistoryDetails" xml:space="preserve"><value>Détails des erreurs</value></data>
+  <data name="HistoryRefresh" xml:space="preserve"><value>Actualiser l'historique</value></data>
+  <data name="UpdateTitle" xml:space="preserve"><value>Versions et mises à jour</value></data>
+  <data name="UpdateCompanion" xml:space="preserve"><value>Companion en cours d'exécution</value></data>
+  <data name="UpdateCortex" xml:space="preserve"><value>Cortex connecté</value></data>
+  <data name="UpdateAvailableLabel" xml:space="preserve"><value>Version stable disponible</value></data>
+  <data name="UpdateNotChecked" xml:space="preserve"><value>La disponibilité des mises à jour n'a pas encore été vérifiée.</value></data>
+  <data name="UpdateCheckFailed" xml:space="preserve"><value>Vérification impossible. Vérifiez la connexion et réessayez.</value></data>
+  <data name="UpdateOpenFailed" xml:space="preserve"><value>Impossible d'ouvrir la page de téléchargement dans le navigateur.</value></data>
+  <data name="UpdateChecking" xml:space="preserve"><value>Vérification de la version stable...</value></data>
+  <data name="UpdateCompareUnknown" xml:space="preserve"><value>Version disponible trouvée. Connectez Cortex dans Réglages pour comparer les deux versions.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>Une mise à jour est disponible pour Cortex ou Companion.</value></data>
+  <data name="UpdateVersionsDiffer" xml:space="preserve"><value>Les versions de Cortex et Companion diffèrent. L'installeur commun permet de les mettre à jour ensemble.</value></data>
+  <data name="UpdateCurrent" xml:space="preserve"><value>Les versions installées correspondent à la version stable disponible ou sont plus récentes.</value></data>
+  <data name="UpdateCheck" xml:space="preserve"><value>Vérifier les mises à jour</value></data>
+  <data name="UpdateOpen" xml:space="preserve"><value>Ouvrir le téléchargement officiel</value></data>
+  <data name="UpdateHelp" xml:space="preserve"><value>La vérification contacte GitHub uniquement à votre demande. L'installeur commun met à jour Cortex et Companion ; aucune installation automatique.</value></data>
+  <data name="SearchAdvanced" xml:space="preserve"><value>Filtres avancés</value></data>
+  <data name="SearchCopy" xml:space="preserve"><value>Copier l'extrait et sa référence</value></data>
+  <data name="SearchCopied" xml:space="preserve"><value>Extrait et référence copiés.</value></data>
+  <data name="SearchCopyFailed" xml:space="preserve"><value>Le presse-papiers est indisponible. Réessayez.</value></data>
+  <data name="SearchPreview" xml:space="preserve"><value>Aperçu du résultat sélectionné</value></data>
 </root>

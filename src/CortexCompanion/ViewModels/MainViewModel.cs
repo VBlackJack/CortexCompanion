@@ -11,13 +11,13 @@ using CortexCompanion.Services;
 namespace CortexCompanion.ViewModels;
 
 /// <summary>Coordinates persistent navigation and atomically applied CLI-bound feature graphs.</summary>
-public sealed class MainViewModel : ViewModelBase
+public sealed partial class MainViewModel : ViewModelBase
 {
     private readonly ICompanionRuntimeCoordinator _runtimeCoordinator;
     private PagesViewModel _pages;
     private SyncViewModel _sync;
     private SchedulingViewModel _scheduling;
-    private NavigationPage _currentPage = NavigationPage.LocalKnowledgeBase;
+    private NavigationPage _currentPage = NavigationPage.Home;
     private string _handshakeStatusText = UiStrings.HandshakePending;
     private bool _isReadOnly = true;
     private bool _isInitializing = true;
@@ -25,7 +25,9 @@ public sealed class MainViewModel : ViewModelBase
     /// <summary>Initializes an immediately displayable shell around the pending runtime.</summary>
     public MainViewModel(
         ICompanionRuntimeCoordinator runtimeCoordinator,
-        SettingsViewModel settings)
+        SettingsViewModel settings,
+        HistoryViewModel? history = null,
+        UpdatesViewModel? updates = null)
     {
         _runtimeCoordinator = runtimeCoordinator ?? throw new ArgumentNullException(nameof(runtimeCoordinator));
         Settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -35,6 +37,9 @@ public sealed class MainViewModel : ViewModelBase
         _scheduling = pending.Scheduling;
         _runtimeCoordinator.RuntimeChanged += OnRuntimeChanged;
         NavigateCommand = new RelayCommand<NavigationPage>(Navigate);
+        History = history ?? new HistoryViewModel(new OperationHistoryReader(new AppPaths()));
+        Updates = updates ?? new UpdatesViewModel(new ReleaseUpdateClient());
+        InitializeOverview();
     }
 
     /// <summary>Gets the configured Confluence pages screen.</summary>
@@ -95,6 +100,10 @@ public sealed class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsLocalKnowledgeBaseSelected));
                 OnPropertyChanged(nameof(IsConfluenceSchedulingSelected));
                 OnPropertyChanged(nameof(IsSettingsSelected));
+                OnPropertyChanged(nameof(IsHomeVisible));
+                OnPropertyChanged(nameof(IsHomeSelected));
+                OnPropertyChanged(nameof(IsHistoryVisible));
+                OnPropertyChanged(nameof(IsHistorySelected));
                 RefreshDestination(value);
             }
         }
@@ -172,6 +181,7 @@ public sealed class MainViewModel : ViewModelBase
         }
         finally
         {
+            IsGuideExpanded = !Settings.HasSavedKnowledgeBase;
             IsInitializing = false;
         }
     }
@@ -199,25 +209,30 @@ public sealed class MainViewModel : ViewModelBase
 
     private void RefreshDestination(NavigationPage page)
     {
-        if (page is NavigationPage.LocalKnowledgeBase or NavigationPage.Search && Sync.RefreshCommand.CanExecute(null))
+        if (page is NavigationPage.Home or NavigationPage.LocalKnowledgeBase or NavigationPage.Search && Sync.RefreshCommand.CanExecute(null))
         {
             Sync.RefreshCommand.Execute(null);
         }
 
-        if (page == NavigationPage.ConfluenceScheduling && Scheduling.RefreshCommand.CanExecute(null))
+        if (page is NavigationPage.Home or NavigationPage.ConfluenceScheduling && Scheduling.RefreshCommand.CanExecute(null))
         {
             Scheduling.RefreshCommand.Execute(null);
         }
 
-        if (page == NavigationPage.Settings && Settings.RefreshCommand.CanExecute(null))
+        if (page is NavigationPage.Home or NavigationPage.Settings && Settings.RefreshCommand.CanExecute(null))
         {
             Settings.RefreshCommand.Execute(null);
+        }
+        if (page == NavigationPage.History && History.RefreshCommand.CanExecute(null))
+        {
+            History.RefreshCommand.Execute(null);
         }
     }
 
     private void OnRuntimeChanged(object? sender, CompanionRuntimeChangedEventArgs eventArgs)
     {
         CompanionRuntime runtime = eventArgs.Runtime;
+        Sync.PropertyChanged -= OnOverviewChanged;
         Pages = runtime.Pages;
         Search.Stop();
         Search = runtime.Search;
@@ -232,6 +247,9 @@ public sealed class MainViewModel : ViewModelBase
         Scheduling = runtime.Scheduling;
         IsReadOnly = runtime.Handshake.IsReadOnly;
         HandshakeStatusText = CliHandshakePresenter.Format(runtime.Handshake);
+        Updates.CortexVersion = runtime.Handshake.DetectedVersion?.ToString() ?? UiStrings.ValueUnknown;
+        Sync.PropertyChanged += OnOverviewChanged;
+        RefreshOverview();
         if (IsReadOnly)
         {
             CurrentPage = NavigationPage.Settings;

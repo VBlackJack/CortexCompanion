@@ -38,6 +38,14 @@
                            FontSize="{StaticResource FontSizeTitle}"
                            FontWeight="SemiBold"
                            Margin="{StaticResource MarginSectionBottom}" />
+                <RadioButton Content="{x:Static localization:UiStrings.HomeNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.HomeNavigation}"
+                             Command="{Binding NavigateCommand}" CommandParameter="{x:Static models:NavigationPage.Home}"
+                             IsChecked="{Binding IsHomeSelected, Mode=TwoWay}" Style="{StaticResource NavigationRadioButtonStyle}" />
+                <RadioButton Content="{x:Static localization:UiStrings.HistoryNavigation}"
+                             AutomationProperties.Name="{x:Static localization:UiStrings.HistoryNavigation}"
+                             Command="{Binding NavigateCommand}" CommandParameter="{x:Static models:NavigationPage.History}"
+                             IsChecked="{Binding IsHistorySelected, Mode=TwoWay}" Style="{StaticResource NavigationRadioButtonStyle}" />
                 <RadioButton Content="{x:Static localization:UiStrings.SyncNavigation}"
                              AutomationProperties.Name="{x:Static localization:UiStrings.SyncNavigation}"
                              Command="{Binding NavigateCommand}"
@@ -90,6 +98,12 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Border>
+            <Grid Grid.Row="1" Visibility="{Binding IsHomeVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:HomeView />
+            </Grid>
+            <Grid Grid.Row="1" Visibility="{Binding IsHistoryVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <views:HistoryView DataContext="{Binding History}" />
+            </Grid>
             <Grid Grid.Row="1"
                   Visibility="{Binding IsConfluencePagesVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <views:PagesView DataContext="{Binding Pages}" />

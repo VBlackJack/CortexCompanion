@@ -73,12 +73,11 @@ public sealed class UiStringsContractTests
     [TestMethod]
     public void EveryDeclaredResourceIsExposedByUiStrings()
     {
-        string source = File.ReadAllText(Path.Combine(
+        string source = string.Join(Environment.NewLine, Directory.EnumerateFiles(Path.Combine(
             FindRepositoryRoot(),
             "src",
             "CortexCompanion",
-            "Localization",
-            "UiStrings.cs"));
+            "Localization"), "UiStrings*.cs").Select(File.ReadAllText));
         string resource = File.ReadAllText(ResourcePath());
 
         List<string> orphans = [];

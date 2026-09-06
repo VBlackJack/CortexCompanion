@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Home overview with observed indexing and collection times, next scheduled run,
+  current activity, and a contextual next action.
+- Four-step getting-started guide that uses saved configuration and observed
+  indexing outcomes, with optional Confluence setup.
+- Retained manual and scheduled operation history with explicit partial,
+  cancelled, unconfirmed and unreadable outcomes, exact available counters,
+  error samples and recovery navigation.
+- On-demand stable release checks showing both installed versions and the
+  available version, with navigation to the official combined installer.
+- Search preview and explicit excerpt/reference copying; advanced filters
+  start collapsed and leave more space for results.
+
+### Fixed
+
+- Successful local-only indexing now exposes its observed completion timestamp
+  without claiming that a Confluence generation has been indexed.
+
 ## [2026.0906.00] - 2026-09-06
 
 ### Added

@@ -21,4 +21,8 @@ public enum NavigationPage
     Settings,
     /// <summary>The read-only indexed document search destination.</summary>
     Search,
+    /// <summary>The overview and guided getting-started destination.</summary>
+    Home,
+    /// <summary>The locally retained operation history.</summary>
+    History,
 }

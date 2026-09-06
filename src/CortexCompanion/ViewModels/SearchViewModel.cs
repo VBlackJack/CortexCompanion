@@ -18,6 +18,8 @@ public sealed class SearchViewModel : ViewModelBase
     private readonly AsyncRelayCommand _search;
     private readonly AsyncRelayCommand _open;
     private readonly AsyncRelayCommand _cancel;
+    private readonly AsyncRelayCommand _copy;
+    private readonly Action<string> _copyText;
     private SourceChoice _source = Choices[0];
     private long _criteriaRevision;
     private bool _hasExecuted;
@@ -29,9 +31,21 @@ public sealed class SearchViewModel : ViewModelBase
     private CancellationTokenSource? _cancellation;
 
     /// <summary>Creates a disabled screen until the compatible runtime is available.</summary>
-    public SearchViewModel(SearchClient? client, string? unavailableReason = null)
+    public SearchViewModel(SearchClient? client, string? unavailableReason = null, Action<string>? copyText = null)
     {
         _client = client;
+        _copyText = copyText ?? System.Windows.Clipboard.SetText;
+        _copy = new AsyncRelayCommand(() =>
+        {
+            if (Selected is SearchHit hit)
+            {
+                _copyText(string.Join(Environment.NewLine + Environment.NewLine,
+                    hit.Excerpt, hit.Title, hit.OpenTarget ?? hit.Path));
+                Status = UiStrings.SearchCopied;
+            }
+            return Task.CompletedTask;
+        }, () => Selected is not null);
+        _copy.ExecutionFailed += (_, _) => Status = UiStrings.SearchCopyFailed;
         _status = client is null ? unavailableReason ?? UiStrings.SearchUnavailable : UiStrings.SearchReady;
         _search = new AsyncRelayCommand(SearchAsync,
             () => _client is not null && !string.IsNullOrWhiteSpace(Query) && Query.Length <= SearchClient.QueryLimit);
@@ -64,7 +78,7 @@ public sealed class SearchViewModel : ViewModelBase
     public SearchHit? Selected
     {
         get => _selected;
-        set { if (SetProperty(ref _selected, value)) { _open.RaiseCanExecuteChanged(); OnPropertyChanged(nameof(OpenStatus)); } }
+        set { if (SetProperty(ref _selected, value)) { _open.RaiseCanExecuteChanged(); _copy.RaiseCanExecuteChanged(); OnPropertyChanged(nameof(OpenStatus)); } }
     }
 
     /// <summary>Gets the accessible operation status.</summary>
@@ -75,6 +89,9 @@ public sealed class SearchViewModel : ViewModelBase
 
     /// <summary>Gets the explicit source-opening command.</summary>
     public ICommand OpenCommand => _open;
+
+    /// <summary>Copies the selected excerpt and its reference after an explicit action.</summary>
+    public ICommand CopyCommand => _copy;
 
     /// <summary>Gets the action that cancels only the current search.</summary>
     public ICommand CancelCommand => _cancel;

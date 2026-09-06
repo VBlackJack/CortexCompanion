@@ -1,12 +1,15 @@
-# Recherche, fraîcheur et validation visuelle
+# Expérience Companion et validation
 
 **Français** | [English](validation.md)
 
 [Retour au README](../README.fr.md)
 
-Ces ajouts sont disponibles dans les sources non encore publiées. L'écran
-**Recherche** exige une version de Cortex fournissant `search --json` ; une CLI
-plus ancienne affiche un échec explicite.
+La recherche et la fraîcheur sont disponibles depuis la release 2026.0906.00.
+L'accueil, le guide de démarrage, l'historique, l'aperçu avec copie et les
+vérifications de mises à jour appartiennent à la prochaine version (**Unreleased**).
+**Recherche** exige Cortex 2026.0906.00 ou ultérieur. Avec une CLI compatible
+plus ancienne, les autres fonctions restent disponibles ; la recherche est
+désactivée avec une explication invitant à mettre à jour.
 
 ## Rechercher un document
 
@@ -15,6 +18,11 @@ puis sélectionner **Rechercher**. La section correspond à un filtre exact.
 Les résultats affichent le titre, le chemin, la date connue et un extrait.
 Sélectionner un résultat puis **Ouvrir la source** pour consulter le document.
 Une cible absente ou refusée laisse ce bouton désactivé.
+
+Les filtres avancés sont initialement repliés. Sélectionner un résultat affiche
+son aperçu. **Copier l'extrait et sa référence** copie l'extrait, le titre et
+la source. Modifier la requête ou les filtres efface les anciens résultats et
+la sélection. **Interrompre** ou Échap annule la recherche en cours.
 
 L'absence de résultat, le classement dégradé, le dépassement du délai et une
 erreur de transport ou de contrat sont des états distincts. Une recherche en
@@ -33,6 +41,28 @@ Une preuve absente, illisible ou incomplète apparaît comme non confirmée. Les
 synchronisations lancées hors de Companion ne sont pas déduites d'une date de
 fichier. Ce suivi est un historique d'observation, pas une inspection indépendante
 du contenu courant de Chroma.
+
+Une indexation locale seule expose sa date de réussite sans confirmer la
+fraîcheur Confluence. L'accueil recommande la synchronisation après une tentative
+plus récente non réussie ou lorsque publication et indexation divergent.
+Le guide valide la configuration enregistrée, jamais un brouillon de chemin.
+
+## Recette de la prochaine version
+
+| Zone | Scénario | Résultat attendu |
+|---|---|---|
+| Accueil et guide | Démarrer sans documents configurés, puis enregistrer un chemin valide | Action vers Réglages, puis synchronisation ; configuration enregistrée vérifiée |
+| Confluence facultatif | Indexer uniquement les documents locaux | Date d'indexation disponible, sans inventer une fraîcheur Confluence |
+| Recherche | Copier un résultat, puis changer un filtre | Copie de l'extrait/titre/référence ; anciens résultats et possibilité de copie effacés |
+| Historique | Consulter des opérations réussies, partielles, interrompues et sans résultat final | Issue propre à chaque opération ; absence de preuve jamais présentée comme une réussite |
+| Erreurs | Consulter une liste échantillonnée ou un enregistrement illisible | Limites explicites ; les autres enregistrements lisibles restent disponibles |
+| Mises à jour | Vérifier en ligne puis sans réseau | Version stable affichée en cas de succès ; ancienne disponibilité effacée après échec et nouvelle tentative possible |
+| Téléchargement | Ouvrir le téléchargement officiel | Page de l'installeur commun dans le navigateur, sans exécution automatique |
+
+L'historique lit les deux magasins de workers Companion conservés, pas les
+commandes CLI externes. Les fichiers publiés regroupent ajouts et modifications.
+Les anciennes opérations et certaines collectes Confluence n'ont pas de compteurs
+détaillés. Les liens de reprise ouvrent les écrans actuels sans rejouer une commande.
 
 ## Valider localement
 
@@ -58,8 +88,11 @@ dotnet test CortexCompanion.sln -c Release --no-restore --filter FullyQualifiedN
 ```
 
 Le test ouvre la fenêtre réelle avec une configuration temporaire et du contenu
-synthétique, sélectionne **Recherche**, vérifie Tab de la requête vers la section,
-puis rend la fenêtre à sa taille minimale en 96, 144 et 192 DPI.
+synthétique, exerce l'action du guide, vérifie les filtres repliés et le parcours
+Tab après leur ouverture, puis rend Accueil, Recherche et Historique à la taille
+minimale en 96, 144 et 192 DPI. Le rendu Historique insère un résultat synthétique
+après le chargement vide ; les tests du lecteur valident séparément les vrais
+formats de fichiers des workers.
 
 Ces captures vérifient le rendu WPF, pas les changements d'échelle physiques de
 Windows. Avant de déclarer une couverture manuelle complète, vérifier encore :

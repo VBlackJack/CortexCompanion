@@ -1,17 +1,25 @@
-# Search, freshness and visual validation
+# Companion experience and validation
 
 [Français](validation.fr.md) | **English**
 
 [Back to the README](../README.md)
 
-These additions are available in unreleased source builds.
+Search and freshness are available starting with release 2026.0906.00.
+Home, the getting-started guide, history, the search preview/copy action and
+on-demand update checks belong to the next release (**Unreleased**).
 
 The **Recherche** destination queries the Cortex JSON search contract. It offers
 an exact section filter, a source-kind filter, bounded excerpts and explicit
 source opening. Empty results, degraded ranking, timeout and transport/contract
 failure are separate states. Reconnecting settings cancels the obsolete runtime's
 search; closing the window also cancels a read-only search. A compatible Cortex
-build containing `search --json` is required; older CLIs fail visibly.
+version 2026.0906.00 or newer is required; older compatible CLIs keep their
+other features while search is disabled with an upgrade explanation.
+
+Advanced filters start collapsed. Select a result to inspect its preview, then
+use **Copier l'extrait et sa référence** to copy the excerpt, title and source.
+Editing the query or filters clears the obsolete results and selection.
+**Interrompre** or Escape cancels an active search.
 
 The **Base locale** screen distinguishes the last successful collection from the
 published generation and the latest successful index generation observed in
@@ -20,6 +28,28 @@ A newer unfinished or failed run prevents a current confirmation. Missing,
 unreadable or incomplete evidence is shown as unconfirmed. Synchronizations run
 outside Companion are not inferred from a file timestamp. This is an observation
 history, not an independent scan of the live Chroma index.
+
+A successful local-only run exposes its completion timestamp without confirming
+Confluence freshness. Home recommends synchronization after a newer unsuccessful
+run or when publication and indexing do not match. The guide uses saved
+configuration, not an unsaved path, to validate the document-setup step.
+
+## Acceptance scenarios for the next release
+
+| Area | Scenario | Expected behavior |
+|---|---|---|
+| Home and guide | Start without configured documents, then save a valid path | Next action leads to Settings, then synchronization; the saved setup step is marked verified |
+| Optional Confluence | Skip Confluence and index local documents | The indexing timestamp remains available; no Confluence freshness is invented |
+| Search | Select a result, copy it, then change a filter | Clipboard includes excerpt/title/reference; old results and copy availability are cleared |
+| History | Inspect successful, partial, interrupted and unfinished operations | Each retains its own outcome; missing terminal evidence is never called a success |
+| History errors | Inspect a sampled error list or a malformed record | Missing details and truncation are explicit; other readable records remain available |
+| Updates | Check while online, then retry without network access | Stable version appears on success; failure clears stale availability and allows retry |
+| Updates | Open the official download | Browser opens the combined-installer release page; no installer executes automatically |
+
+History reads the two retained Companion worker stores, not arbitrary CLI logs.
+Published-file counts combine additions and modifications. Some older and
+Confluence collection records have no detailed counters. Recovery links open
+current operational screens and do not replay a historical command.
 
 ## Local validation
 
@@ -43,9 +73,12 @@ $env:CORTEX_VISUAL_ARTIFACTS = Join-Path $PWD 'local/visual-validation'
 dotnet test CortexCompanion.sln -c Release --no-restore --filter FullyQualifiedName~MainWindowSmokeTests
 ```
 
-The smoke test opens the real WPF shell, navigates to search, traverses from the
-query to the section field with Tab and renders the minimum-size window at 96,
-144 and 192 DPI. It uses synthetic content and temporary settings. These renders
+The smoke test opens the real WPF shell, exercises the guide's next action,
+navigates to search, checks collapsed filters and Tab traversal after expansion,
+and renders Home, Search and History at minimum size in 96, 144 and 192 DPI.
+It uses synthetic content and temporary settings. The history render inserts a
+fixture entry after the empty-state load; history service tests independently
+exercise actual worker records. These renders
 exercise WPF layout and rasterization; they do not emulate Windows display changes.
 
 Before claiming manual accessibility or multi-monitor coverage, still exercise:

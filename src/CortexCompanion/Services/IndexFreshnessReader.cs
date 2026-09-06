@@ -57,14 +57,14 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
                 JsonElement root = report.RootElement;
                 if (root.GetProperty("contract_version").GetInt32() != 1 ||
                     root.GetProperty("operation").GetString() != "sync" ||
-                    root.GetProperty("status").GetString() != "succeeded" ||
-                    !root.GetProperty("scope").GetProperty("included_ingestion_documents").GetBoolean())
+                    root.GetProperty("status").GetString() != "succeeded")
                 {
                     latestSucceeded = false;
                     continue;
                 }
 
-                indexed = root.GetProperty("ingestion").GetProperty("indexed_generation_id").GetString();
+                indexed = root.GetProperty("scope").GetProperty("included_ingestion_documents").GetBoolean()
+                    ? root.GetProperty("ingestion").GetProperty("indexed_generation_id").GetString() : null;
                 completed = result!.CompletedAt;
                 break;
             }
@@ -79,9 +79,16 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
         string status = published is null || completed is null ? UiStrings.FreshnessUnknown :
             latestSucceeded && published == indexed ? UiStrings.FreshnessCurrent : UiStrings.FreshnessPending;
         return new(published ?? UiStrings.ValueUnknown, indexed ?? UiStrings.ValueUnknown,
-            completed?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? UiStrings.ValueUnknown, status);
+            completed?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? UiStrings.ValueUnknown, status)
+        {
+            LatestLocalRunSucceeded = latestSucceeded,
+        };
     }
 }
 
 /// <summary>Separates publication identity, indexed identity, timestamp and evidence status.</summary>
-public sealed record IndexFreshness(string Published, string Indexed, string LastIndex, string Status);
+public sealed record IndexFreshness(string Published, string Indexed, string LastIndex, string Status)
+{
+    /// <summary>Gets whether the newest observed local run completed successfully.</summary>
+    public bool LatestLocalRunSucceeded { get; init; }
+}

@@ -39,6 +39,7 @@ public sealed class IndexFreshnessReaderTests
         IndexFreshness result = await reader.ReadAsync(CancellationToken.None);
         Assert.AreEqual(current ? UiStrings.FreshnessCurrent : UiStrings.FreshnessPending, result.Status);
         Assert.AreEqual(indexed, result.Indexed);
+        Assert.IsTrue(result.LatestLocalRunSucceeded);
 
         // A new failed run invalidates the confirmation without erasing the last success.
         string failed = Path.Combine(root, "runs", "failed");
@@ -48,6 +49,7 @@ public sealed class IndexFreshnessReaderTests
         result = await reader.ReadAsync(CancellationToken.None);
         Assert.AreEqual(UiStrings.FreshnessPending, result.Status);
         Assert.AreEqual(indexed, result.Indexed);
+        Assert.IsFalse(result.LatestLocalRunSucceeded);
     }
 
     [TestMethod]
@@ -55,6 +57,29 @@ public sealed class IndexFreshnessReaderTests
     {
         using TemporaryDirectory temporary = new();
         IndexFreshness result = await new IndexFreshnessReader(temporary.Path, null).ReadAsync(CancellationToken.None);
+        Assert.AreEqual(UiStrings.FreshnessUnknown, result.Status);
+    }
+
+    [TestMethod]
+    public async Task LocalOnlySuccessIsVisibleWithoutClaimingConfluenceFreshness()
+    {
+        using TemporaryDirectory temporary = new();
+        string run = Path.Combine(temporary.Path, "run");
+        await SyncRunPersistence.WriteJsonAtomicAsync(Path.Combine(run, "worker.json"), new SyncWorkerState
+        {
+            RunId = "run",
+            WorkerProcessId = 1,
+            WorkerStartedAt = DateTimeOffset.UtcNow,
+            RunKind = SyncRunKind.LocalDocuments,
+        }, CancellationToken.None);
+        await SyncRunPersistence.WriteJsonAtomicAsync(Path.Combine(run, "result.json"),
+            new SyncWorkerResult { ExitCode = 0, CompletedAt = DateTimeOffset.UtcNow }, CancellationToken.None);
+        await File.WriteAllTextAsync(Path.Combine(run, "stdout.log"),
+            """{"contract_version":1,"operation":"sync","status":"succeeded","scope":{"included_ingestion_documents":false}}""");
+        IndexFreshness result = await new IndexFreshnessReader(temporary.Path, null).ReadAsync(CancellationToken.None);
+        Assert.AreNotEqual(UiStrings.ValueUnknown, result.LastIndex);
+        Assert.IsTrue(result.LatestLocalRunSucceeded);
+        Assert.AreEqual(UiStrings.ValueUnknown, result.Indexed);
         Assert.AreEqual(UiStrings.FreshnessUnknown, result.Status);
     }
 }

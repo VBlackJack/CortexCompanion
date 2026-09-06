@@ -71,10 +71,12 @@ public sealed class SearchClientTests
         { Query = "original" };
         await ((AsyncRelayCommand)viewModel.SearchCommand).ExecuteAsync(null);
         viewModel.Selected = viewModel.Results[0];
+        Assert.IsTrue(viewModel.CopyCommand.CanExecute(null));
         Assert.AreEqual(UiStrings.SearchSourceUnavailable, viewModel.OpenStatus);
         viewModel.Query = "changed";
         Assert.IsEmpty(viewModel.Results);
         Assert.IsNull(viewModel.Selected);
+        Assert.IsFalse(viewModel.CopyCommand.CanExecute(null));
     }
 
     [TestMethod]

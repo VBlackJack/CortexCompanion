@@ -10,7 +10,7 @@ namespace CortexCompanion.Localization;
 /// <summary>
 /// Exposes the embedded French user-interface resources without a runtime language switcher.
 /// </summary>
-public static class UiStrings
+public static partial class UiStrings
 {
     /// <summary>Gets the localized SearchNavigation text.</summary>
     public static string SearchNavigation => GetString(nameof(SearchNavigation));
