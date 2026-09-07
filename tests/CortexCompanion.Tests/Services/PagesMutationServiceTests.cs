@@ -43,6 +43,29 @@ public sealed class PagesMutationServiceTests
     }
 
     [TestMethod]
+    public async Task ATimedOutPreviewStaysRecognisableAsATimeout()
+    {
+        // Without the flag on the exception every caller formatted the generic failure,
+        // so the one message naming the real cause could never be reached from here.
+        FakeCliClient cli = new()
+        {
+            ResolveResult = new ConfluenceCliResult<ResolvedPageContract>(
+                CortexExitCode.Error,
+                null,
+                string.Empty,
+                true,
+                null),
+        };
+        PagesMutationService service = new(cli, new FakeConfigStore(PagesSnapshot()), new FakeConfirmations());
+
+        ConfluenceCliOperationException failure =
+            await Assert.ThrowsAsync<ConfluenceCliOperationException>(() =>
+                service.AddPageAsync("https://wiki/pages/123", false, CancellationToken.None));
+
+        Assert.IsTrue(failure.TimedOut);
+    }
+
+    [TestMethod]
     public async Task FailedResolveNeverReadsOrWritesConfiguration()
     {
         FakeCliClient cli = new()

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
@@ -107,7 +108,9 @@ public sealed class PagesViewModelTests
 
         await viewModel.InitializeAsync(isReadOnly: false);
 
-        Assert.AreEqual(UiStrings.PagesCliTimedOut, viewModel.StateMessage);
+        Assert.AreEqual(
+            UiStrings.FormatPagesCliTimedOut(AppConstants.MaximumCliTimeoutSeconds),
+            viewModel.StateMessage);
         Assert.Contains("Réglages", viewModel.StateMessage, StringComparison.Ordinal);
         Assert.DoesNotContain("refusé", viewModel.StateMessage, StringComparison.Ordinal);
     }

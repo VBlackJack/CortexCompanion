@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CortexCompanion.Constants;
 
@@ -67,6 +68,14 @@ public static class AppConstants
     /// <summary>Gets the bounded Cortex CLI timeout choices exposed by Companion.</summary>
     public static IReadOnlyList<int> CliTimeoutOptions { get; } =
         new ReadOnlyCollection<int>([15, DefaultCliTimeoutSeconds, 60, 120]);
+
+    /// <summary>Gets the highest timeout a user can select.</summary>
+    /// <remarks>
+    /// <see cref="NormalizeCliTimeoutSeconds"/> reverts any other value to the default,
+    /// so a hand-edited settings file cannot buy more time than this. Any message that
+    /// advises raising the timeout has to say where that advice stops.
+    /// </remarks>
+    public static int MaximumCliTimeoutSeconds { get; } = CliTimeoutOptions.Max();
 
     /// <summary>Gets the maximum retained characters for each process output stream.</summary>
     public const int MaxProcessOutputCharacters = 16_384;

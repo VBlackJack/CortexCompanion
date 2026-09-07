@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
@@ -551,8 +552,8 @@ public sealed partial class PagesViewModel : ViewModelBase
         catch (ConfluenceCliOperationException exception)
         {
             terminalMessage = configurationCreated
-                ? $"{UiStrings.PagesSetupCreatedAddFailed} {FormatCliFailure(exception.ExitCode, exception.Message, false, null)}"
-                : FormatCliFailure(exception.ExitCode, exception.Message, false, null);
+                ? $"{UiStrings.PagesSetupCreatedAddFailed} {FormatCliFailure(exception.ExitCode, exception.Message, exception.TimedOut, null)}"
+                : FormatCliFailure(exception.ExitCode, exception.Message, exception.TimedOut, null);
         }
         catch (Exception exception) when (exception is ConfluenceSetupValidationException or
                                           PageMutationRejectedException or
@@ -663,7 +664,7 @@ public sealed partial class PagesViewModel : ViewModelBase
         {
             failed = true;
             terminalMessage = cliFailureOverride?.Invoke(exception)
-                ?? FormatCliFailure(exception.ExitCode, exception.Message, false, null);
+                ?? FormatCliFailure(exception.ExitCode, exception.Message, exception.TimedOut, null);
         }
         catch (Exception exception) when (exception is ConfluenceSetupValidationException or PageMutationRejectedException or
                                           ConfluenceConfigLockedException or
@@ -722,7 +723,7 @@ public sealed partial class PagesViewModel : ViewModelBase
     {
         if (timedOut)
         {
-            return UiStrings.PagesCliTimedOut;
+            return UiStrings.FormatPagesCliTimedOut(AppConstants.MaximumCliTimeoutSeconds);
         }
 
         if (launchError is not null)

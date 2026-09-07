@@ -26,7 +26,10 @@
                    Margin="{StaticResource MarginSectionBottom}" />
         <StackPanel Grid.Row="1">
             <TextBlock Text="{x:Static localization:UiStrings.FlowScopeHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
-            <RadioButton x:Name="PageOnlyOption" GroupName="Scope" Margin="{StaticResource MarginChoiceBottom}">
+            <RadioButton x:Name="PageOnlyOption"
+                         GroupName="Scope"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         Margin="{StaticResource MarginChoiceBottom}">
                 <StackPanel>
                     <WrapPanel>
                         <TextBlock Text="{x:Static localization:UiStrings.ScopeChoicePageOnly}" FontWeight="SemiBold" />
@@ -40,7 +43,10 @@
                     <TextBlock x:Name="PageOnlyDetails" Foreground="{DynamicResource TextSecondaryBrush}" />
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="SubtreeOption" GroupName="Scope" Margin="{StaticResource MarginChoiceBottom}">
+            <RadioButton x:Name="SubtreeOption"
+                         GroupName="Scope"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         Margin="{StaticResource MarginChoiceBottom}">
                 <StackPanel>
                     <WrapPanel>
                         <TextBlock Text="{x:Static localization:UiStrings.ScopeChoiceSubtree}" FontWeight="SemiBold" />
@@ -54,7 +60,9 @@
                     <TextBlock x:Name="SubtreeDetails" Foreground="{DynamicResource TextSecondaryBrush}" />
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="WholeSpaceOption" GroupName="Scope">
+            <RadioButton x:Name="WholeSpaceOption"
+                         GroupName="Scope"
+                         Foreground="{DynamicResource TextPrimaryBrush}">
                 <StackPanel>
                     <TextBlock x:Name="WholeSpaceLabel" FontWeight="SemiBold" />
                     <TextBlock x:Name="WholeSpaceDetails" Foreground="{DynamicResource TextSecondaryBrush}" />

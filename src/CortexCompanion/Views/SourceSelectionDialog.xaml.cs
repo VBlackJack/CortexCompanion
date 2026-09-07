@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using CortexCompanion.Localization;
+using CortexCompanion.Constants;
 using CortexCompanion.Logging;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
@@ -73,6 +74,14 @@ public partial class SourceSelectionDialog : Window
         {
             ConfluenceCliResult<SourceCatalogContract> response = await _loadCatalog();
             if (_closed) { return; }
+            // Reading a whole space can outlast the configured timeout. Reporting that
+            // as a tree error told the user to check a connection that was never down.
+            if (response.TimedOut)
+            {
+                ValidationMessage.Text = UiStrings.FormatPagesCliTimedOut(
+                    AppConstants.MaximumCliTimeoutSeconds);
+                return;
+            }
             if (!response.IsSuccess || response.Value?.SpaceKey != _spaceKey)
             { ValidationMessage.Text = UiStrings.SourcesTreeError; return; }
             _roots = SourceTreeNode.Build(response.Value.Pages, SourceTreeNode.Flatten(_roots).ToArray());

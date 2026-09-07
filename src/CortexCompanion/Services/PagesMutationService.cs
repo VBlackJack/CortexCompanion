@@ -40,7 +40,10 @@ public sealed partial class PagesMutationService
             cancellationToken);
         if (!preview.IsSuccess || preview.Value is null)
         {
-            throw new ConfluenceCliOperationException(preview.ExitCode, preview.StandardError);
+            throw new ConfluenceCliOperationException(
+                preview.ExitCode,
+                preview.StandardError,
+                preview.TimedOut);
         }
 
         ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
@@ -326,14 +329,23 @@ public sealed partial class PagesMutationService
 public sealed class ConfluenceCliOperationException : Exception
 {
     /// <summary>Initializes an operation error with its stable code and sanitized message.</summary>
-    public ConfluenceCliOperationException(CortexExitCode exitCode, string message)
+    public ConfluenceCliOperationException(CortexExitCode exitCode, string message, bool timedOut = false)
         : base(message)
     {
         ExitCode = exitCode;
+        TimedOut = timedOut;
     }
 
     /// <summary>Gets the frozen Cortex exit code.</summary>
     public CortexExitCode ExitCode { get; }
+
+    /// <summary>Gets whether the CLI was killed at the configured timeout.</summary>
+    /// <remarks>
+    /// Without this the presenter could not tell a timeout from any other failure and
+    /// reported the generic error, so the one message that says what actually happened
+    /// was unreachable from every path that raises this exception.
+    /// </remarks>
+    public bool TimedOut { get; }
 }
 
 /// <summary>Reports a business-rule refusal that requires no write.</summary>

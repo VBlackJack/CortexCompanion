@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Interfaces;
+using CortexCompanion.Constants;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
 
@@ -71,11 +72,18 @@ public sealed class ConfluenceSourceService(
                 await stream.WriteAsync(ConfluenceConfigRenderer.Render(candidate), token);
             }
             ConfluenceCliResult<ScopePreviewContract> response = await previewClient(temporary).PreviewAsync(request.PageUrl, token);
-            if (response.TimedOut) { throw new PageMutationRejectedException(UiStrings.PagesCliTimedOut); }
+            if (response.TimedOut)
+            {
+                throw new PageMutationRejectedException(
+                    UiStrings.FormatPagesCliTimedOut(AppConstants.MaximumCliTimeoutSeconds));
+            }
             if (response.LaunchError is not null) { throw new PageMutationRejectedException(UiStrings.PagesCliLaunchFailed); }
             if (!response.IsSuccess || response.Value is null)
             {
-                throw new ConfluenceCliOperationException(response.ExitCode, response.StandardError);
+                throw new ConfluenceCliOperationException(
+                    response.ExitCode,
+                    response.StandardError,
+                    response.TimedOut);
             }
             preview = response.Value;
         }

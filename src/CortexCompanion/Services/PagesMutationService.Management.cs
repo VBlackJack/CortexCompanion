@@ -50,7 +50,10 @@ public sealed partial class PagesMutationService
         ConfluenceCliResult<PagesContract> listing = await _cliClient.GetPagesAsync(cancellationToken);
         if (!listing.IsSuccess || listing.Value is null)
         {
-            throw new ConfluenceCliOperationException(listing.ExitCode, listing.StandardError);
+            throw new ConfluenceCliOperationException(
+                listing.ExitCode,
+                listing.StandardError,
+                listing.TimedOut);
         }
 
         IReadOnlyList<ConfiguredPageContract> pages = listing.Value.Spaces
@@ -87,7 +90,10 @@ public sealed partial class PagesMutationService
             ConfluenceCliResult<ResolvedPageContract> resolved = await _cliClient.ResolveAsync(edit.AdditionalReference, cancellationToken);
             if (!resolved.IsSuccess || resolved.Value is null)
             {
-                throw new ConfluenceCliOperationException(resolved.ExitCode, resolved.StandardError);
+                throw new ConfluenceCliOperationException(
+                    resolved.ExitCode,
+                    resolved.StandardError,
+                    resolved.TimedOut);
             }
 
             if (!string.Equals(spaceKey, resolved.Value.SpaceKey, StringComparison.OrdinalIgnoreCase))

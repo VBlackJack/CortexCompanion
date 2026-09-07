@@ -1,8 +1,10 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using CortexCompanion.Constants;
 using CortexCompanion.Localization;
 
 namespace CortexCompanion.Tests.Localization;
@@ -43,6 +45,23 @@ public sealed class UiStringsContractTests
                 content.Contains(bannedCharacter, StringComparison.Ordinal),
                 $"UiStrings.resx contains banned punctuation U+{(int)bannedCharacter:X4}.");
         }
+    }
+
+    /// <summary>Ensures the timeout advice names the ceiling instead of promising more.</summary>
+    /// <remarks>
+    /// NormalizeCliTimeoutSeconds reverts any value outside CliTimeoutOptions to the
+    /// default, so an unqualified "raise the timeout" cannot be followed past the
+    /// highest option, and a hand-edited settings file silently lands four times lower.
+    /// </remarks>
+    [TestMethod]
+    public void TimeoutAdviceStatesTheHighestSelectableTimeout()
+    {
+        string message = UiStrings.FormatPagesCliTimedOut(AppConstants.MaximumCliTimeoutSeconds);
+
+        StringAssert.Contains(
+            message,
+            AppConstants.MaximumCliTimeoutSeconds.ToString(CultureInfo.CurrentCulture),
+            "The timeout advice must say where raising the timeout stops.");
     }
 
     /// <summary>Ensures no exposed string silently degrades to its own resource key.</summary>

@@ -120,6 +120,8 @@ public static partial class UiStrings
         CompositeFormat.Parse(GetString("PagesAddSpaceInferredKey"));
     private static readonly CompositeFormat PagesSpaceNotAllowlistedFormat =
         CompositeFormat.Parse(GetString("PagesSpaceNotAllowlisted"));
+    private static readonly CompositeFormat PagesCliTimedOutFormat =
+        CompositeFormat.Parse(GetString("PagesCliTimedOut"));
     private static readonly CompositeFormat ScopeRootDetailsFormat =
         CompositeFormat.Parse(GetString("ScopeRootDetails"));
     private static readonly CompositeFormat ScopeChoiceWholeSpaceFormat =
@@ -220,6 +222,9 @@ public static partial class UiStrings
     /// <summary>Formats the measured root and descendant count.</summary>
     public static string FormatScopeRoot(string title, int descendantCount) =>
         string.Format(CultureInfo.CurrentCulture, ScopeRootDetailsFormat, title, descendantCount);
+    /// <summary>Formats the CLI timeout advice around the highest selectable value.</summary>
+    public static string FormatPagesCliTimedOut(int maximumTimeoutSeconds) =>
+        string.Format(CultureInfo.CurrentCulture, PagesCliTimedOutFormat, maximumTimeoutSeconds);
     /// <summary>Formats the whole-space scope label.</summary>
     public static string FormatScopeWholeSpace(string spaceKey) =>
         string.Format(CultureInfo.CurrentCulture, ScopeChoiceWholeSpaceFormat, spaceKey);
@@ -392,7 +397,6 @@ public static partial class UiStrings
     /// <summary>Gets a Pages CLI message.</summary>
     public static string PagesCliOutsideAllowlist => GetString(nameof(PagesCliOutsideAllowlist));
     /// <summary>Gets a Pages CLI message.</summary>
-    public static string PagesCliTimedOut => GetString(nameof(PagesCliTimedOut));
     /// <summary>Gets a Pages CLI message.</summary>
     public static string PagesCliLaunchFailed => GetString(nameof(PagesCliLaunchFailed));
     /// <summary>Gets a Pages CLI message.</summary>

@@ -16,12 +16,22 @@ public static partial class CliStandardErrorPresenter
             return string.Empty;
         }
 
-        // Cortex writes its user-facing sentence and its log records to the same stream.
-        // A log record starts with an ISO 8601 timestamp; nothing else on that stream does.
+        // Cortex writes its user-facing sentence, its log records and its machine
+        // progress records to the same stream. A log record starts with an ISO 8601
+        // timestamp and a progress record starts with its own marker; both would
+        // otherwise be joined into the sentence the user reads, and a screen reader
+        // announces.
+        //
+        // This stays a rejection list rather than an allowlist on the "Cortex " prefix
+        // every user-facing sentence happens to use today: an interpolated error can
+        // carry its own newlines, and an unexpected traceback carries no prefix at all,
+        // so an allowlist would show the user nothing on the failures that matter most.
         IEnumerable<string> sentences = standardError
             .Split('\n')
             .Select(line => line.Trim())
-            .Where(line => line.Length > 0 && !LogRecordPattern().IsMatch(line));
+            .Where(line => line.Length > 0
+                && !LogRecordPattern().IsMatch(line)
+                && !line.StartsWith(SyncProgressParser.Prefix, StringComparison.Ordinal));
         return string.Join(' ', sentences);
     }
 

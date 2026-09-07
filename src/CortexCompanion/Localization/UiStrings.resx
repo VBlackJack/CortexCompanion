@@ -138,7 +138,7 @@
   <data name="PagesRejectSpaceForeignBaseUrl" xml:space="preserve"><value>Cette URL ne pointe pas vers le serveur Confluence configuré.</value></data>
   <data name="ConfirmAddSpaceTitle" xml:space="preserve"><value>Autoriser un espace</value></data>
   <data name="ConfirmAddSpaceMessage" xml:space="preserve"><value>L'espace {0} sera autorisé en classification {1}. Aucune page n'est collectée tant que vous n'en ajoutez pas explicitement.</value></data>
-  <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré. Augmentez-le dans Réglages, choisissez Enregistrer et connecter, puis réessayez.</value></data>
+  <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré. Vous pouvez porter ce délai jusqu'à {0} secondes dans Réglages, choisir Enregistrer et connecter, puis réessayer. Si le délai maximal ne suffit pas, l'espace est trop grand pour cette opération.</value></data>
   <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu être lancé.</value></data>
   <data name="PagesCliInvalidJson" xml:space="preserve"><value>La réponse JSON du CLI est invalide.</value></data>
   <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>Cette page est déjà incluse dans l'espace entier. Vous pouvez collecter maintenant ou modifier sa sélection dans Mes sources ci-dessous.</value></data>

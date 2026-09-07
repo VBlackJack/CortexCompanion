@@ -9,7 +9,8 @@ namespace CortexCompanion.Services;
 /// <summary>Extracts only the latest stable Cortex progress record from stderr.</summary>
 public static class SyncProgressParser
 {
-    private const string Prefix = "CORTEX_PROGRESS ";
+    /// <summary>Gets the marker every machine progress record carries on standard error.</summary>
+    public const string Prefix = "CORTEX_PROGRESS ";
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = false,

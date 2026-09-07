@@ -170,6 +170,52 @@ public sealed class ThemeContrastTests
             (string?)selectionPresenter.Attribute("ContentTemplateSelector"));
     }
 
+    /// <summary>Ensures controls without an implicit theme style declare their own foreground.</summary>
+    /// <remarks>
+    /// The theme carries implicit styles for TextBox, ComboBox and ComboBoxItem, but the
+    /// only RadioButton style is keyed and there is none at all for CheckBox. Either
+    /// control therefore falls through to the built-in WPF style, whose own Foreground
+    /// setter outranks the inherited window brush and paints its labels in the system
+    /// control colour over the fixed dark background. The centralized-literal test cannot
+    /// see this: a missing brush is not a hex literal, which is exactly how it shipped.
+    /// </remarks>
+    [TestMethod]
+    public void ControlsWithoutAnImplicitThemeStyleDeclareTheirOwnForeground()
+    {
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XName[] guardedControls =
+        [
+            presentation + "RadioButton",
+            presentation + "CheckBox",
+        ];
+        string repositoryRoot = FindRepositoryRoot();
+        string viewDirectory = Path.Combine(repositoryRoot, "src", "CortexCompanion", "Views");
+        IEnumerable<string> paths = Directory.EnumerateFiles(viewDirectory, "*.xaml")
+            .Append(Path.Combine(repositoryRoot, "src", "CortexCompanion", "MainWindow.xaml"));
+
+        List<string> undeclared = [];
+        foreach (string path in paths)
+        {
+            foreach (XElement control in XDocument.Load(path).Descendants()
+                         .Where(element => guardedControls.Contains(element.Name)))
+            {
+                if (control.Attribute("Foreground") is not null || control.Attribute("Style") is not null)
+                {
+                    continue;
+                }
+
+                XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+                string name = (string?)control.Attribute(xaml + "Name") ?? control.Name.LocalName;
+                undeclared.Add($"{Path.GetFileName(path)}: {name}");
+            }
+        }
+
+        Assert.IsEmpty(
+            undeclared,
+            "These controls declare neither a Style nor a Foreground, so they render in the " +
+            $"system colour instead of the theme: {string.Join(", ", undeclared)}.");
+    }
+
     /// <summary>Ensures color literals stay centralized in the palette dictionary.</summary>
     [TestMethod]
     public void ThemeAndViewColorLiteralsAreCentralized()

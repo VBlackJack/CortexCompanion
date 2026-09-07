@@ -25,6 +25,21 @@ public sealed class CliStandardErrorPresenterTests
     }
 
     [TestMethod]
+    public void MachineProgressRecordsNeverReachTheUserFacingSentence()
+    {
+        string standardError = string.Join(
+            '\n',
+            "CORTEX_PROGRESS {\"contract_version\":1,\"current\":3,\"phase\":\"enumeration\",\"total\":24}",
+            "Cortex Confluence error: Confluence returned no usable total for the scope count.");
+
+        string sentence = CliStandardErrorPresenter.UserFacing(standardError);
+
+        Assert.AreEqual(
+            "Cortex Confluence error: Confluence returned no usable total for the scope count.",
+            sentence);
+    }
+
+    [TestMethod]
     public void SeveralUserFacingLinesStayInOrderOnOneLine()
     {
         string sentence = CliStandardErrorPresenter.UserFacing("premiere ligne\r\nseconde ligne\r\n");

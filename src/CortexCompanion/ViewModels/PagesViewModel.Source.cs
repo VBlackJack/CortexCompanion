@@ -116,7 +116,7 @@ public sealed partial class PagesViewModel
             HasSourceError = true;
             NeedsCredential = exception.ExitCode == CortexExitCode.Auth;
             StateMessage = NeedsCredential ? UiStrings.FlowAuthenticationRequired :
-                FormatCliFailure(exception.ExitCode, exception.Message, false, null);
+                FormatCliFailure(exception.ExitCode, exception.Message, exception.TimedOut, null);
         }
         catch (ConfluenceConfigConflictException) { SetSourceError(UiStrings.PagesCasConflict); }
         catch (Exception exception) when (exception is ConfluenceSetupValidationException or PageMutationRejectedException or
