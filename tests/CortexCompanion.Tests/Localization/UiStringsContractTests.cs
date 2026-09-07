@@ -55,6 +55,56 @@ public sealed class UiStringsContractTests
         }
     }
 
+    /// <summary>Ensures the neutral set really answers in English, satellite or not.</summary>
+    /// <remarks>
+    /// The assembly pins French, so without this nothing would ever read the neutral set and a
+    /// broken English resource would ship unnoticed. Only plain properties are asserted here:
+    /// they read the resource on each access, while the format members are static and were
+    /// parsed under the pinned language. That is the same limitation the application has, and
+    /// the reason a language change applies at the next start rather than in place.
+    /// </remarks>
+    [TestMethod]
+    public void TheNeutralResourceSetAnswersInEnglish()
+    {
+        CultureInfo previous = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = new CultureInfo("en");
+
+            Assert.AreEqual("Home", UiStrings.HomeNavigation);
+            Assert.AreEqual("Search", UiStrings.SearchNavigation);
+            Assert.AreEqual("History", UiStrings.HistoryNavigation);
+            Assert.AreEqual("Settings", UiStrings.SettingsNavigation);
+            Assert.AreEqual("Cancel", UiStrings.CancelButton);
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    /// <summary>Ensures the French satellite is built and reachable, not silently absent.</summary>
+    /// <remarks>
+    /// A satellite that fails to build degrades to the neutral set, so every French assertion
+    /// in this assembly would report English text rather than a missing resource. Naming the
+    /// failure here makes that cause obvious instead of scattering it over unrelated tests.
+    /// </remarks>
+    [TestMethod]
+    public void TheFrenchSatelliteIsReachable()
+    {
+        CultureInfo previous = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = new CultureInfo(TestCulture.AssertedLanguage);
+
+            Assert.AreEqual("Accueil", UiStrings.HomeNavigation);
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
     /// <summary>Ensures every resource set answers for the same keys with the same placeholders.</summary>
     /// <remarks>
     /// A key present in one set and absent from another degrades to the raw key name on screen
