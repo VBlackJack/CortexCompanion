@@ -78,8 +78,12 @@ public partial class SourceSelectionDialog : Window
             // as a tree error told the user to check a connection that was never down.
             if (response.TimedOut)
             {
-                ValidationMessage.Text = UiStrings.FormatPagesCliTimedOut(
-                    AppConstants.MaximumCliTimeoutSeconds);
+                // The read reports its progress, so a timeout can say how far it got rather
+                // than leaving the user to guess whether anything happened at all.
+                SyncProgressRecord? reached = SyncProgressParser.ReadLatest(response.StandardError);
+                ValidationMessage.Text = reached is null
+                    ? UiStrings.FormatPagesCliTimedOut(AppConstants.MaximumCliTimeoutSeconds)
+                    : UiStrings.FormatSourcesTreeTimedOutProgress(reached.Current, reached.Total);
                 return;
             }
             if (!response.IsSuccess || response.Value?.SpaceKey != _spaceKey)

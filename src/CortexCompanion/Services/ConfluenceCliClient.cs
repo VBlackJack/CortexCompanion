@@ -37,7 +37,10 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
 
     /// <inheritdoc />
     public Task<ConfluenceCliResult<SourceCatalogContract>> GetCatalogAsync(string spaceKey, CancellationToken cancellationToken) =>
-        RunAsync<SourceCatalogContract>(["confluence", "--config", _configPath, "catalog", spaceKey, "--json"], cancellationToken);
+        RunAsync<SourceCatalogContract>(
+            ["confluence", "--config", _configPath, "catalog", spaceKey, "--json"],
+            cancellationToken,
+            _timeout > AppConstants.MinimumCatalogTimeout ? _timeout : AppConstants.MinimumCatalogTimeout);
 
     /// <inheritdoc />
     public Task<ConfluenceCliResult<SourceStatusContract>> GetSourceStatusAsync(CancellationToken cancellationToken) =>
@@ -86,14 +89,15 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
 
     private async Task<ConfluenceCliResult<T>> RunAsync<T>(
         IReadOnlyList<string> arguments,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        TimeSpan? timeout = null)
         where T : class
     {
         ProcessRunResult processResult = await _processRunner.RunAsync(
             new ProcessRequest(
                 _cliPath,
                 arguments,
-                _timeout,
+                timeout ?? _timeout,
                 AppConstants.MaxProcessOutputCharacters),
             cancellationToken);
         CortexExitCode exitCode = MapExitCode(processResult.ExitCode);

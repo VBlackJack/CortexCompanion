@@ -98,6 +98,14 @@ public static class AppConstants
             supported => string.Equals(supported, trimmed, StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>Gets the floor under the timeout for reading a whole space page tree.</summary>
+    /// <remarks>
+    /// Measured against a 5918 page space, the catalogue read takes 112 seconds over thirty
+    /// requests, so the ordinary command timeout kills it at every offered value. The floor
+    /// keeps the read bounded while letting it finish; the user asked for this tree by name.
+    /// </remarks>
+    public static readonly TimeSpan MinimumCatalogTimeout = TimeSpan.FromMinutes(5);
+
     /// <summary>Gets the maximum retained characters for each process output stream.</summary>
     public const int MaxProcessOutputCharacters = 16_384;
 

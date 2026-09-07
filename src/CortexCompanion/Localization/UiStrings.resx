@@ -588,4 +588,5 @@
   <data name="SettingsLanguageLabel" xml:space="preserve"><value>Interface language</value></data>
   <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choose the language of Cortex Companion. The change applies the next time the application starts.</value></data>
   <data name="SettingsLanguageSystem" xml:space="preserve"><value>Windows language</value></data>
+  <data name="SourcesTreeTimedOutProgress" xml:space="preserve"><value>Reading the page tree stopped after {0} of about {1} pages. A very large space can take several minutes; try again.</value></data>
 </root>

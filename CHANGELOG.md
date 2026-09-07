@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Let the page tree finish loading. Reading a whole space takes about two minutes on a
+  large one, measured at 112 seconds over thirty requests for 5918 pages, so every timeout
+  the settings screen offers killed it. That read now has its own floor of five minutes,
+  while every other command keeps the configured timeout; a timeout longer than the floor
+  is still honoured.
+- Say how far the page tree got when it does run out of time. Cortex reports its progress
+  on the diagnostic stream, so the message names the pages read and the estimate instead of
+  repeating the generic timeout advice.
+
 ## [2026.0907.01] - 2026-09-07
 
 ### Added

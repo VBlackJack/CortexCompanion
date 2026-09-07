@@ -588,4 +588,5 @@
   <data name="SettingsLanguageLabel" xml:space="preserve"><value>Langue de l'interface</value></data>
   <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choisissez la langue de Cortex Companion. Le changement s'applique au prochain démarrage de l'application.</value></data>
   <data name="SettingsLanguageSystem" xml:space="preserve"><value>Langue de Windows</value></data>
+  <data name="SourcesTreeTimedOutProgress" xml:space="preserve"><value>La lecture de l'arborescence s'est arrêtée après {0} pages sur environ {1}. Un très grand espace peut demander plusieurs minutes ; réessayez.</value></data>
 </root>

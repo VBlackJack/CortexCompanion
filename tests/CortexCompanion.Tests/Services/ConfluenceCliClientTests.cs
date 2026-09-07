@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using CortexCompanion.Constants;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 using CortexCompanion.Tests.TestSupport;
@@ -23,6 +24,46 @@ public sealed class ConfluenceCliClientTests
         Assert.AreEqual("1", result.Value!.Pages.Single().AncestorIds.Single());
         Assert.AreEqual("catalog", runner.LastRequest!.Arguments[3]);
         Assert.AreEqual("DOC", runner.LastRequest.Arguments[4]);
+    }
+
+    [TestMethod]
+    public async Task ReadingAWholeSpaceIsGivenLongerThanAnOrdinaryCommand()
+    {
+        // Measured at 112 seconds over thirty requests on a 5918 page space, so every
+        // timeout the settings screen offers would kill this read before it finished.
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            """{"contract_version":1,"space_key":"DOC","pages":[]}""", string.Empty));
+        ConfluenceCliClient client = new(runner, @"C:	ools\cortex.exe", @"C:\config\confluence.toml", ConfiguredTimeout);
+
+        await client.GetCatalogAsync("DOC", CancellationToken.None);
+
+        Assert.AreEqual(AppConstants.MinimumCatalogTimeout, runner.LastRequest!.Timeout);
+        Assert.IsGreaterThan(ConfiguredTimeout, runner.LastRequest.Timeout);
+    }
+
+    [TestMethod]
+    public async Task AnOrdinaryCommandKeepsTheConfiguredTimeout()
+    {
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            """{"contract_version":1,"selection_current":true,"generation_id":"g1","status":"ok"}""", string.Empty));
+        ConfluenceCliClient client = new(runner, @"C:	ools\cortex.exe", @"C:\config\confluence.toml", ConfiguredTimeout);
+
+        await client.GetSourceStatusAsync(CancellationToken.None);
+
+        Assert.AreEqual(ConfiguredTimeout, runner.LastRequest!.Timeout);
+    }
+
+    [TestMethod]
+    public async Task AChosenTimeoutLongerThanTheFloorIsKept()
+    {
+        TimeSpan generous = AppConstants.MinimumCatalogTimeout + TimeSpan.FromMinutes(2);
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            """{"contract_version":1,"space_key":"DOC","pages":[]}""", string.Empty));
+        ConfluenceCliClient client = new(runner, @"C:	ools\cortex.exe", @"C:\config\confluence.toml", generous);
+
+        await client.GetCatalogAsync("DOC", CancellationToken.None);
+
+        Assert.AreEqual(generous, runner.LastRequest!.Timeout);
     }
 
     [TestMethod]
