@@ -107,35 +107,35 @@ La suite automatisée ne prétend pas avoir validé ces derniers parcours.
 
 ## Ajout Confluence par lien (2026.0906.01)
 
-Le formulaire accepte une page ou un espace. La connexion dans le meme ecran conserve le lien. La previsualisation utilise un TOML temporaire sans secret ; seul le choix mesure et confirme passe au writer atomique CAS. Les tests couvrent la premiere configuration, un nouvel espace, l'annulation, les erreurs d'authentification et distantes, les editions concurrentes et les origines etrangeres. Collecte et indexation ont des statuts distincts ; une collecte non reussie interdit l'indexation automatique. Les liens anciens exigent encore une cle d'espace. Les racines existantes conservent leur mode sauf choix explicite de tout l'espace.
+Le formulaire accepte une page ou un espace. La connexion dans le même écran conserve le lien. La prévisualisation utilise un TOML temporaire sans secret ; seul le choix mesuré et confirmé passe au writer atomique CAS. Les tests couvrent la première configuration, un nouvel espace, l'annulation, les erreurs d'authentification et distantes, les éditions concurrentes et les origines étrangères. Collecte et indexation ont des statuts distincts ; une collecte non réussie interdit l'indexation automatique. Les liens anciens exigent encore une clé d'espace. Les racines existantes conservent leur mode sauf choix explicite de tout l'espace.
 
-Les liens d'espace exigent Cortex 2026.0906.01 ou ulterieur. Le smoke visuel rend la fenetre minimale et la confirmation a 100 %, 150 % et 200 % de resolution raster. Il ne remplace pas un essai avec un compte Confluence reel ni un changement natif de DPI.
+Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel rend la fenêtre minimale et la confirmation à 100 %, 150 % et 200 % de résolution raster. Il ne remplace pas un essai avec un compte Confluence réel ni un changement natif de DPI.
 
-## Mes sources - recette du lot non publie
+## Mes sources - recette du lot non publié
 
-- Verifier les cartes visibles, les liens navigateur et les titres longs.
-- Ouvrir la selection pre-remplie ; annuler ne doit rien ecrire.
-- Changer la portee et decocher une racine ; verifier le resume avant/apres.
+- Vérifier les cartes visibles, les liens navigateur et les titres longs.
+- Ouvrir la sélection pré-remplie ; annuler ne doit rien écrire.
+- Changer la portée et décocher une racine ; vérifier le résumé avant/après.
 - Retirer une racine couverte ailleurs : la confirmation indique la couverture,
-  ou son indisponibilite. La configuration temporaire est effacee.
-- Retirer la derniere source, collecter puis indexer avec le Cortex apparie.
-  Les originaux Confluence restent intacts ; la recherche suit la generation indexee.
-- Les tests de service couvrent CAS, lecture seule, annulation, serveur etranger,
-  derniere source et liste manquante. Le smoke WPF rend l'editeur et les cartes.
-  Les images a 100/150/200 % sont des rendus, pas une recette Narrator ou DPI natif.
+  ou son indisponibilité. La configuration temporaire est effacée.
+- Retirer la dernière source, collecter puis indexer avec le Cortex apparié.
+  Les originaux Confluence restent intacts ; la recherche suit la génération indexée.
+- Les tests de service couvrent CAS, lecture seule, annulation, serveur étranger,
+  dernière source et liste manquante. Le smoke WPF rend l'éditeur et les cartes.
+  Les images à 100/150/200 % sont des rendus, pas une recette Narrator ou DPI natif.
 
-## Parcours Mes sources et recuperation (non publie)
+## Parcours Mes sources et récupération (non publié)
 
-- Verifier l'ordre liste puis formulaire, le filtre par titre et l'etat sans resultat.
-- Charger une arborescence, rechercher une sous-page et verifier que ses parents
-  restent visibles et que le filtre ne change pas les cases cochees.
+- Vérifier l'ordre liste puis formulaire, le filtre par titre et l'état sans résultat.
+- Charger une arborescence, rechercher une sous-page et vérifier que ses parents
+  restent visibles et que le filtre ne change pas les cases cochées.
 - Comparer changements de racines et documents effectifs dans la confirmation.
-- Annuler un retrait avant toute autre ecriture ; provoquer ensuite un conflit
-  et verifier que l'annulation ne restaure pas aveuglement une sauvegarde.
-- Enregistrer pour plus tard : aucune collecte. Enregistrer et mettre a jour :
-  collecte, puis indexation uniquement apres code de reussite observe.
-- Verifier que la generation collectee non indexee reste A appliquer.
-- Echouer une operation : feedback persistant, reessai et reconnexion accessibles.
-  Reconnexion : date valide requise, perimetre preserve, reprise sans doublon.
-- Tester clavier, lecteur d'ecran et DPI natif en recette humaine. Les rendus
+- Annuler un retrait avant toute autre écriture ; provoquer ensuite un conflit
+  et vérifier que l'annulation ne restaure pas aveuglément une sauvegarde.
+- Enregistrer pour plus tard : aucune collecte. Enregistrer et mettre à jour :
+  collecte, puis indexation uniquement après code de réussite observé.
+- Vérifier que la génération collectée non indexée reste À appliquer.
+- Échouer une opération : feedback persistant, réessai et reconnexion accessibles.
+  Reconnexion : date valide requise, périmètre préservé, reprise sans doublon.
+- Tester clavier, lecteur d'écran et DPI natif en recette humaine. Les rendus
   automatiques 100/150/200 % couvrent la disposition, pas ces usages.
