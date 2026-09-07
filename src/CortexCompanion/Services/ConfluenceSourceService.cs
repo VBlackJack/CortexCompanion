@@ -102,7 +102,8 @@ public sealed class ConfluenceSourceService(
         {
             throw new PageMutationRejectedException(UiStrings.PagesRejectWholeSpaceCovered);
         }
-        ConfluenceSelection? selection = confirmations.ChooseScope(preview);
+        bool alreadyTracked = existing.PageIds.Contains(preview.PageId, StringComparer.Ordinal);
+        ConfluenceSelection? selection = confirmations.ChooseScope(preview, alreadyTracked);
         if (selection is null) { return false; }
         if (existing.PageIds.Count > 0 && selection != existing.Selection && selection != ConfluenceSelection.WholeSpace)
         {

@@ -589,4 +589,5 @@
   <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choose the language of Cortex Companion. The change applies the next time the application starts.</value></data>
   <data name="SettingsLanguageSystem" xml:space="preserve"><value>Windows language</value></data>
   <data name="SourcesTreeTimedOutProgress" xml:space="preserve"><value>Reading the page tree stopped after {0} of about {1} pages. A very large space can take several minutes; try again.</value></data>
+  <data name="ScopeAlreadyTracked" xml:space="preserve"><value>This page is already tracked. Choosing the whole space keeps it; any other choice is refused, because it is already covered.</value></data>
 </root>

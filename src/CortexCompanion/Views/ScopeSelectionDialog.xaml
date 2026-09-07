@@ -19,12 +19,20 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock x:Name="RootDetails"
                    TextWrapping="Wrap"
                    FontWeight="SemiBold"
                    Margin="{StaticResource MarginSectionBottom}" />
-        <StackPanel Grid.Row="1">
+        <TextBlock x:Name="AlreadyTracked"
+                   Grid.Row="1"
+                   Text="{x:Static localization:UiStrings.ScopeAlreadyTracked}"
+                   Foreground="{DynamicResource WarningBrush}"
+                   TextWrapping="Wrap"
+                   Visibility="Collapsed"
+                   Margin="{StaticResource MarginSectionBottom}" />
+        <StackPanel Grid.Row="2">
             <TextBlock Text="{x:Static localization:UiStrings.FlowScopeHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
             <RadioButton x:Name="PageOnlyOption"
                          GroupName="Scope"
@@ -69,7 +77,7 @@
                 </StackPanel>
             </RadioButton>
         </StackPanel>
-        <Border Grid.Row="2"
+        <Border Grid.Row="3"
                 Background="{DynamicResource HighlightBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="{StaticResource BorderThin}"
@@ -77,7 +85,7 @@
                 Margin="{StaticResource MarginSectionTop}">
             <TextBlock x:Name="StorageDetails" TextWrapping="Wrap" />
         </Border>
-        <WrapPanel Grid.Row="3"
+        <WrapPanel Grid.Row="4"
                     Margin="{StaticResource MarginSectionTop}"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">

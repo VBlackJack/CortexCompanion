@@ -188,6 +188,9 @@ public static partial class UiStrings
             exception.Message);
     }
 
+    /// <summary>Gets the notice shown when the page is already tracked.</summary>
+    public static string ScopeAlreadyTracked => GetString(nameof(ScopeAlreadyTracked));
+
     /// <summary>Gets the interface language setting label.</summary>
     public static string SettingsLanguageLabel => GetString(nameof(SettingsLanguageLabel));
 

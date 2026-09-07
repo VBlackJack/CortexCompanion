@@ -14,6 +14,7 @@ internal static class Program
 {
     private const int LockedExitCode = 2;
     private const int UsageExitCode = 64;
+    private const int ContractRefusedExitCode = 65;
     private const string CompatibleVersion = "2026.0808.00";
     private const string SyncProbeDelayVariable = "CORTEX_COMPANION_SYNC_PROBE_DELAY_MS";
 
@@ -88,6 +89,9 @@ internal static class Program
             "mutate" => await MutateAsync(arguments[1]),
             "render-golden" => await RenderGoldenAsync(arguments),
             "validate-search" => await ValidateSearchAsync(arguments[1]),
+            "validate-confluence" => arguments.Length >= 3
+                ? await ValidateConfluenceAsync(arguments[1], arguments[2])
+                : UsageExitCode,
             _ => UsageExitCode,
         };
     }
@@ -98,6 +102,40 @@ internal static class Program
         SearchClient client = new(new SearchFixtureRunner(payload), "fixture", TimeSpan.FromSeconds(5));
         SearchResponse result = await client.SearchAsync("fixture", "", "", CancellationToken.None);
         Console.WriteLine(JsonSerializer.Serialize(result));
+        return 0;
+    }
+
+    private static async Task<int> ValidateConfluenceAsync(string kind, string path)
+    {
+        string payload = await File.ReadAllTextAsync(path);
+        ConfluenceCliClient client = new(
+            new SearchFixtureRunner(payload),
+            Environment.ProcessPath ?? "fixture",
+            path,
+            TimeSpan.FromSeconds(5));
+        // A verb this probe does not know is a caller mistake, not a rejected document, and
+        // saying so keeps a typo from being reported as a broken contract.
+        if (kind is not ("preview" or "resolve" or "pages" or "catalog" or "status"))
+        {
+            await Console.Error.WriteLineAsync($"Unknown contract kind: {kind}");
+            return UsageExitCode;
+        }
+
+        object? value = kind switch
+        {
+            "preview" => (await client.PreviewAsync("https://wiki.test/x/AA", CancellationToken.None)).Value,
+            "resolve" => (await client.ResolveAsync("https://wiki.test/x/AA", CancellationToken.None)).Value,
+            "pages" => (await client.GetPagesAsync(CancellationToken.None)).Value,
+            "catalog" => (await client.GetCatalogAsync("DOC", CancellationToken.None)).Value,
+            _ => (await client.GetSourceStatusAsync(CancellationToken.None)).Value,
+        };
+        if (value is null)
+        {
+            await Console.Error.WriteLineAsync($"The {kind} document was refused by the consumer.");
+            return ContractRefusedExitCode;
+        }
+
+        Console.WriteLine(JsonSerializer.Serialize(value));
         return 0;
     }
 

@@ -115,6 +115,46 @@ public sealed class ConfluenceSourceServiceTests
     private static ConfluenceSetupRequest Request(string? converter) => new(
         "https://wiki.example.test/spaces/DOC", "DOC", new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero), converter, "pro-confidentiel");
 
+    [TestMethod]
+    [DataRow("100", true, DisplayName = "the page is already one of the tracked roots")]
+    [DataRow("42", false, DisplayName = "the page is not tracked yet")]
+    public async Task TheScopeWindowIsToldWhetherThePageIsAlreadyTracked(
+        string trackedPageId,
+        bool expected)
+    {
+        // The window cannot settle this itself: whether an already tracked page can be added
+        // depends on the scope chosen there. Telling it is what stops the user from choosing
+        // carefully and only then being refused.
+        using TemporaryDirectory directory = new();
+        string config = Path.Combine(directory.Path, "confluence.toml");
+        string converter = Path.Combine(directory.Path, "converter.exe");
+        await File.WriteAllBytesAsync(converter, [0x4d, 0x5a]);
+        ConfluenceConfigStore store = new(config);
+        await store.WriteAsync(
+            Configuration() with
+            {
+                Spaces =
+                [
+                    new("DOC", "confluence/DOC", "pro-confidentiel",
+                        ConfluenceSelection.Pages, [trackedPageId]),
+                ],
+            },
+            null,
+            CancellationToken.None);
+        StubProcessRunner runner = new(ProcessRunResult.Completed(0,
+            "{\"tool_version\":\"1.2.0\",\"schema_version\":1}", string.Empty));
+        Confirmations confirmations = new(null);
+        ConfluenceSourceService service = new(
+            store,
+            new ConfluenceSetupService(store, new ConfluenceConverterProbe(runner), converter),
+            _ => new Client(),
+            confirmations);
+
+        await service.AddAsync(Request(converter), false, CancellationToken.None);
+
+        Assert.AreEqual(expected, confirmations.WasToldAlreadyTracked);
+    }
+
     private static ConfluenceConfiguration Configuration() => new(2, "https://wiki.example.test", "cortex-spike",
         new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero), null, 50, 0.1,
         [new("OLD", "confluence/OLD", "pro-confidentiel", ConfluenceSelection.Pages, ["99"])]);
@@ -141,7 +181,16 @@ public sealed class ConfluenceSourceServiceTests
 
     private sealed class Confirmations(ConfluenceSelection? selection, Action? beforeConfirm = null) : IPageMutationConfirmationService
     {
+        /// <summary>Records what the window was told about the page already being tracked.</summary>
+        public bool? WasToldAlreadyTracked { get; private set; }
+
         public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) { beforeConfirm?.Invoke(); return selection; }
+
+        public ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyTracked)
+        {
+            WasToldAlreadyTracked = alreadyTracked;
+            return ChooseScope(preview);
+        }
         public bool ConfirmAdd(ResolvedPageContract page) => throw new NotSupportedException();
         public bool ConfirmAddSpace(string spaceKey, string classification) => throw new NotSupportedException();
         public bool ConfirmKeepEmptySpace(string spaceKey) => throw new NotSupportedException();

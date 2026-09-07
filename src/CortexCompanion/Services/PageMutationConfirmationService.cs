@@ -75,9 +75,13 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
     }
 
     /// <inheritdoc />
-    public ConfluenceSelection? ChooseScope(ScopePreviewContract preview)
+    public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) =>
+        ChooseScope(preview, alreadyTracked: false);
+
+    /// <inheritdoc />
+    public ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyTracked)
     {
-        ScopeSelectionDialog dialog = new(preview)
+        ScopeSelectionDialog dialog = new(preview, alreadyTracked)
         {
             Owner = Application.Current.MainWindow,
         };

@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using CortexCompanion.Constants;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 
@@ -9,6 +10,18 @@ namespace CortexCompanion.Tests.Services;
 [TestClass]
 public sealed class CliVersionPolicyTests
 {
+    [TestMethod]
+    public void TheAcceptedCliFloorIsTheCliThisBuildShipsWith()
+    {
+        // Cortex and Companion are installed together by one installer, so the floor is the
+        // paired CLI. Left behind, it accepts a CLI that no longer answers the way this build
+        // expects, and the mismatch reaches the user as an unexplained parse failure instead
+        // of the version refusal it is. Tying it here makes the release move it.
+        Assert.AreEqual(
+            AppConstants.MinSupportedCliVersion,
+            CompanionVersionProvider.GetCurrent());
+    }
+
     private readonly CliVersionPolicy _policy = new();
 
     [TestMethod]

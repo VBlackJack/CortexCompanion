@@ -24,12 +24,22 @@ public static class AppConstants
     public const string CliExecutableName = "cortex.exe";
 
     /// <summary>
-    /// Gets the minimum supported CLI version measured from the current Cortex main
-    /// release contract on 2026-08-08.
+    /// Gets the oldest Cortex CLI this build accepts, which is the CLI it ships with.
     /// </summary>
-    public const string MinSupportedCliVersion = "2026.0808.00";
+    /// <remarks>
+    /// This has to move with every change to a contract Companion consumes. Left at
+    /// 2026.0808.00 while the product reached 2026.0907.01, it accepted a CLI that no
+    /// longer answers the way this build expects, and the mismatch surfaced as an
+    /// unexplained parse failure rather than as the version refusal it is.
+    /// </remarks>
+    public const string MinSupportedCliVersion = "2026.0907.02";
 
     /// <summary>First distributed CLI version with the desktop JSON search contract.</summary>
+    /// <remarks>
+    /// Now below <see cref="MinSupportedCliVersion"/>, so the search gate that reads it can
+    /// no longer refuse anything: a handshake that passed has already cleared a later
+    /// version. It is kept as the record of when the contract appeared, not as a gate.
+    /// </remarks>
     public const string MinSearchCliVersion = "2026.0906.00";
 
     /// <summary>Gets the only argument used by the startup handshake.</summary>
@@ -101,7 +111,8 @@ public static class AppConstants
     /// <summary>Gets the floor under the timeout for reading a whole space page tree.</summary>
     /// <remarks>
     /// Measured against a 5918 page space, the catalogue read takes 112 seconds over thirty
-    /// requests, so the ordinary command timeout kills it at every offered value. The floor
+    /// requests: past the default of thirty seconds, and inside the highest offered value by
+    /// eight. No caller should have to spend its whole budget on one read and hope. The floor
     /// keeps the read bounded while letting it finish; the user asked for this tree by name.
     /// </remarks>
     public static readonly TimeSpan MinimumCatalogTimeout = TimeSpan.FromMinutes(5);

@@ -37,6 +37,15 @@ public interface IPageMutationConfirmationService
     /// <summary>Returns the explicit measured collection choice, or null when cancelled.</summary>
     ConfluenceSelection? ChooseScope(ScopePreviewContract preview);
 
+    /// <summary>Returns the same choice, told whether the page is already tracked.</summary>
+    /// <remarks>
+    /// Whether an already tracked page can be added depends on the scope the user picks, so
+    /// the answer cannot be settled before the question. Saying so in the window is what
+    /// stops the user from choosing carefully and only then being refused.
+    /// </remarks>
+    ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyTracked) =>
+        ChooseScope(preview);
+
     /// <summary>Confirms the collection consequence before a space enters the allowlist.</summary>
     bool ConfirmAddSpace(string spaceKey, string classification);
 

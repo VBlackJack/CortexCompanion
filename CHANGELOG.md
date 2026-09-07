@@ -2,11 +2,28 @@
 
 ## [Unreleased]
 
+## [2026.0907.02] - 2026-09-07
+
+### Added
+
+- Say in the scope window when the page is already tracked. Whether it can be added depends
+  on the scope chosen, so the answer cannot be settled before the question; showing it stops
+  the user from choosing carefully and only then being refused.
+
+### Changed
+
+- Refuse a Cortex older than the one this build ships with. The floor had been left at
+  2026.0808.00 while the product reached 2026.0907.01, so a mismatched pair reached the user
+  as an unexplained parse failure instead of a version refusal. A test now ties the floor to
+  the shipped version, and the handshake tests follow the constant rather than frozen
+  literals, which is what had made raising it break seven unrelated tests.
+
 ### Fixed
 
 - Let the page tree finish loading. Reading a whole space takes about two minutes on a
-  large one, measured at 112 seconds over thirty requests for 5918 pages, so every timeout
-  the settings screen offers killed it. That read now has its own floor of five minutes,
+  large one, measured at 112 seconds over thirty requests for 5918 pages: past the default
+  of thirty seconds, and inside the highest offered value by eight, which is no margin at
+  all for a slower server. That read now has its own floor of five minutes,
   while every other command keeps the configured timeout; a timeout longer than the floor
   is still honoured.
 - Say how far the page tree got when it does run out of time. Cortex reports its progress

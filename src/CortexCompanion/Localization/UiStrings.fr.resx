@@ -589,4 +589,5 @@
   <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choisissez la langue de Cortex Companion. Le changement s'applique au prochain démarrage de l'application.</value></data>
   <data name="SettingsLanguageSystem" xml:space="preserve"><value>Langue de Windows</value></data>
   <data name="SourcesTreeTimedOutProgress" xml:space="preserve"><value>La lecture de l'arborescence s'est arrêtée après {0} pages sur environ {1}. Un très grand espace peut demander plusieurs minutes ; réessayez.</value></data>
+  <data name="ScopeAlreadyTracked" xml:space="preserve"><value>Cette page est déjà suivie. Choisir l'espace entier la conserve ; tout autre choix est refusé, puisqu'elle est déjà couverte.</value></data>
 </root>

@@ -34,10 +34,15 @@ public sealed class ProcessRunnerTests
     public async Task RunAsyncKillsTheRealProcessTreeOnTimeout()
     {
         ProcessRunner runner = new();
+        // The probe starts a real child process and prints its identifier before sleeping
+        // for thirty seconds. Half a second was not enough room for that start on a loaded
+        // machine, so the kill sometimes landed before anything reached standard output and
+        // the assertion failed for a reason the test does not care about. The timeout still
+        // expires far short of the probe's sleep, so the termination path is unchanged.
         ProcessRequest request = new(
             FindLockProbe(),
             ["spawn-child-tree"],
-            TimeSpan.FromMilliseconds(500),
+            TimeSpan.FromSeconds(5),
             4_096);
 
         ProcessRunResult result = await runner.RunAsync(request, CancellationToken.None);
