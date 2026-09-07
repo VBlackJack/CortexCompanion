@@ -2,8 +2,11 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
@@ -17,6 +20,17 @@ internal static class Program
     private const int ContractRefusedExitCode = 65;
     private const string CompatibleVersion = "2026.0808.00";
     private const string SyncProbeDelayVariable = "CORTEX_COMPANION_SYNC_PROBE_DELAY_MS";
+    private const string CliSurfaceVerb = "dump-cli-arguments";
+    private const int CliSurfaceContractVersion = 1;
+    private const string CliSurfaceSpaceKey = "PN";
+    private const string CliSurfacePageUrl = "https://wiki.test/x/AA";
+    private const string CliSurfacePageId = "2134730685";
+    private const string CliSurfaceQuery = "plan d'action";
+    private const string CliSurfaceSection = "docs";
+    private const string CliSurfaceSourceKind = "doc";
+    private const string CliSurfaceExpectedHash =
+        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+    private static readonly TimeSpan CliSurfaceTimeout = TimeSpan.FromSeconds(5);
 
     private static async Task<int> Main(string[] arguments)
     {
@@ -24,6 +38,11 @@ internal static class Program
         {
             Console.WriteLine(CompatibleVersion);
             return 0;
+        }
+
+        if (arguments is [CliSurfaceVerb])
+        {
+            return await DumpCliArgumentsAsync();
         }
 
         if (arguments is ["sync", "--json"])
@@ -144,6 +163,173 @@ internal static class Program
         public Task<ProcessRunResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken) =>
             Task.FromResult(ProcessRunResult.Completed(0, payload, string.Empty));
     }
+
+    /// <summary>
+    /// Writes every Cortex command line the desktop builds, each captured from the code that
+    /// builds it, so the interoperability proof can parse them with the Cortex parsers.
+    /// </summary>
+    private static async Task<int> DumpCliArgumentsAsync()
+    {
+        string root = Path.Combine(
+            Path.GetTempPath(),
+            "cortex-companion-cli-surface-" + Environment.ProcessId.ToString(CultureInfo.InvariantCulture));
+        Directory.CreateDirectory(root);
+        try
+        {
+            // The handshake validates its path before building anything, and accepts only an
+            // existing file with the Cortex executable name.
+            string cliPath = Path.Combine(root, AppConstants.CliExecutableName);
+            await File.WriteAllBytesAsync(cliPath, []);
+            string confluenceConfig = Path.Combine(root, "confluence.toml");
+            string ingestionConfig = Path.Combine(root, "ingestion.toml");
+            string knowledgeBase = Path.Combine(root, "knowledge");
+            List<CapturedLine> lines =
+            [
+                await CaptureAsync(
+                    "version",
+                    Inputs(),
+                    runner => new CliHandshakeService(new CliVersionPolicy(), runner)
+                        .EvaluateAsync(new AppSettings(cliPath))),
+                await CaptureAsync(
+                    "search.filtered",
+                    Inputs(("query", CliSurfaceQuery), ("section", CliSurfaceSection), ("source_kind", CliSurfaceSourceKind)),
+                    runner => new SearchClient(runner, cliPath, CliSurfaceTimeout)
+                        .SearchAsync(CliSurfaceQuery, CliSurfaceSection, CliSurfaceSourceKind, CancellationToken.None)),
+                await CaptureAsync(
+                    "search.plain",
+                    Inputs(("query", CliSurfaceQuery)),
+                    runner => new SearchClient(runner, cliPath, CliSurfaceTimeout)
+                        .SearchAsync(CliSurfaceQuery, string.Empty, string.Empty, CancellationToken.None)),
+                await CaptureAsync(
+                    "config.get",
+                    Inputs(),
+                    runner => new CortexConfigClient(runner).GetAsync(cliPath, CliSurfaceTimeout)),
+                await CaptureAsync(
+                    "config.set.expected_hash",
+                    Inputs(("kb_path", knowledgeBase), ("expected_hash", CliSurfaceExpectedHash)),
+                    runner => new CortexConfigClient(runner).SetKnowledgeBasePathAsync(
+                        cliPath, knowledgeBase, CliSurfaceExpectedHash, false, CliSurfaceTimeout)),
+                await CaptureAsync(
+                    "config.set.expect_absent",
+                    Inputs(("kb_path", knowledgeBase)),
+                    runner => new CortexConfigClient(runner).SetKnowledgeBasePathAsync(
+                        cliPath, knowledgeBase, null, true, CliSurfaceTimeout)),
+                await CaptureAsync(
+                    "confluence.catalog",
+                    Inputs(("config_path", confluenceConfig), ("space_key", CliSurfaceSpaceKey)),
+                    runner => ConfluenceClient(runner, cliPath, confluenceConfig)
+                        .GetCatalogAsync(CliSurfaceSpaceKey, CancellationToken.None)),
+                await CaptureAsync(
+                    "confluence.source_status",
+                    Inputs(("config_path", confluenceConfig)),
+                    runner => ConfluenceClient(runner, cliPath, confluenceConfig)
+                        .GetSourceStatusAsync(CancellationToken.None)),
+                await CaptureAsync(
+                    "confluence.pages",
+                    Inputs(("config_path", confluenceConfig)),
+                    runner => ConfluenceClient(runner, cliPath, confluenceConfig)
+                        .GetPagesAsync(CancellationToken.None)),
+                await CaptureAsync(
+                    "confluence.resolve",
+                    Inputs(("config_path", confluenceConfig), ("reference", CliSurfacePageUrl)),
+                    runner => ConfluenceClient(runner, cliPath, confluenceConfig)
+                        .ResolveAsync(CliSurfacePageUrl, CancellationToken.None)),
+                await CaptureAsync(
+                    "confluence.preview",
+                    Inputs(("config_path", confluenceConfig), ("reference", CliSurfacePageId)),
+                    runner => ConfluenceClient(runner, cliPath, confluenceConfig)
+                        .PreviewAsync(CliSurfacePageId, CancellationToken.None)),
+                new CapturedLine(
+                    "sync.local",
+                    Inputs(),
+                    SyncWorkerArguments.BuildCliArguments(SyncRunKind.LocalDocuments, null, false)),
+                new CapturedLine(
+                    "sync.confluence",
+                    Inputs(("config_path", confluenceConfig)),
+                    SyncWorkerArguments.BuildCliArguments(SyncRunKind.Confluence, confluenceConfig, false)),
+                new CapturedLine(
+                    "sync.confluence.force",
+                    Inputs(("config_path", confluenceConfig)),
+                    SyncWorkerArguments.BuildCliArguments(SyncRunKind.Confluence, confluenceConfig, true)),
+                new CapturedLine(
+                    "scheduled.guard",
+                    Inputs(("ingestion_config_path", ingestionConfig), ("source_kind", AppConstants.IngestionSourceKind)),
+                    ScheduledWorkerArguments.BuildGuardArguments(ingestionConfig, AppConstants.IngestionSourceKind)),
+                new CapturedLine(
+                    "scheduled.sync",
+                    Inputs(("confluence_config_path", confluenceConfig), ("ingestion_config_path", ingestionConfig)),
+                    ScheduledWorkerArguments.BuildSyncArguments(confluenceConfig, ingestionConfig)),
+            ];
+            Console.WriteLine(JsonSerializer.Serialize(new CliSurfaceDocument(CliSurfaceContractVersion, lines)));
+            return 0;
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
+    private static ConfluenceCliClient ConfluenceClient(IProcessRunner runner, string cliPath, string configPath) =>
+        new(runner, cliPath, configPath, CliSurfaceTimeout);
+
+    private static Dictionary<string, string> Inputs(params (string Key, string Value)[] pairs)
+    {
+        Dictionary<string, string> inputs = new(StringComparer.Ordinal);
+        foreach ((string key, string value) in pairs)
+        {
+            inputs.Add(key, value);
+        }
+
+        return inputs;
+    }
+
+    private static async Task<CapturedLine> CaptureAsync(
+        string name,
+        Dictionary<string, string> inputs,
+        Func<IProcessRunner, Task> act)
+    {
+        CapturingRunner runner = new();
+        try
+        {
+            await act(runner);
+        }
+        catch (Exception exception) when (exception is JsonException or CortexCliContractException)
+        {
+            // The canned reply is no document a client accepts. Refusing it is the client's
+            // job; the command line was built before the reply arrived, and that is all
+            // this verb reports.
+        }
+
+        return new CapturedLine(
+            name,
+            inputs,
+            runner.Arguments ?? throw new InvalidOperationException($"{name} built no command line."));
+    }
+
+    private sealed class CapturingRunner : IProcessRunner
+    {
+        public IReadOnlyList<string>? Arguments { get; private set; }
+
+        public Task<ProcessRunResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken)
+        {
+            if (Arguments is not null)
+            {
+                throw new InvalidOperationException("One client call ran more than one process.");
+            }
+
+            Arguments = request.Arguments;
+            return Task.FromResult(ProcessRunResult.Completed(0, "{}", string.Empty));
+        }
+    }
+
+    private sealed record CliSurfaceDocument(
+        [property: JsonPropertyName("contract_version")] int ContractVersion,
+        [property: JsonPropertyName("lines")] IReadOnlyList<CapturedLine> Lines);
+
+    private sealed record CapturedLine(
+        [property: JsonPropertyName("name")] string Name,
+        [property: JsonPropertyName("inputs")] IReadOnlyDictionary<string, string> Inputs,
+        [property: JsonPropertyName("arguments")] IReadOnlyList<string> Arguments);
 
     private static async Task<int> RunSyncProbeAsync()
     {

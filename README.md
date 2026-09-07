@@ -248,7 +248,7 @@ git config core.hooksPath .githooks
 
 ### Interoperability proofs
 
-Three Python scripts under `tests/interop/` prove the contract Companion shares with
+Five Python scripts under `tests/interop/` prove the contract Companion shares with
 the Cortex CLI on one machine. The `interoperability` workflow in both repositories
 runs them against the peer repository's `main` on every push and pull request.
 For coordinated changes, its manual `peer_ref` input selects the matching peer
@@ -262,17 +262,28 @@ branch or commit. The scripts can also be run locally against sibling checkouts.
   schemas v1, v2, and v3, including empty selections and subtree roots.
 - `search_contract_proof.py` passes Python JSON search results through the real C#
   parser and checks the three retrieval modes, including Unicode text.
+- `confluence_contract_proof.py` passes the Python resolve, preview, pages, catalog
+  and status documents through the C# records that parse them, and checks every
+  value that crosses, not just that the document was accepted.
+- `cli_surface_proof.py` goes the other way: the C# probe captures every Cortex
+  command line the desktop builds, from the code that builds it, and Cortex parses
+  each with the parser that runs it, stopping before anything runs. A renamed
+  subcommand, a parent option moved after its subcommand or a dropped flag fails
+  here instead of on the user's desktop.
 
-All three need `dotnet` on the PATH, a Debug build of `tests/CortexCompanion.LockProbe`
-and a Python interpreter with the Cortex dependencies installed; the renderer proof
-and search proofs also expect a Cortex checkout next to this repository, in `../Cortex`. Each script
-prints `PROOF RESULT=PASS` and exits `0` on success.
+All five need `dotnet` on the PATH, a Debug build of `tests/CortexCompanion.LockProbe`
+and a Python interpreter with the Cortex dependencies installed; all but the lock
+proof also expect a Cortex checkout next to this repository, in `../Cortex`. The
+command-line proof reads `CORTEX_CHECKOUT` when a branch checkout lives elsewhere.
+Each script prints `PROOF RESULT=PASS` and exits `0` on success.
 
 ```powershell
 dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj
 python tests/interop/lock_interop_proof.py
 python tests/interop/renderer_differential_proof.py
 python tests/interop/search_contract_proof.py
+python tests/interop/confluence_contract_proof.py
+python tests/interop/cli_surface_proof.py
 ```
 
 The manual `release-pair` workflow validates an exact pair of source commits.

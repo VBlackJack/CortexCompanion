@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Added
+
+- Prove every Cortex command line the desktop builds against the Cortex parser that runs
+  it. The document proofs checked what Cortex answers, and nothing checked what the desktop
+  asks: a renamed subcommand, a parent option moved after its subcommand or a dropped
+  required flag stayed green on both sides and broke the desktop at run time. The probe now
+  captures the sixteen lines from the code that builds them, and the proof parses each with
+  Cortex, stopping before anything runs, then checks that every value landed in the slot the
+  desktop meant it for. Verified to fail on a renamed subcommand, a renamed parent option, a
+  renamed required flag, a renamed search option and a version flag that prints something
+  other than the version. Both interoperability workflows and the paired release gate run it.
+
 ## [2026.0907.02] - 2026-09-07
 
 ### Added

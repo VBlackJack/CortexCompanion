@@ -268,7 +268,7 @@ git config core.hooksPath .githooks
 
 ### Preuves d'interopérabilité
 
-Trois scripts Python sous `tests/interop/` prouvent le contrat que Companion partage
+Cinq scripts Python sous `tests/interop/` prouvent le contrat que Companion partage
 avec la CLI Cortex sur une même machine. Le workflow `interoperability` des deux
 dépôts les exécute contre `main` du dépôt partenaire à chaque push et pull request.
 Pour un changement coordonné, son paramètre manuel `peer_ref` permet de choisir la
@@ -282,18 +282,29 @@ les deux dépôts côte à côte et couvrent les schémas TOML v1, v2 et v3.
   le rendu Python de `confluence_writer`, puis compare les octets.
 - `search_contract_proof.py` transmet les résultats JSON Python au vrai parseur C#
   et vérifie les trois modes de recherche, y compris le texte Unicode.
+- `confluence_contract_proof.py` transmet les documents Python resolve, preview, pages,
+  catalog et status aux enregistrements C# qui les lisent, et vérifie chaque valeur qui
+  traverse, pas seulement l'acceptation du document.
+- `cli_surface_proof.py` fait le chemin inverse : la sonde C# capture chaque ligne de
+  commande Cortex que le bureau construit, depuis le code qui la construit, et Cortex
+  l'analyse avec le parseur qui l'exécute, en s'arrêtant avant toute exécution. Une
+  sous-commande renommée, une option parente déplacée après sa sous-commande ou un
+  drapeau retiré échouent ici plutôt que sur le bureau de l'utilisateur.
 
-Les trois exigent `dotnet` dans le PATH, une compilation Debug de
+Les cinq exigent `dotnet` dans le PATH, une compilation Debug de
 `tests/CortexCompanion.LockProbe` et un interpréteur Python avec les dépendances de
-Cortex installées ; les preuves du rendu et de recherche attendent en plus un clone de Cortex à côté de ce
-dépôt, dans `../Cortex`. Chaque script affiche `PROOF RESULT=PASS` et sort avec `0`
-en cas de succès.
+Cortex installées ; toutes sauf la preuve du verrou attendent en plus un clone de
+Cortex à côté de ce dépôt, dans `../Cortex`. La preuve des lignes de commande lit
+`CORTEX_CHECKOUT` quand un clone de branche vit ailleurs. Chaque script affiche
+`PROOF RESULT=PASS` et sort avec `0` en cas de succès.
 
 ```powershell
 dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj
 python tests/interop/lock_interop_proof.py
 python tests/interop/renderer_differential_proof.py
 python tests/interop/search_contract_proof.py
+python tests/interop/confluence_contract_proof.py
+python tests/interop/cli_surface_proof.py
 ```
 
 Le workflow manuel `release-pair` valide une paire exacte de commits sources.

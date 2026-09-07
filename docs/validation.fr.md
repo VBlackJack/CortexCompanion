@@ -72,11 +72,16 @@ Après restauration des dépendances du dépôt :
 dotnet test CortexCompanion.sln -c Release --no-restore
 dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj --no-restore
 python tests/interop/search_contract_proof.py
+python tests/interop/confluence_contract_proof.py
+python tests/interop/cli_surface_proof.py
 python tests/interop/renderer_differential_proof.py
 python tests/interop/lock_interop_proof.py
 ```
 
 Les preuves Python attendent un dépôt `Cortex` voisin et ses dépendances installées.
+La preuve des lignes de commande analyse chaque ligne que le bureau construit avec les
+parseurs Cortex qui l'exécutent : une sous-commande renommée ou une option déplacée
+échoue là, pas à l'exécution.
 Le workflow `release-pair` accepte deux SHA complets, contrôle les révisions et
 exécute ces preuves. Il documente un couple de sources, pas les octets d'un installeur.
 

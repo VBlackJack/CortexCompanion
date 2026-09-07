@@ -57,11 +57,15 @@ current operational screens and do not replay a historical command.
 dotnet test CortexCompanion.sln -c Release --no-restore
 dotnet build tests/CortexCompanion.LockProbe/CortexCompanion.LockProbe.csproj --no-restore
 python tests/interop/search_contract_proof.py
+python tests/interop/confluence_contract_proof.py
+python tests/interop/cli_surface_proof.py
 python tests/interop/renderer_differential_proof.py
 python tests/interop/lock_interop_proof.py
 ```
 
 The Python proofs expect a sibling `Cortex` checkout with its dependencies installed.
+The command-line proof parses every line the desktop builds with the Cortex parsers
+that run it, so a renamed subcommand or a moved option fails there, not at run time.
 The `release-pair` workflow in either repository accepts two full commit SHAs,
 verifies their checked-out identities and executes these proofs. Its job summary
 records the source pair; it does not certify installer bytes.
