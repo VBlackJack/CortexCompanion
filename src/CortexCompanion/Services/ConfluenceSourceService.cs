@@ -1,8 +1,8 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
-using CortexCompanion.Interfaces;
 using CortexCompanion.Constants;
+using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
 

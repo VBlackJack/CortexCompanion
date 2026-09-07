@@ -4,8 +4,8 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using CortexCompanion.Localization;
 using CortexCompanion.Constants;
+using CortexCompanion.Localization;
 using CortexCompanion.Logging;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
