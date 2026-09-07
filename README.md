@@ -6,6 +6,23 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
+## Readable scope window and honest timeouts (2026.0907.00)
+
+The scope selection window drew its three options in the system text colour over
+the dark background, because they declared neither a style nor a foreground and
+the only RadioButton style in the theme is keyed. They are readable again, and an
+automated guard now requires every RadioButton and CheckBox in a view to declare
+its own colour.
+
+A timeout now says that it is a timeout. Loading a page tree no longer reports a
+connection failure, and the advice names the highest delay you can actually pick.
+Values outside 15, 30, 60 and 120 seconds revert to 30, so an unqualified
+"raise the timeout" could not be followed.
+
+Paired Cortex 2026.0907.00 measures a Confluence scope with indexed counts, so adding
+a source in a large space answers in about a second instead of exceeding the
+timeout with nothing on screen.
+
 ## Manage Confluence sources (2026.0906.02)
 
 **Mes sources** appears first. Search by space or page title, open the original

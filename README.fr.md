@@ -6,6 +6,23 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir a modifier un fichier TOML ni a ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
+## Fenetre de perimetre lisible et delais honnetes (2026.0907.00)
+
+La fenetre de choix du perimetre affichait ses trois options dans la couleur de
+texte du systeme sur le fond sombre, faute de style et de couleur declares, le
+seul style RadioButton du theme etant nomme. Elles sont de nouveau lisibles, et
+une garde automatique exige desormais que chaque RadioButton et CheckBox d'une
+vue declare sa propre couleur.
+
+Un delai depasse le dit maintenant. Le chargement d'une arborescence ne signale
+plus une panne de connexion, et le conseil nomme le delai maximal reellement
+selectionnable. Toute valeur hors 15, 30, 60 et 120 secondes revient a 30, donc
+un simple "augmentez le delai" ne pouvait pas etre suivi.
+
+Le Cortex apparie 2026.0907.00 mesure un perimetre Confluence par comptages indexes :
+ajouter une source dans un grand espace repond en une seconde environ au lieu de
+depasser le delai sans rien afficher.
+
 ## Gerer les sources Confluence (2026.0906.02)
 
 **Mes sources** apparait en premier. Recherchez un espace ou un titre de page,

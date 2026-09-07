@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [2026.0907.00] - 2026-09-07
+
+- Restore the contrast of the scope selection window. Its three options declared
+  neither a style nor a foreground, so they fell through to the built-in control
+  style and were painted in the system text colour over the dark background. A new
+  theme guard now requires every RadioButton and CheckBox in a view to declare one.
+- Stop presenting a CLI timeout as something else. Loading a page tree reported a
+  tree error and blamed the network connection; the timeout advice promised an
+  increase that reverts to the default for any value outside the offered choices,
+  and now names the highest selectable delay instead.
+- Carry the timeout fact on the CLI operation error, so the four places that present
+  it no longer pass a hardcoded false and can reach the message that names the cause.
+- Keep machine progress records out of the sentence read aloud in the live region.
+
 ## [2026.0906.02] - 2026-09-06
 
 - Put My sources first, add source/title filtering and searchable remote page trees.
