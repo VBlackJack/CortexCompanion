@@ -32,7 +32,7 @@ public static class AppConstants
     /// longer answers the way this build expects, and the mismatch surfaced as an
     /// unexplained parse failure rather than as the version refusal it is.
     /// </remarks>
-    public const string MinSupportedCliVersion = "2026.0907.02";
+    public const string MinSupportedCliVersion = "2026.0907.03";
 
     /// <summary>First distributed CLI version with the desktop JSON search contract.</summary>
     /// <remarks>

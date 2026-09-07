@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2026.0907.03] - 2026-09-07
+
 ### Added
 
 - Prove every Cortex command line the desktop builds against the Cortex parser that runs
@@ -13,6 +15,12 @@
   desktop meant it for. Verified to fail on a renamed subcommand, a renamed parent option, a
   renamed required flag, a renamed search option and a version flag that prints something
   other than the version. Both interoperability workflows and the paired release gate run it.
+
+### Changed
+
+- Refuse a Cortex older than 2026.0907.03, the one this build ships with. Nothing in this
+  pair changes a contract, but the floor follows the shipped version by rule, and a test
+  holds it there.
 
 ## [2026.0907.02] - 2026-09-07
 
