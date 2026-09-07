@@ -17,572 +17,575 @@
     <value>Cortex Companion</value>
   </data>
   <data name="FatalStartupErrorFormat" xml:space="preserve">
-    <value>Cortex Companion n'a pas pu démarrer. Erreur : {1} : {2} Consultez les journaux locaux, s'ils sont disponibles, dans : {0}</value>
+    <value>Cortex Companion could not start. Error: {1}: {2} Check the local logs, if available, in: {0}</value>
   </data>
   <data name="NavigationLabel" xml:space="preserve">
-    <value>Navigation principale</value>
+    <value>Main navigation</value>
   </data>
   <data name="PagesNavigation" xml:space="preserve">
-    <value>Pages Confluence</value>
+    <value>Confluence pages</value>
   </data>
   <data name="SyncNavigation" xml:space="preserve">
-    <value>Base locale</value>
+    <value>Local database</value>
   </data>
   <data name="SchedulingNavigation" xml:space="preserve">
-    <value>Programmation Confluence</value>
+    <value>Confluence scheduling</value>
   </data>
   <data name="PagesTitle" xml:space="preserve">
-    <value>Pages Confluence</value>
+    <value>Confluence pages</value>
   </data>
-  <data name="PagesRefresh" xml:space="preserve"><value>Recharger</value></data>
-  <data name="PagesAddReferenceLabel" xml:space="preserve"><value>URL ou ID de page</value></data>
-  <data name="PagesAddReferenceHint" xml:space="preserve"><value>Collez une URL Confluence ou un ID numérique</value></data>
-  <data name="PagesResolveAndAdd" xml:space="preserve"><value>Résoudre et ajouter</value></data>
-  <data name="ScopeDialogTitle" xml:space="preserve"><value>Choisir le périmètre Confluence</value></data>
-  <data name="ScopeRootDetails" xml:space="preserve"><value>Page racine : {0}&#xA;Cette page contient {1:N0} page(s) descendante(s).</value></data>
-  <data name="ScopeChoicePageOnly" xml:space="preserve"><value>Cette page seule</value></data>
-  <data name="ScopeChoiceSubtree" xml:space="preserve"><value>Cette page et ses sous-pages</value></data>
-  <data name="ScopeChoiceWholeSpace" xml:space="preserve"><value>Tout l'espace {0}</value></data>
-  <data name="ScopeChoiceDetails" xml:space="preserve"><value>{0:N0} page(s) - environ {1:N1} Mo</value></data>
-  <data name="ScopeRecommended" xml:space="preserve"><value>Recommandé</value></data>
+  <data name="PagesRefresh" xml:space="preserve"><value>Reload</value></data>
+  <data name="PagesAddReferenceLabel" xml:space="preserve"><value>Page URL or ID</value></data>
+  <data name="PagesAddReferenceHint" xml:space="preserve"><value>Paste a Confluence URL or a numeric ID</value></data>
+  <data name="PagesResolveAndAdd" xml:space="preserve"><value>Resolve and add</value></data>
+  <data name="ScopeDialogTitle" xml:space="preserve"><value>Choose the Confluence scope</value></data>
+  <data name="ScopeRootDetails" xml:space="preserve"><value>Root page: {0}&#xA;This page contains {1:N0} descendant page(s).</value></data>
+  <data name="ScopeChoicePageOnly" xml:space="preserve"><value>This page only</value></data>
+  <data name="ScopeChoiceSubtree" xml:space="preserve"><value>Page and subtree</value></data>
+  <data name="ScopeChoiceWholeSpace" xml:space="preserve"><value>The whole space {0}</value></data>
+  <data name="ScopeChoiceDetails" xml:space="preserve"><value>{0:N0} page(s) - about {1:N1} MB</value></data>
+  <data name="ScopeRecommended" xml:space="preserve"><value>Recommended</value></data>
   <data name="ScopeRecommendedSeparator" xml:space="preserve"><value> - </value></data>
-  <data name="ScopeStorageDetails" xml:space="preserve"><value>Stockage des générations : {0}&#xA;Rétention bornée : {1:N0} génération(s).</value></data>
-  <data name="PagesLoading" xml:space="preserve"><value>Chargement local des espaces...</value></data>
-  <data name="PagesReady" xml:space="preserve"><value>Configuration Pages chargée.</value></data>
-  <data name="PagesNotConfigured" xml:space="preserve"><value>Cortex n'est pas connecté : aucune configuration Pages ne peut être lue. Ouvrez Réglages pour sélectionner cortex.exe.</value></data>
-  <data name="PagesConfigurationRequired" xml:space="preserve"><value>Initialisez Confluence ci-dessous pour activer l'ajout de pages. Aucun fichier TOML n'est à modifier manuellement.</value></data>
-  <data name="PagesSetupTitle" xml:space="preserve"><value>Première configuration Confluence</value></data>
-  <data name="PagesSetupDescription" xml:space="preserve"><value>Collez l'URL d'une page. Companion mesure son arborescence et son coût, recommande de l'inclure, puis enregistre votre choix explicite.</value></data>
-  <data name="PagesSetupPageUrlLabel" xml:space="preserve"><value>URL de la première page</value></data>
-  <data name="PagesSetupPageUrlHint" xml:space="preserve"><value>URL complète copiée depuis votre navigateur Confluence</value></data>
-  <data name="PagesSetupSpaceKeyLabel" xml:space="preserve"><value>Clé de l'espace</value></data>
-  <data name="PagesSetupSpaceKeyHint" xml:space="preserve"><value>Détectée automatiquement quand l'URL la contient</value></data>
-  <data name="PagesSetupExpiryLabel" xml:space="preserve"><value>Date d'expiration du PAT</value></data>
-  <data name="PagesSetupExpiryHint" xml:space="preserve"><value>Date déclarée lors de la création du PAT. Le bouton Initialiser reste inactif tant qu'elle n'est pas choisie.</value></data>
-  <data name="PagesSetupClassificationLabel" xml:space="preserve"><value>Classification locale</value></data>
-  <data name="PagesSetupConverterLabel" xml:space="preserve"><value>Convertisseur Confluence</value></data>
-  <data name="PagesSetupConverterHint" xml:space="preserve"><value>Fourni automatiquement avec Cortex. À modifier uniquement pour le développement.</value></data>
-  <data name="PagesSetupAdvanced" xml:space="preserve"><value>Options avancées pour développeurs</value></data>
-  <data name="PagesSetupBrowse" xml:space="preserve"><value>Parcourir</value></data>
-  <data name="PagesSetupInitialize" xml:space="preserve"><value>Initialiser et ajouter la page</value></data>
-  <data name="PagesSetupProfessional" xml:space="preserve"><value>Professionnel - confidentiel</value></data>
-  <data name="PagesSetupPersonal" xml:space="preserve"><value>Personnel - non sensible</value></data>
-  <data name="PagesSetupCompleted" xml:space="preserve"><value>Confluence est configuré et la première page a été ajoutée.</value></data>
-  <data name="PagesSetupCreatedAddCancelled" xml:space="preserve"><value>Confluence est configuré. L'ajout de la page a été annulé.</value></data>
-  <data name="PagesSetupCreatedAddFailed" xml:space="preserve"><value>Confluence est configuré, mais la page n'a pas encore été ajoutée.</value></data>
-  <data name="ConfluenceSetupInvalidPageUrl" xml:space="preserve"><value>Collez une URL de page Confluence complète et prise en charge.</value></data>
-  <data name="ConfluenceSetupInvalidSpaceKey" xml:space="preserve"><value>La clé d'espace accepte uniquement lettres, chiffres, point, tiret et underscore.</value></data>
-  <data name="ConfluenceSetupSpaceMismatch" xml:space="preserve"><value>La clé d'espace ne correspond pas à celle détectée dans l'URL.</value></data>
-  <data name="ConfluenceSetupExpiredAuthentication" xml:space="preserve"><value>La date d'expiration du PAT doit être dans le futur.</value></data>
-  <data name="ConfluenceSetupInvalidClassification" xml:space="preserve"><value>La classification sélectionnée n'est pas prise en charge.</value></data>
-  <data name="ConfluenceSetupInvalidConverter" xml:space="preserve"><value>Le convertisseur Cortex est introuvable. Réinstallez Cortex ou choisissez le convertisseur console livré avec l'application.</value></data>
-  <data name="ConfluenceSetupIncompatibleConverter" xml:space="preserve"><value>Ce fichier n'est pas le convertisseur console Cortex compatible. Le chemin n'a pas été enregistré.</value></data>
-  <data name="ConfluenceConverterFileDialogTitle" xml:space="preserve"><value>Choisir le convertisseur Confluence</value></data>
-  <data name="ConfluenceConverterFileDialogFilter" xml:space="preserve"><value>Convertisseur Confluence (ConfluenceRAGBuilder.Console.exe)|ConfluenceRAGBuilder.Console.exe|Exécutables (*.exe)|*.exe</value></data>
-  <data name="PagesNoSpaces" xml:space="preserve"><value>Aucun espace Confluence n'est configuré.</value></data>
-  <data name="SpaceCoverageLabel" xml:space="preserve"><value>Couverture</value></data>
-  <data name="SpaceCoverageUnknown" xml:space="preserve"><value>inconnue, aucune collecte mesurée</value></data>
-  <data name="SpaceCoverage" xml:space="preserve"><value>{0:N0} page(s) a la dernière collecte</value></data>
-  <data name="ConfirmKeepEmptySpaceTitle" xml:space="preserve"><value>Espace sans aucune page</value></data>
-  <data name="ConfirmKeepEmptySpaceMessage" xml:space="preserve"><value>L'espace {0} est autorisé mais sa sélection est vide : aucune page ne sera collectée, et rien ne vous le rappellera lors des synchronisations. Choisissez Confirmer pour le garder tel quel et choisir ses pages plus tard, ou Annuler pour retirer l'espace.</value></data>
-  <data name="PagesEmptySelection" xml:space="preserve"><value>Liste vide : ZERO page sera collectée.</value></data>
-  <data name="PagesModeDescription" xml:space="preserve"><value>Seules les pages listées sont collectées.</value></data>
-  <data name="PagesModeName" xml:space="preserve"><value>Cette page seule</value></data>
-  <data name="SubtreeModeName" xml:space="preserve"><value>Page et arborescence</value></data>
-  <data name="WholeSpaceModeName" xml:space="preserve"><value>Tout l'espace</value></data>
-  <data name="ScopeAnomaly" xml:space="preserve"><value>{0:N0} page(s) collectée(s) sur {1:N0} disponible(s) : {2:N0} descendant(s) ne sont pas inclus.</value></data>
-  <data name="ExpandToSubtree" xml:space="preserve"><value>Élargir à l'arborescence</value></data>
-  <data name="LogicalTargetExplanation" xml:space="preserve"><value>La cible est un préfixe logique dans l'index Cortex, pas un dossier de votre Vault.</value></data>
-  <data name="WholeSpaceModeDescription" xml:space="preserve"><value>L'espace entier est collecté ; aucune liste de pages n'est applicable.</value></data>
-  <data name="SubtreeModeDescription" xml:space="preserve"><value>Chaque page listée est une racine : elle est collectée avec toutes ses pages descendantes.</value></data>
-  <data name="PagesSwitchMode" xml:space="preserve"><value>Changer de mode</value></data>
-  <data name="PagesRemove" xml:space="preserve"><value>Retirer de Cortex</value></data>
-  <data name="PagesReadOnly" xml:space="preserve"><value>Lecture seule : les mutations sont désactivées.</value></data>
-  <data name="PagesMutationCommitted" xml:space="preserve"><value>Configuration mise à jour.</value></data>
-  <data name="PagesMutationCancelled" xml:space="preserve"><value>Opération annulée ; aucune écriture.</value></data>
-  <data name="PagesCasConflict" xml:space="preserve"><value>La configuration a changé. Elle a été rechargée ; vérifiez-la avant de recommencer.</value></data>
-  <data name="ConfigPathLabel" xml:space="preserve"><value>Configuration TOML</value></data>
-  <data name="ConfigOriginLabel" xml:space="preserve"><value>Origine</value></data>
-  <data name="ConfigPathUnavailable" xml:space="preserve"><value>indisponible</value></data>
-  <data name="ConfigOriginUnavailable" xml:space="preserve"><value>non configurée</value></data>
+  <data name="ScopeStorageDetails" xml:space="preserve"><value>Generation storage: {0}&#xA;Bounded retention: {1:N0} generation(s).</value></data>
+  <data name="PagesLoading" xml:space="preserve"><value>Loading spaces locally...</value></data>
+  <data name="PagesReady" xml:space="preserve"><value>Confluence pages configuration loaded.</value></data>
+  <data name="PagesNotConfigured" xml:space="preserve"><value>Cortex is not connected: no Confluence pages configuration can be read. Open Settings to select cortex.exe.</value></data>
+  <data name="PagesConfigurationRequired" xml:space="preserve"><value>Initialize Confluence below to enable adding pages. No TOML file has to be edited by hand.</value></data>
+  <data name="PagesSetupTitle" xml:space="preserve"><value>First Confluence setup</value></data>
+  <data name="PagesSetupDescription" xml:space="preserve"><value>Paste the URL of a page. Companion measures its page tree and its cost, recommends including it, then saves your explicit choice.</value></data>
+  <data name="PagesSetupPageUrlLabel" xml:space="preserve"><value>First page URL</value></data>
+  <data name="PagesSetupPageUrlHint" xml:space="preserve"><value>Full URL copied from your browser in Confluence</value></data>
+  <data name="PagesSetupSpaceKeyLabel" xml:space="preserve"><value>Space key</value></data>
+  <data name="PagesSetupSpaceKeyHint" xml:space="preserve"><value>Detected automatically when the URL contains it</value></data>
+  <data name="PagesSetupExpiryLabel" xml:space="preserve"><value>PAT expiry date</value></data>
+  <data name="PagesSetupExpiryHint" xml:space="preserve"><value>Date declared when the PAT was created. The Initialize button stays disabled until it is chosen.</value></data>
+  <data name="PagesSetupClassificationLabel" xml:space="preserve"><value>Local classification</value></data>
+  <data name="PagesSetupConverterLabel" xml:space="preserve"><value>Confluence converter</value></data>
+  <data name="PagesSetupConverterHint" xml:space="preserve"><value>Provided automatically with Cortex. Change it only for development.</value></data>
+  <data name="PagesSetupAdvanced" xml:space="preserve"><value>Advanced options for developers</value></data>
+  <data name="PagesSetupBrowse" xml:space="preserve"><value>Browse</value></data>
+  <data name="PagesSetupInitialize" xml:space="preserve"><value>Initialize and add the page</value></data>
+  <data name="PagesSetupProfessional" xml:space="preserve"><value>Work - confidential</value></data>
+  <data name="PagesSetupPersonal" xml:space="preserve"><value>Personal - not sensitive</value></data>
+  <data name="PagesSetupCompleted" xml:space="preserve"><value>Confluence is configured and the first page has been added.</value></data>
+  <data name="PagesSetupCreatedAddCancelled" xml:space="preserve"><value>Confluence is configured. Adding the page was canceled.</value></data>
+  <data name="PagesSetupCreatedAddFailed" xml:space="preserve"><value>Confluence is configured, but the page has not been added yet.</value></data>
+  <data name="ConfluenceSetupInvalidPageUrl" xml:space="preserve"><value>Paste a complete, supported Confluence page URL.</value></data>
+  <data name="ConfluenceSetupInvalidSpaceKey" xml:space="preserve"><value>The space key accepts only letters, digits, dot, hyphen and underscore.</value></data>
+  <data name="ConfluenceSetupSpaceMismatch" xml:space="preserve"><value>The space key does not match the one detected in the URL.</value></data>
+  <data name="ConfluenceSetupExpiredAuthentication" xml:space="preserve"><value>The PAT expiry date must be in the future.</value></data>
+  <data name="ConfluenceSetupInvalidClassification" xml:space="preserve"><value>The selected classification is not supported.</value></data>
+  <data name="ConfluenceSetupInvalidConverter" xml:space="preserve"><value>The Cortex converter could not be found. Reinstall Cortex or choose the console converter shipped with the application.</value></data>
+  <data name="ConfluenceSetupIncompatibleConverter" xml:space="preserve"><value>This file is not the compatible Cortex console converter. The path was not saved.</value></data>
+  <data name="ConfluenceConverterFileDialogTitle" xml:space="preserve"><value>Choose the Confluence converter</value></data>
+  <data name="ConfluenceConverterFileDialogFilter" xml:space="preserve"><value>Confluence converter (ConfluenceRAGBuilder.Console.exe)|ConfluenceRAGBuilder.Console.exe|Executables (*.exe)|*.exe</value></data>
+  <data name="PagesNoSpaces" xml:space="preserve"><value>No Confluence space is configured.</value></data>
+  <data name="SpaceCoverageLabel" xml:space="preserve"><value>Coverage</value></data>
+  <data name="SpaceCoverageUnknown" xml:space="preserve"><value>unknown, no collection measured</value></data>
+  <data name="SpaceCoverage" xml:space="preserve"><value>{0:N0} page(s) at the last collection</value></data>
+  <data name="ConfirmKeepEmptySpaceTitle" xml:space="preserve"><value>Space with no pages</value></data>
+  <data name="ConfirmKeepEmptySpaceMessage" xml:space="preserve"><value>Space {0} is allowed but its selection is empty: no page will be collected, and nothing will remind you of it during synchronizations. Select Confirm to keep it as it is and choose its pages later, or Cancel to remove the space.</value></data>
+  <data name="PagesEmptySelection" xml:space="preserve"><value>Empty list: ZERO pages will be collected.</value></data>
+  <data name="PagesModeDescription" xml:space="preserve"><value>Only the listed pages are collected.</value></data>
+  <data name="PagesModeName" xml:space="preserve"><value>This page only</value></data>
+  <data name="SubtreeModeName" xml:space="preserve"><value>Page and subtree</value></data>
+  <data name="WholeSpaceModeName" xml:space="preserve"><value>The whole space</value></data>
+  <data name="ScopeAnomaly" xml:space="preserve"><value>{0:N0} page(s) collected out of {1:N0} available: {2:N0} descendant(s) are not included.</value></data>
+  <data name="ExpandToSubtree" xml:space="preserve"><value>Expand to subtree</value></data>
+  <data name="LogicalTargetExplanation" xml:space="preserve"><value>The logical prefix is a name inside the Cortex index, not a folder in your Vault.</value></data>
+  <data name="WholeSpaceModeDescription" xml:space="preserve"><value>The whole space is collected; no page list applies.</value></data>
+  <data name="SubtreeModeDescription" xml:space="preserve"><value>Each listed page is a root page: it is collected with all its descendant pages.</value></data>
+  <data name="PagesSwitchMode" xml:space="preserve"><value>Change mode</value></data>
+  <data name="PagesRemove" xml:space="preserve"><value>Remove from Cortex</value></data>
+  <data name="PagesReadOnly" xml:space="preserve"><value>Read-only: changes are disabled.</value></data>
+  <data name="PagesMutationCommitted" xml:space="preserve"><value>Configuration updated.</value></data>
+  <data name="PagesMutationCancelled" xml:space="preserve"><value>Operation canceled; nothing was written.</value></data>
+  <data name="PagesCasConflict" xml:space="preserve"><value>The configuration has changed. It has been reloaded; check it before trying again.</value></data>
+  <data name="ConfigPathLabel" xml:space="preserve"><value>TOML configuration</value></data>
+  <data name="ConfigOriginLabel" xml:space="preserve"><value>Origin</value></data>
+  <data name="ConfigPathUnavailable" xml:space="preserve"><value>unavailable</value></data>
+  <data name="ConfigOriginUnavailable" xml:space="preserve"><value>not configured</value></data>
   <data name="ConfigOrigin" xml:space="preserve"><value>{0}</value></data>
-  <data name="EnvironmentOverridesTitle" xml:space="preserve"><value>Champs verrouillés par l'environnement</value></data>
-  <data name="EnvironmentOverrideOrigin" xml:space="preserve"><value>Verrouillé - origine : {0}</value></data>
-  <data name="SpaceTargetLabel" xml:space="preserve"><value>Préfixe logique</value></data>
+  <data name="EnvironmentOverridesTitle" xml:space="preserve"><value>Fields locked by the environment</value></data>
+  <data name="EnvironmentOverrideOrigin" xml:space="preserve"><value>Locked - origin: {0}</value></data>
+  <data name="SpaceTargetLabel" xml:space="preserve"><value>Logical prefix</value></data>
   <data name="SpaceClassificationLabel" xml:space="preserve"><value>Classification</value></data>
   <data name="SpaceModeLabel" xml:space="preserve"><value>Mode</value></data>
   <data name="PageIdLabel" xml:space="preserve"><value>ID</value></data>
-  <data name="PageTitleUnknown" xml:space="preserve"><value>Titre inconnu</value></data>
-  <data name="PageTitleUnknownUntilSync" xml:space="preserve"><value>Titre inconnu jusqu'au prochain sync.</value></data>
-  <data name="PageTitleLastSync" xml:space="preserve"><value>Titre au dernier sync du {0}</value></data>
-  <data name="PageTitleNeverSynced" xml:space="preserve"><value>Titre issu du dernier état local ; aucune date de sync disponible.</value></data>
-  <data name="PagesCliError" xml:space="preserve"><value>Cortex a échoué pendant la lecture des pages Confluence. Consultez les journaux locaux.</value></data>
-  <data name="PagesCliLocked" xml:space="preserve"><value>Le CLI signale un verrou actif.</value></data>
-  <data name="PagesCliNotDue" xml:space="preserve"><value>La commande n'est pas due.</value></data>
-  <data name="PagesCliAuth" xml:space="preserve"><value>L'authentification Confluence est indisponible.</value></data>
-  <data name="PagesCliRemote" xml:space="preserve"><value>Le service Confluence distant est indisponible.</value></data>
-  <data name="PagesCliInvalidInput" xml:space="preserve"><value>La configuration Confluence ou la référence de page est invalide.</value></data>
-  <data name="PagesCliNotFound" xml:space="preserve"><value>La page n'existe pas.</value></data>
-  <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>La page appartient à un espace hors allowlist.</value></data>
-  <data name="PagesAddSpaceTitle" xml:space="preserve"><value>Autoriser un nouvel espace</value></data>
-  <data name="PagesAddSpaceDescription" xml:space="preserve"><value>Un espace doit être autorisé avant que ses pages puissent être collectées. Collez l'URL d'une page de cet espace : sa clé en est déduite.</value></data>
-  <data name="PagesAddSpaceReferenceLabel" xml:space="preserve"><value>URL d'une page de l'espace</value></data>
-  <data name="PagesAddSpaceReferenceHint" xml:space="preserve"><value>Exemple : https://votre-confluence/spaces/ANSSIWS/pages/123456/Titre. Un lien court ne permet pas de déduire l'espace.</value></data>
-  <data name="PagesAddSpaceClassificationLabel" xml:space="preserve"><value>Classification de l'espace</value></data>
-  <data name="PagesAddSpaceInferredKey" xml:space="preserve"><value>Espace déduit : {0}</value></data>
-  <data name="PagesAddSpaceNoInferredKey" xml:space="preserve"><value>Aucun espace n'a pu être déduit de cette URL.</value></data>
-  <data name="PagesAddSpaceButton" xml:space="preserve"><value>Autoriser l'espace</value></data>
-  <data name="PagesSpaceNotAllowlisted" xml:space="preserve"><value>L'espace {0} n'est pas autorisé. Autorisez-le ci-dessous, la page sera ajoutée dans la foulée.</value></data>
-  <data name="PagesRejectSpaceAlreadyAllowlisted" xml:space="preserve"><value>Cet espace est déjà autorisé.</value></data>
-  <data name="PagesRejectSpaceKeyNotInferable" xml:space="preserve"><value>Cette URL ne porte pas d'espace. Ouvrez la page dans Confluence et copiez l'URL complète depuis la barre d'adresse.</value></data>
-  <data name="PagesRejectSpaceForeignBaseUrl" xml:space="preserve"><value>Cette URL ne pointe pas vers le serveur Confluence configuré.</value></data>
-  <data name="ConfirmAddSpaceTitle" xml:space="preserve"><value>Autoriser un espace</value></data>
-  <data name="ConfirmAddSpaceMessage" xml:space="preserve"><value>L'espace {0} sera autorisé en classification {1}. Aucune page n'est collectée tant que vous n'en ajoutez pas explicitement.</value></data>
-  <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré. Vous pouvez porter ce délai jusqu'à {0} secondes dans Réglages, choisir Enregistrer et connecter, puis réessayer. Si le délai maximal ne suffit pas, l'espace est trop grand pour cette opération.</value></data>
-  <data name="PagesCliLaunchFailed" xml:space="preserve"><value>Le CLI n'a pas pu être lancé.</value></data>
-  <data name="PagesCliInvalidJson" xml:space="preserve"><value>La réponse JSON du CLI est invalide.</value></data>
-  <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>Cette page est déjà incluse dans l'espace entier. Vous pouvez collecter maintenant ou modifier sa sélection dans Mes sources ci-dessous.</value></data>
-  <data name="PagesRejectPageAlreadyConfigured" xml:space="preserve"><value>Cette page est déjà configurée.</value></data>
-  <data name="PagesRejectPageNotConfigured" xml:space="preserve"><value>Cette page n'est pas configurée dans ce mode.</value></data>
-  <data name="PagesRejectSpaceNotAllowlisted" xml:space="preserve"><value>L'espace de cette page n'est plus déclaré dans la configuration Confluence. Rechargez l'écran, puis autorisez-le avec la carte "Autoriser un nouvel espace" avant de recommencer.</value></data>
-  <data name="PagesRejectReadOnly" xml:space="preserve"><value>La mutation est désactivée en lecture seule.</value></data>
-  <data name="ConfirmAddTitle" xml:space="preserve"><value>Confirmer l'ajout</value></data>
-  <data name="ConfirmAddMessage" xml:space="preserve"><value>Ajouter la page "{0}" (ID {1}) dans l'espace {2} ?</value></data>
-  <data name="ConfirmRemoveTitle" xml:space="preserve"><value>Confirmer le retrait</value></data>
-  <data name="ConfirmRemoveMessage" xml:space="preserve"><value>Retirer la page {0} de l'espace {1} ? Elle sera retirée de la génération suivante puis purgée de l'index.</value></data>
-  <data name="ConfirmModeTitle" xml:space="preserve"><value>Confirmation typée du mode</value></data>
-  <data name="ConfirmModeWholeSpace" xml:space="preserve"><value>L'espace {0} sera collecté en entier ; sa liste d'ID explicites sera retirée du fichier. Tapez exactement sa clé pour confirmer.</value></data>
-  <data name="ConfirmModePagesEmpty" xml:space="preserve"><value>L'espace {0} passera en mode pages avec une liste initiale vide : ZERO page sera collectée. Tapez exactement sa clé pour confirmer.</value></data>
-  <data name="ConfirmModeSubtree" xml:space="preserve"><value>L'espace {0} passera en mode sous-arbre. Ses {1} page(s) explicites deviennent des racines : leurs pages descendantes seront collectées en plus. Tapez exactement sa clé pour confirmer.</value></data>
-  <data name="ConfirmModeSubtreeEmpty" xml:space="preserve"><value>L'espace {0} passera en mode sous-arbre avec une liste initiale vide : ZERO page sera collectée. Tapez exactement sa clé pour confirmer.</value></data>
-  <data name="ConfirmModeInputLabel" xml:space="preserve"><value>Clé d'espace à saisir</value></data>
-  <data name="ConfirmButton" xml:space="preserve"><value>Confirmer</value></data>
-  <data name="CancelButton" xml:space="preserve"><value>Annuler</value></data>
+  <data name="PageTitleUnknown" xml:space="preserve"><value>Unknown title</value></data>
+  <data name="PageTitleUnknownUntilSync" xml:space="preserve"><value>Title unknown until the next synchronization.</value></data>
+  <data name="PageTitleLastSync" xml:space="preserve"><value>Title at the last synchronization on {0}</value></data>
+  <data name="PageTitleNeverSynced" xml:space="preserve"><value>Title from the last local state; no synchronization date available.</value></data>
+  <data name="PagesCliError" xml:space="preserve"><value>Cortex failed while reading the Confluence pages. Check the local logs.</value></data>
+  <data name="PagesCliLocked" xml:space="preserve"><value>The CLI reports an active lock.</value></data>
+  <data name="PagesCliNotDue" xml:space="preserve"><value>The command is not due.</value></data>
+  <data name="PagesCliAuth" xml:space="preserve"><value>Confluence authentication is unavailable.</value></data>
+  <data name="PagesCliRemote" xml:space="preserve"><value>The remote Confluence service is unavailable.</value></data>
+  <data name="PagesCliInvalidInput" xml:space="preserve"><value>The Confluence configuration or the page reference is invalid.</value></data>
+  <data name="PagesCliNotFound" xml:space="preserve"><value>The page does not exist.</value></data>
+  <data name="PagesCliOutsideAllowlist" xml:space="preserve"><value>The page belongs to a space outside the allowlist.</value></data>
+  <data name="PagesAddSpaceTitle" xml:space="preserve"><value>Allow a new space</value></data>
+  <data name="PagesAddSpaceDescription" xml:space="preserve"><value>A space must be allowed before its pages can be collected. Paste the URL of a page in this space: its space key is derived from it.</value></data>
+  <data name="PagesAddSpaceReferenceLabel" xml:space="preserve"><value>URL of a page in the space</value></data>
+  <data name="PagesAddSpaceReferenceHint" xml:space="preserve"><value>Example: https://your-confluence/spaces/ANSSIWS/pages/123456/Title. The space cannot be derived from a short link.</value></data>
+  <data name="PagesAddSpaceClassificationLabel" xml:space="preserve"><value>Space classification</value></data>
+  <data name="PagesAddSpaceInferredKey" xml:space="preserve"><value>Derived space: {0}</value></data>
+  <data name="PagesAddSpaceNoInferredKey" xml:space="preserve"><value>No space could be derived from this URL.</value></data>
+  <data name="PagesAddSpaceButton" xml:space="preserve"><value>Allow this space</value></data>
+  <data name="PagesSpaceNotAllowlisted" xml:space="preserve"><value>Space {0} is not allowed. Allow it below and the page will be added right after.</value></data>
+  <data name="PagesRejectSpaceAlreadyAllowlisted" xml:space="preserve"><value>This space is already allowed.</value></data>
+  <data name="PagesRejectSpaceKeyNotInferable" xml:space="preserve"><value>This URL carries no space. Open the page in Confluence and copy the full URL from the address bar.</value></data>
+  <data name="PagesRejectSpaceForeignBaseUrl" xml:space="preserve"><value>This URL does not point to the configured Confluence server.</value></data>
+  <data name="ConfirmAddSpaceTitle" xml:space="preserve"><value>Allow a space</value></data>
+  <data name="ConfirmAddSpaceMessage" xml:space="preserve"><value>Space {0} will be allowed with classification {1}. No page is collected until you explicitly add one.</value></data>
+  <data name="PagesCliTimedOut" xml:space="preserve"><value>Cortex did not answer within the configured timeout. Raise it to at most {0} seconds in Settings, select Save and connect, then try again. If the maximum timeout is not enough, the space is too large for this operation.</value></data>
+  <data name="PagesCliLaunchFailed" xml:space="preserve"><value>The CLI could not be started.</value></data>
+  <data name="PagesCliInvalidJson" xml:space="preserve"><value>The JSON response from the CLI is invalid.</value></data>
+  <data name="PagesRejectWholeSpaceCovered" xml:space="preserve"><value>This page is already included in the whole space. Collect now or edit its selection in My sources below.</value></data>
+  <data name="PagesRejectPageAlreadyConfigured" xml:space="preserve"><value>This page is already configured.</value></data>
+  <data name="PagesRejectPageNotConfigured" xml:space="preserve"><value>This page is not configured in this mode.</value></data>
+  <data name="PagesRejectSpaceNotAllowlisted" xml:space="preserve"><value>The space of this page is no longer declared in the Confluence configuration. Reload the screen, then allow it with the Allow a new space card before starting over.</value></data>
+  <data name="PagesRejectReadOnly" xml:space="preserve"><value>Changes are disabled in read-only mode.</value></data>
+  <data name="ConfirmAddTitle" xml:space="preserve"><value>Confirm addition</value></data>
+  <data name="ConfirmAddMessage" xml:space="preserve"><value>Add the page "{0}" (ID {1}) to space {2}?</value></data>
+  <data name="ConfirmRemoveTitle" xml:space="preserve"><value>Confirm removal</value></data>
+  <data name="ConfirmRemoveMessage" xml:space="preserve"><value>Remove page {0} from space {1}? It will be removed from the next generation, then purged from the index.</value></data>
+  <data name="ConfirmModeTitle" xml:space="preserve"><value>Typed mode confirmation</value></data>
+  <data name="ConfirmModeWholeSpace" xml:space="preserve"><value>Space {0} will be collected in full; its list of explicit IDs will be removed from the file. Type its key exactly to confirm.</value></data>
+  <data name="ConfirmModePagesEmpty" xml:space="preserve"><value>Space {0} will switch to page mode with an empty initial list: ZERO pages will be collected. Type its key exactly to confirm.</value></data>
+  <data name="ConfirmModeSubtree" xml:space="preserve"><value>Space {0} will switch to subtree mode. Its {1} explicit page(s) become root pages: their descendant pages will be collected as well. Type its key exactly to confirm.</value></data>
+  <data name="ConfirmModeSubtreeEmpty" xml:space="preserve"><value>Space {0} will switch to subtree mode with an empty initial list: ZERO pages will be collected. Type its key exactly to confirm.</value></data>
+  <data name="ConfirmModeInputLabel" xml:space="preserve"><value>Space key to type</value></data>
+  <data name="ConfirmButton" xml:space="preserve"><value>Confirm</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancel</value></data>
   <data name="SyncTitle" xml:space="preserve">
-    <value>Base locale</value>
+    <value>Local database</value>
   </data>
   <data name="SchedulingTitle" xml:space="preserve">
-    <value>Programmation</value>
+    <value>Scheduling</value>
   </data>
   <data name="HandshakePending" xml:space="preserve">
-    <value>CLI : vérification en cours - lecture seule</value>
+    <value>CLI: check in progress - read-only</value>
   </data>
   <data name="HandshakeNotConfigured" xml:space="preserve">
-    <value>CLI : non configuré - lecture seule</value>
+    <value>CLI: not configured - read-only</value>
   </data>
   <data name="HandshakeLaunchFailed" xml:space="preserve">
-    <value>CLI : lancement impossible - lecture seule</value>
+    <value>CLI: could not be started - read-only</value>
   </data>
   <data name="HandshakeTimedOut" xml:space="preserve">
-    <value>CLI : délai dépassé - lecture seule</value>
+    <value>CLI: timed out - read-only</value>
   </data>
   <data name="HandshakeNonZeroExit" xml:space="preserve">
-    <value>CLI : commande en échec - lecture seule</value>
+    <value>CLI: command failed - read-only</value>
   </data>
   <data name="HandshakeUnparseable" xml:space="preserve">
-    <value>CLI : version non reconnue - lecture seule</value>
+    <value>CLI: version not recognized - read-only</value>
   </data>
   <data name="HandshakeIncompatible" xml:space="preserve">
-    <value>CLI : version trop ancienne (détectée {0}, minimum {1}) - lecture seule</value>
+    <value>CLI: version too old (detected {0}, minimum {1}) - read-only</value>
   </data>
   <data name="HandshakeCompatible" xml:space="preserve">
-    <value>CLI : version {0} compatible</value>
+    <value>CLI: version {0} compatible</value>
   </data>
-  <data name="SyncRefresh" xml:space="preserve"><value>Recharger</value></data>
-  <data name="SyncReadOnly" xml:space="preserve"><value>Connectez une version compatible de Cortex dans Réglages pour synchroniser la base locale. Les états déjà enregistrés restent lisibles.</value></data>
-  <data name="SyncNow" xml:space="preserve"><value>Synchroniser les documents locaux</value></data>
-  <data name="LocalSyncDescription" xml:space="preserve"><value>Indexez maintenant les documents du dossier configuré dans votre base de connaissances Cortex. Cette action ne dépend pas de Confluence.</value></data>
-  <data name="ConfluenceSyncAdvancedTitle" xml:space="preserve"><value>Intégration Confluence avancée</value></data>
-  <data name="ConfluenceSyncAdvancedDescription" xml:space="preserve"><value>Collectez les pages configurées dans l'écran Pages Confluence ; le PAT s'enregistre dans Réglages. Cette intégration reste facultative pour les documents locaux.</value></data>
-  <data name="ConfluenceSyncNow" xml:space="preserve"><value>Collecter Confluence</value></data>
-  <data name="SyncLoading" xml:space="preserve"><value>Lecture du dernier état local...</value></data>
-  <data name="SyncStateReady" xml:space="preserve"><value>Dernier état local rechargé.</value></data>
-  <data name="SyncStateCancelled" xml:space="preserve"><value>Observation interrompue par la fermeture de l'application.</value></data>
-  <data name="SyncStarting" xml:space="preserve"><value>Démarrage du worker de synchronisation...</value></data>
-  <data name="SyncContinuesAfterClose" xml:space="preserve"><value>La synchronisation continue en dehors de l'application.</value></data>
-  <data name="SyncHealthPathTitle" xml:space="preserve"><value>Canal d'état local</value></data>
-  <data name="IngestionStorageTitle" xml:space="preserve"><value>Stockage des générations Confluence</value></data>
-  <data name="IngestionStorageSummary" xml:space="preserve"><value>{0}&#xA;Rétention : {1:N0} génération(s) maximum.</value></data>
-  <data name="OpenCurrentGeneration" xml:space="preserve"><value>Ouvrir la génération courante</value></data>
-  <data name="CurrentGenerationUnavailable" xml:space="preserve"><value>Aucune génération courante lisible n'est disponible.</value></data>
-  <data name="HealthPathOrigin" xml:space="preserve"><value>data_root : {0} ; fichier de configuration : {1}</value></data>
-  <data name="SyncHealthTitle" xml:space="preserve"><value>Dernière tentative enregistrée</value></data>
-  <data name="SyncHealthStatusLabel" xml:space="preserve"><value>État</value></data>
-  <data name="SyncLastAttemptLabel" xml:space="preserve"><value>Dernière tentative</value></data>
-  <data name="SyncLastSuccessLabel" xml:space="preserve"><value>Dernier succès</value></data>
-  <data name="SyncErrorCodeLabel" xml:space="preserve"><value>Code d'erreur</value></data>
-  <data name="SyncActionRequiredLabel" xml:space="preserve"><value>Action demandée</value></data>
-  <data name="SyncSeenLabel" xml:space="preserve"><value>Documents vus</value></data>
-  <data name="SyncConvertedLabel" xml:space="preserve"><value>Documents convertis (dernière tentative)</value></data>
-  <data name="SyncFailedLabel" xml:space="preserve"><value>Documents en échec</value></data>
-  <data name="SyncCarryForwardLabel" xml:space="preserve"><value>Documents conservés</value></data>
+  <data name="SyncRefresh" xml:space="preserve"><value>Reload</value></data>
+  <data name="SyncReadOnly" xml:space="preserve"><value>Connect a compatible version of Cortex in Settings to synchronize the local database. States already recorded remain readable.</value></data>
+  <data name="SyncNow" xml:space="preserve"><value>Synchronize local documents</value></data>
+  <data name="LocalSyncDescription" xml:space="preserve"><value>Index the documents in the folder configured as your Cortex knowledge base now. This action does not depend on Confluence.</value></data>
+  <data name="ConfluenceSyncAdvancedTitle" xml:space="preserve"><value>Advanced Confluence integration</value></data>
+  <data name="ConfluenceSyncAdvancedDescription" xml:space="preserve"><value>Collect the pages configured in the Confluence pages screen; the PAT is saved in Settings. This integration remains optional for local documents.</value></data>
+  <data name="ConfluenceSyncNow" xml:space="preserve"><value>Collect Confluence</value></data>
+  <data name="SyncLoading" xml:space="preserve"><value>Reading the last local state...</value></data>
+  <data name="SyncStateReady" xml:space="preserve"><value>The last local state has been reloaded.</value></data>
+  <data name="SyncStateCancelled" xml:space="preserve"><value>Monitoring stopped when the application closed.</value></data>
+  <data name="SyncStarting" xml:space="preserve"><value>Starting the synchronization worker...</value></data>
+  <data name="SyncContinuesAfterClose" xml:space="preserve"><value>Synchronization continues outside the application.</value></data>
+  <data name="SyncHealthPathTitle" xml:space="preserve"><value>Local state channel</value></data>
+  <data name="IngestionStorageTitle" xml:space="preserve"><value>Confluence generation storage</value></data>
+  <data name="IngestionStorageSummary" xml:space="preserve"><value>{0}&#xA;Retention: {1:N0} generation(s) maximum.</value></data>
+  <data name="OpenCurrentGeneration" xml:space="preserve"><value>Open the current generation</value></data>
+  <data name="CurrentGenerationUnavailable" xml:space="preserve"><value>No readable current generation is available.</value></data>
+  <data name="HealthPathOrigin" xml:space="preserve"><value>data_root: {0}; configuration file: {1}</value></data>
+  <data name="SyncHealthTitle" xml:space="preserve"><value>Last recorded attempt</value></data>
+  <data name="SyncHealthStatusLabel" xml:space="preserve"><value>Status</value></data>
+  <data name="SyncLastAttemptLabel" xml:space="preserve"><value>Last attempt</value></data>
+  <data name="SyncLastSuccessLabel" xml:space="preserve"><value>Last success</value></data>
+  <data name="SyncErrorCodeLabel" xml:space="preserve"><value>Error code</value></data>
+  <data name="SyncActionRequiredLabel" xml:space="preserve"><value>Action required</value></data>
+  <data name="SyncSeenLabel" xml:space="preserve"><value>Documents seen</value></data>
+  <data name="SyncConvertedLabel" xml:space="preserve"><value>Documents converted (last attempt)</value></data>
+  <data name="SyncFailedLabel" xml:space="preserve"><value>Failed documents</value></data>
+  <data name="SyncCarryForwardLabel" xml:space="preserve"><value>Documents kept</value></data>
   <data name="SyncTombstonesLabel" xml:space="preserve"><value>Tombstones</value></data>
-  <data name="SyncNeverRun" xml:space="preserve"><value>Jamais synchronisé</value></data>
-  <data name="SyncHealthUnreadable" xml:space="preserve"><value>État local illisible</value></data>
-  <data name="SyncHealthLockedInformation" xml:space="preserve"><value>Information : un autre sync était en cours lors de la dernière tentative.</value></data>
+  <data name="SyncNeverRun" xml:space="preserve"><value>Never synchronized</value></data>
+  <data name="SyncHealthUnreadable" xml:space="preserve"><value>Local state unreadable</value></data>
+  <data name="SyncHealthLockedInformation" xml:space="preserve"><value>Information: another synchronization was in progress during the last attempt.</value></data>
   <data name="SyncHealthOk" xml:space="preserve"><value>OK</value></data>
-  <data name="SyncHealthDegraded" xml:space="preserve"><value>Dégradé</value></data>
-  <data name="SyncHealthError" xml:space="preserve"><value>Erreur</value></data>
-  <data name="ValueUnknown" xml:space="preserve"><value>inconnu</value></data>
-  <data name="ValueNone" xml:space="preserve"><value>aucun</value></data>
-  <data name="PatTitle" xml:space="preserve"><value>Badge PAT</value></data>
-  <data name="PatUnknown" xml:space="preserve"><value>Inconnue : aucune échéance configurée.</value></data>
-  <data name="PatInvalid" xml:space="preserve"><value>Invalide : l'échéance configurée ne peut pas être lue.</value></data>
-  <data name="PatOk" xml:space="preserve"><value>OK - expire le {0}</value></data>
-  <data name="PatWarning" xml:space="preserve"><value>Alerte - expire le {0} (moins de 30 jours)</value></data>
-  <data name="PatExpired" xml:space="preserve"><value>Expiré depuis le {0}</value></data>
-  <data name="SyncRunTitle" xml:space="preserve"><value>Dernière synchronisation</value></data>
-  <data name="LocalSyncRunTitle" xml:space="preserve"><value>Dernière synchronisation locale</value></data>
-  <data name="ConfluenceSyncRunTitle" xml:space="preserve"><value>Dernière collecte Confluence</value></data>
-  <data name="SyncDiagnosticsLabel" xml:space="preserve"><value>Diagnostics Cortex en direct (stderr)</value></data>
-  <data name="SyncFinalOutputLabel" xml:space="preserve"><value>Sortie finale Cortex (stdout)</value></data>
-  <data name="SyncNoRunResult" xml:space="preserve"><value>Aucun run Companion enregistré.</value></data>
-  <data name="SyncRunning" xml:space="preserve"><value>Synchronisation en cours.</value></data>
-  <data name="ProgressEnumeration" xml:space="preserve"><value>Énumération</value></data>
-  <data name="ProgressStaging" xml:space="preserve"><value>Téléchargement et préparation</value></data>
+  <data name="SyncHealthDegraded" xml:space="preserve"><value>Degraded</value></data>
+  <data name="SyncHealthError" xml:space="preserve"><value>Error</value></data>
+  <data name="ValueUnknown" xml:space="preserve"><value>unknown</value></data>
+  <data name="ValueNone" xml:space="preserve"><value>none</value></data>
+  <data name="PatTitle" xml:space="preserve"><value>PAT badge</value></data>
+  <data name="PatUnknown" xml:space="preserve"><value>Unknown: no expiry date configured.</value></data>
+  <data name="PatInvalid" xml:space="preserve"><value>Invalid: the configured expiry date cannot be read.</value></data>
+  <data name="PatOk" xml:space="preserve"><value>OK - expires on {0}</value></data>
+  <data name="PatWarning" xml:space="preserve"><value>Warning - expires on {0} (less than 30 days)</value></data>
+  <data name="PatExpired" xml:space="preserve"><value>Expired since {0}</value></data>
+  <data name="SyncRunTitle" xml:space="preserve"><value>Last synchronization</value></data>
+  <data name="LocalSyncRunTitle" xml:space="preserve"><value>Last local synchronization</value></data>
+  <data name="ConfluenceSyncRunTitle" xml:space="preserve"><value>Last Confluence collection</value></data>
+  <data name="SyncDiagnosticsLabel" xml:space="preserve"><value>Live Cortex diagnostics (stderr)</value></data>
+  <data name="SyncFinalOutputLabel" xml:space="preserve"><value>Cortex final output (stdout)</value></data>
+  <data name="SyncNoRunResult" xml:space="preserve"><value>No Companion run recorded.</value></data>
+  <data name="SyncRunning" xml:space="preserve"><value>Synchronization in progress.</value></data>
+  <data name="ProgressEnumeration" xml:space="preserve"><value>Enumeration</value></data>
+  <data name="ProgressStaging" xml:space="preserve"><value>Download and preparation</value></data>
   <data name="ProgressConversion" xml:space="preserve"><value>Conversion</value></data>
-  <data name="ProgressPublication" xml:space="preserve"><value>Publication atomique</value></data>
-  <data name="ProgressIndexation" xml:space="preserve"><value>Indexation</value></data>
+  <data name="ProgressPublication" xml:space="preserve"><value>Atomic publication</value></data>
+  <data name="ProgressIndexation" xml:space="preserve"><value>Indexing</value></data>
   <data name="ProgressCounter" xml:space="preserve"><value>{0} - {1:N0}/{2:N0}</value></data>
-  <data name="SyncRunUnknown" xml:space="preserve"><value>Résultat inconnu ; l'état est relu depuis source-health.json.</value></data>
-  <data name="SyncLaunchFailed" xml:space="preserve"><value>Le worker de synchronisation n'a pas pu être lancé.</value></data>
-  <data name="SyncOutputPersistenceFailed" xml:space="preserve"><value>Le processus est terminé, mais ses journaux n'ont pas pu être enregistrés complètement. Vérifiez l'espace disque et les droits du dossier des journaux, puis consultez l'état de la synchronisation avant de relancer.</value></data>
-  <data name="SyncSucceeded" xml:space="preserve"><value>Synchronisation terminée avec succès (code 0).</value></data>
-  <data name="SyncLocked" xml:space="preserve"><value>Un sync est déjà en cours ailleurs (code 2). Aucun nouvel essai automatique.</value></data>
-  <data name="SyncNotDue" xml:space="preserve"><value>Rien à faire : la collecte a déjà réussi récemment et Cortex ne la relance pas avant l'échéance planifiée (code 3). Choisissez Collecter Confluence pour forcer une collecte immédiate.</value></data>
-  <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>Cette action manuelle collecte toujours immédiatement. La cadence reste réservée aux exécutions automatiques.</value></data>
-  <data name="SyncAuthFailed" xml:space="preserve"><value>Credential absent, expiré ou refusé (code 4).</value></data>
-  <data name="SyncRemoteFailed" xml:space="preserve"><value>Le service distant est indisponible (code 5).</value></data>
-  <data name="SyncFailed" xml:space="preserve"><value>La synchronisation a échoué (code 1).</value></data>
-  <data name="LocalSyncConfigurationInvalid" xml:space="preserve"><value>La base locale n'est pas encore configurée correctement (code 6). Ouvrez Réglages, vérifiez le dossier, puis réessayez.</value></data>
-  <data name="SyncUnexpectedExit" xml:space="preserve"><value>Le CLI a retourné le code non nominal {0}.</value></data>
-  <data name="SchedulingRefresh" xml:space="preserve"><value>Recharger</value></data>
-  <data name="SchedulingTaskContractDescription" xml:space="preserve"><value>Cortex Companion - programmation ingestion - contrat 1</value></data>
-  <data name="SchedulingReadOnly" xml:space="preserve"><value>Lecture seule : la création, la modification et la suppression sont désactivées. L'état de la tâche reste lisible.</value></data>
-  <data name="SchedulingSessionRequired" xml:space="preserve"><value>La tâche s'exécute uniquement lorsque votre session Windows est ouverte. Elle ne demande aucune élévation.</value></data>
-  <data name="SchedulingNotConfigured" xml:space="preserve"><value>Le chemin de Cortex ou la configuration Confluence n'est pas disponible : connectez Cortex dans Réglages, puis initialisez Confluence dans Pages Confluence. Les actions sont désactivées, mais l'état existant reste lisible.</value></data>
-  <data name="SchedulingPresetLabel" xml:space="preserve"><value>Fréquence</value></data>
-  <data name="SchedulingPresetDaily" xml:space="preserve"><value>Quotidienne</value></data>
-  <data name="SchedulingPresetHourly" xml:space="preserve"><value>Horaire</value></data>
-  <data name="SchedulingStartTimeLabel" xml:space="preserve"><value>Heure locale de départ (HH:mm)</value></data>
-  <data name="SchedulingCreateOrUpdate" xml:space="preserve"><value>Créer ou reconfigurer</value></data>
-  <data name="SchedulingDelete" xml:space="preserve"><value>Supprimer la tâche</value></data>
-  <data name="SchedulingStateTitle" xml:space="preserve"><value>État de la tâche</value></data>
-  <data name="SchedulingStateLabel" xml:space="preserve"><value>État</value></data>
-  <data name="SchedulingNextRunLabel" xml:space="preserve"><value>Prochaine exécution</value></data>
-  <data name="SchedulingLastRunLabel" xml:space="preserve"><value>Dernière exécution</value></data>
-  <data name="SchedulingLastResultLabel" xml:space="preserve"><value>Dernier résultat</value></data>
-  <data name="SchedulingExecutionLabel" xml:space="preserve"><value>Exécution actuelle</value></data>
-  <data name="SchedulingLoading" xml:space="preserve"><value>Lecture de la tâche en cours...</value></data>
-  <data name="SchedulingStateAbsent" xml:space="preserve"><value>Absente</value></data>
-  <data name="SchedulingStateActive" xml:space="preserve"><value>Présente et active</value></data>
-  <data name="SchedulingStateDisabled" xml:space="preserve"><value>Présente mais désactivée</value></data>
-  <data name="SchedulingStateNeedsReconfiguration" xml:space="preserve"><value>Présente - à reconfigurer</value></data>
-  <data name="SchedulingStateCollision" xml:space="preserve"><value>Collision : une tâche étrangère occupe ce nom. Aucune modification n'est autorisée.</value></data>
-  <data name="SchedulingStateReadError" xml:space="preserve"><value>Erreur de lecture</value></data>
-  <data name="SchedulingNeverRun" xml:space="preserve"><value>Jamais exécutée</value></data>
-  <data name="SchedulingRunning" xml:space="preserve"><value>En cours</value></data>
-  <data name="SchedulingRunningSinceFormat" xml:space="preserve"><value>En cours depuis le {0}</value></data>
-  <data name="SchedulingRunningSinceApproximateFormat" xml:space="preserve"><value>En cours depuis environ le {0}</value></data>
-  <data name="SchedulingNextRunDisabledFormat" xml:space="preserve"><value>{0} - tâche désactivée, cette exécution n'aura pas lieu tant qu'elle reste désactivée</value></data>
-  <data name="SchedulingResultSuccess" xml:space="preserve"><value>Terminée sans erreur</value></data>
-  <data name="SchedulingResultNothingToDo" xml:space="preserve"><value>Rien à faire, rien de nouveau à publier</value></data>
-  <data name="SchedulingResultFailure" xml:space="preserve"><value>Échec</value></data>
-  <data name="SchedulingResultUnexpectedFormat" xml:space="preserve"><value>Résultat non reconnu : 0x{0:X8}</value></data>
-  <data name="SchedulingInvalidTime" xml:space="preserve"><value>Saisissez une heure locale valide au format HH:mm.</value></data>
-  <data name="SchedulingSaved" xml:space="preserve"><value>La tâche a été créée ou reconfigurée.</value></data>
-  <data name="SchedulingDeleted" xml:space="preserve"><value>La tâche a été supprimée.</value></data>
-  <data name="SchedulingDeleteCancelled" xml:space="preserve"><value>Suppression annulée.</value></data>
-  <data name="SchedulingDeleteConfirmationTitle" xml:space="preserve"><value>Supprimer la programmation</value></data>
-  <data name="SchedulingDeleteConfirmation" xml:space="preserve"><value>Supprimer la tâche de programmation Cortex Companion ? Elle pourra être recréée depuis cet écran.</value></data>
-  <data name="SchedulingEnvironmentBlockedFormat" xml:space="preserve"><value>Programmation refusée : la tâche n'héritera pas des variables suivantes : {0}. Reportez la configuration voulue dans INGESTION.toml ou CONFLUENCE.toml, puis corrigez ou retirez les variables indiquées et relancez Cortex Companion. Les variables inconnues doivent être corrigées ou supprimées.</value></data>
-  <data name="SchedulingErrorMissing" xml:space="preserve"><value>La tâche n'existe plus. Rechargez l'écran avant de recommencer.</value></data>
-  <data name="SchedulingErrorAccessDenied" xml:space="preserve"><value>Accès refusé. Vérifiez le compte propriétaire et les droits du dossier de tâches CortexCompanion.</value></data>
-  <data name="SchedulingErrorServiceNotRunning" xml:space="preserve"><value>Le service Planificateur de tâches est arrêté. Démarrez-le puis rechargez l'écran.</value></data>
-  <data name="SchedulingErrorUserNotLoggedOn" xml:space="preserve"><value>L'utilisateur prévu pour la tâche n'est pas connecté. Ouvrez sa session puis réessayez.</value></data>
-  <data name="SchedulingErrorServiceUnavailable" xml:space="preserve"><value>Le service Planificateur de tâches est indisponible. Vérifiez son état puis réessayez.</value></data>
-  <data name="SchedulingErrorUnexpectedFormat" xml:space="preserve"><value>Erreur du Planificateur de tâches (0x{0:X8}). Rechargez l'écran ; si elle persiste, consultez le journal.</value></data>
-  <data name="SettingsNavigation" xml:space="preserve"><value>Réglages</value></data>
-  <data name="StartupInitializationError" xml:space="preserve"><value>L'initialisation de Cortex a échoué. La fenêtre reste ouverte afin que vous puissiez corriger le chemin dans Réglages ou consulter les journaux locaux.</value></data>
-  <data name="BrowseButton" xml:space="preserve"><value>Parcourir</value></data>
-  <data name="RefreshButton" xml:space="preserve"><value>Recharger</value></data>
-  <data name="SettingsTitle" xml:space="preserve"><value>Réglages</value></data>
-  <data name="SettingsIntroduction" xml:space="preserve"><value>Connectez Cortex Companion à Cortex, choisissez votre base de connaissances et gérez vos réglages sans modifier les fichiers de configuration à la main.</value></data>
-  <data name="SettingsCurrentStateTitle" xml:space="preserve"><value>État actuel</value></data>
-  <data name="SettingsLoading" xml:space="preserve"><value>Initialisation de Cortex Companion en cours...</value></data>
-  <data name="SettingsCliTitle" xml:space="preserve"><value>1. Connecter Cortex</value></data>
-  <data name="SettingsCliDescription" xml:space="preserve"><value>Cortex Companion recherche cortex.exe dans la même installation Cortex (y compris son dossier parent), puis dans l'installation Windows standard. Vous pouvez aussi sélectionner le fichier manuellement.</value></data>
-  <data name="SettingsCliPathLabel" xml:space="preserve"><value>Chemin de cortex.exe</value></data>
-  <data name="SettingsCliTimeoutLabel" xml:space="preserve"><value>Délai maximal des commandes Cortex (secondes)</value></data>
-  <data name="SettingsCliTimeoutDescription" xml:space="preserve"><value>Cette valeur s'applique à la connexion, aux réglages et aux pages Confluence. Augmentez-la sur un ordinateur lent.</value></data>
-  <data name="SettingsBrowseCliAccessibleName" xml:space="preserve"><value>Choisir le fichier cortex.exe</value></data>
-  <data name="SettingsSaveAndConnect" xml:space="preserve"><value>Enregistrer et connecter</value></data>
-  <data name="SettingsKnowledgeBaseTitle" xml:space="preserve"><value>2. Base de connaissances</value></data>
-  <data name="SettingsKnowledgeBaseDescription" xml:space="preserve"><value>Ce dossier contient les documents indexés par Cortex. Le changement est transmis à la commande Cortex avec une protection contre les modifications concurrentes.</value></data>
-  <data name="SettingsKnowledgeBasePathLabel" xml:space="preserve"><value>Dossier de la base de connaissances</value></data>
-  <data name="SettingsBrowseKnowledgeBaseAccessibleName" xml:space="preserve"><value>Choisir le dossier de la base de connaissances</value></data>
-  <data name="SettingsSaveKnowledgeBase" xml:space="preserve"><value>Enregistrer le dossier</value></data>
-  <data name="SettingsConfluenceCredentialTitle" xml:space="preserve"><value>3. Authentification Confluence</value></data>
-  <data name="SettingsConfluenceCredentialDescription" xml:space="preserve"><value>Le PAT est enregistré dans le Gestionnaire d'identifiants Windows pour votre compte, protégé par DPAPI. Il n'est jamais écrit dans settings.json ni dans CONFLUENCE.toml.</value></data>
+  <data name="SyncRunUnknown" xml:space="preserve"><value>Unknown result; the state is read back from source-health.json.</value></data>
+  <data name="SyncLaunchFailed" xml:space="preserve"><value>The synchronization worker could not be started.</value></data>
+  <data name="SyncOutputPersistenceFailed" xml:space="preserve"><value>The process has finished, but its logs could not be fully recorded. Check the disk space and the log folder permissions, then check the synchronization status before running it again.</value></data>
+  <data name="SyncSucceeded" xml:space="preserve"><value>Synchronization completed successfully (code 0).</value></data>
+  <data name="SyncLocked" xml:space="preserve"><value>A synchronization is already running elsewhere (code 2). No automatic retry.</value></data>
+  <data name="SyncNotDue" xml:space="preserve"><value>Nothing to do: the collection already succeeded recently and Cortex does not run it again before the scheduled time (code 3). Select Collect Confluence to force an immediate collection.</value></data>
+  <data name="ConfluenceSyncForceHint" xml:space="preserve"><value>This manual action always collects immediately. The cadence applies only to automatic runs.</value></data>
+  <data name="SyncAuthFailed" xml:space="preserve"><value>Credential missing, expired or rejected (code 4).</value></data>
+  <data name="SyncRemoteFailed" xml:space="preserve"><value>The remote service is unavailable (code 5).</value></data>
+  <data name="SyncFailed" xml:space="preserve"><value>Synchronization failed (code 1).</value></data>
+  <data name="LocalSyncConfigurationInvalid" xml:space="preserve"><value>The local database is not yet configured correctly (code 6). Open Settings, check the folder, then try again.</value></data>
+  <data name="SyncUnexpectedExit" xml:space="preserve"><value>The CLI returned the unexpected code {0}.</value></data>
+  <data name="SchedulingRefresh" xml:space="preserve"><value>Reload</value></data>
+  <data name="SchedulingTaskContractDescription" xml:space="preserve"><value>Cortex Companion - ingestion scheduling - contract 1</value></data>
+  <data name="SchedulingReadOnly" xml:space="preserve"><value>Read-only: creation, editing and deletion are disabled. The task status remains readable.</value></data>
+  <data name="SchedulingSessionRequired" xml:space="preserve"><value>The task runs only while your Windows session is open. It requires no elevation.</value></data>
+  <data name="SchedulingNotConfigured" xml:space="preserve"><value>The Cortex path or the Confluence configuration is not available: connect Cortex in Settings, then initialize Confluence in Confluence pages. The actions are disabled, but the existing state remains readable.</value></data>
+  <data name="SchedulingPresetLabel" xml:space="preserve"><value>Frequency</value></data>
+  <data name="SchedulingPresetDaily" xml:space="preserve"><value>Daily</value></data>
+  <data name="SchedulingPresetHourly" xml:space="preserve"><value>Hourly</value></data>
+  <data name="SchedulingStartTimeLabel" xml:space="preserve"><value>Local start time (HH:mm)</value></data>
+  <data name="SchedulingCreateOrUpdate" xml:space="preserve"><value>Create or reconfigure</value></data>
+  <data name="SchedulingDelete" xml:space="preserve"><value>Delete the task</value></data>
+  <data name="SchedulingStateTitle" xml:space="preserve"><value>Task status</value></data>
+  <data name="SchedulingStateLabel" xml:space="preserve"><value>Status</value></data>
+  <data name="SchedulingNextRunLabel" xml:space="preserve"><value>Next run</value></data>
+  <data name="SchedulingLastRunLabel" xml:space="preserve"><value>Last run</value></data>
+  <data name="SchedulingLastResultLabel" xml:space="preserve"><value>Last result</value></data>
+  <data name="SchedulingExecutionLabel" xml:space="preserve"><value>Current run</value></data>
+  <data name="SchedulingLoading" xml:space="preserve"><value>Reading the task...</value></data>
+  <data name="SchedulingStateAbsent" xml:space="preserve"><value>Absent</value></data>
+  <data name="SchedulingStateActive" xml:space="preserve"><value>Present and active</value></data>
+  <data name="SchedulingStateDisabled" xml:space="preserve"><value>Present but disabled</value></data>
+  <data name="SchedulingStateNeedsReconfiguration" xml:space="preserve"><value>Present - to be reconfigured</value></data>
+  <data name="SchedulingStateCollision" xml:space="preserve"><value>Collision: an unrelated task already uses this name. No change is allowed.</value></data>
+  <data name="SchedulingStateReadError" xml:space="preserve"><value>Read error</value></data>
+  <data name="SchedulingNeverRun" xml:space="preserve"><value>Never run</value></data>
+  <data name="SchedulingRunning" xml:space="preserve"><value>Running</value></data>
+  <data name="SchedulingRunningSinceFormat" xml:space="preserve"><value>Running since {0}</value></data>
+  <data name="SchedulingRunningSinceApproximateFormat" xml:space="preserve"><value>Running since approximately {0}</value></data>
+  <data name="SchedulingNextRunDisabledFormat" xml:space="preserve"><value>{0} - task disabled, this run will not take place while it stays disabled</value></data>
+  <data name="SchedulingResultSuccess" xml:space="preserve"><value>Completed without error</value></data>
+  <data name="SchedulingResultNothingToDo" xml:space="preserve"><value>Nothing to do, nothing new to publish</value></data>
+  <data name="SchedulingResultFailure" xml:space="preserve"><value>Failed</value></data>
+  <data name="SchedulingResultUnexpectedFormat" xml:space="preserve"><value>Unrecognized result: 0x{0:X8}</value></data>
+  <data name="SchedulingInvalidTime" xml:space="preserve"><value>Enter a valid local time in HH:mm format.</value></data>
+  <data name="SchedulingSaved" xml:space="preserve"><value>The task has been created or reconfigured.</value></data>
+  <data name="SchedulingDeleted" xml:space="preserve"><value>The task has been deleted.</value></data>
+  <data name="SchedulingDeleteCancelled" xml:space="preserve"><value>Deletion cancelled.</value></data>
+  <data name="SchedulingDeleteConfirmationTitle" xml:space="preserve"><value>Delete scheduling</value></data>
+  <data name="SchedulingDeleteConfirmation" xml:space="preserve"><value>Delete the Cortex Companion scheduled task? It can be recreated from this screen.</value></data>
+  <data name="SchedulingEnvironmentBlockedFormat" xml:space="preserve"><value>Scheduling refused: the task will not inherit the following variables: {0}. Move the intended configuration to INGESTION.toml or CONFLUENCE.toml, then correct or remove the listed variables and restart Cortex Companion. Unknown variables must be corrected or deleted.</value></data>
+  <data name="SchedulingErrorMissing" xml:space="preserve"><value>The task no longer exists. Reload the screen before starting again.</value></data>
+  <data name="SchedulingErrorAccessDenied" xml:space="preserve"><value>Access denied. Check the owner account and the permissions on the CortexCompanion task folder.</value></data>
+  <data name="SchedulingErrorServiceNotRunning" xml:space="preserve"><value>The Task Scheduler service is stopped. Start it, then reload the screen.</value></data>
+  <data name="SchedulingErrorUserNotLoggedOn" xml:space="preserve"><value>The user configured for the task is not logged on. Open that user's session, then try again.</value></data>
+  <data name="SchedulingErrorServiceUnavailable" xml:space="preserve"><value>The Task Scheduler service is unavailable. Check its status, then try again.</value></data>
+  <data name="SchedulingErrorUnexpectedFormat" xml:space="preserve"><value>Task Scheduler error (0x{0:X8}). Reload the screen; if it persists, check the log.</value></data>
+  <data name="SettingsNavigation" xml:space="preserve"><value>Settings</value></data>
+  <data name="StartupInitializationError" xml:space="preserve"><value>Cortex initialization failed. The window stays open so that you can correct the path in Settings or check the local logs.</value></data>
+  <data name="BrowseButton" xml:space="preserve"><value>Browse</value></data>
+  <data name="RefreshButton" xml:space="preserve"><value>Reload</value></data>
+  <data name="SettingsTitle" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsIntroduction" xml:space="preserve"><value>Connect Cortex Companion to Cortex, choose your knowledge base and manage your settings without editing the configuration files by hand.</value></data>
+  <data name="SettingsCurrentStateTitle" xml:space="preserve"><value>Current status</value></data>
+  <data name="SettingsLoading" xml:space="preserve"><value>Initializing Cortex Companion...</value></data>
+  <data name="SettingsCliTitle" xml:space="preserve"><value>1. Connect Cortex</value></data>
+  <data name="SettingsCliDescription" xml:space="preserve"><value>Cortex Companion looks for cortex.exe in the same Cortex installation (including its parent folder), then in the standard Windows installation. You can also select the file manually.</value></data>
+  <data name="SettingsCliPathLabel" xml:space="preserve"><value>Path to cortex.exe</value></data>
+  <data name="SettingsCliTimeoutLabel" xml:space="preserve"><value>Cortex command timeout (seconds)</value></data>
+  <data name="SettingsCliTimeoutDescription" xml:space="preserve"><value>This value applies to the connection, the settings and the Confluence pages. Raise it on a slow computer.</value></data>
+  <data name="SettingsBrowseCliAccessibleName" xml:space="preserve"><value>Choose the cortex.exe file</value></data>
+  <data name="SettingsSaveAndConnect" xml:space="preserve"><value>Save and connect</value></data>
+  <data name="SettingsKnowledgeBaseTitle" xml:space="preserve"><value>2. Knowledge base</value></data>
+  <data name="SettingsKnowledgeBaseDescription" xml:space="preserve"><value>This folder holds the documents indexed by Cortex. The change is sent to the Cortex command with protection against concurrent changes.</value></data>
+  <data name="SettingsKnowledgeBasePathLabel" xml:space="preserve"><value>Knowledge base folder</value></data>
+  <data name="SettingsBrowseKnowledgeBaseAccessibleName" xml:space="preserve"><value>Choose the knowledge base folder</value></data>
+  <data name="SettingsSaveKnowledgeBase" xml:space="preserve"><value>Save the folder</value></data>
+  <data name="SettingsConfluenceCredentialTitle" xml:space="preserve"><value>3. Confluence authentication</value></data>
+  <data name="SettingsConfluenceCredentialDescription" xml:space="preserve"><value>The PAT is saved in Windows Credential Manager for your account, protected by DPAPI. It is never written to settings.json or to CONFLUENCE.toml.</value></data>
   <data name="SettingsConfluenceCredentialPatLabel" xml:space="preserve"><value>Personal Access Token (PAT)</value></data>
-  <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Enregistrer le PAT</value></data>
-  <data name="SettingsConfluenceCredentialUnavailable" xml:space="preserve"><value>Connectez d'abord Cortex pour charger la cible d'identifiant Confluence.</value></data>
-  <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Ouvrez Pages Confluence et complétez Première configuration Confluence, puis revenez dans Réglages pour enregistrer le PAT.</value></data>
-  <data name="SettingsConfluenceCredentialConfigInvalid" xml:space="preserve"><value>La cible d'identifiant Confluence n'a pas pu être validée. Corrigez CONFLUENCE.toml, puis rechargez.</value></data>
-  <data name="SettingsConfluenceCredentialReadyFormat" xml:space="preserve"><value>Le PAT sera enregistré pour la cible Windows : {0}</value></data>
-  <data name="SettingsConfluenceCredentialEmpty" xml:space="preserve"><value>Saisissez un PAT avant de l'enregistrer.</value></data>
-  <data name="SettingsConfluenceCredentialSaving" xml:space="preserve"><value>Enregistrement sécurisé du PAT dans Windows...</value></data>
-  <data name="SettingsConfluenceCredentialStored" xml:space="preserve"><value>Le PAT Confluence a été enregistré pour le compte Windows courant.</value></data>
-  <data name="SettingsConfluenceCredentialSaveFailed" xml:space="preserve"><value>Windows n'a pas pu enregistrer le PAT. Le secret n'a été écrit ni dans les réglages ni dans les journaux.</value></data>
-  <data name="SettingsRefreshAccessibleName" xml:space="preserve"><value>Recharger la configuration Cortex</value></data>
-  <data name="SettingsCliNotConfigured" xml:space="preserve"><value>Aucun exécutable Cortex valide n'est configuré.</value></data>
-  <data name="SettingsFirstRun" xml:space="preserve"><value>Bienvenue. Sélectionnez cortex.exe, puis choisissez Enregistrer et connecter.</value></data>
-  <data name="SettingsFileCorrupt" xml:space="preserve"><value>Les réglages locaux étaient illisibles. Sélectionnez à nouveau cortex.exe pour les reconstruire.</value></data>
-  <data name="SettingsFileUnreadable" xml:space="preserve"><value>Les réglages locaux n'ont pas pu être lus. Vérifiez les droits du dossier local, puis réessayez.</value></data>
-  <data name="SettingsCliDetected" xml:space="preserve"><value>Cortex a été détecté, validé et enregistré automatiquement. Vous pouvez utiliser l'application.</value></data>
-  <data name="SettingsCliReady" xml:space="preserve"><value>Cortex est connecté. Les réglages et les opérations sont disponibles.</value></data>
-  <data name="SettingsCliSelectionPending" xml:space="preserve"><value>Chemin sélectionné. Choisissez Enregistrer et connecter pour le valider.</value></data>
-  <data name="SettingsCliFixPath" xml:space="preserve"><value>Corrigez le chemin de cortex.exe avant de continuer.</value></data>
-  <data name="SettingsCliSaved" xml:space="preserve"><value>Cortex a été validé, enregistré et reconnecté sans redémarrage.</value></data>
-  <data name="SettingsSaveFailed" xml:space="preserve"><value>Le chemin est valide, mais les réglages locaux n'ont pas pu être enregistrés. Vérifiez les droits du dossier local.</value></data>
-  <data name="SettingsCliReplacementFailedPreviousRetained" xml:space="preserve"><value>Le nouveau Cortex n'a pas pu être préparé. Le Cortex précédemment connecté reste actif ; son chemin n'a pas été remplacé.</value></data>
-  <data name="SettingsCheckingCli" xml:space="preserve"><value>Vérification de la version de Cortex et chargement des fonctions...</value></data>
-  <data name="SettingsCliHandshakeFailed" xml:space="preserve"><value>Cortex n'est pas compatible ou n'a pas répondu. Les actions restent désactivées. Vérifiez le chemin ou augmentez le délai sur un ordinateur lent, puis réessayez.</value></data>
-  <data name="SettingsRefreshing" xml:space="preserve"><value>Rechargement de la configuration Cortex...</value></data>
-  <data name="SettingsRefreshed" xml:space="preserve"><value>La configuration Cortex a été rechargée.</value></data>
-  <data name="SettingsConfigUnavailable" xml:space="preserve"><value>Configuration indisponible tant que Cortex n'est pas connecté.</value></data>
-  <data name="SettingsConfigLoaded" xml:space="preserve"><value>Configuration Cortex valide chargée.</value></data>
-  <data name="SettingsConfigDefaults" xml:space="preserve"><value>Aucun fichier utilisateur n'existe encore. Cortex utilise ses valeurs par défaut.</value></data>
-  <data name="SettingsConfigInvalid" xml:space="preserve"><value>La configuration Cortex est invalide. Un nouvel enregistrement la reconstruira depuis les valeurs par défaut en conservant une sauvegarde.</value></data>
-  <data name="SettingsConfigReadFailed" xml:space="preserve"><value>La réponse de configuration Cortex n'a pas pu être authentifiée. Ne lancez aucune modification et consultez les journaux locaux.</value></data>
-  <data name="SettingsConfigTimedOut" xml:space="preserve"><value>Cortex n'a pas répondu avant le délai configuré pendant la lecture locale. Augmentez-le dans Réglages, choisissez Enregistrer et connecter, puis réessayez.</value></data>
-  <data name="SettingsConfigOutcomeUnknown" xml:space="preserve"><value>Cortex n'a pas terminé la lecture de la configuration locale. Ne lancez aucune modification. Redémarrez Cortex Companion avant de réessayer.</value></data>
-  <data name="SettingsKnowledgeBaseSelectionPending" xml:space="preserve"><value>Dossier sélectionné. Enregistrez-le pour appliquer le changement à Cortex.</value></data>
-  <data name="SettingsKnowledgeBaseInvalid" xml:space="preserve"><value>Choisissez un dossier existant avec un chemin absolu.</value></data>
-  <data name="SettingsConfigRefreshRequired" xml:space="preserve"><value>Rechargez la configuration avant de modifier le dossier.</value></data>
-  <data name="SettingsSavingKnowledgeBase" xml:space="preserve"><value>Enregistrement du dossier par Cortex...</value></data>
-  <data name="SettingsKnowledgeBaseSaved" xml:space="preserve"><value>Le dossier a été enregistré.</value></data>
-  <data name="SettingsKnowledgeBaseSavedReindex" xml:space="preserve"><value>Le dossier a été enregistré. Relancez une synchronisation pour reconstruire l'index avec ce nouvel emplacement.</value></data>
-  <data name="SettingsKnowledgeBaseUnchanged" xml:space="preserve"><value>Le dossier était déjà configuré. Aucun fichier n'a été modifié.</value></data>
-  <data name="SettingsConfigConflict" xml:space="preserve"><value>La configuration a changé depuis son affichage. Son état a été rechargé et votre saisie conservée ; vérifiez-la puis recommencez.</value></data>
-  <data name="SettingsConfigLocked" xml:space="preserve"><value>Une autre opération Cortex modifie la configuration. Attendez sa fin, actualisez, puis réessayez.</value></data>
-  <data name="SettingsKnowledgeBaseSaveFailed" xml:space="preserve"><value>Cortex n'a pas pu enregistrer le dossier. La configuration a été rechargée sans écriture directe.</value></data>
-  <data name="CliFileDialogTitle" xml:space="preserve"><value>Choisir cortex.exe</value></data>
+  <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Save the PAT</value></data>
+  <data name="SettingsConfluenceCredentialUnavailable" xml:space="preserve"><value>Connect Cortex first to load the Confluence credential target.</value></data>
+  <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Open Confluence pages and complete First Confluence setup, then return to Settings to save the PAT.</value></data>
+  <data name="SettingsConfluenceCredentialConfigInvalid" xml:space="preserve"><value>The Confluence credential target could not be validated. Correct CONFLUENCE.toml, then reload.</value></data>
+  <data name="SettingsConfluenceCredentialReadyFormat" xml:space="preserve"><value>The PAT will be saved for the Windows target: {0}</value></data>
+  <data name="SettingsConfluenceCredentialEmpty" xml:space="preserve"><value>Enter a PAT before saving it.</value></data>
+  <data name="SettingsConfluenceCredentialSaving" xml:space="preserve"><value>Saving the PAT securely in Windows...</value></data>
+  <data name="SettingsConfluenceCredentialStored" xml:space="preserve"><value>The Confluence PAT has been saved for the current Windows account.</value></data>
+  <data name="SettingsConfluenceCredentialSaveFailed" xml:space="preserve"><value>Windows could not save the PAT. The secret was not written to the settings or to the logs.</value></data>
+  <data name="SettingsRefreshAccessibleName" xml:space="preserve"><value>Reload the Cortex configuration</value></data>
+  <data name="SettingsCliNotConfigured" xml:space="preserve"><value>No valid Cortex executable is configured.</value></data>
+  <data name="SettingsFirstRun" xml:space="preserve"><value>Welcome. Select cortex.exe, then select Save and connect.</value></data>
+  <data name="SettingsFileCorrupt" xml:space="preserve"><value>The local settings were unreadable. Select cortex.exe again to rebuild them.</value></data>
+  <data name="SettingsFileUnreadable" xml:space="preserve"><value>The local settings could not be read. Check the local folder permissions, then try again.</value></data>
+  <data name="SettingsCliDetected" xml:space="preserve"><value>Cortex has been detected, validated and saved automatically. The application is ready to use.</value></data>
+  <data name="SettingsCliReady" xml:space="preserve"><value>Cortex is connected. Settings and operations are available.</value></data>
+  <data name="SettingsCliSelectionPending" xml:space="preserve"><value>Path selected. Select Save and connect to validate it.</value></data>
+  <data name="SettingsCliFixPath" xml:space="preserve"><value>Correct the path to cortex.exe before continuing.</value></data>
+  <data name="SettingsCliSaved" xml:space="preserve"><value>Cortex has been validated, saved and reconnected without a restart.</value></data>
+  <data name="SettingsSaveFailed" xml:space="preserve"><value>The path is valid, but the local settings could not be saved. Check the local folder permissions.</value></data>
+  <data name="SettingsCliReplacementFailedPreviousRetained" xml:space="preserve"><value>The new Cortex could not be prepared. The previously connected Cortex stays active; its path was not replaced.</value></data>
+  <data name="SettingsCheckingCli" xml:space="preserve"><value>Checking the Cortex version and loading features...</value></data>
+  <data name="SettingsCliHandshakeFailed" xml:space="preserve"><value>Cortex is not compatible or did not answer. Actions stay disabled. Check the path, or raise the timeout on a slow computer, then try again.</value></data>
+  <data name="SettingsRefreshing" xml:space="preserve"><value>Reloading the Cortex configuration...</value></data>
+  <data name="SettingsRefreshed" xml:space="preserve"><value>The Cortex configuration has been reloaded.</value></data>
+  <data name="SettingsConfigUnavailable" xml:space="preserve"><value>Configuration unavailable until Cortex is connected.</value></data>
+  <data name="SettingsConfigLoaded" xml:space="preserve"><value>Valid Cortex configuration loaded.</value></data>
+  <data name="SettingsConfigDefaults" xml:space="preserve"><value>No user file exists yet. Cortex is using its default values.</value></data>
+  <data name="SettingsConfigInvalid" xml:space="preserve"><value>The Cortex configuration is invalid. Saving again will rebuild it from the default values and keep a backup.</value></data>
+  <data name="SettingsConfigReadFailed" xml:space="preserve"><value>The Cortex configuration response could not be authenticated. Do not start any change, and check the local logs.</value></data>
+  <data name="SettingsConfigTimedOut" xml:space="preserve"><value>Cortex did not answer within the configured timeout during the local read. Raise it in Settings, select Save and connect, then try again.</value></data>
+  <data name="SettingsConfigOutcomeUnknown" xml:space="preserve"><value>Cortex did not finish reading the local configuration. Do not start any change. Restart Cortex Companion before trying again.</value></data>
+  <data name="SettingsKnowledgeBaseSelectionPending" xml:space="preserve"><value>Folder selected. Save it to apply the change to Cortex.</value></data>
+  <data name="SettingsKnowledgeBaseInvalid" xml:space="preserve"><value>Choose an existing folder with an absolute path.</value></data>
+  <data name="SettingsConfigRefreshRequired" xml:space="preserve"><value>Reload the configuration before changing the folder.</value></data>
+  <data name="SettingsSavingKnowledgeBase" xml:space="preserve"><value>Cortex is saving the folder...</value></data>
+  <data name="SettingsKnowledgeBaseSaved" xml:space="preserve"><value>The folder has been saved.</value></data>
+  <data name="SettingsKnowledgeBaseSavedReindex" xml:space="preserve"><value>The folder has been saved. Run a synchronization again to rebuild the index with this new location.</value></data>
+  <data name="SettingsKnowledgeBaseUnchanged" xml:space="preserve"><value>The folder was already configured. No file has been changed.</value></data>
+  <data name="SettingsConfigConflict" xml:space="preserve"><value>The configuration changed since it was displayed. Its state has been reloaded and your input kept; check it, then start again.</value></data>
+  <data name="SettingsConfigLocked" xml:space="preserve"><value>Another Cortex operation is changing the configuration. Wait for it to finish, refresh, then try again.</value></data>
+  <data name="SettingsKnowledgeBaseSaveFailed" xml:space="preserve"><value>Cortex could not save the folder. The configuration has been reloaded without a direct write.</value></data>
+  <data name="CliFileDialogTitle" xml:space="preserve"><value>Choose cortex.exe</value></data>
   <data name="CliFileDialogFilter" xml:space="preserve"><value>Cortex (cortex.exe)|cortex.exe</value></data>
-  <data name="KnowledgeBaseFolderDialogTitle" xml:space="preserve"><value>Choisir la base de connaissances Cortex</value></data>
-  <data name="SettingsCliPathMustBeAbsolute" xml:space="preserve"><value>Le chemin doit être absolu.</value></data>
-  <data name="SettingsCliWrongFileName" xml:space="preserve"><value>Le fichier sélectionné doit s'appeler cortex.exe.</value></data>
-  <data name="SettingsCliFileNotFound" xml:space="preserve"><value>Le fichier cortex.exe sélectionné n'existe pas.</value></data>
-  <data name="SettingsCliInvalidPath" xml:space="preserve"><value>Le chemin contient des caractères ou une forme non valides.</value></data>
-  <data name="SettingsCliPathValid" xml:space="preserve"><value>Le fichier cortex.exe existe. Enregistrez pour vérifier sa version.</value></data>
-  <data name="SyncTechnicalDetails" xml:space="preserve"><value>Afficher les détails techniques</value></data>
-  <data name="SyncDiagnosticsSummaryTitle" xml:space="preserve"><value>Compteurs et diagnostic</value></data>
-  <data name="SyncRawOutputTitle" xml:space="preserve"><value>Sorties de la commande</value></data>
-  <data name="ConfluenceSetupInsecurePageUrl" xml:space="preserve"><value>Cette adresse utilise http. Le jeton Confluence circulerait en clair sur le réseau. Utilisez l'adresse https de votre instance.</value></data>
-  <data name="LabelledValueFormat" xml:space="preserve"><value>{0} : {1}</value></data>
-  <data name="SyncCancel" xml:space="preserve"><value>Interrompre</value></data>
-  <data name="SyncCancelConfirmTitle" xml:space="preserve"><value>Interrompre l'opération en cours</value></data>
-  <data name="SyncCancelConfirmLocal" xml:space="preserve"><value>L'indexation des documents locaux va être arrêtée immédiatement. L'index déjà écrit est conservé et sera complété à la prochaine synchronisation. Interrompre ?</value></data>
-  <data name="SyncCancelConfirmConfluence" xml:space="preserve"><value>La collecte Confluence va être arrêtée immédiatement. La génération publiée précédente reste intacte ; la collecte en cours est abandonnée. Interrompre ?</value></data>
-  <data name="SyncCancelled" xml:space="preserve"><value>Opération interrompue à votre demande.</value></data>
-  <data name="SyncCancelFailed" xml:space="preserve"><value>L'opération n'a pas pu être interrompue ; elle était probablement déjà terminée.</value></data>
-  <data name="CloseDuringRunTitle" xml:space="preserve"><value>Une opération est en cours</value></data>
-  <data name="CloseDuringRunMessage" xml:space="preserve"><value>Une opération Cortex est en cours. Si vous fermez Cortex Companion maintenant, elle continue en arrière-plan et vous ne verrez plus sa progression. Fermer quand même ?</value></data>
-  <data name="SyncDiagnosticsLanguageNote" xml:space="preserve"><value>Sortie brute de la ligne de commande Cortex. Ces messages sont en anglais.</value></data>
-  <data name="ShortcutRefreshHint" xml:space="preserve"><value>Raccourci : F5</value></data>
-  <data name="ShortcutSaveHint" xml:space="preserve"><value>Raccourci : Ctrl+S</value></data>
-  <data name="SearchNavigation" xml:space="preserve"><value>Recherche</value></data>
-  <data name="SearchQuery" xml:space="preserve"><value>Question ou mots-clés</value></data>
-  <data name="SearchSection" xml:space="preserve"><value>Section (facultatif)</value></data>
+  <data name="KnowledgeBaseFolderDialogTitle" xml:space="preserve"><value>Choose the Cortex knowledge base</value></data>
+  <data name="SettingsCliPathMustBeAbsolute" xml:space="preserve"><value>The path must be absolute.</value></data>
+  <data name="SettingsCliWrongFileName" xml:space="preserve"><value>The selected file must be named cortex.exe.</value></data>
+  <data name="SettingsCliFileNotFound" xml:space="preserve"><value>The selected cortex.exe file does not exist.</value></data>
+  <data name="SettingsCliInvalidPath" xml:space="preserve"><value>The path contains invalid characters or an invalid form.</value></data>
+  <data name="SettingsCliPathValid" xml:space="preserve"><value>The cortex.exe file exists. Save to check its version.</value></data>
+  <data name="SyncTechnicalDetails" xml:space="preserve"><value>Show technical details</value></data>
+  <data name="SyncDiagnosticsSummaryTitle" xml:space="preserve"><value>Counters and diagnostics</value></data>
+  <data name="SyncRawOutputTitle" xml:space="preserve"><value>Command output</value></data>
+  <data name="ConfluenceSetupInsecurePageUrl" xml:space="preserve"><value>This address uses http. The Confluence token would travel over the network in clear text. Use the https address of your instance.</value></data>
+  <data name="LabelledValueFormat" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="SyncCancel" xml:space="preserve"><value>Stop</value></data>
+  <data name="SyncCancelConfirmTitle" xml:space="preserve"><value>Stop the running operation</value></data>
+  <data name="SyncCancelConfirmLocal" xml:space="preserve"><value>Indexing of local documents will stop immediately. The index already written is kept and will be completed at the next synchronization. Stop the run?</value></data>
+  <data name="SyncCancelConfirmConfluence" xml:space="preserve"><value>The Confluence collection will stop immediately. The previous published generation stays intact; the collection in progress is discarded. Stop the run?</value></data>
+  <data name="SyncCancelled" xml:space="preserve"><value>Operation stopped at your request.</value></data>
+  <data name="SyncCancelFailed" xml:space="preserve"><value>The operation could not be stopped; it had probably already finished.</value></data>
+  <data name="CloseDuringRunTitle" xml:space="preserve"><value>An operation is in progress</value></data>
+  <data name="CloseDuringRunMessage" xml:space="preserve"><value>A Cortex operation is in progress. If you close Cortex Companion now, it continues in the background and you will no longer see its progress. Close anyway?</value></data>
+  <data name="SyncDiagnosticsLanguageNote" xml:space="preserve"><value>Raw output from the Cortex command line. These messages are in English.</value></data>
+  <data name="ShortcutRefreshHint" xml:space="preserve"><value>Shortcut: F5</value></data>
+  <data name="ShortcutSaveHint" xml:space="preserve"><value>Shortcut: Ctrl+S</value></data>
+  <data name="SearchNavigation" xml:space="preserve"><value>Search</value></data>
+  <data name="SearchQuery" xml:space="preserve"><value>Question or keywords</value></data>
+  <data name="SearchSection" xml:space="preserve"><value>Section (optional)</value></data>
   <data name="SearchSource" xml:space="preserve"><value>Source</value></data>
-  <data name="SearchAll" xml:space="preserve"><value>Toutes les sources</value></data>
-  <data name="SearchNotes" xml:space="preserve"><value>Documents locaux</value></data>
-  <data name="SearchDocuments" xml:space="preserve"><value>Documents collectés</value></data>
-  <data name="SearchSubmit" xml:space="preserve"><value>Rechercher</value></data>
-  <data name="SearchOpen" xml:space="preserve"><value>Ouvrir la source</value></data>
-  <data name="SearchResults" xml:space="preserve"><value>Résultats de recherche</value></data>
-  <data name="SearchReady" xml:space="preserve"><value>Saisissez une question pour rechercher dans les documents indexés.</value></data>
-  <data name="SearchRunning" xml:space="preserve"><value>Recherche en cours...</value></data>
-  <data name="SearchComplete" xml:space="preserve"><value>Résultats disponibles. Sélectionnez un document pour ouvrir sa source.</value></data>
-  <data name="SearchEmpty" xml:space="preserve"><value>Aucun résultat pour cette recherche et ces filtres.</value></data>
-  <data name="SearchDegraded" xml:space="preserve"><value>Résultats disponibles avec un classement dégradé. Consultez les diagnostics de Cortex.</value></data>
-  <data name="SearchFailed" xml:space="preserve"><value>Recherche indisponible. Vérifiez la compatibilité de Cortex et les diagnostics.</value></data>
-  <data name="SearchTimeout" xml:space="preserve"><value>Le délai de recherche est dépassé. Vous pouvez augmenter le délai CLI dans Réglages.</value></data>
-  <data name="SearchCancelled" xml:space="preserve"><value>Recherche interrompue.</value></data>
-  <data name="SearchOpenFailed" xml:space="preserve"><value>Impossible d'ouvrir cette source.</value></data>
-  <data name="FreshnessPublished" xml:space="preserve"><value>Génération publiée</value></data>
-  <data name="FreshnessIndexed" xml:space="preserve"><value>Génération indexée confirmée</value></data>
-  <data name="FreshnessLastIndex" xml:space="preserve"><value>Dernière indexation réussie observée</value></data>
-  <data name="FreshnessCurrent" xml:space="preserve"><value>La génération publiée correspond à la dernière indexation réussie observée.</value></data>
-  <data name="FreshnessPending" xml:space="preserve"><value>La génération publiée attend une indexation réussie confirmée.</value></data>
-  <data name="FreshnessUnknown" xml:space="preserve"><value>Correspondance entre publication et indexation non confirmée.</value></data>
-  <data name="SearchUnavailable" xml:space="preserve"><value>Connectez une version compatible de Cortex dans Réglages pour activer la recherche.</value></data>
-  <data name="SearchVersionRequiredFormat" xml:space="preserve"><value>La recherche nécessite Cortex {0} ou une version plus récente. Installez cette version, puis sélectionnez son exécutable dans Réglages. Les autres fonctions restent disponibles.</value></data>
-  <data name="SearchCriteriaChanged" xml:space="preserve"><value>Les critères ont changé. Relancez la recherche pour afficher les résultats correspondants.</value></data>
-  <data name="SearchExecutedFormat" xml:space="preserve"><value>Dernière recherche : {0} | Section : {1} | Source : {2}</value></data>
-  <data name="SearchSourceUnavailable" xml:space="preserve"><value>Ce résultat ne fournit pas de lien d'ouverture. Sa référence figure sous le titre.</value></data>
-  <data name="SearchSourceMissing" xml:space="preserve"><value>Le fichier source est introuvable. Vérifiez son emplacement, puis synchronisez la base locale.</value></data>
-  <data name="SearchSourceBlocked" xml:space="preserve"><value>L'ouverture de cette cible n'est pas autorisée. Consultez sa référence sous le titre.</value></data>
-  <data name="SearchGoToSync" xml:space="preserve"><value>Ouvrir Base locale pour synchroniser</value></data>
-  <data name="SettingsGoToConfluence" xml:space="preserve"><value>Configurer dans Pages Confluence</value></data>
-  <data name="HomeNavigation" xml:space="preserve"><value>Accueil</value></data>
-  <data name="HomeTitle" xml:space="preserve"><value>Votre base de connaissances</value></data>
-  <data name="HomeIntro" xml:space="preserve"><value>Retrouvez vos documents et voyez la prochaine action utile.</value></data>
-  <data name="HomeIndex" xml:space="preserve"><value>Dernière indexation observée</value></data>
-  <data name="HomeCollection" xml:space="preserve"><value>Dernière collecte Confluence réussie</value></data>
-  <data name="HomeNext" xml:space="preserve"><value>Prochaine collecte planifiée</value></data>
-  <data name="HomeActivity" xml:space="preserve"><value>Opération en cours ou dernier résultat</value></data>
-  <data name="HomeRefresh" xml:space="preserve"><value>Actualiser l'accueil</value></data>
-  <data name="GuideTitle" xml:space="preserve"><value>Premiers pas</value></data>
-  <data name="GuideIntro" xml:space="preserve"><value>Suivez ces étapes à votre rythme. Vous pouvez revenir ici après chaque action.</value></data>
-  <data name="GuideConfigure" xml:space="preserve"><value>Choisir et enregistrer mes documents</value></data>
-  <data name="GuideObserve" xml:space="preserve"><value>Suivre l'opération en cours</value></data>
-  <data name="GuideSync" xml:space="preserve"><value>Synchroniser mes documents</value></data>
-  <data name="GuideSearch" xml:space="preserve"><value>Rechercher dans mes documents</value></data>
-  <data name="GuideDone" xml:space="preserve"><value>Étape vérifiée</value></data>
-  <data name="GuidePending" xml:space="preserve"><value>À vérifier</value></data>
-  <data name="GuideDocuments" xml:space="preserve"><value>1. Choisir les documents</value></data>
-  <data name="GuideConfluence" xml:space="preserve"><value>2. Connecter Confluence (facultatif)</value></data>
-  <data name="GuideConfluenceHelp" xml:space="preserve"><value>Ajoutez une page Confluence si vous souhaitez aussi rechercher dans ses documents. Vous pouvez passer directement à la synchronisation.</value></data>
-  <data name="GuideIndex" xml:space="preserve"><value>3. Synchroniser</value></data>
-  <data name="GuideTry" xml:space="preserve"><value>4. Essayer une recherche</value></data>
-  <data name="GuideTryHelp" xml:space="preserve"><value>Recherchez un sujet présent dans vos documents, puis ouvrez une source pour vérifier le résultat.</value></data>
-  <data name="HistoryNavigation" xml:space="preserve"><value>Historique</value></data>
-  <data name="HistoryScope" xml:space="preserve"><value>Opérations conservées par Companion sur ce compte Windows (jusqu'à 100 par catégorie). Les exécutions externes et les opérations déjà purgées ne sont pas incluses.</value></data>
-  <data name="HistoryScheduled" xml:space="preserve"><value>Collecte planifiée</value></data>
-  <data name="HistoryManual" xml:space="preserve"><value>Opération manuelle</value></data>
-  <data name="HistoryLocal" xml:space="preserve"><value>Documents locaux</value></data>
-  <data name="HistoryConfluence" xml:space="preserve"><value>Collecte Confluence</value></data>
-  <data name="HistoryUnreadable" xml:space="preserve"><value>Données illisibles</value></data>
-  <data name="HistoryNoCounters" xml:space="preserve"><value>Compteurs détaillés non disponibles pour cette opération.</value></data>
-  <data name="HistoryInspect" xml:space="preserve"><value>Consultez l'état actuel et les diagnostics avant de relancer.</value></data>
-  <data name="HistoryCancelled" xml:space="preserve"><value>Interrompue</value></data>
-  <data name="HistoryUnconfirmed" xml:space="preserve"><value>Issue non confirmée (opération en cours ou arrêt sans résultat)</value></data>
-  <data name="HistorySucceeded" xml:space="preserve"><value>Réussie</value></data>
-  <data name="HistoryFailed" xml:space="preserve"><value>Échec</value></data>
-  <data name="HistoryPartial" xml:space="preserve"><value>Résultat partiel</value></data>
-  <data name="HistoryLocked" xml:space="preserve"><value>Une autre opération détient le verrou</value></data>
-  <data name="HistoryNoAction" xml:space="preserve"><value>Aucune action requise pour cette opération.</value></data>
-  <data name="HistoryRetry" xml:space="preserve"><value>Vérifiez les fichiers signalés, puis relancez la synchronisation depuis Base locale.</value></data>
-  <data name="HistoryRepair" xml:space="preserve"><value>L'index lexical doit être réparé. Consultez les diagnostics dans Base locale ; une synchronisation ordinaire ne garantit pas cette réparation.</value></data>
-  <data name="HistoryErrorsTruncated" xml:space="preserve"><value>La liste des erreurs est partielle.</value></data>
-  <data name="HistoryCounters" xml:space="preserve"><value>Fichiers publiés (ajoutés ou modifiés) : {0} · supprimés : {1} · ignorés : {2} · vides : {3} · erreurs : {4}</value></data>
-  <data name="HistoryReadFailed" xml:space="preserve"><value>Impossible de lire l'historique. Actualisez pour réessayer.</value></data>
-  <data name="HistoryLoading" xml:space="preserve"><value>Chargement de l'historique...</value></data>
-  <data name="HistoryEmpty" xml:space="preserve"><value>Aucune opération conservée par Companion. Lancez une synchronisation depuis Base locale.</value></data>
-  <data name="HistoryOpen" xml:space="preserve"><value>Consulter l'état actuel</value></data>
-  <data name="HistoryDetails" xml:space="preserve"><value>Détails des erreurs</value></data>
-  <data name="HistoryRefresh" xml:space="preserve"><value>Actualiser l'historique</value></data>
-  <data name="UpdateTitle" xml:space="preserve"><value>Versions et mises à jour</value></data>
-  <data name="UpdateCompanion" xml:space="preserve"><value>Companion en cours d'exécution</value></data>
-  <data name="UpdateCortex" xml:space="preserve"><value>Cortex connecté</value></data>
-  <data name="UpdateAvailableLabel" xml:space="preserve"><value>Version stable disponible</value></data>
-  <data name="UpdateNotChecked" xml:space="preserve"><value>La disponibilité des mises à jour n'a pas encore été vérifiée.</value></data>
-  <data name="UpdateCheckFailed" xml:space="preserve"><value>Vérification impossible. Vérifiez la connexion et réessayez.</value></data>
-  <data name="UpdateOpenFailed" xml:space="preserve"><value>Impossible d'ouvrir la page de téléchargement dans le navigateur.</value></data>
-  <data name="UpdateChecking" xml:space="preserve"><value>Vérification de la version stable...</value></data>
-  <data name="UpdateCompareUnknown" xml:space="preserve"><value>Version disponible trouvée. Connectez Cortex dans Réglages pour comparer les deux versions.</value></data>
-  <data name="UpdateAvailable" xml:space="preserve"><value>Une mise à jour est disponible pour Cortex ou Companion.</value></data>
-  <data name="UpdateVersionsDiffer" xml:space="preserve"><value>Les versions de Cortex et Companion diffèrent. L'installeur commun permet de les mettre à jour ensemble.</value></data>
-  <data name="UpdateCurrent" xml:space="preserve"><value>Les versions installées correspondent à la version stable disponible ou sont plus récentes.</value></data>
-  <data name="UpdateCheck" xml:space="preserve"><value>Vérifier les mises à jour</value></data>
-  <data name="UpdateOpen" xml:space="preserve"><value>Ouvrir le téléchargement officiel</value></data>
-  <data name="UpdateHelp" xml:space="preserve"><value>La vérification contacte GitHub uniquement à votre demande. L'installeur commun met à jour Cortex et Companion ; aucune installation automatique.</value></data>
-  <data name="SearchAdvanced" xml:space="preserve"><value>Filtres avancés</value></data>
-  <data name="SearchCopy" xml:space="preserve"><value>Copier l'extrait et sa référence</value></data>
-  <data name="SearchCopied" xml:space="preserve"><value>Extrait et référence copiés.</value></data>
-  <data name="SearchCopyFailed" xml:space="preserve"><value>Le presse-papiers est indisponible. Réessayez.</value></data>
-  <data name="SearchPreview" xml:space="preserve"><value>Aperçu du résultat sélectionné</value></data>
-  <data name="FlowTitle" xml:space="preserve"><value>Ajouter depuis Confluence</value></data>
-  <data name="FlowIntro" xml:space="preserve"><value>Collez le lien d'une page ou d'un espace. Vous choisirez ensuite les documents à ajouter.</value></data>
-  <data name="FlowLink" xml:space="preserve"><value>Lien Confluence</value></data>
-  <data name="FlowInspect" xml:space="preserve"><value>Voir les documents à ajouter</value></data>
-  <data name="FlowInspecting" xml:space="preserve"><value>Recherche de la page et mesure des périmètres...</value></data>
-  <data name="FlowNeedSpace" xml:space="preserve"><value>Ce lien ne contient pas la clé de l'espace. Renseignez-la ci-dessous ou collez un lien contenant /spaces/ ou /display/.</value></data>
-  <data name="FlowSpaceHelp" xml:space="preserve"><value>La clé identifie l'espace dans Confluence. Elle apparaît généralement dans son adresse.</value></data>
-  <data name="FlowConnectFirst" xml:space="preserve"><value>Pour continuer, indiquez la date d'expiration de votre accès Confluence. Si votre jeton n'est pas encore enregistré, saisissez-le ici.</value></data>
-  <data name="FlowAuthenticationRequired" xml:space="preserve"><value>Confluence n'a pas accepté la connexion. Vérifiez votre jeton, sa validité et vos droits sur cette page, puis réessayez.</value></data>
-  <data name="FlowConnect" xml:space="preserve"><value>Enregistrer le jeton et continuer</value></data>
-  <data name="FlowToken" xml:space="preserve"><value>Jeton d'accès personnel Confluence</value></data>
-  <data name="FlowTokenHelp" xml:space="preserve"><value>Où trouver mon jeton ?</value></data>
-  <data name="FlowTokenInstructions" xml:space="preserve"><value>Dans Confluence, ouvrez votre profil puis Jetons d'accès personnels. Créez un jeton et copiez-le ici. Si ce menu est absent, demandez à votre administrateur. Le jeton reste dans le Gestionnaire d'identification Windows et n'est pas écrit dans la configuration.</value></data>
-  <data name="FlowClassificationHelp" xml:space="preserve"><value>Choisissez la nature des documents. Cette classification sera conservée avec la source ; les sources déjà configurées gardent leur classification.</value></data>
-  <data name="FlowAdded" xml:space="preserve"><value>Source ajoutée. Les documents ne sont pas encore disponibles dans la recherche. Lancez la collecte, puis l'indexation.</value></data>
-  <data name="FlowCancelled" xml:space="preserve"><value>Ajout annulé. Votre lien est conservé et aucune source n'a été ajoutée.</value></data>
-  <data name="FlowUnexpectedFailure" xml:space="preserve"><value>L'ajout n'a pas abouti. Votre lien est conservé ; réessayez ou consultez les diagnostics.</value></data>
-  <data name="FlowExistingScope" xml:space="preserve"><value>Cet espace contient déjà des pages avec un autre périmètre. Choisissez le même périmètre pour les conserver, ou gérez son mode dans les sources configurées.</value></data>
-  <data name="FlowOverrides" xml:space="preserve"><value>Des paramètres Confluence sont imposés par l'environnement. Consultez les détails avancés avant d'utiliser l'ajout guidé.</value></data>
-  <data name="FlowNextTitle" xml:space="preserve"><value>Rendre les documents disponibles</value></data>
-  <data name="FlowCollect" xml:space="preserve"><value>Collecter maintenant</value></data>
-  <data name="FlowIndex" xml:space="preserve"><value>2. Indexer les documents collectés</value></data>
-  <data name="FlowSearch" xml:space="preserve"><value>3. Rechercher un document</value></data>
-  <data name="FlowNextHelp" xml:space="preserve"><value>Les sources configurées seront collectées, puis indexées si la collecte réussit. La progression distingue les documents récupérés et leur disponibilité dans la recherche.</value></data>
-  <data name="FlowSources" xml:space="preserve"><value>Mes sources</value></data>
-  <data name="FlowAdvanced" xml:space="preserve"><value>Détails techniques et options avancées</value></data>
-  <data name="FlowConfirmCount" xml:space="preserve"><value>Ajouter ces {0} pages</value></data>
-  <data name="FlowScopeHelp" xml:space="preserve"><value>Choisissez ce que Cortex pourra rechercher. Tout l'espace inclut aussi les pages hors de cette arborescence.</value></data>
-  <data name="FlowScopeIdentity" xml:space="preserve"><value>{0} - espace {1}</value></data>
-  <data name="FlowSpaceHomepage" xml:space="preserve"><value>Le lien d'espace est présenté à partir de sa page d'accueil.</value></data>
-  <data name="FlowCollectionUnavailable" xml:space="preserve"><value>La collecte n'est pas disponible. Vérifiez les réglages ou attendez la fin de l'opération en cours.</value></data>
-  <data name="FlowCollecting" xml:space="preserve"><value>Application des sources - collecte des documents en cours.</value></data>
-  <data name="FlowCollectionUnconfirmed" xml:space="preserve"><value>Collecte non confirmée. L'indexation automatique n'a pas été lancée. Consultez le résultat ci-dessous.</value></data>
-  <data name="FlowIndexing" xml:space="preserve"><value>Documents collectés - indexation en cours.</value></data>
-  <data name="FlowIndexUnconfirmed" xml:space="preserve"><value>Disponibilité dans la recherche non confirmée. Consultez le résultat de l'indexation ci-dessous.</value></data>
-  <data name="FlowSearchReady" xml:space="preserve"><value>Documents collectés et indexés. Vous pouvez maintenant rechercher un document.</value></data>
-  <data name="ManageEdit" xml:space="preserve"><value>Modifier la sélection</value></data>
-  <data name="ManageRemove" xml:space="preserve"><value>Retirer de Cortex</value></data>
-  <data name="ManageOpen" xml:space="preserve"><value>Ouvrir dans Confluence</value></data>
-  <data name="ManageHelp" xml:space="preserve"><value>Modifiez les documents suivis par Cortex. Les pages originales restent dans Confluence.</value></data>
-  <data name="ManageScopeHelp" xml:space="preserve"><value>La portée choisie s'applique à toutes les pages cochées de cet espace. Décochez une page pour ne plus la suivre directement.</value></data>
-  <data name="ManagePages" xml:space="preserve"><value>Les pages cochées uniquement</value></data>
-  <data name="ManageSubtree" xml:space="preserve"><value>Les pages cochées et leurs sous-pages</value></data>
-  <data name="ManageWhole" xml:space="preserve"><value>Tout l'espace</value></data>
-  <data name="ManageLink" xml:space="preserve"><value>Ajouter une page à cette sélection (lien Confluence facultatif)</value></data>
-  <data name="ManageReview" xml:space="preserve"><value>Vérifier les changements</value></data>
-  <data name="ManageCancel" xml:space="preserve"><value>Annuler</value></data>
-  <data name="ManageConsequences" xml:space="preserve"><value>Enregistrer et mettre à jour applique le changement à la recherche après une collecte et une indexation réussies. Enregistrer pour plus tard conserve uniquement la sélection. Aucune page originale ne sera supprimée dans Confluence. Les documents encore couverts par une autre arborescence restent inclus.</value></data>
-  <data name="ManageEmpty" xml:space="preserve"><value>Sélectionnez au moins une page ou collez son lien. Pour retirer tout l'espace, utilisez &quot; Retirer de Cortex &quot;.</value></data>
-  <data name="ManageReviewTitle" xml:space="preserve"><value>Confirmer la nouvelle sélection</value></data>
-  <data name="ManageRemaining" xml:space="preserve"><value>Pages suivies directement :</value></data>
-  <data name="ManageBefore" xml:space="preserve"><value>Avant :</value></data>
-  <data name="ManageAfter" xml:space="preserve"><value>Après :</value></data>
-  <data name="ManageRemoveHelp" xml:space="preserve"><value>Retirer cette source du suivi Cortex ? Les documents qui ne sont plus couverts seront retirés de la recherche après une collecte et une indexation réussies. Aucune page originale ne sera supprimée dans Confluence. Les documents couverts par une autre arborescence resteront disponibles.</value></data>
-  <data name="ManageRefresh" xml:space="preserve"><value>Actualiser mes sources</value></data>
-  <data name="ManageStillCovered" xml:space="preserve"><value>Cette page reste incluse dans une autre arborescence sélectionnée. Ce retrait seul ne la fera pas disparaître de Cortex.</value></data>
-  <data name="ManageCoverageUnknown" xml:space="preserve"><value>La couverture par les autres arborescences n'a pas pu être vérifiée. Cette page pourrait rester incluse.</value></data>
-  <data name="SourcesAdd" xml:space="preserve"><value>Ajouter une source</value></data>
-  <data name="SourcesSearch" xml:space="preserve"><value>Rechercher un espace ou une page</value></data>
-  <data name="SourcesNoMatch" xml:space="preserve"><value>Aucune source ne correspond à cette recherche.</value></data>
-  <data name="SourcesPending" xml:space="preserve"><value>À appliquer</value></data>
-  <data name="SourcesUpdating" xml:space="preserve"><value>Mise à jour en cours</value></data>
-  <data name="SourcesAvailable" xml:space="preserve"><value>Disponible dans la recherche</value></data>
-  <data name="SourcesAttention" xml:space="preserve"><value>Action requise</value></data>
-  <data name="SourcesUnknown" xml:space="preserve"><value>Disponibilité à vérifier</value></data>
-  <data name="SourcesSaveUpdate" xml:space="preserve"><value>Enregistrer et mettre à jour</value></data>
-  <data name="SourcesSaveLater" xml:space="preserve"><value>Enregistrer pour plus tard</value></data>
-  <data name="SourcesApply" xml:space="preserve"><value>Mettre à jour la recherche</value></data>
-  <data name="SourcesUndo" xml:space="preserve"><value>Annuler le dernier retrait</value></data>
-  <data name="SourcesUndoHelp" xml:space="preserve"><value>Le dernier retrait de cette session peut être annulé tant que la configuration ne change pas. Une nouvelle mise à jour peut être nécessaire pour restaurer les résultats.</value></data>
-  <data name="SourcesRetry" xml:space="preserve"><value>Réessayer</value></data>
-  <data name="SourcesReconnect" xml:space="preserve"><value>Reconnecter Confluence</value></data>
-  <data name="SourcesError" xml:space="preserve"><value>Cette action a échoué. Votre source reste accessible ci-dessous.</value></data>
-  <data name="SourcesLoadTree" xml:space="preserve"><value>Charger les pages de cet espace</value></data>
-  <data name="SourcesTreeLoading" xml:space="preserve"><value>Lecture des pages et de leur arborescence...</value></data>
-  <data name="SourcesTreeError" xml:space="preserve"><value>Impossible de lire les pages. Vérifiez la connexion ou reconnectez Confluence, puis réessayez. Vos choix sont conservés.</value></data>
-  <data name="SourcesTreeSearch" xml:space="preserve"><value>Rechercher une page dans cet espace</value></data>
-  <data name="SourcesAddedPages" xml:space="preserve"><value>Documents ajoutés au périmètre</value></data>
-  <data name="SourcesRemovedPages" xml:space="preserve"><value>Documents retirés du périmètre</value></data>
-  <data name="SourcesImpactUnknown" xml:space="preserve"><value>Les sous-pages n'ont pas pu être mesurées. La liste ci-dessous montre uniquement les pages connues ; le nombre total de documents concernés reste inconnu.</value></data>
-  <data name="SourcesImpactMeasured" xml:space="preserve"><value>Les listes incluent les sous-pages et tiennent compte des arborescences qui se recouvrent. Elles reflètent la lecture actuelle de Confluence.</value></data>
-  <data name="SourcesNoChange" xml:space="preserve"><value>Aucun document dans cette liste.</value></data>
-  <data name="SourcesCovered" xml:space="preserve"><value>Incluse avec une page parente</value></data>
-  <data name="SourcesReview" xml:space="preserve"><value>Vérifier les changements</value></data>
-  <data name="SourcesConfirm" xml:space="preserve"><value>Confirmer</value></data>
-  <data name="SourcesSyncFailure" xml:space="preserve"><value>La mise à jour n'est pas confirmée. Les changements sont enregistrés ; vous pouvez réessayer ou consulter Base locale.</value></data>
-  <data name="SourcesViewDetails" xml:space="preserve"><value>Voir le résultat détaillé</value></data>
-  <data name="SourcesSaved" xml:space="preserve"><value>Changements enregistrés. La recherche sera mise à jour à la prochaine synchronisation.</value></data>
-  <data name="SourcesEmpty" xml:space="preserve"><value>Aucune source suivie. Utilisez Ajouter une source pour commencer.</value></data>
-  <data name="SourcesApplyHelp" xml:space="preserve"><value>La mise à jour collecte toutes les sources puis prépare leurs documents pour la recherche. La disponibilité est vérifiée pour cette génération commune.</value></data>
-  <data name="SourcesAddedRoots" xml:space="preserve"><value>Pages ajoutées au suivi direct</value></data>
-  <data name="SourcesRemovedRoots" xml:space="preserve"><value>Pages retirées du suivi direct</value></data>
+  <data name="SearchAll" xml:space="preserve"><value>All sources</value></data>
+  <data name="SearchNotes" xml:space="preserve"><value>Local documents</value></data>
+  <data name="SearchDocuments" xml:space="preserve"><value>Collected documents</value></data>
+  <data name="SearchSubmit" xml:space="preserve"><value>Search</value></data>
+  <data name="SearchOpen" xml:space="preserve"><value>Open the source</value></data>
+  <data name="SearchResults" xml:space="preserve"><value>Search results</value></data>
+  <data name="SearchReady" xml:space="preserve"><value>Enter a question to search the indexed documents.</value></data>
+  <data name="SearchRunning" xml:space="preserve"><value>Searching...</value></data>
+  <data name="SearchComplete" xml:space="preserve"><value>Results available. Select a document to open its source.</value></data>
+  <data name="SearchEmpty" xml:space="preserve"><value>No results for this search and these filters.</value></data>
+  <data name="SearchDegraded" xml:space="preserve"><value>Results available with degraded ranking. Check the Cortex diagnostics.</value></data>
+  <data name="SearchFailed" xml:space="preserve"><value>Search unavailable. Check Cortex compatibility and the diagnostics.</value></data>
+  <data name="SearchTimeout" xml:space="preserve"><value>The search timed out. Raise the CLI timeout in Settings.</value></data>
+  <data name="SearchCancelled" xml:space="preserve"><value>Search stopped.</value></data>
+  <data name="SearchOpenFailed" xml:space="preserve"><value>This source could not be opened.</value></data>
+  <data name="FreshnessPublished" xml:space="preserve"><value>Published generation</value></data>
+  <data name="FreshnessIndexed" xml:space="preserve"><value>Confirmed indexed generation</value></data>
+  <data name="FreshnessLastIndex" xml:space="preserve"><value>Last observed successful indexing</value></data>
+  <data name="FreshnessCurrent" xml:space="preserve"><value>The published generation matches the last observed successful indexing.</value></data>
+  <data name="FreshnessPending" xml:space="preserve"><value>The published generation is waiting for a confirmed successful indexing.</value></data>
+  <data name="FreshnessUnknown" xml:space="preserve"><value>The match between publication and indexing is not confirmed.</value></data>
+  <data name="SearchUnavailable" xml:space="preserve"><value>Connect a compatible version of Cortex in Settings to enable search.</value></data>
+  <data name="SearchVersionRequiredFormat" xml:space="preserve"><value>Search requires Cortex {0} or a more recent version. Install that version, then select its executable in Settings. The other functions remain available.</value></data>
+  <data name="SearchCriteriaChanged" xml:space="preserve"><value>The criteria have changed. Run the search again to show the matching results.</value></data>
+  <data name="SearchExecutedFormat" xml:space="preserve"><value>Last search: {0} | Section: {1} | Source: {2}</value></data>
+  <data name="SearchSourceUnavailable" xml:space="preserve"><value>This result provides no link to open. Its reference appears under the title.</value></data>
+  <data name="SearchSourceMissing" xml:space="preserve"><value>The source file could not be found. Check its location, then synchronize the local database.</value></data>
+  <data name="SearchSourceBlocked" xml:space="preserve"><value>Opening this target is not allowed. Check its reference under the title.</value></data>
+  <data name="SearchGoToSync" xml:space="preserve"><value>Open Local database to synchronize</value></data>
+  <data name="SettingsGoToConfluence" xml:space="preserve"><value>Configure in Confluence pages</value></data>
+  <data name="HomeNavigation" xml:space="preserve"><value>Home</value></data>
+  <data name="HomeTitle" xml:space="preserve"><value>Your knowledge base</value></data>
+  <data name="HomeIntro" xml:space="preserve"><value>Find your documents and see the next useful action.</value></data>
+  <data name="HomeIndex" xml:space="preserve"><value>Last observed indexing</value></data>
+  <data name="HomeCollection" xml:space="preserve"><value>Last successful Confluence collection</value></data>
+  <data name="HomeNext" xml:space="preserve"><value>Next scheduled collection</value></data>
+  <data name="HomeActivity" xml:space="preserve"><value>Operation in progress or last result</value></data>
+  <data name="HomeRefresh" xml:space="preserve"><value>Refresh Home</value></data>
+  <data name="GuideTitle" xml:space="preserve"><value>Getting started</value></data>
+  <data name="GuideIntro" xml:space="preserve"><value>Follow these steps at your own pace. Return here after each action.</value></data>
+  <data name="GuideConfigure" xml:space="preserve"><value>Choose and save my documents</value></data>
+  <data name="GuideObserve" xml:space="preserve"><value>Follow the operation in progress</value></data>
+  <data name="GuideSync" xml:space="preserve"><value>Synchronize my documents</value></data>
+  <data name="GuideSearch" xml:space="preserve"><value>Search my documents</value></data>
+  <data name="GuideDone" xml:space="preserve"><value>Step verified</value></data>
+  <data name="GuidePending" xml:space="preserve"><value>To verify</value></data>
+  <data name="GuideDocuments" xml:space="preserve"><value>1. Choose the documents</value></data>
+  <data name="GuideConfluence" xml:space="preserve"><value>2. Connect Confluence (optional)</value></data>
+  <data name="GuideConfluenceHelp" xml:space="preserve"><value>Add a Confluence page if you also want to search its documents. Otherwise, go straight to synchronization.</value></data>
+  <data name="GuideIndex" xml:space="preserve"><value>3. Synchronize</value></data>
+  <data name="GuideTry" xml:space="preserve"><value>4. Try a search</value></data>
+  <data name="GuideTryHelp" xml:space="preserve"><value>Search for a topic that appears in your documents, then open a source to check the result.</value></data>
+  <data name="HistoryNavigation" xml:space="preserve"><value>History</value></data>
+  <data name="HistoryScope" xml:space="preserve"><value>Operations kept by Companion on this Windows account (up to 100 per category). External runs and operations already purged are not included.</value></data>
+  <data name="HistoryScheduled" xml:space="preserve"><value>Scheduled collection</value></data>
+  <data name="HistoryManual" xml:space="preserve"><value>Manual operation</value></data>
+  <data name="HistoryLocal" xml:space="preserve"><value>Local documents</value></data>
+  <data name="HistoryConfluence" xml:space="preserve"><value>Confluence collection</value></data>
+  <data name="HistoryUnreadable" xml:space="preserve"><value>Unreadable data</value></data>
+  <data name="HistoryNoCounters" xml:space="preserve"><value>Detailed counters are not available for this operation.</value></data>
+  <data name="HistoryInspect" xml:space="preserve"><value>Check the current status and the diagnostics before running it again.</value></data>
+  <data name="HistoryCancelled" xml:space="preserve"><value>Stopped</value></data>
+  <data name="HistoryUnconfirmed" xml:space="preserve"><value>Outcome not confirmed (operation in progress or stopped without a result)</value></data>
+  <data name="HistorySucceeded" xml:space="preserve"><value>Succeeded</value></data>
+  <data name="HistoryFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="HistoryPartial" xml:space="preserve"><value>Partial result</value></data>
+  <data name="HistoryLocked" xml:space="preserve"><value>Another operation holds the lock</value></data>
+  <data name="HistoryNoAction" xml:space="preserve"><value>No action is required for this operation.</value></data>
+  <data name="HistoryRetry" xml:space="preserve"><value>Check the reported files, then run synchronization again from Local database.</value></data>
+  <data name="HistoryRepair" xml:space="preserve"><value>The lexical index must be repaired. Check the diagnostics in Local database; an ordinary synchronization does not guarantee this repair.</value></data>
+  <data name="HistoryErrorsTruncated" xml:space="preserve"><value>The error list is partial.</value></data>
+  <data name="HistoryCounters" xml:space="preserve"><value>Published files (added or changed): {0} - deleted: {1} - skipped: {2} - empty: {3} - errors: {4}</value></data>
+  <data name="HistoryReadFailed" xml:space="preserve"><value>The history could not be read. Refresh to try again.</value></data>
+  <data name="HistoryLoading" xml:space="preserve"><value>Loading history...</value></data>
+  <data name="HistoryEmpty" xml:space="preserve"><value>No operation retained by Companion. Start a synchronization from Local database.</value></data>
+  <data name="HistoryOpen" xml:space="preserve"><value>View current status</value></data>
+  <data name="HistoryDetails" xml:space="preserve"><value>Error details</value></data>
+  <data name="HistoryRefresh" xml:space="preserve"><value>Refresh history</value></data>
+  <data name="UpdateTitle" xml:space="preserve"><value>Versions and updates</value></data>
+  <data name="UpdateCompanion" xml:space="preserve"><value>Companion running</value></data>
+  <data name="UpdateCortex" xml:space="preserve"><value>Cortex connected</value></data>
+  <data name="UpdateAvailableLabel" xml:space="preserve"><value>Stable version available</value></data>
+  <data name="UpdateNotChecked" xml:space="preserve"><value>Update availability has not been checked yet.</value></data>
+  <data name="UpdateCheckFailed" xml:space="preserve"><value>The check could not be completed. Check the connection and try again.</value></data>
+  <data name="UpdateOpenFailed" xml:space="preserve"><value>The download page could not be opened in the browser.</value></data>
+  <data name="UpdateChecking" xml:space="preserve"><value>Checking the stable version...</value></data>
+  <data name="UpdateCompareUnknown" xml:space="preserve"><value>Available version found. Connect Cortex in Settings to compare the two versions.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>An update is available for Cortex or Companion.</value></data>
+  <data name="UpdateVersionsDiffer" xml:space="preserve"><value>The Cortex and Companion versions differ. The shared installer can update them together.</value></data>
+  <data name="UpdateCurrent" xml:space="preserve"><value>The installed versions match the available stable version or are newer.</value></data>
+  <data name="UpdateCheck" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="UpdateOpen" xml:space="preserve"><value>Open the official download</value></data>
+  <data name="UpdateHelp" xml:space="preserve"><value>The check contacts GitHub only at your request. The shared installer updates Cortex and Companion; no automatic installation.</value></data>
+  <data name="SearchAdvanced" xml:space="preserve"><value>Advanced filters</value></data>
+  <data name="SearchCopy" xml:space="preserve"><value>Copy the excerpt and its reference</value></data>
+  <data name="SearchCopied" xml:space="preserve"><value>Excerpt and reference copied.</value></data>
+  <data name="SearchCopyFailed" xml:space="preserve"><value>The clipboard is unavailable. Try again.</value></data>
+  <data name="SearchPreview" xml:space="preserve"><value>Selected result preview</value></data>
+  <data name="FlowTitle" xml:space="preserve"><value>Add from Confluence</value></data>
+  <data name="FlowIntro" xml:space="preserve"><value>Paste the link of a page or a space. You will then choose the documents to add.</value></data>
+  <data name="FlowLink" xml:space="preserve"><value>Confluence link</value></data>
+  <data name="FlowInspect" xml:space="preserve"><value>View the documents to add</value></data>
+  <data name="FlowInspecting" xml:space="preserve"><value>Looking up the page and measuring the scopes...</value></data>
+  <data name="FlowNeedSpace" xml:space="preserve"><value>This link does not contain the space key. Enter it below, or paste a link containing /spaces/ or /display/.</value></data>
+  <data name="FlowSpaceHelp" xml:space="preserve"><value>The key identifies the space in Confluence. It usually appears in its address.</value></data>
+  <data name="FlowConnectFirst" xml:space="preserve"><value>To continue, provide the expiry date of your Confluence access. If your token is not saved yet, enter it here.</value></data>
+  <data name="FlowAuthenticationRequired" xml:space="preserve"><value>Confluence did not accept the connection. Check your token, its validity and your permissions on this page, then try again.</value></data>
+  <data name="FlowConnect" xml:space="preserve"><value>Save the token and continue</value></data>
+  <data name="FlowToken" xml:space="preserve"><value>Confluence personal access token</value></data>
+  <data name="FlowTokenHelp" xml:space="preserve"><value>Where do I find my token?</value></data>
+  <data name="FlowTokenInstructions" xml:space="preserve"><value>In Confluence, open your profile then Personal Access Tokens. Create a token and copy it here. If that menu is missing, ask your administrator. The token stays in Windows Credential Manager and is not written to the configuration.</value></data>
+  <data name="FlowClassificationHelp" xml:space="preserve"><value>Choose the nature of the documents. This classification will be kept with the source; sources already configured keep their classification.</value></data>
+  <data name="FlowAdded" xml:space="preserve"><value>Source added. The documents are not available in search yet. Start the collection, then the indexing.</value></data>
+  <data name="FlowCancelled" xml:space="preserve"><value>Addition canceled. Your link is kept and no source has been added.</value></data>
+  <data name="FlowUnexpectedFailure" xml:space="preserve"><value>The addition did not complete. Your link is kept; try again or check the diagnostics.</value></data>
+  <data name="FlowExistingScope" xml:space="preserve"><value>This space already contains pages with a different scope. Choose the same scope to keep them, or manage its mode in the configured sources.</value></data>
+  <data name="FlowOverrides" xml:space="preserve"><value>Some Confluence settings are enforced by the environment. Check the advanced details before using the guided flow.</value></data>
+  <data name="FlowNextTitle" xml:space="preserve"><value>Make the documents available</value></data>
+  <data name="FlowCollect" xml:space="preserve"><value>Collect now</value></data>
+  <data name="FlowIndex" xml:space="preserve"><value>2. Index the collected documents</value></data>
+  <data name="FlowSearch" xml:space="preserve"><value>3. Search for a document</value></data>
+  <data name="FlowNextHelp" xml:space="preserve"><value>The configured sources will be collected, then indexed if the collection succeeds. The progress distinguishes the documents retrieved from their availability in search.</value></data>
+  <data name="FlowSources" xml:space="preserve"><value>My sources</value></data>
+  <data name="FlowAdvanced" xml:space="preserve"><value>Technical details and advanced options</value></data>
+  <data name="FlowConfirmCount" xml:space="preserve"><value>Add these {0} pages</value></data>
+  <data name="FlowScopeHelp" xml:space="preserve"><value>Choose what Cortex can search. The whole space also includes pages outside this page tree.</value></data>
+  <data name="FlowScopeIdentity" xml:space="preserve"><value>{0} - space {1}</value></data>
+  <data name="FlowSpaceHomepage" xml:space="preserve"><value>The space link is presented from its homepage.</value></data>
+  <data name="FlowCollectionUnavailable" xml:space="preserve"><value>The collection is not available. Check Settings or wait for the operation in progress to finish.</value></data>
+  <data name="FlowCollecting" xml:space="preserve"><value>Applying the sources - document collection in progress.</value></data>
+  <data name="FlowCollectionUnconfirmed" xml:space="preserve"><value>Collection not confirmed. Automatic indexing was not started. Check the result below.</value></data>
+  <data name="FlowIndexing" xml:space="preserve"><value>Documents collected - indexing in progress.</value></data>
+  <data name="FlowIndexUnconfirmed" xml:space="preserve"><value>Availability in search not confirmed. Check the indexing result below.</value></data>
+  <data name="FlowSearchReady" xml:space="preserve"><value>Documents collected and indexed. You can now search for a document.</value></data>
+  <data name="ManageEdit" xml:space="preserve"><value>Edit selection</value></data>
+  <data name="ManageRemove" xml:space="preserve"><value>Remove from Cortex</value></data>
+  <data name="ManageOpen" xml:space="preserve"><value>Open in Confluence</value></data>
+  <data name="ManageHelp" xml:space="preserve"><value>Edit the documents tracked by Cortex. The original pages stay in Confluence.</value></data>
+  <data name="ManageScopeHelp" xml:space="preserve"><value>The chosen scope applies to every checked page in this space. Uncheck a page to stop tracking it directly.</value></data>
+  <data name="ManagePages" xml:space="preserve"><value>The checked pages only</value></data>
+  <data name="ManageSubtree" xml:space="preserve"><value>The checked pages and their child pages</value></data>
+  <data name="ManageWhole" xml:space="preserve"><value>The whole space</value></data>
+  <data name="ManageLink" xml:space="preserve"><value>Add a page to this selection (Confluence link optional)</value></data>
+  <data name="ManageReview" xml:space="preserve"><value>Review changes</value></data>
+  <data name="ManageCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ManageConsequences" xml:space="preserve"><value>Save and update applies the change to search after a successful collection and indexing. Save for later keeps only the selection. No original page will be deleted in Confluence. Documents still covered by another subtree stay included.</value></data>
+  <data name="ManageEmpty" xml:space="preserve"><value>Select at least one page or paste its link. To remove the whole space, use Remove from Cortex.</value></data>
+  <data name="ManageReviewTitle" xml:space="preserve"><value>Confirm the new selection</value></data>
+  <data name="ManageRemaining" xml:space="preserve"><value>Directly tracked pages:</value></data>
+  <data name="ManageBefore" xml:space="preserve"><value>Before:</value></data>
+  <data name="ManageAfter" xml:space="preserve"><value>After:</value></data>
+  <data name="ManageRemoveHelp" xml:space="preserve"><value>Remove this source from Cortex tracking? Documents that are no longer covered will be removed from search after a successful collection and indexing. No original page will be deleted in Confluence. Documents covered by another subtree will remain available.</value></data>
+  <data name="ManageRefresh" xml:space="preserve"><value>Refresh my sources</value></data>
+  <data name="ManageStillCovered" xml:space="preserve"><value>This page is still included in another selected subtree. This removal alone will not remove it from Cortex.</value></data>
+  <data name="ManageCoverageUnknown" xml:space="preserve"><value>Coverage by the other subtrees could not be verified. This page may remain included.</value></data>
+  <data name="SourcesAdd" xml:space="preserve"><value>Add a source</value></data>
+  <data name="SourcesSearch" xml:space="preserve"><value>Search for a space or a page</value></data>
+  <data name="SourcesNoMatch" xml:space="preserve"><value>No source matches this search.</value></data>
+  <data name="SourcesPending" xml:space="preserve"><value>Pending</value></data>
+  <data name="SourcesUpdating" xml:space="preserve"><value>Updating</value></data>
+  <data name="SourcesAvailable" xml:space="preserve"><value>Available in search</value></data>
+  <data name="SourcesAttention" xml:space="preserve"><value>Action required</value></data>
+  <data name="SourcesUnknown" xml:space="preserve"><value>Unverified</value></data>
+  <data name="SourcesSaveUpdate" xml:space="preserve"><value>Save and update</value></data>
+  <data name="SourcesSaveLater" xml:space="preserve"><value>Save for later</value></data>
+  <data name="SourcesApply" xml:space="preserve"><value>Update search</value></data>
+  <data name="SourcesUndo" xml:space="preserve"><value>Undo the last removal</value></data>
+  <data name="SourcesUndoHelp" xml:space="preserve"><value>The last removal in this session can be undone as long as the configuration does not change. A new update may be needed to restore the results.</value></data>
+  <data name="SourcesRetry" xml:space="preserve"><value>Try again</value></data>
+  <data name="SourcesReconnect" xml:space="preserve"><value>Reconnect Confluence</value></data>
+  <data name="SourcesError" xml:space="preserve"><value>This action failed. Your source remains accessible below.</value></data>
+  <data name="SourcesLoadTree" xml:space="preserve"><value>Load the pages in this space</value></data>
+  <data name="SourcesTreeLoading" xml:space="preserve"><value>Reading the pages and their page tree...</value></data>
+  <data name="SourcesTreeError" xml:space="preserve"><value>The pages could not be read. Check the connection or reconnect Confluence, then try again. Your choices are kept.</value></data>
+  <data name="SourcesTreeSearch" xml:space="preserve"><value>Search for a page in this space</value></data>
+  <data name="SourcesAddedPages" xml:space="preserve"><value>Documents added to the scope</value></data>
+  <data name="SourcesRemovedPages" xml:space="preserve"><value>Documents removed from the scope</value></data>
+  <data name="SourcesImpactUnknown" xml:space="preserve"><value>The child pages could not be measured. The list below shows only the known pages; the total number of documents affected remains unknown.</value></data>
+  <data name="SourcesImpactMeasured" xml:space="preserve"><value>The lists include child pages and account for overlapping subtrees. They reflect the current reading of Confluence.</value></data>
+  <data name="SourcesNoChange" xml:space="preserve"><value>No documents in this list.</value></data>
+  <data name="SourcesCovered" xml:space="preserve"><value>Included with a parent page</value></data>
+  <data name="SourcesReview" xml:space="preserve"><value>Review changes</value></data>
+  <data name="SourcesConfirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="SourcesSyncFailure" xml:space="preserve"><value>The update is not confirmed. The changes are saved; try again or check Local database.</value></data>
+  <data name="SourcesViewDetails" xml:space="preserve"><value>View the detailed result</value></data>
+  <data name="SourcesSaved" xml:space="preserve"><value>Changes saved. Search will be updated at the next synchronization.</value></data>
+  <data name="SourcesEmpty" xml:space="preserve"><value>No sources tracked. Select Add a source to get started.</value></data>
+  <data name="SourcesApplyHelp" xml:space="preserve"><value>The update collects all sources, then prepares their documents for search. Availability is verified for this shared generation.</value></data>
+  <data name="SourcesAddedRoots" xml:space="preserve"><value>Pages added to direct tracking</value></data>
+  <data name="SourcesRemovedRoots" xml:space="preserve"><value>Pages removed from direct tracking</value></data>
+  <data name="SettingsLanguageLabel" xml:space="preserve"><value>Interface language</value></data>
+  <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choose the language of Cortex Companion. The change applies the next time the application starts.</value></data>
+  <data name="SettingsLanguageSystem" xml:space="preserve"><value>Windows language</value></data>
 </root>

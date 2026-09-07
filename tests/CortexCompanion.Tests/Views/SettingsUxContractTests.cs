@@ -196,12 +196,14 @@ public sealed partial class SettingsUxContractTests
     [TestMethod]
     public void FrenchUserFacingResourcesDoNotRegressToReviewedAsciiSpellings()
     {
+        // The French strings live in the satellite; UiStrings.resx is the English neutral
+        // set, where an unaccented "Generation" is the correct spelling, not a regression.
         XDocument document = XDocument.Load(Path.Combine(
             FindRepositoryRoot(),
             "src",
             "CortexCompanion",
             "Localization",
-            "UiStrings.resx"));
+            "UiStrings.fr.resx"));
         Dictionary<string, string> values = document
             .Descendants("data")
             .ToDictionary(

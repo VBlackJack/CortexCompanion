@@ -23,6 +23,19 @@ Le Cortex apparié 2026.0907.00 mesure un périmètre Confluence par comptages i
 ajouter une source dans un grand espace répond en une seconde environ au lieu de
 dépasser le délai sans rien afficher.
 
+## Langue de l'interface
+
+Companion parle français et anglais. Il suit la langue de Windows par défaut, et les
+Réglages proposent un choix explicite qui la remplace. Chaque langue est nommée dans sa
+propre langue.
+
+Le changement s'applique au prochain démarrage, et le réglage le dit. Plusieurs valeurs
+localisées sont des formats analysés une seule fois à la première lecture : les basculer
+en place laisserait une partie de l'interface dans la langue précédente.
+
+L'anglais est le jeu de ressources neutre, donc une machine dont la langue n'est pas
+fournie par Companion lit l'anglais plutôt que des clés de ressources brutes.
+
 ## Gérer les sources Confluence (2026.0906.02)
 
 **Mes sources** apparaît en premier. Recherchez un espace ou un titre de page,

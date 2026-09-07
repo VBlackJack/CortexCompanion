@@ -23,6 +23,19 @@ Paired Cortex 2026.0907.00 measures a Confluence scope with indexed counts, so a
 a source in a large space answers in about a second instead of exceeding the
 timeout with nothing on screen.
 
+## Interface language
+
+Companion speaks English and French. It follows the Windows language by default, and
+Settings offers an explicit choice that overrides it. Each language is listed under its
+own name.
+
+A change applies the next time the application starts, and the setting says so. Several
+localized values are formats parsed once when they are first read, so switching them in
+place would leave part of the interface in the previous language.
+
+English is the neutral resource set, so a Windows language Companion does not ship reads
+English rather than showing raw resource keys.
+
 ## Manage Confluence sources (2026.0906.02)
 
 **Mes sources** appears first. Search by space or page title, open the original

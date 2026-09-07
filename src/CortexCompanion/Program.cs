@@ -36,6 +36,11 @@ internal static class Program
                 .GetResult();
         }
 
+        // Before the first localized string is read: several UiStrings members are static
+        // formats parsed once when the type is first touched, so a later switch would leave
+        // half the interface in the previous language.
+        UiCultureBootstrap.Apply(new AppPaths().SettingsPath);
+
         App application = new();
         application.InitializeComponent();
         return application.Run();

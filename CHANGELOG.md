@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+### Added
+
+- Ship the interface in English as well as French. UiStrings.resx now holds English and is
+  the neutral resource, the French set moves to UiStrings.fr.resx as a satellite, and the
+  project declares NeutralResourcesLanguage so a Windows language Companion does not ship
+  reads English rather than failing to resolve a string. Until now a single French resource
+  set was the neutral one, so every machine read French whatever its language.
+- Add an interface language setting, kept in settings.json and offered in Settings. It
+  follows the Windows language by default and each language is named in its own language.
+  The choice applies at the next start: several localized members are static formats parsed
+  once when their type is first touched, so switching in place would leave part of the
+  interface in the previous language. UiCultureBootstrap therefore reads the preference
+  straight from the settings file at the top of Main, before anything reaches those formats,
+  and treats a missing, locked, truncated or hand-edited file as no preference at all.
+- Guard the two resource sets against drift: they must answer for the same keys with the
+  same placeholders, and the typography guard now scans every UiStrings resource file rather
+  than one named path.
+
 ## [2026.0907.00] - 2026-09-07
 
 - Restore the contrast of the scope selection window. Its three options declared

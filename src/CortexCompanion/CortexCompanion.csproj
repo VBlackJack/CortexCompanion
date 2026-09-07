@@ -12,6 +12,9 @@
     <StartupObject>CortexCompanion.Program</StartupObject>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- UiStrings.resx holds English and UiStrings.fr.resx is its satellite, so a Windows
+         language Companion does not ship reads English instead of failing to resolve. -->
+    <NeutralResourcesLanguage>en</NeutralResourcesLanguage>
   </PropertyGroup>
 
   <ItemGroup>

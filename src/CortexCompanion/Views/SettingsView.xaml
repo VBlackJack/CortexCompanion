@@ -82,6 +82,20 @@
                               HorizontalAlignment="Left"
                               AutomationProperties.Name="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
                               Margin="{StaticResource MarginSectionBottom}" />
+                    <TextBlock x:Name="LanguageLabel"
+                               Text="{x:Static localization:UiStrings.SettingsLanguageLabel}"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsLanguageDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <ComboBox ItemsSource="{Binding UiLanguageOptions}"
+                              SelectedItem="{Binding SelectedUiLanguage, Mode=TwoWay}"
+                              DisplayMemberPath="Label"
+                              Width="{StaticResource SettingsInputWidth}"
+                              HorizontalAlignment="Left"
+                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsLanguageLabel}"
+                              Margin="{StaticResource MarginSectionBottom}" />
                     <Button Content="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
                             AutomationProperties.Name="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
                             ToolTip="{x:Static localization:UiStrings.ShortcutSaveHint}"

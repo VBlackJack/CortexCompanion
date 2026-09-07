@@ -9,7 +9,10 @@ namespace CortexCompanion.Models;
 /// <summary>
 /// Represents the application-owned settings schema.
 /// </summary>
-public sealed record AppSettings(string? CliPath, int? CliHandshakeTimeoutSeconds = null)
+public sealed record AppSettings(
+    string? CliPath,
+    int? CliHandshakeTimeoutSeconds = null,
+    string? UiLanguage = null)
 {
     /// <summary>
     /// Gets the validated timeout shared by every bounded Cortex CLI operation.
@@ -22,6 +25,10 @@ public sealed record AppSettings(string? CliPath, int? CliHandshakeTimeoutSecond
     /// <summary>Gets the validated shared Cortex CLI timeout as a duration.</summary>
     [JsonIgnore]
     public TimeSpan EffectiveCliTimeout => TimeSpan.FromSeconds(EffectiveCliTimeoutSeconds);
+
+    /// <summary>Gets the interface language, or null when Windows decides.</summary>
+    [JsonIgnore]
+    public string? EffectiveUiLanguage => AppConstants.NormalizeUiLanguage(UiLanguage);
 
     /// <summary>Gets an empty settings instance for a first launch or invalid file.</summary>
     public static AppSettings Empty { get; } = new(

@@ -97,7 +97,7 @@ public sealed class SettingsViewModelTests
     }
     private static readonly int[] ExpectedCliTimeoutOptions = [15, 30, 60, 120];
     private static readonly string[] ExpectedPersistedSettingsProperties =
-        ["cliPath", "cliHandshakeTimeoutSeconds"];
+        ["cliPath", "cliHandshakeTimeoutSeconds", "uiLanguage"];
 
     [TestMethod]
     public async Task SaveCliDoesNotPersistOrReportSuccessWhenReplacementCompositionFails()

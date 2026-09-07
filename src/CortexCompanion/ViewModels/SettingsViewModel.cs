@@ -33,6 +33,8 @@ public sealed class SettingsViewModel : ViewModelBase
     private CortexConfigSnapshot? _configSnapshot;
     private string _cliPath = string.Empty;
     private int _cliTimeoutSeconds = AppConstants.DefaultCliTimeoutSeconds;
+    private readonly IReadOnlyList<UiLanguageOption> _uiLanguageOptions = UiLanguageOption.Build();
+    private UiLanguageOption _selectedUiLanguage = UiLanguageOption.Build()[0];
     private string _knowledgeBasePath = string.Empty;
     private string _knowledgeBaseBaseline = string.Empty;
     private string _cliValidationMessage = UiStrings.SettingsCliNotConfigured;
@@ -102,6 +104,20 @@ public sealed class SettingsViewModel : ViewModelBase
         set => SetProperty(
             ref _cliTimeoutSeconds,
             AppConstants.NormalizeCliTimeoutSeconds(value));
+    }
+
+    /// <summary>Gets the interface languages Companion ships.</summary>
+    public IReadOnlyList<UiLanguageOption> UiLanguageOptions => _uiLanguageOptions;
+
+    /// <summary>Gets or sets the interface language, or the Windows default.</summary>
+    /// <remarks>
+    /// Saving records the choice; the interface itself changes at the next start, because
+    /// several localized formats are parsed once when their type is first touched.
+    /// </remarks>
+    public UiLanguageOption SelectedUiLanguage
+    {
+        get => _selectedUiLanguage;
+        set => SetProperty(ref _selectedUiLanguage, value ?? _uiLanguageOptions[0]);
     }
 
     /// <summary>Gets or sets the knowledge-base destination projected by Cortex.</summary>
@@ -254,6 +270,9 @@ public sealed class SettingsViewModel : ViewModelBase
         _activeSettings = settingsResult.Settings;
         CliPath = settingsResult.Settings.CliPath ?? string.Empty;
         CliTimeoutSeconds = settingsResult.Settings.EffectiveCliTimeoutSeconds;
+        SelectedUiLanguage = UiLanguageOption.Resolve(
+            _uiLanguageOptions,
+            settingsResult.Settings.EffectiveUiLanguage);
         bool discovered = false;
         if (!CliPathValidator.Validate(CliPath).IsValid)
         {
@@ -396,6 +415,9 @@ public sealed class SettingsViewModel : ViewModelBase
             IsCliReady = !current.Handshake.IsReadOnly;
             CliPath = _activeSettings.CliPath ?? string.Empty;
             CliTimeoutSeconds = _activeSettings.EffectiveCliTimeoutSeconds;
+            SelectedUiLanguage = UiLanguageOption.Resolve(
+                _uiLanguageOptions,
+                _activeSettings.EffectiveUiLanguage);
             CliValidationMessage = CliHandshakePresenter.Format(current.Handshake);
             StatusMessage = IsCliReady
                 ? UiStrings.SettingsCliReplacementFailedPreviousRetained
@@ -414,7 +436,7 @@ public sealed class SettingsViewModel : ViewModelBase
     }
 
     private AppSettings CreateCandidateSettings(string? cliPath) =>
-        new(cliPath, CliTimeoutSeconds);
+        new(cliPath, CliTimeoutSeconds, SelectedUiLanguage.Culture);
 
     private async Task RefreshAsync()
     {

@@ -77,6 +77,27 @@ public static class AppConstants
     /// </remarks>
     public static int MaximumCliTimeoutSeconds { get; } = CliTimeoutOptions.Max();
 
+    /// <summary>Gets the interface languages Companion ships.</summary>
+    /// <remarks>
+    /// English is the neutral resource and French is a satellite, so an unlisted
+    /// Windows language reads English rather than failing to resolve a string.
+    /// </remarks>
+    public static IReadOnlyList<string> SupportedUiLanguages { get; } =
+        new ReadOnlyCollection<string>(["en", "fr"]);
+
+    /// <summary>Returns a supported language name, or null to follow Windows.</summary>
+    public static string? NormalizeUiLanguage(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        string trimmed = value.Trim();
+        return SupportedUiLanguages.FirstOrDefault(
+            supported => string.Equals(supported, trimmed, StringComparison.OrdinalIgnoreCase));
+    }
+
     /// <summary>Gets the maximum retained characters for each process output stream.</summary>
     public const int MaxProcessOutputCharacters = 16_384;
 

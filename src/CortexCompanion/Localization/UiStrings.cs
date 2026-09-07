@@ -186,6 +186,16 @@ public static partial class UiStrings
             exception.Message);
     }
 
+    /// <summary>Gets the interface language setting label.</summary>
+    public static string SettingsLanguageLabel => GetString(nameof(SettingsLanguageLabel));
+
+    /// <summary>Gets the interface language setting explanation.</summary>
+    public static string SettingsLanguageDescription =>
+        GetString(nameof(SettingsLanguageDescription));
+
+    /// <summary>Gets the label of the option that follows the Windows language.</summary>
+    public static string SettingsLanguageSystem => GetString(nameof(SettingsLanguageSystem));
+
     /// <summary>Gets the navigation accessibility label.</summary>
     public static string NavigationLabel => GetString(nameof(NavigationLabel));
 

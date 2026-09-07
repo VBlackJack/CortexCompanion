@@ -4,6 +4,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using CortexCompanion.Constants;
 using CortexCompanion.Localization;
 
@@ -13,6 +14,9 @@ namespace CortexCompanion.Tests.Localization;
 [TestClass]
 public sealed class UiStringsContractTests
 {
+    private static readonly Regex PlaceholderPattern =
+        new(@"\{(\d+)(?::[^}]*)?\}", RegexOptions.CultureInvariant);
+
     private static readonly char[] BannedPunctuation =
     [
         '\u00A0',
@@ -28,24 +32,86 @@ public sealed class UiStringsContractTests
     ];
 
     /// <summary>Ensures UI resources retain plain punctuation while preserving legitimate accents.</summary>
+    /// <remarks>
+    /// Every resource set is scanned, not just the neutral one. Checking a single named file
+    /// would pass while a satellite added later carried the typography the repository refuses.
+    /// </remarks>
     [TestMethod]
     public void UiStringsContainsNoBannedPunctuation()
     {
-        string resourcePath = Path.Combine(
-            FindRepositoryRoot(),
-            "src",
-            "CortexCompanion",
-            "Localization",
-            "UiStrings.resx");
-        string content = File.ReadAllText(resourcePath);
+        string[] resourcePaths = LocalizationResourcePaths();
 
-        foreach (char bannedCharacter in BannedPunctuation)
+        Assert.IsNotEmpty(resourcePaths, "No UiStrings resource file was found to scan.");
+        foreach (string resourcePath in resourcePaths)
         {
-            Assert.IsFalse(
-                content.Contains(bannedCharacter, StringComparison.Ordinal),
-                $"UiStrings.resx contains banned punctuation U+{(int)bannedCharacter:X4}.");
+            string content = File.ReadAllText(resourcePath);
+            foreach (char bannedCharacter in BannedPunctuation)
+            {
+                Assert.IsFalse(
+                    content.Contains(bannedCharacter, StringComparison.Ordinal),
+                    $"{Path.GetFileName(resourcePath)} contains banned punctuation " +
+                    $"U+{(int)bannedCharacter:X4}.");
+            }
         }
     }
+
+    /// <summary>Ensures every resource set answers for the same keys with the same placeholders.</summary>
+    /// <remarks>
+    /// A key present in one set and absent from another degrades to the raw key name on screen
+    /// for the readers of that language only, which no French-speaking author would ever see.
+    /// A placeholder dropped or renumbered is worse: string.Format throws at the moment the
+    /// message is needed, so the failure lands on the error path it was meant to explain.
+    /// </remarks>
+    [TestMethod]
+    public void EveryResourceSetCarriesTheSameKeysAndPlaceholders()
+    {
+        Dictionary<string, Dictionary<string, string>> sets = LocalizationResourcePaths()
+            .ToDictionary(path => Path.GetFileName(path)!, ReadResourceValues, StringComparer.Ordinal);
+
+        Assert.IsGreaterThan(
+            1,
+            sets.Count,
+            "Only one resource set was found, so this guard proves nothing.");
+
+        KeyValuePair<string, Dictionary<string, string>> neutral =
+            sets.Single(set => string.Equals(set.Key, "UiStrings.resx", StringComparison.Ordinal));
+        foreach ((string fileName, Dictionary<string, string> values) in sets)
+        {
+            if (ReferenceEquals(values, neutral.Value))
+            {
+                continue;
+            }
+
+            CollectionAssert.AreEquivalent(
+                neutral.Value.Keys.ToArray(),
+                values.Keys.ToArray(),
+                $"{fileName} does not answer for the same keys as {neutral.Key}.");
+
+            foreach ((string key, string neutralValue) in neutral.Value)
+            {
+                CollectionAssert.AreEquivalent(
+                    Placeholders(neutralValue),
+                    Placeholders(values[key]),
+                    $"{fileName} changes the placeholders of {key}.");
+            }
+        }
+    }
+
+    private static Dictionary<string, string> ReadResourceValues(string path) =>
+        XDocument.Load(path)
+            .Descendants("data")
+            .ToDictionary(
+                element => element.Attribute("name")?.Value ?? string.Empty,
+                element => element.Element("value")?.Value ?? string.Empty,
+                StringComparer.Ordinal);
+
+    private static string[] Placeholders(string value) =>
+        PlaceholderPattern.Matches(value).Select(match => match.Groups[1].Value).Order().ToArray();
+
+    private static string[] LocalizationResourcePaths() =>
+        Directory.GetFiles(
+            Path.Combine(FindRepositoryRoot(), "src", "CortexCompanion", "Localization"),
+            "UiStrings*.resx");
 
     /// <summary>Ensures the timeout advice names the ceiling instead of promising more.</summary>
     /// <remarks>
