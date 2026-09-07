@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2026.0907.01] - 2026-09-07
+
 ### Added
 
 - Ship the interface in English as well as French. UiStrings.resx now holds English and is
