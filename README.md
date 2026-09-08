@@ -6,7 +6,7 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
-## Merge a page the source already collects (unreleased)
+## Merge a page the source already collects (2026.0908.00)
 
 Pasting a page that a configured source already collects used to end in a refusal, and
 only after the scope had been chosen. The scope window now says up front that the source

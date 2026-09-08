@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2026.0908.00] - 2026-09-08
+
 ### Added
 
 - Offer to merge a page the source already collects instead of refusing it. The scope
@@ -12,6 +14,11 @@
   be read, and a candidate that would change nothing cannot be chosen. The answer comes
   from the paired Cortex preview document, which now reports the coverage, so a page
   under a tracked subtree is recognised where the previous check saw only listed pages.
+
+### Changed
+
+- Refuse a Cortex older than 2026.0908.00, the one this build ships with: the preview contract
+  changed, and the floor follows the shipped version by rule.
 
 ### Removed
 

@@ -6,7 +6,7 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir à modifier un fichier TOML ni à ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
-## Fusionner une page que la source collecte déjà (non publié)
+## Fusionner une page que la source collecte déjà (2026.0908.00)
 
 Coller une page qu'une source configurée collecte déjà finissait par un refus, et
 seulement après le choix du périmètre. La fenêtre de périmètre dit désormais d'emblée que
