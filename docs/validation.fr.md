@@ -7,9 +7,9 @@
 La recherche et la fraîcheur sont disponibles depuis la release 2026.0906.00.
 L'accueil, le guide de démarrage, l'historique, l'aperçu avec copie et les
 vérifications de mises à jour sont disponibles depuis la version 2026.0906.01.
-**Recherche** exige Cortex 2026.0906.00 ou ultérieur. Avec une CLI compatible
-plus ancienne, les autres fonctions restent disponibles ; la recherche est
-désactivée avec une explication invitant à mettre à jour.
+**Recherche** suit la poignée de main de démarrage : toute CLI acceptée par
+Companion porte le contrat de recherche, il n'existe donc plus de plancher de
+version propre à la recherche.
 
 ## Rechercher un document
 

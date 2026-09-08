@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Removed
+
+- Drop the search-only version floor and the upgrade message it produced. The accepted
+  floor is the CLI this build ships with, which already carries the search contract, so a
+  second boundary below it could no longer refuse anything: a handshake that passed had
+  cleared a later version. Search now follows the startup handshake alone, and the
+  documentation says so instead of naming a version.
+
 ## [2026.0907.03] - 2026-09-07
 
 ### Added

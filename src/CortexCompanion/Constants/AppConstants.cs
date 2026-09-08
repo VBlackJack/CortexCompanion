@@ -34,14 +34,6 @@ public static class AppConstants
     /// </remarks>
     public const string MinSupportedCliVersion = "2026.0907.03";
 
-    /// <summary>First distributed CLI version with the desktop JSON search contract.</summary>
-    /// <remarks>
-    /// Now below <see cref="MinSupportedCliVersion"/>, so the search gate that reads it can
-    /// no longer refuse anything: a handshake that passed has already cleared a later
-    /// version. It is kept as the record of when the contract appeared, not as a gate.
-    /// </remarks>
-    public const string MinSearchCliVersion = "2026.0906.00";
-
     /// <summary>Gets the only argument used by the startup handshake.</summary>
     public const string CliVersionArgument = "--version";
 

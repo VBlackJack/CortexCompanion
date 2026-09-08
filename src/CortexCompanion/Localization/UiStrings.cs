@@ -97,7 +97,6 @@ public static partial class UiStrings
     }
     private static readonly CompositeFormat HandshakeIncompatibleFormat =
         CompositeFormat.Parse(GetString("HandshakeIncompatible"));
-    private static readonly CompositeFormat SearchVersionFormat = CompositeFormat.Parse(GetString("SearchVersionRequiredFormat"));
     private static readonly CompositeFormat SearchCriteriaFormat = CompositeFormat.Parse(GetString("SearchExecutedFormat"));
     private static readonly CompositeFormat FatalStartupErrorFormat =
         CompositeFormat.Parse(GetString("FatalStartupErrorFormat"));
@@ -1008,8 +1007,6 @@ public static partial class UiStrings
     private static string GetString(string name) =>
         Resources.Manager.GetString(name, CultureInfo.CurrentUICulture) ?? name;
 
-    /// <summary>Gets the search capability upgrade guidance.</summary>
-    public static string FormatSearchVersionRequired(string version) => string.Format(CultureInfo.CurrentCulture, SearchVersionFormat, version);
     /// <summary>Gets the prompt to submit edited criteria.</summary>
     public static string SearchCriteriaChanged => GetString(nameof(SearchCriteriaChanged));
     /// <summary>Gets the immutable executed-criteria label.</summary>

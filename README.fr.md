@@ -354,8 +354,8 @@ Sous licence Apache 2.0.
 
 L'écran **Recherche** affiche les extraits indexés et propose des filtres et l'ouverture de la source. **Base locale** distingue la génération publiée de la dernière indexation réussie observée. Voir [les limites et les commandes de validation](docs/validation.fr.md).
 
-La recherche nécessite Cortex 2026.0906.00 ou une version plus récente ; les versions
-antérieures compatibles conservent leurs autres fonctions. **Interrompre** ou Échap
+La recherche est disponible avec toute version de Cortex acceptée par Companion, le
+plancher accepté étant la CLI livrée avec lui. **Interrompre** ou Échap
 annule la recherche. Modifier ses critères efface les résultats obsolètes ; les
 derniers critères exécutés restent affichés. Une source impossible à ouvrir présente
 une explication. La fraîcheur est directement visible dans Recherche et Base locale,

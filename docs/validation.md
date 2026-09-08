@@ -12,9 +12,9 @@ The **Recherche** destination queries the Cortex JSON search contract. It offers
 an exact section filter, a source-kind filter, bounded excerpts and explicit
 source opening. Empty results, degraded ranking, timeout and transport/contract
 failure are separate states. Reconnecting settings cancels the obsolete runtime's
-search; closing the window also cancels a read-only search. A compatible Cortex
-version 2026.0906.00 or newer is required; older compatible CLIs keep their
-other features while search is disabled with an upgrade explanation.
+search; closing the window also cancels a read-only search. Every Cortex this
+build accepts carries the search contract, so search follows the startup
+handshake and has no version floor of its own.
 
 Advanced filters start collapsed. Select a result to inspect its preview, then
 use **Copier l'extrait et sa référence** to copy the excerpt, title and source.

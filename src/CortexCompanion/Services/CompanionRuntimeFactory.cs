@@ -4,7 +4,6 @@
 using System.Security.Principal;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
-using CortexCompanion.Localization;
 using CortexCompanion.Logging;
 using CortexCompanion.Models;
 using CortexCompanion.ViewModels;
@@ -164,13 +163,17 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
         {
             Search = new SearchViewModel(SupportsSearch(handshake) && cliValidation.AbsolutePath is not null
                 ? new SearchClient(_processRunner, cliValidation.AbsolutePath, settings.EffectiveCliTimeout)
-                : null, !handshake.IsReadOnly ? UiStrings.FormatSearchVersionRequired(AppConstants.MinSearchCliVersion) : null),
+                : null),
         };
     }
 
-    internal static bool SupportsSearch(CliHandshakeResult handshake) => !handshake.IsReadOnly &&
-        handshake.DetectedVersion is CliVersion detected &&
-        new CliVersionPolicy().TryParse(AppConstants.MinSearchCliVersion, out CliVersion minimum) && detected >= minimum;
+    /// <summary>Tells whether the handshake enables search.</summary>
+    /// <remarks>
+    /// Search has no floor of its own. The accepted floor is the CLI this build ships with,
+    /// which already carries the search contract, so a second boundary below it could never
+    /// refuse anything and only suggested a check that never happened.
+    /// </remarks>
+    internal static bool SupportsSearch(CliHandshakeResult handshake) => !handshake.IsReadOnly;
 
     private ScheduledTaskContract? BuildScheduledTaskContract(
         CliPathValidationResult cliValidation,

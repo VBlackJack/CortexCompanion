@@ -330,8 +330,8 @@ Licensed under the Apache License 2.0.
 
 The **Recherche** screen provides indexed excerpts, filters and source opening. **Base locale** distinguishes the published generation from the latest observed successful index run. See [validation commands and coverage limits](docs/validation.md).
 
-Desktop search requires Cortex 2026.0906.00 or newer; older supported versions retain
-their other features. Use **Interrompre** or Escape to cancel a search. Editing its
+Desktop search is available with every Cortex this build accepts, since the accepted
+floor is the CLI it ships with. Use **Interrompre** or Escape to cancel a search. Editing its
 criteria clears obsolete results, and the last submitted criteria remain visible.
 Unavailable source opening includes an explanation. Freshness is shown directly in
 Recherche and Base locale, with navigation to synchronization and settings.

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CortexCompanion.Commands;
+using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
@@ -15,15 +16,21 @@ namespace CortexCompanion.Tests.Services;
 public sealed class SearchClientTests
 {
     [TestMethod]
-    [DataRow(4, 2, false)]
-    [DataRow(6, 0, true)]
-    [DataRow(7, 0, true)]
-    public void SearchCapabilityHasItsOwnVersionBoundary(int day, int revision, bool expected)
+    public void SearchFollowsTheHandshakeAndHasNoFloorOfItsOwn()
     {
-        CliHandshakeResult handshake = new(CliHandshakeStatus.Compatible, new CliVersion(2026, 9, day, revision));
-        Assert.AreEqual(expected, CompanionRuntimeFactory.SupportsSearch(handshake));
-        Assert.IsFalse(handshake.IsReadOnly);
-        Assert.IsFalse(CompanionRuntimeFactory.SupportsSearch(handshake with { Status = CliHandshakeStatus.LaunchFailed }));
+        // The accepted floor is the CLI this build ships with, and it carries the search
+        // contract. A search floor below it could never refuse anything, so the handshake
+        // alone decides: the floor itself enables search, every refusal disables it.
+        Assert.IsTrue(new CliVersionPolicy().TryParse(AppConstants.MinSupportedCliVersion, out CliVersion floor));
+        CliHandshakeResult accepted = new(CliHandshakeStatus.Compatible, floor);
+        Assert.IsTrue(CompanionRuntimeFactory.SupportsSearch(accepted));
+        foreach (CliHandshakeStatus status in Enum.GetValues<CliHandshakeStatus>())
+        {
+            if (status != CliHandshakeStatus.Compatible)
+            {
+                Assert.IsFalse(CompanionRuntimeFactory.SupportsSearch(accepted with { Status = status }), status.ToString());
+            }
+        }
     }
 
     [TestMethod]

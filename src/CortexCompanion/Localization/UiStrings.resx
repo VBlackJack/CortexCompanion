@@ -417,7 +417,6 @@
   <data name="FreshnessPending" xml:space="preserve"><value>The published generation is waiting for a confirmed successful indexing.</value></data>
   <data name="FreshnessUnknown" xml:space="preserve"><value>The match between publication and indexing is not confirmed.</value></data>
   <data name="SearchUnavailable" xml:space="preserve"><value>Connect a compatible version of Cortex in Settings to enable search.</value></data>
-  <data name="SearchVersionRequiredFormat" xml:space="preserve"><value>Search requires Cortex {0} or a more recent version. Install that version, then select its executable in Settings. The other functions remain available.</value></data>
   <data name="SearchCriteriaChanged" xml:space="preserve"><value>The criteria have changed. Run the search again to show the matching results.</value></data>
   <data name="SearchExecutedFormat" xml:space="preserve"><value>Last search: {0} | Section: {1} | Source: {2}</value></data>
   <data name="SearchSourceUnavailable" xml:space="preserve"><value>This result provides no link to open. Its reference appears under the title.</value></data>

@@ -31,7 +31,7 @@ public sealed class SearchViewModel : ViewModelBase
     private CancellationTokenSource? _cancellation;
 
     /// <summary>Creates a disabled screen until the compatible runtime is available.</summary>
-    public SearchViewModel(SearchClient? client, string? unavailableReason = null, Action<string>? copyText = null)
+    public SearchViewModel(SearchClient? client, Action<string>? copyText = null)
     {
         _client = client;
         _copyText = copyText ?? System.Windows.Clipboard.SetText;
@@ -46,7 +46,7 @@ public sealed class SearchViewModel : ViewModelBase
             return Task.CompletedTask;
         }, () => Selected is not null);
         _copy.ExecutionFailed += (_, _) => Status = UiStrings.SearchCopyFailed;
-        _status = client is null ? unavailableReason ?? UiStrings.SearchUnavailable : UiStrings.SearchReady;
+        _status = client is null ? UiStrings.SearchUnavailable : UiStrings.SearchReady;
         _search = new AsyncRelayCommand(SearchAsync,
             () => _client is not null && !string.IsNullOrWhiteSpace(Query) && Query.Length <= SearchClient.QueryLimit);
         _search.ExecutionFailed += (_, _) => Status = UiStrings.SearchFailed;
