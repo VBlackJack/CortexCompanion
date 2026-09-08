@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- List a retained run whose sync report lacks a counter instead of hiding it behind an
+  unreadable entry and an ERROR in the journal. A report written by an older Cortex may
+  omit one of the five counters; the entry now keeps its status, errors and recommended
+  action and says that detailed counters are not available.
+
 ## [2026.0908.00] - 2026-09-08
 
 ### Added

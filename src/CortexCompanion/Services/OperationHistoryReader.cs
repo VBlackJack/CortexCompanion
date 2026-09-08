@@ -112,10 +112,7 @@ public sealed class OperationHistoryReader(AppPaths paths)
                 status = reportedStatus == "partial" ? UiStrings.HistoryPartial :
                     reportedStatus == "locked" ? UiStrings.HistoryLocked :
                     reportedStatus == "succeeded" && success ? UiStrings.HistorySucceeded : UiStrings.HistoryFailed;
-                JsonElement counts = report.GetProperty("counters");
-                counters = UiStrings.FormatHistoryCounters(
-                    Counter(counts, "published_files"), Counter(counts, "removed_files"),
-                    Counter(counts, "skipped_files"), Counter(counts, "empty_files"), Counter(counts, "errors"));
+                counters = DescribeCounters(report, id);
                 details = string.Join(Environment.NewLine, report.GetProperty("errors").EnumerateArray().Select(error =>
                     string.Join(" · ", new[] { error.GetProperty("path").GetString(), error.GetProperty("code").GetString(),
                         error.GetProperty("phase").GetString() }.Where(value => !string.IsNullOrWhiteSpace(value)))));
@@ -131,9 +128,36 @@ public sealed class OperationHistoryReader(AppPaths paths)
         return new(id, started, kind, status, counters, action, details, destination);
     }
 
-    private static int Counter(JsonElement counts, string name)
+    /// <summary>
+    /// Formats the five counters, or says they are unavailable when the report lacks one.
+    /// A report written by an older Cortex may omit a counter; that must not hide the run
+    /// behind an unreadable entry, because its status and errors are still trustworthy.
+    /// </summary>
+    private static string DescribeCounters(JsonElement report, string id)
     {
-        int value = counts.GetProperty(name).GetInt32();
+        if (!report.TryGetProperty("counters", out JsonElement counts) || counts.ValueKind != JsonValueKind.Object)
+        {
+            FileLogger.Warn($"Run {id} carries no counters block; listed without counters");
+            return UiStrings.HistoryNoCounters;
+        }
+        int? published = Counter(counts, "published_files");
+        int? removed = Counter(counts, "removed_files");
+        int? skipped = Counter(counts, "skipped_files");
+        int? empty = Counter(counts, "empty_files");
+        int? errors = Counter(counts, "errors");
+        if (published is null || removed is null || skipped is null || empty is null || errors is null)
+        {
+            FileLogger.Warn($"Run {id} carries an incomplete counters block; listed without counters");
+            return UiStrings.HistoryNoCounters;
+        }
+        return UiStrings.FormatHistoryCounters(published.Value, removed.Value, skipped.Value, empty.Value, errors.Value);
+    }
+
+    /// <summary>Reads one counter, null when the report does not carry it.</summary>
+    private static int? Counter(JsonElement counts, string name)
+    {
+        if (!counts.TryGetProperty(name, out JsonElement element)) { return null; }
+        int value = element.GetInt32();
         return value >= 0 ? value : throw new InvalidDataException("A history counter is negative.");
     }
 

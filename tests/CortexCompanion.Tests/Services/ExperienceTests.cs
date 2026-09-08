@@ -45,6 +45,26 @@ public sealed class ExperienceTests
     }
 
     [TestMethod]
+    public async Task HistoryListsARunWhoseReportLacksACounter()
+    {
+        using TemporaryDirectory temporary = new();
+        AppPaths paths = new(temporary.Path);
+        string directory = await WriteRunAsync(paths, "run-old-counters", new SyncWorkerResult
+        {
+            ExitCode = 1,
+            CompletedAt = DateTimeOffset.UtcNow,
+        });
+        string olderReport = PartialReport.Replace("\"empty_files\":2,", string.Empty, StringComparison.Ordinal);
+        await File.WriteAllTextAsync(Path.Combine(directory, "stdout.log"), olderReport);
+        IReadOnlyList<OperationHistoryEntry> entries = await new OperationHistoryReader(paths).ReadAsync(CancellationToken.None);
+        Assert.HasCount(1, entries);
+        Assert.AreEqual(UiStrings.HistoryPartial, entries[0].Status);
+        Assert.AreEqual(UiStrings.HistoryNoCounters, entries[0].Counters);
+        Assert.Contains("notes/locked.md", entries[0].Details, StringComparison.Ordinal);
+        Assert.AreEqual(UiStrings.HistoryRetry, entries[0].Action);
+    }
+
+    [TestMethod]
     public async Task HistoryNeverTurnsMissingOrCorruptResultsIntoSuccess()
     {
         using TemporaryDirectory temporary = new();
