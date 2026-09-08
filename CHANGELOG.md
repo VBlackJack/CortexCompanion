@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [2026.0908.01] - 2026-09-08
+
+### Changed
+
+- Refuse a Cortex older than 2026.0908.01, the one this build ships with. The pair moves
+  together: that Cortex removes the stale generation a change of index mode left behind,
+  and a Companion that drove an older one would run a synchronisation that keeps it.
+
 ### Fixed
 
 - List a retained run whose sync report lacks a counter instead of hiding it behind an
