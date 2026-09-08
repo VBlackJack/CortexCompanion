@@ -507,6 +507,7 @@
   <data name="FlowTokenInstructions" xml:space="preserve"><value>Dans Confluence, ouvrez votre profil puis Jetons d'accès personnels. Créez un jeton et copiez-le ici. Si ce menu est absent, demandez à votre administrateur. Le jeton reste dans le Gestionnaire d'identification Windows et n'est pas écrit dans la configuration.</value></data>
   <data name="FlowClassificationHelp" xml:space="preserve"><value>Choisissez la nature des documents. Cette classification sera conservée avec la source ; les sources déjà configurées gardent leur classification.</value></data>
   <data name="FlowAdded" xml:space="preserve"><value>Source ajoutée. Les documents ne sont pas encore disponibles dans la recherche. Lancez la collecte, puis l'indexation.</value></data>
+  <data name="FlowMerged" xml:space="preserve"><value>Source mise à jour. Les documents ne sont pas encore disponibles dans la recherche. Lancez la collecte, puis l'indexation.</value></data>
   <data name="FlowCancelled" xml:space="preserve"><value>Ajout annulé. Votre lien est conservé et aucune source n'a été ajoutée.</value></data>
   <data name="FlowUnexpectedFailure" xml:space="preserve"><value>L'ajout n'a pas abouti. Votre lien est conservé ; réessayez ou consultez les diagnostics.</value></data>
   <data name="FlowExistingScope" xml:space="preserve"><value>Cet espace contient déjà des pages avec un autre périmètre. Choisissez le même périmètre pour les conserver, ou gérez son mode dans les sources configurées.</value></data>
@@ -588,5 +589,15 @@
   <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choisissez la langue de Cortex Companion. Le changement s'applique au prochain démarrage de l'application.</value></data>
   <data name="SettingsLanguageSystem" xml:space="preserve"><value>Langue de Windows</value></data>
   <data name="SourcesTreeTimedOutProgress" xml:space="preserve"><value>La lecture de l'arborescence s'est arrêtée après {0} pages sur environ {1}. Un très grand espace peut demander plusieurs minutes ; réessayez.</value></data>
-  <data name="ScopeAlreadyTracked" xml:space="preserve"><value>Cette page est déjà suivie. Choisir l'espace entier la conserve ; tout autre choix est refusé, puisqu'elle est déjà couverte.</value></data>
+  <data name="ScopeAlreadyCovered" xml:space="preserve"><value>Cette source collecte déjà cette page. Après votre choix, Companion proposera d'élargir la source ou de remplacer sa sélection, en montrant les documents que chaque option ajoute ou retire.</value></data>
+  <data name="SourcesMergeTitle" xml:space="preserve"><value>Fusionner avec la source existante</value></data>
+  <data name="SourcesMergeSummaryFormat" xml:space="preserve"><value>{0} est déjà collectée par la source {1}.</value></data>
+  <data name="SourcesCoveredByWholeSpace" xml:space="preserve"><value>La source collecte l'espace entier : l'élargir ne change rien.</value></data>
+  <data name="SourcesCoveredByPage" xml:space="preserve"><value>La page fait partie des pages que la source suit directement.</value></data>
+  <data name="SourcesCoveredBySubtreeFormat" xml:space="preserve"><value>La page est une sous-page de {0}, que la source suit avec ses sous-pages.</value></data>
+  <data name="SourcesMergeWiden" xml:space="preserve"><value>Élargir la source</value></data>
+  <data name="SourcesMergeReplace" xml:space="preserve"><value>Remplacer la sélection</value></data>
+  <data name="SourcesMergeWidenHelp" xml:space="preserve"><value>Conserve tout ce que la source collecte et y ajoute votre choix. Une source qui suit des pages seules se met aussi à suivre leurs sous-pages si vous avez choisi un sous-arbre.</value></data>
+  <data name="SourcesMergeReplaceHelp" xml:space="preserve"><value>Ne conserve que votre choix. Les documents que la source collectait en dehors quittent le périmètre à la prochaine collecte.</value></data>
+  <data name="SourcesMergeNoChange" xml:space="preserve"><value>Cette option laisserait la source telle quelle.</value></data>
 </root>

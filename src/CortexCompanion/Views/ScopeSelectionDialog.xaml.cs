@@ -15,16 +15,16 @@ public partial class ScopeSelectionDialog : Window
 
     /// <summary>Initializes a mandatory explicit scope choice with the measured recommendation.</summary>
     public ScopeSelectionDialog(ScopePreviewContract preview)
-        : this(preview, alreadyTracked: false)
+        : this(preview, alreadyCovered: false)
     {
     }
 
-    /// <summary>Initializes the choice, saying whether the page is already tracked.</summary>
-    public ScopeSelectionDialog(ScopePreviewContract preview, bool alreadyTracked)
+    /// <summary>Initializes the choice, saying whether the source already collects the page.</summary>
+    public ScopeSelectionDialog(ScopePreviewContract preview, bool alreadyCovered)
     {
         _preview = preview ?? throw new ArgumentNullException(nameof(preview));
         InitializeComponent();
-        AlreadyTracked.Visibility = alreadyTracked ? Visibility.Visible : Visibility.Collapsed;
+        AlreadyCovered.Visibility = alreadyCovered ? Visibility.Visible : Visibility.Collapsed;
         RootDetails.Text = UiStrings.FormatFlowScopeIdentity(preview.Title, preview.SpaceKey);
         PageOnlyDetails.Text = UiStrings.FormatScopeChoice(
             preview.PageOnly.PageCount,

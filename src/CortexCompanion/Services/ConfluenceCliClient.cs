@@ -146,16 +146,26 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
             pages.LastSync.Status is null or "ok" or "degraded" or "error",
         ResolvedPageContract resolved => resolved.ContractVersion == 1 &&
             resolved.PageId is not null && resolved.Title is not null && resolved.SpaceKey is not null,
-        ScopePreviewContract preview => preview.ContractVersion == 1 &&
+        ScopePreviewContract preview => preview.ContractVersion == 2 &&
             preview.PageId is not null && preview.Title is not null && preview.SpaceKey is not null &&
             preview.StorageRoot is not null && preview.RetentionGenerations >= 1 &&
             preview.RecommendedSelection is "pages" or "subtree" &&
+            HasValidCoverage(preview) &&
             HasValidChoice(preview.PageOnly) && HasValidChoice(preview.Subtree) &&
             HasValidChoice(preview.WholeSpace),
         _ => false,
     };
 
     private static bool IsNumeric(string? value) => !string.IsNullOrEmpty(value) && value.All(char.IsAsciiDigit);
+
+    // A covering root names a listed page, so it comes with the two answers that go through
+    // one and with neither of the others.
+    private static bool HasValidCoverage(ScopePreviewContract preview) => preview.Coverage switch
+    {
+        "page" or "subtree" => IsNumeric(preview.CoveringRoot),
+        "none" or "whole_space" => preview.CoveringRoot is null,
+        _ => false,
+    };
 
     private static bool HasValidChoice(ScopeChoiceContract choice) =>
         choice is not null && choice.PageCount >= 0 && choice.EstimatedBytes >= 0;

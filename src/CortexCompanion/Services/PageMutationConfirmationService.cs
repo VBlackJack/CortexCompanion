@@ -76,18 +76,25 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
 
     /// <inheritdoc />
     public ConfluenceSelection? ChooseScope(ScopePreviewContract preview) =>
-        ChooseScope(preview, alreadyTracked: false);
+        ChooseScope(preview, alreadyCovered: false);
 
     /// <inheritdoc />
-    public ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyTracked)
+    public ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyCovered)
     {
-        ScopeSelectionDialog dialog = new(preview, alreadyTracked)
+        ScopeSelectionDialog dialog = new(preview, alreadyCovered)
         {
             Owner = Application.Current.MainWindow,
         };
         bool confirmed = ConfirmationDialog.IsConfirmed(dialog.ShowDialog());
         SaveRequestsUpdate = confirmed && dialog.UpdateNow;
         return confirmed ? dialog.SelectedSelection : null;
+    }
+
+    /// <inheritdoc />
+    public SourceMergeChoice? ChooseMerge(SourceMergeReview review)
+    {
+        SourceMergeReviewDialog dialog = new(review) { Owner = Application.Current.MainWindow };
+        return ConfirmationDialog.IsConfirmed(dialog.ShowDialog()) ? dialog.Choice : null;
     }
 
     /// <inheritdoc />

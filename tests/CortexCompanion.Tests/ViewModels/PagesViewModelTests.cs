@@ -350,11 +350,13 @@ public sealed class PagesViewModelTests
                 resolved.ExitCode,
                 new ScopePreviewContract
                 {
-                    ContractVersion = 1,
+                    ContractVersion = 2,
                     PageId = "1001",
                     Title = "Run Book",
                     SpaceKey = "DOC",
                     RecommendedSelection = "subtree",
+                    Coverage = "none",
+                    CoveringRoot = null,
                     PageOnly = new ScopeChoiceContract { PageCount = 1, EstimatedBytes = 393_216 },
                     Subtree = new ScopeChoiceContract { PageCount = 8, EstimatedBytes = 3_145_728 },
                     WholeSpace = new ScopeChoiceContract { PageCount = 10, EstimatedBytes = 3_932_160 },

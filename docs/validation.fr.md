@@ -123,6 +123,11 @@ Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel re
 - Changer la portée et décocher une racine ; vérifier le résumé avant/après.
 - Retirer une racine couverte ailleurs : la confirmation indique la couverture,
   ou son indisponibilité. La configuration temporaire est effacée.
+- Coller une page que la source collecte déjà, une fois listée directement et une
+  fois sous un sous-arbre suivi : la fenêtre de périmètre le dit, et après le choix
+  du périmètre la revue de fusion propose élargir et remplacer avec les documents
+  que chacun ajoute et retire. Annuler n'écrit rien ; une source qui collecte
+  l'espace entier ne propose que remplacer.
 - Retirer la dernière source, collecter puis indexer avec le Cortex apparié.
   Les originaux Confluence restent intacts ; la recherche suit la génération indexée.
 - Les tests de service couvrent CAS, lecture seule, annulation, serveur étranger,

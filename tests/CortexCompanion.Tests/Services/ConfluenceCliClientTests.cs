@@ -152,8 +152,9 @@ public sealed class ConfluenceCliClientTests
         StubProcessRunner runner = new(ProcessRunResult.Completed(
             0,
             """
-            {"contract_version":1,"page_id":"123","title":"Root","space_key":"DOC",
-            "recommended_selection":"subtree","page_only":{"page_count":1,"estimated_bytes":393216},
+            {"contract_version":2,"page_id":"123","title":"Root","space_key":"DOC",
+            "recommended_selection":"subtree","coverage":"subtree","covering_root":"7",
+            "page_only":{"page_count":1,"estimated_bytes":393216},
             "subtree":{"page_count":12,"estimated_bytes":4718592},
             "whole_space":{"page_count":20,"estimated_bytes":7864320},
             "storage_root":"C:\\state","retention_generations":2}
@@ -172,6 +173,8 @@ public sealed class ConfluenceCliClientTests
 
         Assert.IsTrue(result.IsSuccess);
         Assert.AreEqual(12, result.Value!.Subtree.PageCount);
+        Assert.IsTrue(result.Value.IsCovered);
+        Assert.AreEqual("7", result.Value.CoveringRoot);
         CollectionAssert.AreEqual(
             new[]
             {

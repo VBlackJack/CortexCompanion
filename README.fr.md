@@ -6,6 +6,22 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir à modifier un fichier TOML ni à ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
+## Fusionner une page que la source collecte déjà (non publié)
+
+Coller une page qu'une source configurée collecte déjà finissait par un refus, et
+seulement après le choix du périmètre. La fenêtre de périmètre dit désormais d'emblée que
+la source collecte déjà la page, et une fois le périmètre choisi Companion montre les deux
+façons de la fusionner, côte à côte : élargir la source, qui conserve tout ce qu'elle
+collecte et y ajoute votre choix, ou remplacer sa sélection par votre choix seul. Chaque
+colonne liste les documents qu'elle ajoute et retire, mesurés sur l'arborescence courante
+quand elle peut être lue. Une page couverte par un sous-arbre suivi est reconnue aussi, ce
+que la vérification précédente ne voyait pas.
+
+La configuration n'a pas de mode mixte : élargir vers un sous-arbre une source qui suit
+des pages seules fait de chaque page listée une racine, et la revue montre ce que cela
+ajoute avant toute écriture. Le Cortex apparié indique la couverture dans son document de
+prévisualisation.
+
 ## Fenêtre de périmètre lisible et délais honnêtes (2026.0907.00)
 
 La fenêtre de choix du périmètre affichait ses trois options dans la couleur de

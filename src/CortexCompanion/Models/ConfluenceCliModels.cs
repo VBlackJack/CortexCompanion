@@ -105,6 +105,18 @@ public sealed record ScopePreviewContract
     [JsonPropertyName("recommended_selection")]
     public required string RecommendedSelection { get; init; }
 
+    /// <summary>Gets how the configured space already collects this page: none, page, subtree or whole_space.</summary>
+    [JsonPropertyName("coverage")]
+    public required string Coverage { get; init; }
+
+    /// <summary>Gets the listed page through which the source collects this one, or null.</summary>
+    [JsonPropertyName("covering_root")]
+    public required string? CoveringRoot { get; init; }
+
+    /// <summary>Gets whether the configured space already collects this page.</summary>
+    [JsonIgnore]
+    public bool IsCovered => Coverage != "none";
+
     [JsonPropertyName("page_only")]
     public required ScopeChoiceContract PageOnly { get; init; }
 

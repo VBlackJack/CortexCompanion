@@ -25,9 +25,9 @@
                    TextWrapping="Wrap"
                    FontWeight="SemiBold"
                    Margin="{StaticResource MarginSectionBottom}" />
-        <TextBlock x:Name="AlreadyTracked"
+        <TextBlock x:Name="AlreadyCovered"
                    Grid.Row="1"
-                   Text="{x:Static localization:UiStrings.ScopeAlreadyTracked}"
+                   Text="{x:Static localization:UiStrings.ScopeAlreadyCovered}"
                    Foreground="{DynamicResource WarningBrush}"
                    TextWrapping="Wrap"
                    Visibility="Collapsed"

@@ -109,7 +109,8 @@ public sealed partial class PagesViewModel
             await RefreshAsync();
             SourceAdded = SourceAdded || added;
             if (added) { NeedsCredential = false; ShowAddSource = false; apply = _sourceService.LastSaveRequestsUpdate; }
-            StateMessage = added ? UiStrings.FlowAdded : UiStrings.FlowCancelled;
+            StateMessage = !added ? UiStrings.FlowCancelled
+                : _sourceService.LastSaveMerged ? UiStrings.FlowMerged : UiStrings.FlowAdded;
         }
         catch (ConfluenceCliOperationException exception)
         {

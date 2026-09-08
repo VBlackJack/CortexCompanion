@@ -97,6 +97,10 @@ public static partial class UiStrings
     }
     private static readonly CompositeFormat HandshakeIncompatibleFormat =
         CompositeFormat.Parse(GetString("HandshakeIncompatible"));
+    private static readonly CompositeFormat SourcesMergeSummaryFormat =
+        CompositeFormat.Parse(GetString("SourcesMergeSummaryFormat"));
+    private static readonly CompositeFormat SourcesCoveredBySubtreeFormat =
+        CompositeFormat.Parse(GetString("SourcesCoveredBySubtreeFormat"));
     private static readonly CompositeFormat SearchCriteriaFormat = CompositeFormat.Parse(GetString("SearchExecutedFormat"));
     private static readonly CompositeFormat FatalStartupErrorFormat =
         CompositeFormat.Parse(GetString("FatalStartupErrorFormat"));
@@ -187,8 +191,32 @@ public static partial class UiStrings
             exception.Message);
     }
 
-    /// <summary>Gets the notice shown when the page is already tracked.</summary>
-    public static string ScopeAlreadyTracked => GetString(nameof(ScopeAlreadyTracked));
+    /// <summary>Gets the notice shown when the source already collects the page.</summary>
+    public static string ScopeAlreadyCovered => GetString(nameof(ScopeAlreadyCovered));
+    /// <summary>Gets the title of the merge review.</summary>
+    public static string SourcesMergeTitle => GetString(nameof(SourcesMergeTitle));
+    /// <summary>Gets the name of the merge that keeps everything the source collects.</summary>
+    public static string SourcesMergeWiden => GetString(nameof(SourcesMergeWiden));
+    /// <summary>Gets the name of the merge that keeps only the chosen scope.</summary>
+    public static string SourcesMergeReplace => GetString(nameof(SourcesMergeReplace));
+    /// <summary>Gets the explanation of widening.</summary>
+    public static string SourcesMergeWidenHelp => GetString(nameof(SourcesMergeWidenHelp));
+    /// <summary>Gets the explanation of replacing.</summary>
+    public static string SourcesMergeReplaceHelp => GetString(nameof(SourcesMergeReplaceHelp));
+    /// <summary>Gets the notice for a merge that would leave the source as it is.</summary>
+    public static string SourcesMergeNoChange => GetString(nameof(SourcesMergeNoChange));
+    /// <summary>Gets the explanation of a page covered by a whole-space source.</summary>
+    public static string SourcesCoveredByWholeSpace => GetString(nameof(SourcesCoveredByWholeSpace));
+    /// <summary>Gets the explanation of a page the source lists directly.</summary>
+    public static string SourcesCoveredByPage => GetString(nameof(SourcesCoveredByPage));
+    /// <summary>Gets the state message after a merge was saved.</summary>
+    public static string FlowMerged => GetString(nameof(FlowMerged));
+    /// <summary>Formats the merge review summary with the page title and the space key.</summary>
+    public static string FormatSourcesMergeSummary(string title, string spaceKey) =>
+        string.Format(CultureInfo.CurrentCulture, SourcesMergeSummaryFormat, title, spaceKey);
+    /// <summary>Formats the explanation of a page covered through a tracked subtree root.</summary>
+    public static string FormatSourcesCoveredBySubtree(string root) =>
+        string.Format(CultureInfo.CurrentCulture, SourcesCoveredBySubtreeFormat, root);
 
     /// <summary>Gets the interface language setting label.</summary>
     public static string SettingsLanguageLabel => GetString(nameof(SettingsLanguageLabel));

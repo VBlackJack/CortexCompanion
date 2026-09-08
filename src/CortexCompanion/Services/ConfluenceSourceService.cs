@@ -18,6 +18,9 @@ public sealed class ConfluenceSourceService(
     /// <summary>Gets the explicit apply choice after the last successful save.</summary>
     public bool LastSaveRequestsUpdate { get; private set; }
 
+    /// <summary>Gets whether the last successful save merged the page into a source that already collected it.</summary>
+    public bool LastSaveMerged { get; private set; }
+
     /// <summary>Adds the measured selection atomically; cancellation leaves no empty allowlist entry.</summary>
     public async Task<bool> AddAsync(ConfluenceSetupRequest request, bool readOnly, CancellationToken token)
     {
@@ -63,15 +66,18 @@ public sealed class ConfluenceSourceService(
             }
         }
 
+        // The temporary configuration carries no secret, so it can outlive the preview: the
+        // merge review reads the page tree through the same isolated client.
         string temporary = Path.Combine(Path.GetTempPath(), $"CortexCompanion-preview-{Guid.NewGuid():N}.toml");
-        ScopePreviewContract preview;
+        LastSaveMerged = false;
         try
         {
             await using (FileStream stream = new(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
             {
                 await stream.WriteAsync(ConfluenceConfigRenderer.Render(candidate), token);
             }
-            ConfluenceCliResult<ScopePreviewContract> response = await previewClient(temporary).PreviewAsync(request.PageUrl, token);
+            IConfluenceCliClient client = previewClient(temporary);
+            ConfluenceCliResult<ScopePreviewContract> response = await client.PreviewAsync(request.PageUrl, token);
             if (response.TimedOut)
             {
                 throw new PageMutationRejectedException(
@@ -85,43 +91,82 @@ public sealed class ConfluenceSourceService(
                     response.StandardError,
                     response.TimedOut);
             }
-            preview = response.Value;
+            ScopePreviewContract preview = response.Value;
+            if (!string.Equals(preview.SpaceKey, key, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new PageMutationRejectedException(UiStrings.ConfluenceSetupSpaceMismatch);
+            }
+            ConfluenceSpaceConfiguration existing = candidate.Spaces.Single(space =>
+                string.Equals(space.SpaceKey, key, StringComparison.OrdinalIgnoreCase));
+            ConfluenceSelection? selection = confirmations.ChooseScope(preview, preview.IsCovered);
+            if (selection is null) { return false; }
+            ConfluenceSpaceConfiguration? selected = preview.IsCovered
+                ? await MergeAsync(existing, preview, selection.Value, client, token)
+                : Extend(existing, preview, selection.Value);
+            if (selected is null) { return false; }
+            await store.WriteAsync(candidate.MigrateToSchema(selected.Selection == ConfluenceSelection.Subtree ? 3 : 2)
+                .ReplaceSpace(selected), snapshot?.ContentHash, token);
+            LastSaveRequestsUpdate = confirmations.SaveRequestsUpdate;
+            return true;
         }
         finally
         {
             File.Delete(temporary);
         }
+    }
 
-        if (!string.Equals(preview.SpaceKey, key, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new PageMutationRejectedException(UiStrings.ConfluenceSetupSpaceMismatch);
-        }
-        ConfluenceSpaceConfiguration existing = candidate.Spaces.Single(space =>
-            string.Equals(space.SpaceKey, key, StringComparison.OrdinalIgnoreCase));
-        if (existing.Selection == ConfluenceSelection.WholeSpace)
-        {
-            throw new PageMutationRejectedException(UiStrings.PagesRejectWholeSpaceCovered);
-        }
-        bool alreadyTracked = existing.PageIds.Contains(preview.PageId, StringComparer.Ordinal);
-        ConfluenceSelection? selection = confirmations.ChooseScope(preview, alreadyTracked);
-        if (selection is null) { return false; }
+    /// <summary>Adds an uncovered page to the source, keeping one collection mode per space.</summary>
+    private static ConfluenceSpaceConfiguration Extend(
+        ConfluenceSpaceConfiguration existing, ScopePreviewContract preview, ConfluenceSelection selection)
+    {
         if (existing.PageIds.Count > 0 && selection != existing.Selection && selection != ConfluenceSelection.WholeSpace)
         {
             throw new PageMutationRejectedException(UiStrings.FlowExistingScope);
         }
-        if (existing.PageIds.Contains(preview.PageId, StringComparer.Ordinal) && selection != ConfluenceSelection.WholeSpace)
+        return existing with
         {
-            throw new PageMutationRejectedException(UiStrings.PagesRejectPageAlreadyConfigured);
-        }
-        ConfluenceSpaceConfiguration selected = existing with
-        {
-            Selection = selection.Value,
+            Selection = selection,
             PageIds = selection == ConfluenceSelection.WholeSpace ? [] :
                 existing.PageIds.Append(preview.PageId).Distinct(StringComparer.Ordinal).ToArray(),
         };
-        await store.WriteAsync(candidate.MigrateToSchema(selection == ConfluenceSelection.Subtree ? 3 : 2)
-            .ReplaceSpace(selected), snapshot?.ContentHash, token);
-        LastSaveRequestsUpdate = confirmations.SaveRequestsUpdate;
-        return true;
+    }
+
+    /// <summary>Offers to widen the source or to replace its selection, and returns the chosen source.</summary>
+    /// <remarks>
+    /// The page tree names the documents each merge adds or removes. Without it the review
+    /// still opens and says that it could not measure them, as the editor does.
+    /// </remarks>
+    private async Task<ConfluenceSpaceConfiguration?> MergeAsync(
+        ConfluenceSpaceConfiguration existing,
+        ScopePreviewContract preview,
+        ConfluenceSelection selection,
+        IConfluenceCliClient client,
+        CancellationToken token)
+    {
+        ConfluenceSpaceConfiguration? widen = SourceMergeReview.WidenCandidate(existing, selection, preview.PageId);
+        ConfluenceSpaceConfiguration? replace = SourceMergeReview.ReplaceCandidate(existing, selection, preview.PageId);
+        if (widen is null && replace is null)
+        {
+            throw new PageMutationRejectedException(UiStrings.PagesRejectPageAlreadyConfigured);
+        }
+        ConfluenceCliResult<SourceCatalogContract> read = await client.GetCatalogAsync(existing.SpaceKey, token);
+        SourceCatalogContract? catalog = read.IsSuccess && read.Value?.SpaceKey == existing.SpaceKey ? read.Value : null;
+        ConfiguredPageContract[] known = [new() { PageId = preview.PageId, Title = preview.Title }];
+        SourceMergeReview review = new(
+            preview,
+            existing,
+            widen is null ? null : SourceChangeReview.Create(existing, widen, catalog, known),
+            replace is null ? null : SourceChangeReview.Create(existing, replace, catalog, known))
+        {
+            CoveringRootTitle = preview.CoveringRoot is null
+                ? null
+                : catalog?.Pages.FirstOrDefault(page => page.PageId == preview.CoveringRoot)?.Title,
+        };
+        SourceMergeChoice? choice = confirmations.ChooseMerge(review);
+        if (choice is null) { return null; }
+        ConfluenceSpaceConfiguration chosen = (choice == SourceMergeChoice.Widen ? widen : replace)
+            ?? throw new PageMutationRejectedException(UiStrings.PagesRejectPageAlreadyConfigured);
+        LastSaveMerged = true;
+        return chosen;
     }
 }

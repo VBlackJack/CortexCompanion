@@ -37,14 +37,17 @@ public interface IPageMutationConfirmationService
     /// <summary>Returns the explicit measured collection choice, or null when cancelled.</summary>
     ConfluenceSelection? ChooseScope(ScopePreviewContract preview);
 
-    /// <summary>Returns the same choice, told whether the page is already tracked.</summary>
+    /// <summary>Returns the same choice, told whether the source already collects the page.</summary>
     /// <remarks>
-    /// Whether an already tracked page can be added depends on the scope the user picks, so
-    /// the answer cannot be settled before the question. Saying so in the window is what
-    /// stops the user from choosing carefully and only then being refused.
+    /// What happens to a page the source already collects depends on the scope the user
+    /// picks, so the answer cannot be settled before the question. Saying in the window that
+    /// a merge follows is what lets the user choose the scope for it.
     /// </remarks>
-    ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyTracked) =>
+    ConfluenceSelection? ChooseScope(ScopePreviewContract preview, bool alreadyCovered) =>
         ChooseScope(preview);
+
+    /// <summary>Returns how a page the source already collects joins it, or null when cancelled.</summary>
+    SourceMergeChoice? ChooseMerge(SourceMergeReview review) => null;
 
     /// <summary>Confirms the collection consequence before a space enters the allowlist.</summary>
     bool ConfirmAddSpace(string spaceKey, string classification);

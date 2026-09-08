@@ -8,13 +8,17 @@ that consumer, so a field renamed on one side stays green on both until a user m
 """
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 COMPANION = Path(__file__).resolve().parents[2]
-CORTEX = COMPANION.parent / "Cortex"
+# CORTEX_CHECKOUT points the proof at a branch checkout instead of the sibling clone, as
+# the command-line proof already allows; a contract change is proved against the checkout
+# that carries it before either side is on main.
+CORTEX = Path(os.environ.get("CORTEX_CHECKOUT", COMPANION.parent / "Cortex")).resolve()
 sys.path.insert(0, str(CORTEX))
 
 from confluence_writer.models import (  # noqa: E402
@@ -43,11 +47,13 @@ def _documents() -> dict[str, tuple[object, dict[str, object]]]:
     # A space the caller can see no page in measures zero, which is a value the enumerating
     # implementation could never emit and no released client had ever been handed.
     preview = ScopePreviewContract(
-        contract_version=1,
+        contract_version=2,
         page_id="2134730685",
         title="Équipe 東京 : plan d'action",
         space_key="PN",
         recommended_selection="pages",
+        coverage="subtree",
+        covering_root="1286970214",
         page_only=ScopeChoiceContract(page_count=1, estimated_bytes=393_216),
         subtree=ScopeChoiceContract(page_count=1, estimated_bytes=393_216),
         whole_space=ScopeChoiceContract(page_count=0, estimated_bytes=0),
@@ -119,11 +125,13 @@ def _documents() -> dict[str, tuple[object, dict[str, object]]]:
         "preview": (
             preview,
             {
-                "contract_version": 1,
+                "contract_version": 2,
                 "page_id": "2134730685",
                 "title": "Équipe 東京 : plan d'action",
                 "space_key": "PN",
                 "recommended_selection": "pages",
+                "coverage": "subtree",
+                "covering_root": "1286970214",
                 "storage_root": "C:\\Users\\Example\\AppData\\Local\\Cortex",
                 "retention_generations": 2,
             },

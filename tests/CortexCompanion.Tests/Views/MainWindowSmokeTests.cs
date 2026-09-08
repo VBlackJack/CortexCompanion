@@ -173,13 +173,55 @@ public sealed class MainWindowSmokeTests
             SourceChangeReviewDialog reviewDialog = new(review) { Owner = window, ShowInTaskbar = false };
             try { reviewDialog.Show(); reviewDialog.UpdateLayout(); Capture(reviewDialog, "source-review"); }
             finally { reviewDialog.Close(); }
-            ScopeSelectionDialog scope = new(new ScopePreviewContract
+            ConfluenceSpaceConfiguration covering = new("DOC", "doc", "pro-confidentiel", ConfluenceSelection.Subtree, ["100"]);
+            SourceCatalogContract mergeCatalog = new()
             {
                 ContractVersion = 1,
+                SpaceKey = "DOC",
+                Pages = [
+                    new CatalogPageContract { PageId = "100", Title = "Documentation Windows", AncestorIds = [] },
+                    new CatalogPageContract { PageId = "101", Title = "Configurer WinRM", AncestorIds = ["100"] },
+                    new CatalogPageContract { PageId = "102", Title = "Tester la connexion", AncestorIds = ["100", "101"] }],
+            };
+            SourceMergeReview merge = new(
+                new ScopePreviewContract
+                {
+                    ContractVersion = 2,
+                    PageId = "101",
+                    Title = "Configurer WinRM",
+                    SpaceKey = "DOC",
+                    RecommendedSelection = "subtree",
+                    Coverage = "subtree",
+                    CoveringRoot = "100",
+                    StorageRoot = temporary.Path,
+                    RetentionGenerations = 2,
+                    PageOnly = new() { PageCount = 1, EstimatedBytes = 393216 },
+                    Subtree = new() { PageCount = 2, EstimatedBytes = 786432 },
+                    WholeSpace = new() { PageCount = 200, EstimatedBytes = 78643200 },
+                },
+                covering,
+                SourceChangeReview.Create(covering, SourceMergeReview.WidenCandidate(covering, ConfluenceSelection.Subtree, "101")!, mergeCatalog, []),
+                SourceChangeReview.Create(covering, SourceMergeReview.ReplaceCandidate(covering, ConfluenceSelection.Subtree, "101")!, mergeCatalog, []))
+            { CoveringRootTitle = "Documentation Windows" };
+            SourceMergeReviewDialog mergeDialog = new(merge) { Owner = window, ShowInTaskbar = false };
+            try
+            {
+                mergeDialog.Show();
+                mergeDialog.UpdateLayout();
+                Assert.IsTrue(((Button)mergeDialog.FindName("WidenButton")).IsEnabled);
+                Assert.IsTrue(((Button)mergeDialog.FindName("ReplaceButton")).IsEnabled);
+                Capture(mergeDialog, "source-merge");
+            }
+            finally { mergeDialog.Close(); }
+            ScopeSelectionDialog scope = new(new ScopePreviewContract
+            {
+                ContractVersion = 2,
                 PageId = "100",
                 Title = "Documentation de l'équipe",
                 SpaceKey = "DOC",
                 RecommendedSelection = "subtree",
+                Coverage = "none",
+                CoveringRoot = null,
                 StorageRoot = temporary.Path,
                 RetentionGenerations = 2,
                 PageOnly = new() { PageCount = 1, EstimatedBytes = 393216 },

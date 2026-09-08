@@ -507,6 +507,7 @@
   <data name="FlowTokenInstructions" xml:space="preserve"><value>In Confluence, open your profile then Personal Access Tokens. Create a token and copy it here. If that menu is missing, ask your administrator. The token stays in Windows Credential Manager and is not written to the configuration.</value></data>
   <data name="FlowClassificationHelp" xml:space="preserve"><value>Choose the nature of the documents. This classification will be kept with the source; sources already configured keep their classification.</value></data>
   <data name="FlowAdded" xml:space="preserve"><value>Source added. The documents are not available in search yet. Start the collection, then the indexing.</value></data>
+  <data name="FlowMerged" xml:space="preserve"><value>Source updated. The documents are not available in search yet. Start the collection, then the indexing.</value></data>
   <data name="FlowCancelled" xml:space="preserve"><value>Addition canceled. Your link is kept and no source has been added.</value></data>
   <data name="FlowUnexpectedFailure" xml:space="preserve"><value>The addition did not complete. Your link is kept; try again or check the diagnostics.</value></data>
   <data name="FlowExistingScope" xml:space="preserve"><value>This space already contains pages with a different scope. Choose the same scope to keep them, or manage its mode in the configured sources.</value></data>
@@ -588,5 +589,15 @@
   <data name="SettingsLanguageDescription" xml:space="preserve"><value>Choose the language of Cortex Companion. The change applies the next time the application starts.</value></data>
   <data name="SettingsLanguageSystem" xml:space="preserve"><value>Windows language</value></data>
   <data name="SourcesTreeTimedOutProgress" xml:space="preserve"><value>Reading the page tree stopped after {0} of about {1} pages. A very large space can take several minutes; try again.</value></data>
-  <data name="ScopeAlreadyTracked" xml:space="preserve"><value>This page is already tracked. Choosing the whole space keeps it; any other choice is refused, because it is already covered.</value></data>
+  <data name="ScopeAlreadyCovered" xml:space="preserve"><value>This source already collects this page. After your choice, Companion offers to widen the source or to replace its selection, and shows the documents each option adds or removes.</value></data>
+  <data name="SourcesMergeTitle" xml:space="preserve"><value>Merge with the existing source</value></data>
+  <data name="SourcesMergeSummaryFormat" xml:space="preserve"><value>{0} is already collected by the source {1}.</value></data>
+  <data name="SourcesCoveredByWholeSpace" xml:space="preserve"><value>The source collects the whole space, so widening it changes nothing.</value></data>
+  <data name="SourcesCoveredByPage" xml:space="preserve"><value>The page is one of the pages the source tracks directly.</value></data>
+  <data name="SourcesCoveredBySubtreeFormat" xml:space="preserve"><value>The page is a child of {0}, which the source tracks with its child pages.</value></data>
+  <data name="SourcesMergeWiden" xml:space="preserve"><value>Widen the source</value></data>
+  <data name="SourcesMergeReplace" xml:space="preserve"><value>Replace the selection</value></data>
+  <data name="SourcesMergeWidenHelp" xml:space="preserve"><value>Keeps everything the source collects and adds your choice. A source tracking pages alone starts tracking their child pages too when you chose a subtree.</value></data>
+  <data name="SourcesMergeReplaceHelp" xml:space="preserve"><value>Keeps only your choice. Documents the source collected outside it leave the scope at the next collection.</value></data>
+  <data name="SourcesMergeNoChange" xml:space="preserve"><value>This option would leave the source as it is.</value></data>
 </root>

@@ -108,6 +108,10 @@ Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minim
 - Change the common scope and uncheck a root; inspect the before/after review.
 - Remove a root covered elsewhere: confirmation reports coverage or an unavailable
   check. Its temporary configuration is deleted.
+- Paste a page the source already collects, once listed directly and once under a
+  tracked subtree: the scope window says so, and after the scope choice the merge
+  review offers widen and replace with the documents each adds and removes. Cancel
+  writes nothing; a source collecting the whole space offers replace alone.
 - Remove the final source, then collect and index with the paired Cortex build.
   Originals remain in Confluence; search follows the indexed generation.
 - Service tests cover CAS, read-only mode, cancellation, foreign origins, last-source

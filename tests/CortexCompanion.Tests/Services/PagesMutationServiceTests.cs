@@ -799,11 +799,13 @@ public sealed class PagesMutationServiceTests
                 ? null
                 : new ScopePreviewContract
                 {
-                    ContractVersion = 1,
+                    ContractVersion = 2,
                     PageId = resolved.PageId,
                     Title = resolved.Title,
                     SpaceKey = resolved.SpaceKey,
                     RecommendedSelection = "subtree",
+                    Coverage = "none",
+                    CoveringRoot = null,
                     PageOnly = new ScopeChoiceContract { PageCount = 1, EstimatedBytes = 393_216 },
                     Subtree = new ScopeChoiceContract { PageCount = 12, EstimatedBytes = 4_718_592 },
                     WholeSpace = new ScopeChoiceContract { PageCount = 20, EstimatedBytes = 7_864_320 },

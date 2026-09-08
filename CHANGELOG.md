@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Added
+
+- Offer to merge a page the source already collects instead of refusing it. The scope
+  window says up front that the source collects the page, and once the scope is chosen a
+  review shows the two merges side by side: widen the source, keeping everything it
+  collects and adding the choice, or replace its selection with the choice alone. Each
+  column lists the documents it adds and removes, measured on the page tree when it can
+  be read, and a candidate that would change nothing cannot be chosen. The answer comes
+  from the paired Cortex preview document, which now reports the coverage, so a page
+  under a tracked subtree is recognised where the previous check saw only listed pages.
+
 ### Removed
 
 - Drop the search-only version floor and the upgrade message it produced. The accepted

@@ -6,6 +6,20 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
+## Merge a page the source already collects (unreleased)
+
+Pasting a page that a configured source already collects used to end in a refusal, and
+only after the scope had been chosen. The scope window now says up front that the source
+already collects the page, and once the scope is chosen Companion shows the two ways to
+merge it, side by side: widen the source, which keeps everything it collects and adds your
+choice, or replace its selection with your choice alone. Each column lists the documents
+it adds and removes, measured on the current page tree when it can be read. A page covered
+by a tracked subtree is recognised as well, which the previous check could not see.
+
+The configuration has no mixed mode, so widening a source that tracks pages alone to a
+subtree makes every listed page a root; the review shows what that adds before anything
+is written. The paired Cortex reports the coverage in its preview document.
+
 ## Readable scope window and honest timeouts (2026.0907.00)
 
 The scope selection window drew its three options in the system text colour over

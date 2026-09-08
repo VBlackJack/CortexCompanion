@@ -1,0 +1,64 @@
+<!-- Copyright 2026 Julien Bombled. Licensed under the Apache License, Version 2.0. -->
+<Window x:Class="CortexCompanion.Views.SourceMergeReviewDialog"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:localization="clr-namespace:CortexCompanion.Localization"
+ Width="{StaticResource ScopeDialogWidth}" Height="{StaticResource ScopeDialogMaxHeight}" WindowStartupLocation="CenterOwner"
+ Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+ FontFamily="{StaticResource AppFontFamily}" FontSize="{StaticResource FontSizeBody}" Title="{x:Static localization:UiStrings.SourcesMergeTitle}">
+ <Grid Margin="{StaticResource SpacingXl}">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <StackPanel>
+   <TextBlock x:Name="Summary" TextWrapping="Wrap" FontWeight="SemiBold" Margin="{StaticResource MarginSectionBottom}"/>
+   <TextBlock x:Name="Coverage" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+  </StackPanel>
+  <Grid Grid.Row="1">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{StaticResource MarginInlineSm}">
+    <StackPanel>
+     <TextBlock Text="{x:Static localization:UiStrings.SourcesMergeWiden}" FontWeight="SemiBold" Margin="{StaticResource MarginSectionBottom}"/>
+     <TextBlock Text="{x:Static localization:UiStrings.SourcesMergeWidenHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+     <TextBlock x:Name="WidenNoChange" Text="{x:Static localization:UiStrings.SourcesMergeNoChange}" TextWrapping="Wrap" Visibility="Collapsed"/>
+     <StackPanel x:Name="WidenDetails">
+      <TextBlock x:Name="WidenScope" TextWrapping="Wrap" FontWeight="SemiBold" Margin="{StaticResource MarginSectionBottom}"/>
+      <TextBlock x:Name="WidenMeasured" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+      <TextBlock Text="{x:Static localization:UiStrings.SourcesAddedRoots}" FontWeight="SemiBold"/>
+      <ItemsControl x:Name="WidenAddedRoots"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock Text="{x:Static localization:UiStrings.SourcesRemovedRoots}" FontWeight="SemiBold"/>
+      <ItemsControl x:Name="WidenRemovedRoots"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock x:Name="WidenAddedHeading" FontWeight="SemiBold"/>
+      <ItemsControl x:Name="WidenAddedPages"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock x:Name="WidenRemovedHeading" FontWeight="SemiBold" Margin="{StaticResource MarginSectionTop}"/>
+      <ItemsControl x:Name="WidenRemovedPages"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+     </StackPanel>
+    </StackPanel>
+   </ScrollViewer>
+   <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="{StaticResource MarginInlineSm}">
+    <StackPanel>
+     <TextBlock Text="{x:Static localization:UiStrings.SourcesMergeReplace}" FontWeight="SemiBold" Margin="{StaticResource MarginSectionBottom}"/>
+     <TextBlock Text="{x:Static localization:UiStrings.SourcesMergeReplaceHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+     <TextBlock x:Name="ReplaceNoChange" Text="{x:Static localization:UiStrings.SourcesMergeNoChange}" TextWrapping="Wrap" Visibility="Collapsed"/>
+     <StackPanel x:Name="ReplaceDetails">
+      <TextBlock x:Name="ReplaceScope" TextWrapping="Wrap" FontWeight="SemiBold" Margin="{StaticResource MarginSectionBottom}"/>
+      <TextBlock x:Name="ReplaceMeasured" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+      <TextBlock Text="{x:Static localization:UiStrings.SourcesAddedRoots}" FontWeight="SemiBold"/>
+      <ItemsControl x:Name="ReplaceAddedRoots"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock Text="{x:Static localization:UiStrings.SourcesRemovedRoots}" FontWeight="SemiBold"/>
+      <ItemsControl x:Name="ReplaceRemovedRoots"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock x:Name="ReplaceAddedHeading" FontWeight="SemiBold"/>
+      <ItemsControl x:Name="ReplaceAddedPages"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock x:Name="ReplaceRemovedHeading" FontWeight="SemiBold" Margin="{StaticResource MarginSectionTop}"/>
+      <ItemsControl x:Name="ReplaceRemovedPages"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+     </StackPanel>
+    </StackPanel>
+   </ScrollViewer>
+  </Grid>
+  <StackPanel Grid.Row="2" Margin="{StaticResource MarginSectionTop}">
+   <TextBlock Text="{x:Static localization:UiStrings.ManageConsequences}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
+   <WrapPanel HorizontalAlignment="Right">
+    <Button Content="{x:Static localization:UiStrings.ManageCancel}" AutomationProperties.Name="{x:Static localization:UiStrings.ManageCancel}" IsCancel="True" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+    <Button x:Name="WidenButton" Content="{x:Static localization:UiStrings.SourcesMergeWiden}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesMergeWiden}" Click="WidenClick" Style="{StaticResource PrimaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+    <Button x:Name="ReplaceButton" Content="{x:Static localization:UiStrings.SourcesMergeReplace}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesMergeReplace}" Click="ReplaceClick" Style="{StaticResource PrimaryButtonStyle}"/>
+   </WrapPanel>
+  </StackPanel>
+ </Grid>
+</Window>
