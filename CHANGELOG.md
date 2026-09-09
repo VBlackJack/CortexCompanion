@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2026.0909.03] - 2026-09-09
+
+### Changed
+- Align the desktop payload with the paired Cortex installer release. Document indexing starts separately in Companion after installation finishes.
+
 ## [2026.0909.02] - 2026-09-09
 
 ### Changed
