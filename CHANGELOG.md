@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [2026.0909.01] - 2026-09-09
+
+### Changed
+
+- Align the desktop version with the paired Cortex ingestion and multilingual search fixes. Document updates preserve the served generation when subtree enumeration fails and apply changed publication mappings on retry.
+- Use Cortex's multilingual vector search default through the existing desktop search contract.
+
 ## [2026.0909.00] - 2026-09-09
 
 ### Added
