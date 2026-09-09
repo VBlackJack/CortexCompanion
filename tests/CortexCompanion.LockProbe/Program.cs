@@ -54,6 +54,19 @@ internal static class Program
             return 0;
         }
 
+        if (arguments is ["catalog-output", string countText] && int.TryParse(countText, out int pageCount))
+        {
+            SourceCatalogContract catalogue = new()
+            {
+                ContractVersion = 1,
+                SpaceKey = "TEST",
+                Pages = Enumerable.Range(1, pageCount).Select(index => new CatalogPageContract
+                { PageId = index.ToString(CultureInfo.InvariantCulture), Title = new string('t', 128) + " Équipe", AncestorIds = [] }).ToArray(),
+            };
+            await Console.OpenStandardOutput().WriteAsync(JsonSerializer.SerializeToUtf8Bytes(catalogue));
+            return 0;
+        }
+
         if (arguments is ["unicode-output"])
         {
             byte[] responseBytes = new UTF8Encoding(false, true).GetBytes(

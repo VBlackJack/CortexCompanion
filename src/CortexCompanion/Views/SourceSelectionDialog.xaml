@@ -9,43 +9,52 @@
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
  FontFamily="{StaticResource AppFontFamily}" FontSize="{StaticResource FontSizeBody}"
  Title="{x:Static localization:UiStrings.ManageEdit}">
+
  <Grid Margin="{StaticResource SpacingXl}">
   <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+  <Grid>
+   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
    <StackPanel>
     <TextBlock x:Name="SourceTitle" Style="{StaticResource PageTitleStyle}" TextWrapping="Wrap"/>
     <TextBlock Text="{x:Static localization:UiStrings.ManageScopeHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
     <RadioButton Foreground="{DynamicResource TextPrimaryBrush}" x:Name="PagesOption" Content="{x:Static localization:UiStrings.ManagePages}" GroupName="Selection" Margin="{StaticResource MarginChoiceBottom}" Checked="ScopeChanged"/>
     <RadioButton Foreground="{DynamicResource TextPrimaryBrush}" x:Name="SubtreeOption" Content="{x:Static localization:UiStrings.ManageSubtree}" GroupName="Selection" Margin="{StaticResource MarginChoiceBottom}" Checked="ScopeChanged"/>
     <RadioButton Foreground="{DynamicResource TextPrimaryBrush}" x:Name="WholeOption" Content="{x:Static localization:UiStrings.ManageWhole}" GroupName="Selection" Margin="{StaticResource MarginChoiceBottom}" Checked="ScopeChanged"/>
-    <StackPanel x:Name="PageSelectionPanel" Margin="{StaticResource MarginSectionTop}">
+   </StackPanel>
+    <Grid Grid.Row="1" x:Name="PageSelectionPanel" Margin="{StaticResource MarginSectionTop}">
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <StackPanel>
      <Button x:Name="LoadTreeButton" Content="{x:Static localization:UiStrings.SourcesLoadTree}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesLoadTree}" Click="LoadTreeClick" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginStackItem}"/>
      <TextBlock Text="{x:Static localization:UiStrings.SourcesTreeSearch}"/>
      <TextBox x:Name="TreeSearch" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesTreeSearch}" ToolTip="{x:Static localization:UiStrings.SourcesTreeSearch}" TextChanged="SearchChanged" Margin="{StaticResource MarginStackItem}"/>
-     <TreeView x:Name="PageChoices" Background="{DynamicResource BackgroundBrush}" BorderThickness="{StaticResource BorderNone}" Foreground="{DynamicResource TextPrimaryBrush}">
-      <TreeView.ItemContainerStyle><Style TargetType="TreeViewItem">
-       <Setter Property="IsExpanded" Value="True"/>
-       <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
-      </Style></TreeView.ItemContainerStyle>
-      <TreeView.ItemTemplate><HierarchicalDataTemplate DataType="{x:Type viewModels:SourceTreeNode}" ItemsSource="{Binding Children}">
+     </StackPanel>
+     <TreeView Grid.Row="1" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource SourceTreeItemStyle}" x:Name="PageChoices" Background="{DynamicResource BackgroundBrush}" BorderThickness="{StaticResource BorderNone}" Foreground="{DynamicResource TextPrimaryBrush}">
+
+      <TreeView.ItemTemplate><HierarchicalDataTemplate ItemContainerStyle="{StaticResource SourceTreeItemStyle}" DataType="{x:Type viewModels:SourceTreeNode}" ItemsSource="{Binding Children}">
        <StackPanel>
         <CheckBox Foreground="{DynamicResource TextPrimaryBrush}" IsChecked="{Binding IsSelected}" AutomationProperties.Name="{Binding Title}" Margin="{StaticResource MarginStackItem}"><TextBlock Text="{Binding Title}" TextWrapping="Wrap"/></CheckBox>
         <TextBlock Text="{x:Static localization:UiStrings.SourcesCovered}" Foreground="{DynamicResource TextSecondaryBrush}" Visibility="{Binding IsCovered, Converter={StaticResource BooleanToVisibilityConverter}}"/>
        </StackPanel>
       </HierarchicalDataTemplate></TreeView.ItemTemplate>
      </TreeView>
+     <StackPanel Grid.Row="2">
      <TextBlock x:Name="LinkLabel" Text="{x:Static localization:UiStrings.ManageLink}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionTop}"/>
-     <TextBox x:Name="AdditionalLink" AutomationProperties.LabeledBy="{Binding ElementName=LinkLabel}" Margin="{StaticResource MarginStackItem}"/>
-    </StackPanel>
+     <TextBox x:Name="AdditionalLink" TextChanged="AdditionalLinkChanged" AutomationProperties.LabeledBy="{Binding ElementName=LinkLabel}" Margin="{StaticResource MarginStackItem}"/>
+     </StackPanel>
+    </Grid>
+    <StackPanel Grid.Row="2">
     <TextBlock Text="{x:Static localization:UiStrings.ManageConsequences}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionTop}"/>
     <TextBlock x:Name="ValidationMessage" TextWrapping="Wrap" Foreground="{DynamicResource WarningBrush}" AutomationProperties.LiveSetting="Polite" Margin="{StaticResource MarginSectionTop}"/>
    </StackPanel>
-  </ScrollViewer>
-  <WrapPanel x:Name="EditorActions" Grid.Row="1" HorizontalAlignment="Right" Margin="{StaticResource MarginSectionTop}">
-   <Button Content="{x:Static localization:UiStrings.ManageCancel}" AutomationProperties.Name="{x:Static localization:UiStrings.ManageCancel}" IsCancel="True" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
-   <Button Content="{x:Static localization:UiStrings.SourcesSaveLater}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesSaveLater}" Click="SaveLaterClick" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
-   <Button Content="{x:Static localization:UiStrings.SourcesSaveUpdate}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesSaveUpdate}" Click="ReviewClick" IsDefault="True" Style="{StaticResource PrimaryButtonStyle}"/>
+  </Grid>
+  <StackPanel Grid.Row="1" Margin="{StaticResource MarginSectionTop}">
+   <TextBlock x:Name="SelectionSummary" TextWrapping="Wrap" FontWeight="SemiBold" />
+   <TextBlock x:Name="DraftSummary" TextWrapping="Wrap" Foreground="{DynamicResource WarningBrush}" />
+  <WrapPanel x:Name="EditorActions" HorizontalAlignment="Right" Margin="{StaticResource MarginSectionTop}">
+   <Button x:Name="CancelEditorButton" Click="CancelEditorClick" Content="{x:Static localization:UiStrings.ManageCancel}" AutomationProperties.Name="{x:Static localization:UiStrings.ManageCancel}" IsCancel="True" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+   <Button x:Name="SaveLaterButton" Content="{x:Static localization:UiStrings.SourcesSaveLater}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesSaveLater}" Click="SaveLaterClick" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+   <Button x:Name="SaveUpdateButton" Content="{x:Static localization:UiStrings.SourcesSaveUpdate}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesSaveUpdate}" Click="ReviewClick" IsDefault="True" Style="{StaticResource PrimaryButtonStyle}"/>
   </WrapPanel>
+  </StackPanel>
  </Grid>
 </Window>

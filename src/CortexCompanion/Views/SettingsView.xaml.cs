@@ -18,6 +18,12 @@ public partial class SettingsView : UserControl
         InitializeComponent();
     }
 
+    private void ConfigureCortexClick(object sender, RoutedEventArgs e)
+    {
+        TechnicalSettings.IsExpanded = true;
+        _ = Dispatcher.BeginInvoke(new Action(() => { CliPathInput.BringIntoView(); CliPathInput.Focus(); }));
+    }
+
     private async void StoreConfluenceCredentialClick(object sender, RoutedEventArgs eventArgs) =>
         await StoreConfluenceCredentialAsync();
 

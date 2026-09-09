@@ -6,6 +6,25 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
+## Audit corrections (2026.0909.00)
+
+Large source responses now have a dedicated bounded transport budget; incomplete output is rejected explicitly. The source tree renders only visible rows. Cancel or Escape also stops review preparation after the editor closes.
+
+A successful local-only update can be ready without Confluence. New indexing runs retain the observed local folder and configuration identity; changing either requires a new index. Older runs without this evidence remain unconfirmed until a successful update. The worker checks configuration before and after indexing; unreadable or changed configuration does not produce readiness evidence.
+
+## Document workflow (2026.0909.00)
+
+- **My sources** brings the configured local document folder and Confluence sources together. The folder card shows the saved path, never an unsaved draft.
+- **Update my documents** reads configured Confluence sources, then indexes documents. Without Confluence, it indexes local documents directly. A failed collection stops the workflow.
+- **Home** shows readiness and the next action; timestamps remain under detailed status.
+- The source editor keeps its selection summary and save actions visible while scrolling. Counts describe observed pages; missing coverage is explicit.
+- **Search** has a wider, resizable preview. An empty search offers filter removal, source review and document update.
+- **Settings** puts documents and Confluence first. Advanced Cortex settings remain available, with a direct connection shortcut when Cortex is unavailable.
+
+## Recovery improvements (2026.0909.00)
+
+While a page tree is loading, Cancel or Escape stops the read and keeps your selection. Closing the editor also cancels the read. If saving fails, Retry restores your unsaved scope and link as long as the saved configuration has not changed. Required recovery guidance appears directly on Local knowledge base, outside advanced options.
+
 ## Merge a page the source already collects (2026.0908.00)
 
 Pasting a page that a configured source already collects used to end in a refusal, and
@@ -19,6 +38,7 @@ by a tracked subtree is recognised as well, which the previous check could not s
 The configuration has no mixed mode, so widening a source that tracks pages alone to a
 subtree makes every listed page a root; the review shows what that adds before anything
 is written. The paired Cortex reports the coverage in its preview document.
+
 
 ## Readable scope window and honest timeouts (2026.0907.00)
 
@@ -170,7 +190,7 @@ display is lost.
 | Shortcut | Action |
 |---|---|
 | `F5` | Reload the current screen |
-| `Ctrl+S` | Save and connect, on the Settings screen |
+| `Ctrl+S` | Save the document folder when its field has focus; otherwise save and connect Cortex in Settings |
 | `Tab` / `Shift+Tab` | Move between controls; the focused control is outlined |
 | `Esc` | Cancel the open confirmation dialog |
 | `Enter` | Submit the field being edited: page URL, space URL, PAT, folder, path, start time |

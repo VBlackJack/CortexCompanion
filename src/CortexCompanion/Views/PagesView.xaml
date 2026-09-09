@@ -6,10 +6,14 @@
  xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels"
  xmlns:models="clr-namespace:CortexCompanion.Models"
  xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility">
- <UserControl.InputBindings><KeyBinding Key="F5" Command="{Binding RefreshCommand}"/></UserControl.InputBindings>
+ <UserControl.InputBindings><KeyBinding Key="F5" Command="{Binding RefreshCommand}"/><KeyBinding Key="Escape" Command="{Binding CancelSelectionPreparationCommand}"/></UserControl.InputBindings>
  <Grid>
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
   <StackPanel Margin="{StaticResource MarginSectionBottom}">
+        <StackPanel Visibility="{Binding IsPreparingSelection, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="{StaticResource MarginStackItem}">
+            <TextBlock Text="{x:Static localization:UiStrings.SourcesPreparingReview}" TextWrapping="Wrap" />
+            <Button Content="{x:Static localization:UiStrings.ManageCancel}" Command="{Binding CancelSelectionPreparationCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.ManageCancel}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" />
+        </StackPanel>
    <TextBlock Text="{Binding ErrorContext}" FontWeight="SemiBold" Visibility="{Binding HasSourceError, Converter={StaticResource BooleanToVisibilityConverter}}"/>
    <TextBlock Text="{Binding StateMessage}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding StateMessage}"/>
    <WrapPanel Visibility="{Binding HasSourceError, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -21,10 +25,24 @@
  <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
   <StackPanel>
    <TextBlock Text="{x:Static localization:UiStrings.FlowSources}" Style="{StaticResource PageTitleStyle}"/>
+   <TextBlock Text="{Binding DataContext.DocumentsStatus, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" />
+    <Button Content="{x:Static localization:UiStrings.ExperienceUpdate}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceUpdate}" Command="{Binding DataContext.UpdateDocumentsCommand, RelativeSource={RelativeSource AncestorType=Window}}" ToolTip="{x:Static localization:UiStrings.SourcesApplyHelp}" Style="{StaticResource PrimaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+   <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}">
+    <StackPanel>
+     <TextBlock Text="{x:Static localization:UiStrings.ExperienceLocal}" FontWeight="SemiBold" />
+     <TextBlock Text="{Binding DataContext.LocalSourcePath, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" />
+     <TextBlock Text="{x:Static localization:UiStrings.HomeIndex}" Foreground="{DynamicResource TextSecondaryBrush}" />
+     <TextBlock Text="{Binding DataContext.Sync.Freshness.LastIndex, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" />
+     <Button Content="{x:Static localization:UiStrings.ExperienceEditFolder}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceEditFolder}"
+             Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.Settings}"
+             Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginSectionTop}" />
+    </StackPanel>
+   </Border>
+   <TextBlock Text="{x:Static localization:UiStrings.ExperienceConfluence}" FontWeight="SemiBold" Margin="{StaticResource MarginStackItem}" />
    <TextBlock Text="{x:Static localization:UiStrings.ManageHelp}" TextWrapping="Wrap"/>
    <WrapPanel Margin="{StaticResource MarginSectionTop}">
     <Button Content="{x:Static localization:UiStrings.SourcesAdd}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesAdd}" Command="{Binding ShowAddSourceCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
-    <Button Content="{x:Static localization:UiStrings.SourcesApply}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesApply}" Command="{Binding ApplyPendingSourcesCommand}" ToolTip="{x:Static localization:UiStrings.SourcesApplyHelp}" Style="{StaticResource SecondaryButtonStyle}" Margin="{StaticResource MarginInlineSm}"/>
+
     <Button Content="{x:Static localization:UiStrings.SourcesUndo}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesUndo}" Command="{Binding UndoRemovalCommand}" Visibility="{Binding CanUndoRemoval, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="{x:Static localization:UiStrings.SourcesUndoHelp}" Style="{StaticResource SecondaryButtonStyle}"/>
      <Button Content="{x:Static localization:UiStrings.ManageRefresh}" AutomationProperties.Name="{x:Static localization:UiStrings.ManageRefresh}" Command="{Binding RefreshCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginStackItem}"/>
    </WrapPanel>

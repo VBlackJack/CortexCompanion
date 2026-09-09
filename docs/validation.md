@@ -101,7 +101,7 @@ The source form accepts a page or space link. Inline authentication retains the 
 
 Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minimum-size window and scope confirmation at 100%, 150% and 200% raster scale. This is not a live Confluence account or native DPI test.
 
-## My sources - unreleased validation
+## My sources - 2026.0909.00 validation
 
 - Check visible cards, browser links and long titles.
 - Open the prefilled editor; cancellation must leave configuration bytes unchanged.
@@ -118,7 +118,7 @@ Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minim
   removal and a missing allowlist. WPF smoke renders the editor and source cards.
   100/150/200 percent images are renders, not native DPI or Narrator validation.
 
-## Source experience and recovery (unreleased)
+## Source experience and recovery (2026.0909.00)
 
 - Verify list-before-form ordering, title filtering and no-match feedback.
 - Load and search a page tree; ancestors remain visible and filtering preserves checks.
@@ -131,3 +131,26 @@ Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minim
   Reconnection validates expiry and preserves the source selection.
 - Human acceptance still covers keyboard, screen reader and native DPI. Automatic
   100/150/200 percent renders only cover layout.
+
+## UX recovery regression checks
+
+- During a delayed catalogue read, Cancel and Escape stop reading without closing the editor or changing its draft; closing the editor cancels the process request.
+- Submit an invalid additional source link, retry, and verify scope, roots and link are restored. Correct it and confirm before any write. A changed configuration must not restore an obsolete draft.
+- Load a health error with a required action: guidance is visible above synchronization actions without opening advanced options. A subsequent healthy state clears it.
+- Edit the document folder and press Ctrl+S from that field: it uses the folder save command. The unsaved indicator disappears after a successful save.
+
+## Unified document workflow
+
+- Update a local-only configuration: no Confluence worker should start.
+- Update a configuration with Confluence: collect before indexing; authentication, remote failure and cancellation must prevent the indexing step.
+- Edit the folder without saving: My sources must still display the saved path.
+- An old successful index must not mask a failed collection on Home.
+- Compare selected roots and observed included pages before and after filtering; scrolling must retain the summary and save actions.
+- Resize the search preview with mouse and keyboard; both panes must remain usable. An empty result must offer recovery without clearing the query unexpectedly.
+- First-run connection shortcut must expand advanced settings and focus the Cortex path. Check connected settings with advanced options collapsed.
+
+## Audit regression checks (2026.0909.00)
+
+The automated suite covers 1,000/10,000-page process responses, explicit output overflow, local-only readiness, folder changes and reloaded provenance, cancellation before the final review, and bounded realized tree containers. The real worker records configuration only when its pre/post indexing snapshots agree. Historical runs without provenance require a new update.
+
+Manual acceptance: change the saved folder, restart, update it, and verify readiness; cancel review preparation without loading the catalogue first; scroll/filter a large source tree and verify selections remain intact. Native DPI and Narrator checks remain manual.

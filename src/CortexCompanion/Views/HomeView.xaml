@@ -9,10 +9,11 @@
             <TextBlock Text="{x:Static localization:UiStrings.HomeIntro}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" />
             <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}">
                 <StackPanel>
-                    <TextBlock Text="{Binding Sync.Freshness.Status}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding DocumentsStatus}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" FontWeight="SemiBold" />
                     <Button Content="{Binding RecommendedAction}" AutomationProperties.Name="{Binding RecommendedAction}" Command="{Binding ContinueSetupCommand}" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left" />
                 </StackPanel>
             </Border>
+            <Expander Header="{x:Static localization:UiStrings.ExperienceDetails}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceDetails}" IsExpanded="False" Margin="{StaticResource MarginSectionBottom}">
             <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}">
                 <StackPanel>
                     <UniformGrid Columns="2">
@@ -38,6 +39,7 @@
                     <Button Content="{x:Static localization:UiStrings.HomeRefresh}" AutomationProperties.Name="{x:Static localization:UiStrings.HomeRefresh}" Command="{Binding RefreshOverviewCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" />
                 </StackPanel>
             </Border>
+            </Expander>
             <Expander Header="{x:Static localization:UiStrings.GuideTitle}" AutomationProperties.Name="{x:Static localization:UiStrings.GuideTitle}" IsExpanded="{Binding IsGuideExpanded, Mode=TwoWay}" Margin="{StaticResource MarginSectionBottom}">
                 <StackPanel Margin="{StaticResource MarginSectionTop}">
                     <TextBlock Text="{x:Static localization:UiStrings.GuideIntro}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" />

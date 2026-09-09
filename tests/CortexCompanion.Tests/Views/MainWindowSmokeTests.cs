@@ -98,10 +98,13 @@ public sealed class MainWindowSmokeTests
             advanced.IsExpanded = false;
             query.Focus();
             window.UpdateLayout();
+            GridSplitter splitter = Descendants(search).OfType<GridSplitter>().Single();
+            Assert.IsTrue(splitter.Focusable);
+            Assert.AreEqual(UiStrings.ExperienceResize, AutomationProperties.GetName(splitter));
             Capture(window, "search");
             ListBox results = Descendants(search).OfType<ListBox>().Single();
             Assert.IsGreaterThanOrEqualTo(80.0, results.ActualHeight, "Search results must retain a usable viewport at minimum window size.");
-            Assert.IsTrue(Descendants(search).OfType<TextBlock>().Any(text => text.Text == viewModel.Sync.Freshness.Status));
+            Assert.IsTrue(Descendants(search).OfType<TextBlock>().Any(text => text.Text == viewModel.DocumentsStatus));
             Button syncLink = Descendants(search).OfType<Button>().Single(button =>
                 AutomationProperties.GetName(button) == UiStrings.SearchGoToSync);
             Assert.IsNotNull(syncLink.Command);
@@ -133,7 +136,7 @@ public sealed class MainWindowSmokeTests
             Assert.IsTrue(Descendants(pagesView).OfType<Button>().Any(button => Equals(button.Content, UiStrings.ManageEdit)));
             Capture(window, "my-sources");
             SourceSelectionDialog editor = new(new ConfluenceSpaceConfiguration("DOC", "confluence/DOC", "pro-confidentiel",
-                ConfluenceSelection.Subtree, ["100"]), [new ConfiguredPageContract { PageId = "100", Title = "Installation et administration des serveurs Windows" }], () => Task.FromResult(
+                ConfluenceSelection.Subtree, ["100"]), [new ConfiguredPageContract { PageId = "100", Title = "Installation et administration des serveurs Windows" }], _ => Task.FromResult(
                     new ConfluenceCliResult<SourceCatalogContract>(CortexExitCode.Ok, new SourceCatalogContract
                     {
                         ContractVersion = 1,
@@ -152,13 +155,43 @@ public sealed class MainWindowSmokeTests
                 Assert.IsTrue(Descendants(editor).OfType<CheckBox>().Single().IsChecked);
                 ((Button)editor.FindName("LoadTreeButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 editor.UpdateLayout();
-                Assert.HasCount(3, Descendants(editor).OfType<CheckBox>());
+                Assert.HasCount(1, Descendants(editor).OfType<CheckBox>());
+                ((TextBox)editor.FindName("TreeSearch")).Text = "Tester";
+                editor.UpdateLayout();
+                TreeView filteredTree = (TreeView)editor.FindName("PageChoices");
+                SourceTreeNode[] filteredNodes = SourceTreeNode.Flatten((IReadOnlyList<SourceTreeNode>)filteredTree.ItemsSource).ToArray();
+                Assert.HasCount(3, filteredNodes);
+                Assert.IsTrue(filteredNodes.Single(node => node.PageId == "101").IsExpanded);
+                Descendants(filteredTree).OfType<ScrollViewer>().First().ScrollToEnd();
+                editor.UpdateLayout();
+                ((TextBox)editor.FindName("TreeSearch")).Clear();
+                Assert.AreEqual(UiStrings.ExperienceNoChanges, ((TextBlock)editor.FindName("DraftSummary")).Text);
+                StringAssert.Contains(((TextBlock)editor.FindName("SelectionSummary")).Text, "2");
+                ((TextBox)editor.FindName("AdditionalLink")).Text = "new-draft";
+                Assert.AreEqual(UiStrings.ExperienceDraft, ((TextBlock)editor.FindName("DraftSummary")).Text);
+                ((TextBox)editor.FindName("AdditionalLink")).Clear();
                 Capture(editor, "source-editor");
                 ((TextBox)editor.FindName("TreeSearch")).Text = "Tester";
                 editor.UpdateLayout();
                 Capture(editor, "source-tree-filtered");
             }
             finally { editor.Close(); }
+            string[] largeIds = Enumerable.Range(1, 10000).Select(index => index.ToString(System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+            SourceSelectionDialog largeEditor = new(new ConfluenceSpaceConfiguration("TEST", "docs", "pro-confidentiel", ConfluenceSelection.Pages, largeIds), [])
+            { Owner = window, ShowInTaskbar = false };
+            try
+            {
+                largeEditor.Show(); largeEditor.UpdateLayout();
+                TreeView tree = (TreeView)largeEditor.FindName("PageChoices");
+                Assert.HasCount(10000, tree.Items);
+                Assert.IsLessThan(100, Descendants(tree).OfType<TreeViewItem>().Count());
+                ScrollViewer viewport = Descendants(tree).OfType<ScrollViewer>().First();
+                viewport.ScrollToEnd(); largeEditor.UpdateLayout();
+                Assert.IsLessThan(100, Descendants(tree).OfType<TreeViewItem>().Count());
+                Assert.IsTrue(((IReadOnlyList<SourceTreeNode>)tree.ItemsSource).All(node => node.IsSelected));
+                Capture(largeEditor, "source-large-virtualized");
+            }
+            finally { largeEditor.Close(); }
             SourceChangeReview review = SourceChangeReview.Create(
                 new ConfluenceSpaceConfiguration("DOC", "doc", "pro-confidentiel", ConfluenceSelection.WholeSpace, []),
                 new ConfluenceSpaceConfiguration("DOC", "doc", "pro-confidentiel", ConfluenceSelection.Pages, ["100"]),
@@ -242,6 +275,55 @@ public sealed class MainWindowSmokeTests
                 Capture(scope, "confluence-scope");
             }
             finally { scope.Close(); }
+            CancellationToken observedToken = default;
+            TaskCompletionSource<ConfluenceCliResult<SourceCatalogContract>> pending = new();
+            SourceSelectionEdit draft = new(ConfluenceSelection.Subtree, ["123"], "invalid-link");
+            SourceSelectionDialog cancellable = new(new ConfluenceSpaceConfiguration("DOC", "docs", "internal", ConfluenceSelection.Pages, []), [], token =>
+            {
+                observedToken = token;
+                token.Register(() => pending.TrySetCanceled(token));
+                return pending.Task;
+            }, draft)
+            { Owner = window, ShowInTaskbar = false };
+            try
+            {
+                cancellable.Show();
+                Assert.AreEqual("invalid-link", ((TextBox)cancellable.FindName("AdditionalLink")).Text);
+                Assert.IsTrue(((RadioButton)cancellable.FindName("SubtreeOption")).IsChecked);
+                ((Button)cancellable.FindName("LoadTreeButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Button cancelRead = (Button)cancellable.FindName("CancelEditorButton");
+                Assert.IsTrue(cancelRead.IsEnabled);
+                cancelRead.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Assert.IsTrue(observedToken.IsCancellationRequested);
+                Assert.IsTrue(cancellable.IsVisible);
+                Assert.AreEqual("invalid-link", ((TextBox)cancellable.FindName("AdditionalLink")).Text);
+                Assert.IsNull(cancellable.SelectionEdit);
+                cancellable.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                Assert.IsTrue(((Button)cancellable.FindName("SaveLaterButton")).IsEnabled);
+                pending = new();
+                ((Button)cancellable.FindName("LoadTreeButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                cancellable.Close();
+                Assert.IsTrue(observedToken.IsCancellationRequested);
+            }
+            finally { cancellable.Close(); }
+            viewModel.NavigateCommand.Execute(NavigationPage.Settings);
+            window.UpdateLayout();
+            Capture(window, "settings-progressive");
+            SettingsView progressiveSettings = Descendants(window).OfType<SettingsView>().Single();
+            Button setupConnection = Descendants(progressiveSettings).OfType<Button>().Single(button => Equals(button.Content, UiStrings.SettingsCliTitle));
+            setupConnection.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            Assert.IsTrue(((Expander)progressiveSettings.FindName("TechnicalSettings")).IsExpanded);
+            Assert.IsTrue(((TextBox)progressiveSettings.FindName("CliPathInput")).IsFocused);
+            Capture(window, "settings-connection");
+            viewModel.NavigateCommand.Execute(NavigationPage.LocalKnowledgeBase);
+            window.UpdateLayout();
+            Capture(window, "update-documents");
+            SettingsView settingsView = Descendants(window).OfType<SettingsView>().Single();
+            TextBox folder = Descendants(settingsView).OfType<TextBox>().Single(control =>
+                control.InputBindings.OfType<KeyBinding>().Any(binding => ReferenceEquals(binding.Command, settings.SaveKnowledgeBaseCommand)));
+            Assert.IsTrue(folder.InputBindings.OfType<KeyBinding>().Any(binding => binding.Key == Key.S && binding.Modifiers == ModifierKeys.Control && ReferenceEquals(binding.Command, settings.SaveKnowledgeBaseCommand)));
+
         }
         finally
         {

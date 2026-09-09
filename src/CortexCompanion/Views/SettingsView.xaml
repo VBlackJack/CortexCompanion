@@ -18,6 +18,9 @@
                        Style="{StaticResource PlaceholderTextStyle}"
                        Margin="{StaticResource MarginSectionSeparator}" />
 
+            <Button Content="{x:Static localization:UiStrings.SettingsCliTitle}" AutomationProperties.Name="{x:Static localization:UiStrings.SettingsCliTitle}"
+                    Visibility="{Binding NeedsCliSetup, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="ConfigureCortexClick" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginStackItem}" />
             <Border Style="{StaticResource PageCardStyle}"
                     Margin="{StaticResource MarginSectionBottom}">
                 <StackPanel>
@@ -32,80 +35,6 @@
             </Border>
 
             <Border Style="{StaticResource PageCardStyle}"
-                    Margin="{StaticResource MarginSectionBottom}">
-                <StackPanel>
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliTitle}"
-                               FontSize="{StaticResource FontSizeTitle}"
-                               FontWeight="SemiBold"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliDescription}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock x:Name="CliPathLabel"
-                               Text="{x:Static localization:UiStrings.SettingsCliPathLabel}"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <Grid Margin="{StaticResource MarginStackItem}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding CliPath, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.LabeledBy="{Binding ElementName=CliPathLabel}">
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding SaveCliCommand}" />
-                            </TextBox.InputBindings>
-                        </TextBox>
-                        <Button Grid.Column="1"
-                                Content="{x:Static localization:UiStrings.BrowseButton}"
-                                AutomationProperties.Name="{x:Static localization:UiStrings.SettingsBrowseCliAccessibleName}"
-                                Command="{Binding BrowseCliCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Margin="{StaticResource MarginInlineControl}" />
-                    </Grid>
-                    <TextBlock Text="{Binding CliValidationMessage}"
-                               accessibility:LiveRegionBehavior.Announcement="{Binding CliValidationMessage}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               AutomationProperties.LiveSetting="Polite"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock x:Name="CliTimeoutLabel"
-                               Text="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliTimeoutDescription}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <ComboBox ItemsSource="{Binding CliTimeoutOptions}"
-                              SelectedItem="{Binding CliTimeoutSeconds, Mode=TwoWay}"
-                              Width="{StaticResource SettingsInputWidth}"
-                              HorizontalAlignment="Left"
-                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
-                              Margin="{StaticResource MarginSectionBottom}" />
-                    <TextBlock x:Name="LanguageLabel"
-                               Text="{x:Static localization:UiStrings.SettingsLanguageLabel}"
-                               Margin="{StaticResource MarginLabelBottom}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsLanguageDescription}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource MarginStackItem}" />
-                    <ComboBox ItemsSource="{Binding UiLanguageOptions}"
-                              SelectedItem="{Binding SelectedUiLanguage, Mode=TwoWay}"
-                              DisplayMemberPath="Label"
-                              Width="{StaticResource SettingsInputWidth}"
-                              HorizontalAlignment="Left"
-                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsLanguageLabel}"
-                              Margin="{StaticResource MarginSectionBottom}" />
-                    <Button Content="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
-                            AutomationProperties.Name="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
-                            ToolTip="{x:Static localization:UiStrings.ShortcutSaveHint}"
-                            Command="{Binding SaveCliCommand}"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            HorizontalAlignment="Left" />
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource PageCardStyle}"
                     Margin="{StaticResource MarginSectionBottom}"
                     IsEnabled="{Binding IsCliReady}">
                 <StackPanel>
@@ -113,7 +42,7 @@
                                FontSize="{StaticResource FontSizeTitle}"
                                FontWeight="SemiBold"
                                Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsKnowledgeBaseDescription}"
+                    <TextBlock Text="{x:Static localization:UiStrings.ExperienceFolderHelp}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
@@ -121,6 +50,9 @@
                                accessibility:LiveRegionBehavior.Announcement="{Binding ConfigStateText}"
                                AutomationProperties.LiveSetting="Polite"
                                Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsKnowledgeBaseSelectionPending}"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding HasUnsavedKnowledgeBase, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <TextBlock x:Name="KnowledgeBasePathLabel"
                                Text="{x:Static localization:UiStrings.SettingsKnowledgeBasePathLabel}"
                                Margin="{StaticResource MarginLabelBottom}" />
@@ -133,6 +65,7 @@
                                  AutomationProperties.LabeledBy="{Binding ElementName=KnowledgeBasePathLabel}">
                             <TextBox.InputBindings>
                                 <KeyBinding Key="Return" Command="{Binding SaveKnowledgeBaseCommand}" />
+                                <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveKnowledgeBaseCommand}" />
                             </TextBox.InputBindings>
                         </TextBox>
                         <Button Grid.Column="1"
@@ -198,6 +131,82 @@
                 </StackPanel>
             </Border>
 
+            <Expander x:Name="TechnicalSettings" Header="{x:Static localization:UiStrings.ExperienceTechnical}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceTechnical}" IsExpanded="{Binding NeedsCliSetup, Mode=OneWay}">
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionBottom}">
+                <StackPanel>
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliTitle}"
+                               FontSize="{StaticResource FontSizeTitle}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock x:Name="CliPathLabel"
+                               Text="{x:Static localization:UiStrings.SettingsCliPathLabel}"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <Grid Margin="{StaticResource MarginStackItem}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="CliPathInput" Text="{Binding CliPath, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.LabeledBy="{Binding ElementName=CliPathLabel}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding SaveCliCommand}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Button Grid.Column="1"
+                                Content="{x:Static localization:UiStrings.BrowseButton}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.SettingsBrowseCliAccessibleName}"
+                                Command="{Binding BrowseCliCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Margin="{StaticResource MarginInlineControl}" />
+                    </Grid>
+                    <TextBlock Text="{Binding CliValidationMessage}"
+                               accessibility:LiveRegionBehavior.Announcement="{Binding CliValidationMessage}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Polite"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock x:Name="CliTimeoutLabel"
+                               Text="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsCliTimeoutDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <ComboBox ItemsSource="{Binding CliTimeoutOptions}"
+                              SelectedItem="{Binding CliTimeoutSeconds, Mode=TwoWay}"
+                              Width="{StaticResource SettingsInputWidth}"
+                              HorizontalAlignment="Left"
+                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsCliTimeoutLabel}"
+                              Margin="{StaticResource MarginSectionBottom}" />
+                    <TextBlock x:Name="LanguageLabel"
+                               Text="{x:Static localization:UiStrings.SettingsLanguageLabel}"
+                               Margin="{StaticResource MarginLabelBottom}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsLanguageDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <ComboBox ItemsSource="{Binding UiLanguageOptions}"
+                              SelectedItem="{Binding SelectedUiLanguage, Mode=TwoWay}"
+                              DisplayMemberPath="Label"
+                              Width="{StaticResource SettingsInputWidth}"
+                              HorizontalAlignment="Left"
+                              AutomationProperties.Name="{x:Static localization:UiStrings.SettingsLanguageLabel}"
+                              Margin="{StaticResource MarginSectionBottom}" />
+                    <Button Content="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
+                            AutomationProperties.Name="{x:Static localization:UiStrings.SettingsSaveAndConnect}"
+                            ToolTip="{x:Static localization:UiStrings.ShortcutSaveHint}"
+                            Command="{Binding SaveCliCommand}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            </Expander>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

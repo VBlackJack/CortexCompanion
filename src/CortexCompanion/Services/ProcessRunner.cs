@@ -86,11 +86,11 @@ public sealed class ProcessRunner : IProcessRunner
             leaveOpen: true);
         using CancellationTokenSource outputReadSource = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken);
-        Task<string> standardOutputTask = ReadBoundedAsync(
+        Task<BoundedOutput> standardOutputTask = ReadBoundedAsync(
             standardOutputReader,
             request.MaxOutputCharacters,
             outputReadSource.Token);
-        Task<string> standardErrorTask = ReadBoundedAsync(
+        Task<BoundedOutput> standardErrorTask = ReadBoundedAsync(
             standardErrorReader,
             request.MaxOutputCharacters,
             outputReadSource.Token);
@@ -164,13 +164,20 @@ public sealed class ProcessRunner : IProcessRunner
                 "Process output was not valid UTF-8.");
         }
 
+        if (completed.Truncated)
+        {
+            return ProcessRunResult.OutcomeUnknownFailure(completed.StandardOutput, completed.StandardError,
+                "OutputTruncated") with
+            { OutputTruncated = true };
+        }
+
         return ProcessRunResult.Completed(
             process.ExitCode,
             completed.StandardOutput,
             completed.StandardError);
     }
 
-    private static async Task<string> ReadBoundedAsync(
+    private static async Task<BoundedOutput> ReadBoundedAsync(
         StreamReader reader,
         int maximumCharacters,
         CancellationToken cancellationToken)
@@ -178,16 +185,18 @@ public sealed class ProcessRunner : IProcessRunner
         const int BufferLength = 1_024;
         char[] buffer = new char[BufferLength];
         StringBuilder retained = new(Math.Min(maximumCharacters, BufferLength));
+        bool truncated = false;
 
         while (true)
         {
             int charactersRead = await reader.ReadAsync(buffer.AsMemory(), cancellationToken);
             if (charactersRead == 0)
             {
-                return retained.ToString();
+                return new BoundedOutput(retained.ToString(), truncated);
             }
 
             int remaining = maximumCharacters - retained.Length;
+            truncated |= charactersRead > remaining;
             if (remaining > 0)
             {
                 retained.Append(buffer, 0, Math.Min(remaining, charactersRead));
@@ -196,14 +205,15 @@ public sealed class ProcessRunner : IProcessRunner
     }
 
     private static async Task<ProcessOutputCapture> CaptureOutputAsync(
-        Task<string> standardOutputTask,
-        Task<string> standardErrorTask)
+        Task<BoundedOutput> standardOutputTask,
+        Task<BoundedOutput> standardErrorTask)
     {
         try
         {
-            string standardOutput = await standardOutputTask;
-            string standardError = await standardErrorTask;
-            return new ProcessOutputCapture(true, true, standardOutput, standardError);
+            BoundedOutput standardOutput = await standardOutputTask;
+            BoundedOutput standardError = await standardErrorTask;
+            return new ProcessOutputCapture(true, true, standardOutput.Text, standardError.Text)
+            { Truncated = standardOutput.Truncated || standardError.Truncated };
         }
         catch (DecoderFallbackException)
         {
@@ -213,8 +223,8 @@ public sealed class ProcessRunner : IProcessRunner
 
     private async Task<ProcessOutputCapture> TerminateAndCaptureAsync(
         Process process,
-        Task<string> standardOutputTask,
-        Task<string> standardErrorTask,
+        Task<BoundedOutput> standardOutputTask,
+        Task<BoundedOutput> standardErrorTask,
         CancellationTokenSource outputReadSource)
     {
         bool terminated;
@@ -242,8 +252,8 @@ public sealed class ProcessRunner : IProcessRunner
     }
 
     private static async Task<ProcessOutputCapture> CaptureOutputBoundedAsync(
-        Task<string> standardOutputTask,
-        Task<string> standardErrorTask,
+        Task<BoundedOutput> standardOutputTask,
+        Task<BoundedOutput> standardErrorTask,
         CancellationTokenSource outputReadSource)
     {
         Task<ProcessOutputCapture> captureTask = CaptureOutputAsync(
@@ -322,12 +332,15 @@ public sealed class ProcessRunner : IProcessRunner
             TaskScheduler.Default);
     }
 
+    private sealed record BoundedOutput(string Text, bool Truncated);
+
     private sealed record ProcessOutputCapture(
         bool IsComplete,
         bool IsValidUtf8,
         string StandardOutput,
         string StandardError)
     {
+        public bool Truncated { get; init; }
         public static ProcessOutputCapture Empty { get; } = new(false, true, string.Empty, string.Empty);
     }
 }

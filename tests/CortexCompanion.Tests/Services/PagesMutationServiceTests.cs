@@ -424,6 +424,29 @@ public sealed class PagesMutationServiceTests
     }
 
     [TestMethod]
+    public async Task CancellingAutomaticReviewReadPreservesDraftAndWritesNothing()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123"]));
+        using CancellationTokenSource cancellation = new();
+        FakeCliClient cli = new()
+        {
+            Catalogue = token =>
+        {
+            cancellation.Cancel();
+            return Task.FromCanceled<ConfluenceCliResult<SourceCatalogContract>>(token);
+        }
+        };
+        SourceSelectionEdit edit = new(ConfluenceSelection.Subtree, ["123"], string.Empty, false);
+        FakeConfirmations confirmations = new() { Edit = edit, SelectionAccepted = true };
+        PagesMutationService service = new(cli, store, confirmations);
+        await Assert.ThrowsAsync<OperationCanceledException>(() => service.EditSelectionAsync("DOC", false, cancellation.Token));
+        Assert.AreEqual(0, store.WriteCalls);
+        confirmations.Edit = null;
+        Assert.IsFalse(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.AreEqual(edit, confirmations.ObservedDraft);
+    }
+
+    [TestMethod]
     public async Task EditingPreservesOtherSettingsAndSelectedRoots()
     {
         FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123", "456"]));
@@ -617,6 +640,38 @@ public sealed class PagesMutationServiceTests
         Assert.AreEqual("123", store.WrittenConfiguration.Spaces.Single().PageIds.Single());
     }
 
+    [TestMethod]
+    public async Task FailedReferenceRetainsDraftUntilSuccessfulCorrection()
+    {
+        FakeConfigStore store = new(SelectionSnapshot(ConfluenceSelection.Pages, ["123", "456"]));
+        SourceSelectionEdit draft = new(ConfluenceSelection.Subtree, ["456"], "https://other.example.test/spaces/DOC/pages/1/title");
+        FakeConfirmations confirmations = new() { Edit = draft, SelectionAccepted = true };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.AreEqual(0, store.WriteCalls);
+        confirmations.Edit = draft with { AdditionalReference = string.Empty };
+        Assert.IsTrue(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.AreEqual(draft, confirmations.ObservedDraft);
+        Assert.AreEqual("456", store.WrittenConfiguration!.Spaces[0].PageIds.Single());
+        confirmations.Edit = null;
+        Assert.IsFalse(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.IsNull(confirmations.ObservedDraft);
+    }
+
+    [TestMethod]
+    public async Task ChangedConfigurationDoesNotRestoreObsoleteDraft()
+    {
+        ConfluenceConfigSnapshot before = SelectionSnapshot(ConfluenceSelection.Pages, ["123"]);
+        FakeConfigStore store = new(before) { ReloadedSnapshot = before with { ContentHash = new string('b', 64) } };
+        FakeConfirmations confirmations = new() { Edit = new(ConfluenceSelection.Subtree, ["123"], "https://other.example.test/spaces/DOC/pages/1/title") };
+        PagesMutationService service = new(new FakeCliClient(), store, confirmations);
+        await Assert.ThrowsAsync<PageMutationRejectedException>(() => service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        confirmations.Edit = null;
+        Assert.IsFalse(await service.EditSelectionAsync("DOC", false, CancellationToken.None));
+        Assert.IsNull(confirmations.ObservedDraft);
+        Assert.AreEqual(0, store.WriteCalls);
+    }
+
     private static FakeCliClient AnssiwsCliClient() => new()
     {
         ResolveResult = Success(new ResolvedPageContract
@@ -771,6 +826,10 @@ public sealed class PagesMutationServiceTests
 
     private sealed class FakeCliClient : IConfluenceCliClient
     {
+        public Func<CancellationToken, Task<ConfluenceCliResult<SourceCatalogContract>>>? Catalogue { get; init; }
+        public Task<ConfluenceCliResult<SourceCatalogContract>> GetCatalogAsync(string spaceKey, CancellationToken token) =>
+            Catalogue?.Invoke(token) ?? Task.FromResult(new ConfluenceCliResult<SourceCatalogContract>(CortexExitCode.Error, null, string.Empty, false, null));
+
         public ConfluenceCliResult<ResolvedPageContract> ResolveResult { get; init; } =
             new(CortexExitCode.Error, null, "non configure", false, null);
 
@@ -871,7 +930,11 @@ public sealed class PagesMutationServiceTests
 
     private sealed class FakeConfirmations : IPageMutationConfirmationService
     {
-        public SourceSelectionEdit? Edit { get; init; }
+        public SourceSelectionEdit? Edit { get; set; }
+        public SourceSelectionEdit? ObservedDraft { get; private set; }
+        public SourceSelectionEdit? EditSelectionWithCatalog(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages,
+            Func<CancellationToken, Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog, SourceSelectionEdit? draft = null)
+        { ObservedDraft = draft; return Edit; }
         public bool SelectionAccepted { get; init; }
         public bool? ObservedCoverage { get; private set; }
         public bool ConfirmRemoveWithCoverage(string spaceKey, string pageId, string? title, bool? stillCovered)

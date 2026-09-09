@@ -202,6 +202,42 @@ public sealed class ProcessRunnerTests
         Assert.Contains("not valid UTF-8", result.LaunchError, StringComparison.Ordinal);
     }
 
+    [TestMethod]
+    [DataRow(1000)]
+    [DataRow(10000)]
+    public async Task SourceCatalogueCrossesTheRealProcessBoundaryWithoutTruncation(int count)
+    {
+        CatalogueRunner runner = new(FindLockProbe(), count);
+        ConfluenceCliClient client = new(runner, FindLockProbe(), Path.GetFullPath("test-config.toml"), TimeSpan.FromSeconds(30));
+        ConfluenceCliResult<SourceCatalogContract> result = await client.GetCatalogAsync("TEST", CancellationToken.None);
+        Assert.IsTrue(result.IsSuccess);
+        Assert.HasCount(count, result.Value!.Pages);
+        Assert.IsGreaterThan(16384, runner.Result!.StandardOutput.Length);
+        Assert.IsFalse(runner.Result.OutputTruncated);
+    }
+
+    [TestMethod]
+    public async Task OutputOverflowHasAnExplicitRejectedOutcome()
+    {
+        ProcessRunResult result = await new ProcessRunner().RunAsync(new ProcessRequest(FindLockProbe(),
+            ["catalog-output", "1000"], TimeSpan.FromSeconds(30), 1024), CancellationToken.None);
+        Assert.IsTrue(result.OutputTruncated);
+        Assert.IsTrue(result.OutcomeUnknown);
+        Assert.AreEqual(1024, result.StandardOutput.Length);
+        Assert.AreEqual("OutputTruncated", result.LaunchError);
+    }
+
+    private sealed class CatalogueRunner(string executable, int count) : CortexCompanion.Interfaces.IProcessRunner
+    {
+        public ProcessRunResult? Result { get; private set; }
+        public async Task<ProcessRunResult> RunAsync(ProcessRequest request, CancellationToken token)
+        {
+            Result = await new ProcessRunner().RunAsync(request with
+            { FilePath = executable, Arguments = ["catalog-output", count.ToString(System.Globalization.CultureInfo.InvariantCulture)] }, token);
+            return Result;
+        }
+    }
+
     private static string FindLockProbe()
     {
         DirectoryInfo? directory = new(AppContext.BaseDirectory);

@@ -6,6 +6,25 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir à modifier un fichier TOML ni à ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
+## Corrections de l’audit (2026.0909.00)
+
+Les réponses volumineuses disposent d’une limite de transport dédiée ; toute sortie tronquée est refusée explicitement. L’arbre affiche uniquement les lignes visibles. Annuler ou Échap arrête aussi la préparation de la confirmation après fermeture de l’éditeur.
+
+Une indexation locale réussie peut être prête sans Confluence. Les nouveaux traitements conservent le dossier local et l’identité de configuration observés ; leur modification impose une nouvelle indexation. Les anciens traitements sans cette preuve restent non confirmés jusqu’à une mise à jour réussie. La configuration est vérifiée avant et après indexation ; si elle est illisible ou a changé, aucune preuve de disponibilité n’est enregistrée.
+
+## Parcours documentaire (2026.0909.00)
+
+- **Mes sources** réunit le dossier documentaire local configuré et les sources Confluence. La carte du dossier affiche le chemin enregistré, jamais un brouillon.
+- **Mettre à jour mes documents** lit les sources Confluence configurées, puis indexe les documents. Sans Confluence, les documents locaux sont indexés directement. Un échec de collecte arrête le parcours.
+- **Accueil** montre la disponibilité et la prochaine action ; les dates restent accessibles dans l'état détaillé.
+- L'éditeur conserve le résumé de sélection et les actions visibles pendant le défilement. Les compteurs portent sur les pages observées ; une couverture non mesurée est explicite.
+- **Recherche** propose un aperçu plus large et redimensionnable. Une recherche vide permet de retirer les filtres, vérifier les sources ou mettre à jour les documents.
+- **Réglages** présente les documents et Confluence en premier. Les paramètres avancés de Cortex restent accessibles, avec un accès direct à la connexion si Cortex est indisponible.
+
+## Améliorations de récupération (2026.0909.00)
+
+Pendant le chargement de l'arbre, Annuler ou Échap interrompt la lecture et conserve vos choix. Fermer l'éditeur interrompt aussi la lecture. Si l'enregistrement échoue, Réessayer restaure la portée et le lien non enregistrés tant que la configuration sauvegardée n'a pas changé. Les consignes de récupération apparaissent directement sur Base locale, hors des options avancées.
+
 ## Fusionner une page que la source collecte déjà (2026.0908.00)
 
 Coller une page qu'une source configurée collecte déjà finissait par un refus, et
@@ -21,6 +40,7 @@ La configuration n'a pas de mode mixte : élargir vers un sous-arbre une source 
 des pages seules fait de chaque page listée une racine, et la revue montre ce que cela
 ajoute avant toute écriture. Le Cortex apparié indique la couverture dans son document de
 prévisualisation.
+
 
 ## Fenêtre de périmètre lisible et délais honnêtes (2026.0907.00)
 
@@ -182,7 +202,7 @@ progression est perdu.
 | Raccourci | Action |
 |---|---|
 | `F5` | Recharger l'écran courant |
-| `Ctrl+S` | Enregistrer et connecter, sur l'écran Réglages |
+| `Ctrl+S` | Enregistrer le dossier documentaire lorsque son champ a le focus ; sinon enregistrer et connecter Cortex dans Réglages |
 | `Entree` | Valide le champ en cours de saisie : URL de page ou d'espace, PAT, dossier, chemin, heure |
 | `Tab` / `Maj+Tab` | Passer d'un contrôle à l'autre ; le contrôle actif est entouré |
 | `Echap` | Annuler la boîte de dialogue de confirmation ouverte |

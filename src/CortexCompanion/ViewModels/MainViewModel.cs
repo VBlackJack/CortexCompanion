@@ -167,7 +167,7 @@ public sealed partial class MainViewModel : ViewModelBase
     public bool IsInitializing
     {
         get => _isInitializing;
-        private set => SetProperty(ref _isInitializing, value);
+        private set { if (SetProperty(ref _isInitializing, value)) { OnPropertyChanged(nameof(DocumentsStatus)); } }
     }
 
     /// <summary>Loads local settings after the shell is visible.</summary>
@@ -233,6 +233,7 @@ public sealed partial class MainViewModel : ViewModelBase
     {
         CompanionRuntime runtime = eventArgs.Runtime;
         Sync.PropertyChanged -= OnOverviewChanged;
+        Pages.PropertyChanged -= OnSourceOverviewChanged;
         Pages = runtime.Pages;
         Search.Stop();
         Search = runtime.Search;

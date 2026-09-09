@@ -98,10 +98,13 @@ public sealed class ConfluenceCliClient : IConfluenceCliClient
                 _cliPath,
                 arguments,
                 timeout ?? _timeout,
-                AppConstants.MaxProcessOutputCharacters),
+                typeof(T) == typeof(SourceCatalogContract) || typeof(T) == typeof(PagesContract)
+                    ? AppConstants.MaxSourceOutputCharacters : AppConstants.MaxProcessOutputCharacters),
             cancellationToken);
+        if (processResult.OutputTruncated)
+        { return new(CortexExitCode.Error, null, UiStrings.SourcesResponseTooLarge, false, null); }
         CortexExitCode exitCode = MapExitCode(processResult.ExitCode);
-        if (processResult.TimedOut || processResult.LaunchError is not null || exitCode != CortexExitCode.Ok)
+        if (processResult.TimedOut || processResult.OutcomeUnknown || processResult.LaunchError is not null || exitCode != CortexExitCode.Ok)
         {
             return new ConfluenceCliResult<T>(
                 exitCode,

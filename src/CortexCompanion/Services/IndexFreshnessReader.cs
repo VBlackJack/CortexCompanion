@@ -21,6 +21,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
         string? indexed = null;
         DateTimeOffset? completed = null;
         bool latestSucceeded = false;
+        LocalIndexContext? localContext = null;
         bool first = true;
         try
         {
@@ -65,6 +66,8 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
 
                 indexed = root.GetProperty("scope").GetProperty("included_ingestion_documents").GetBoolean()
                     ? root.GetProperty("ingestion").GetProperty("indexed_generation_id").GetString() : null;
+                localContext = await SyncRunPersistence.ReadJsonAsync<LocalIndexContext>(
+                    Path.Combine(directory, LocalIndexContext.FileName), cancellationToken);
                 completed = result!.CompletedAt;
                 break;
             }
@@ -82,6 +85,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
             completed?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? UiStrings.ValueUnknown, status)
         {
             LatestLocalRunSucceeded = latestSucceeded,
+            LocalContext = localContext,
         };
     }
 }
@@ -91,4 +95,11 @@ public sealed record IndexFreshness(string Published, string Indexed, string Las
 {
     /// <summary>Gets whether the newest observed local run completed successfully.</summary>
     public bool LatestLocalRunSucceeded { get; init; }
+
+    /// <summary>Gets durable root/configuration provenance; absent on historical runs.</summary>
+    public LocalIndexContext? LocalContext { get; init; }
+
+    /// <summary>Confirms a successful local index only for the currently saved configuration.</summary>
+    public bool MatchesLocalConfiguration(LocalIndexContext? current) =>
+        LatestLocalRunSucceeded && LocalContext?.Matches(current) == true;
 }

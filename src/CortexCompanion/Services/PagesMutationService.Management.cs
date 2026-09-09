@@ -11,6 +11,8 @@ public sealed partial class PagesMutationService
 {
     private sealed record RemovalUndo(ConfluenceConfiguration Before, string AfterHash);
     private RemovalUndo? _removalUndo;
+    private sealed record SelectionDraft(string SpaceKey, string Hash, SourceSelectionEdit Edit, SourceCatalogContract? Catalog);
+    private SelectionDraft? _selectionDraft;
 
     /// <summary>Gets whether this session retains a removal that can be reversed through CAS.</summary>
     public bool CanUndoRemoval => _removalUndo is not null;
@@ -44,6 +46,7 @@ public sealed partial class PagesMutationService
     public async Task<bool> EditSelectionAsync(string spaceKey, bool isReadOnly, CancellationToken cancellationToken)
     {
         EnsureMutable(isReadOnly);
+        LastSaveRequestsUpdate = false;
         ConfluenceConfigSnapshot snapshot = await _configStore.ReadAsync(cancellationToken);
         ConfluenceConfiguration configuration = snapshot.Configuration.MigrateToVersionTwo();
         ConfluenceSpaceConfiguration before = FindSpace(configuration, spaceKey);
@@ -60,18 +63,23 @@ public sealed partial class PagesMutationService
             .SingleOrDefault(item => string.Equals(item.SpaceKey, spaceKey, StringComparison.OrdinalIgnoreCase))?.Pages
             ?? Array.Empty<ConfiguredPageContract>();
         LastSaveRequestsUpdate = false;
-        SourceCatalogContract? catalog = null;
-        async Task<ConfluenceCliResult<SourceCatalogContract>> LoadCatalog()
+        SelectionDraft? retained = _selectionDraft is { } saved && saved.SpaceKey == spaceKey && saved.Hash == snapshot.ContentHash ? saved : null;
+        _selectionDraft = retained;
+        SourceCatalogContract? catalog = retained?.Catalog;
+        async Task<ConfluenceCliResult<SourceCatalogContract>> LoadCatalog(CancellationToken token)
         {
-            ConfluenceCliResult<SourceCatalogContract> result = await _cliClient.GetCatalogAsync(spaceKey, cancellationToken);
+            using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, token);
+            ConfluenceCliResult<SourceCatalogContract> result = await _cliClient.GetCatalogAsync(spaceKey, linked.Token);
             if (result.IsSuccess && result.Value?.SpaceKey == spaceKey) { catalog = result.Value; }
             return result;
         }
-        SourceSelectionEdit? edit = _confirmations.EditSelectionWithCatalog(before, pages, LoadCatalog);
+        SourceSelectionEdit? edit = _confirmations.EditSelectionWithCatalog(before, pages, LoadCatalog, retained?.Edit);
         if (edit is null)
         {
+            _selectionDraft = null;
             return false;
         }
+        _selectionDraft = new(spaceKey, snapshot.ContentHash, edit, catalog);
 
         if (!Enum.IsDefined(edit.Selection) || edit.PageIds.Any(id => !before.PageIds.Contains(id, StringComparer.Ordinal) && catalog?.Pages.Any(page => page.PageId == id) != true))
         {
@@ -119,17 +127,21 @@ public sealed partial class PagesMutationService
         };
         if (before.Selection == after.Selection && before.PageIds.SequenceEqual(after.PageIds))
         {
+            _selectionDraft = null;
             return false;
         }
 
-        if (catalog is null) { _ = await LoadCatalog(); }
+        if (catalog is null) { _ = await LoadCatalog(cancellationToken); }
+        cancellationToken.ThrowIfCancellationRequested();
         if (!_confirmations.ConfirmSelectionReview(SourceChangeReview.Create(before, after, catalog, pages)))
         {
             return false;
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
         await WriteOrRefreshAsync(configuration.MigrateToSchema(after.Selection == ConfluenceSelection.Subtree ? 3 : 2)
             .ReplaceSpace(after), snapshot.ContentHash, cancellationToken);
+        _selectionDraft = null;
         LastSaveRequestsUpdate = edit.UpdateNow;
         return true;
     }

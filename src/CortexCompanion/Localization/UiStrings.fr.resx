@@ -23,7 +23,7 @@
     <value>Navigation principale</value>
   </data>
   <data name="PagesNavigation" xml:space="preserve">
-    <value>Pages Confluence</value>
+    <value>Mes sources</value>
   </data>
   <data name="SyncNavigation" xml:space="preserve">
     <value>Base locale</value>
@@ -310,19 +310,19 @@
   <data name="SettingsIntroduction" xml:space="preserve"><value>Connectez Cortex Companion à Cortex, choisissez votre base de connaissances et gérez vos réglages sans modifier les fichiers de configuration à la main.</value></data>
   <data name="SettingsCurrentStateTitle" xml:space="preserve"><value>État actuel</value></data>
   <data name="SettingsLoading" xml:space="preserve"><value>Initialisation de Cortex Companion en cours...</value></data>
-  <data name="SettingsCliTitle" xml:space="preserve"><value>1. Connecter Cortex</value></data>
+  <data name="SettingsCliTitle" xml:space="preserve"><value>Connecter Cortex</value></data>
   <data name="SettingsCliDescription" xml:space="preserve"><value>Cortex Companion recherche cortex.exe dans la même installation Cortex (y compris son dossier parent), puis dans l'installation Windows standard. Vous pouvez aussi sélectionner le fichier manuellement.</value></data>
   <data name="SettingsCliPathLabel" xml:space="preserve"><value>Chemin de cortex.exe</value></data>
   <data name="SettingsCliTimeoutLabel" xml:space="preserve"><value>Délai maximal des commandes Cortex (secondes)</value></data>
   <data name="SettingsCliTimeoutDescription" xml:space="preserve"><value>Cette valeur s'applique à la connexion, aux réglages et aux pages Confluence. Augmentez-la sur un ordinateur lent.</value></data>
   <data name="SettingsBrowseCliAccessibleName" xml:space="preserve"><value>Choisir le fichier cortex.exe</value></data>
   <data name="SettingsSaveAndConnect" xml:space="preserve"><value>Enregistrer et connecter</value></data>
-  <data name="SettingsKnowledgeBaseTitle" xml:space="preserve"><value>2. Base de connaissances</value></data>
+  <data name="SettingsKnowledgeBaseTitle" xml:space="preserve"><value>Dossier documentaire</value></data>
   <data name="SettingsKnowledgeBaseDescription" xml:space="preserve"><value>Ce dossier contient les documents indexés par Cortex. Le changement est transmis à la commande Cortex avec une protection contre les modifications concurrentes.</value></data>
   <data name="SettingsKnowledgeBasePathLabel" xml:space="preserve"><value>Dossier de la base de connaissances</value></data>
   <data name="SettingsBrowseKnowledgeBaseAccessibleName" xml:space="preserve"><value>Choisir le dossier de la base de connaissances</value></data>
   <data name="SettingsSaveKnowledgeBase" xml:space="preserve"><value>Enregistrer le dossier</value></data>
-  <data name="SettingsConfluenceCredentialTitle" xml:space="preserve"><value>3. Authentification Confluence</value></data>
+  <data name="SettingsConfluenceCredentialTitle" xml:space="preserve"><value>Connexion Confluence</value></data>
   <data name="SettingsConfluenceCredentialDescription" xml:space="preserve"><value>Le PAT est enregistré dans le Gestionnaire d'identifiants Windows pour votre compte, protégé par DPAPI. Il n'est jamais écrit dans settings.json ni dans CONFLUENCE.toml.</value></data>
   <data name="SettingsConfluenceCredentialPatLabel" xml:space="preserve"><value>Personal Access Token (PAT)</value></data>
   <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Enregistrer le PAT</value></data>
@@ -524,11 +524,11 @@
   <data name="FlowScopeIdentity" xml:space="preserve"><value>{0} - espace {1}</value></data>
   <data name="FlowSpaceHomepage" xml:space="preserve"><value>Le lien d'espace est présenté à partir de sa page d'accueil.</value></data>
   <data name="FlowCollectionUnavailable" xml:space="preserve"><value>La collecte n'est pas disponible. Vérifiez les réglages ou attendez la fin de l'opération en cours.</value></data>
-  <data name="FlowCollecting" xml:space="preserve"><value>Application des sources - collecte des documents en cours.</value></data>
+  <data name="FlowCollecting" xml:space="preserve"><value>Lecture des documents Confluence...</value></data>
   <data name="FlowCollectionUnconfirmed" xml:space="preserve"><value>Collecte non confirmée. L'indexation automatique n'a pas été lancée. Consultez le résultat ci-dessous.</value></data>
-  <data name="FlowIndexing" xml:space="preserve"><value>Documents collectés - indexation en cours.</value></data>
+  <data name="FlowIndexing" xml:space="preserve"><value>Préparation des documents pour la recherche...</value></data>
   <data name="FlowIndexUnconfirmed" xml:space="preserve"><value>Disponibilité dans la recherche non confirmée. Consultez le résultat de l'indexation ci-dessous.</value></data>
-  <data name="FlowSearchReady" xml:space="preserve"><value>Documents collectés et indexés. Vous pouvez maintenant rechercher un document.</value></data>
+  <data name="FlowSearchReady" xml:space="preserve"><value>Documents indexés. Vous pouvez maintenant rechercher un document.</value></data>
   <data name="ManageEdit" xml:space="preserve"><value>Modifier la sélection</value></data>
   <data name="ManageRemove" xml:space="preserve"><value>Retirer de Cortex</value></data>
   <data name="ManageOpen" xml:space="preserve"><value>Ouvrir dans Confluence</value></data>
@@ -600,4 +600,34 @@
   <data name="SourcesMergeWidenHelp" xml:space="preserve"><value>Conserve tout ce que la source collecte et y ajoute votre choix. Une source qui suit des pages seules se met aussi à suivre leurs sous-pages si vous avez choisi un sous-arbre.</value></data>
   <data name="SourcesMergeReplaceHelp" xml:space="preserve"><value>Ne conserve que votre choix. Les documents que la source collectait en dehors quittent le périmètre à la prochaine collecte.</value></data>
   <data name="SourcesMergeNoChange" xml:space="preserve"><value>Cette option laisserait la source telle quelle.</value></data>
+  <data name="SourcesTreeCancelled" xml:space="preserve"><value>Lecture des pages interrompue. Vos choix sont conservés.</value></data>
+  <data name="SourcesDraftRestored" xml:space="preserve"><value>Votre sélection non enregistrée a été restaurée. Corrigez le lien ajouté ou réessayez d'enregistrer.</value></data>
+  <data name="ExperienceUpdate" xml:space="preserve"><value>Mettre à jour mes documents</value></data>
+  <data name="ExperienceReady" xml:space="preserve"><value>Vos documents sont prêts pour la recherche.</value></data>
+  <data name="ExperiencePending" xml:space="preserve"><value>Vos documents doivent être mis à jour.</value></data>
+  <data name="ExperienceAttention" xml:space="preserve"><value>Une connexion ou une source demande votre attention.</value></data>
+  <data name="ExperienceSetup" xml:space="preserve"><value>Choisissez vos documents pour commencer.</value></data>
+  <data name="ExperienceWorking" xml:space="preserve"><value>Vos documents sont en cours de mise à jour.</value></data>
+  <data name="ExperienceChecking" xml:space="preserve"><value>Vérification des sources avant la mise à jour...</value></data>
+  <data name="ExperienceLocal" xml:space="preserve"><value>Documents locaux</value></data>
+  <data name="ExperienceLocalEmpty" xml:space="preserve"><value>Aucun dossier documentaire enregistré pour le moment.</value></data>
+  <data name="ExperienceEditFolder" xml:space="preserve"><value>Choisir ou modifier le dossier</value></data>
+  <data name="ExperienceConfluence" xml:space="preserve"><value>Sources Confluence</value></data>
+  <data name="ExperienceTechnical" xml:space="preserve"><value>Connexion Cortex et réglages avancés</value></data>
+  <data name="ExperienceRecover" xml:space="preserve"><value>Voir la prochaine action nécessaire</value></data>
+  <data name="ExperienceSeparate" xml:space="preserve"><value>Exécuter une étape séparément</value></data>
+  <data name="ExperienceRemoveFilters" xml:space="preserve"><value>Retirer les filtres de recherche</value></data>
+  <data name="ExperienceSources" xml:space="preserve"><value>Vérifier mes sources</value></data>
+  <data name="ExperienceResize" xml:space="preserve"><value>Redimensionner les résultats et leur aperçu</value></data>
+  <data name="ExperienceSelection" xml:space="preserve"><value>{0} racines sélectionnées ; {1} sous-pages incluses observées. Portée : {2}.</value></data>
+  <data name="ExperienceSelectionUnknown" xml:space="preserve"><value>Le nombre de pages incluses n'est pas encore mesuré.</value></data>
+  <data name="ExperienceDraft" xml:space="preserve"><value>Modifications non enregistrées</value></data>
+  <data name="ExperienceNoChanges" xml:space="preserve"><value>Sélection inchangée</value></data>
+  <data name="ExperienceWholeCount" xml:space="preserve"><value>{0} pages observées dans l'espace entier.</value></data>
+  <data name="ExperienceDetails" xml:space="preserve"><value>État détaillé</value></data>
+  <data name="ExperienceInitializing" xml:space="preserve"><value>Préparation de votre espace documentaire...</value></data>
+  <data name="ExperienceUpdateHelp" xml:space="preserve"><value>Lire les sources Confluence configurées, puis préparer vos documents pour la recherche. Si la collecte échoue, la préparation s'arrête.</value></data>
+  <data name="ExperienceFolderHelp" xml:space="preserve"><value>Choisissez le dossier contenant vos documents. Enregistrez-le, puis mettez à jour vos documents pour les retrouver dans la recherche.</value></data>
+  <data name="SourcesResponseTooLarge" xml:space="preserve"><value>La réponse de la source dépasse la taille prise en charge. Aucune sélection partielle n'a été chargée.</value></data>
+  <data name="SourcesPreparingReview" xml:space="preserve"><value>Préparation de la sélection à confirmer. Vous pouvez annuler cette lecture sans enregistrer vos modifications.</value></data>
 </root>

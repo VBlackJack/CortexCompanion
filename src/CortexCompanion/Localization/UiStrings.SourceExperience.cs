@@ -5,6 +5,10 @@ namespace CortexCompanion.Localization;
 
 public static partial class UiStrings
 {
+    /// <summary>Explains that cancelling a read keeps the selection.</summary>
+    public static string SourcesTreeCancelled => GetString(nameof(SourcesTreeCancelled));
+    /// <summary>Explains the restored unsaved selection.</summary>
+    public static string SourcesDraftRestored => GetString(nameof(SourcesDraftRestored));
     /// <summary>Gets localized SourcesEmpty text.</summary>
     public static string SourcesEmpty => GetString(nameof(SourcesEmpty));
     /// <summary>Gets localized SourcesApplyHelp text.</summary>

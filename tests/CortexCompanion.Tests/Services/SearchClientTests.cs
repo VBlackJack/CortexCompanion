@@ -16,6 +16,22 @@ namespace CortexCompanion.Tests.Services;
 public sealed class SearchClientTests
 {
     [TestMethod]
+    public async Task EmptySearchOffersRecoveryAndClearingFiltersKeepsTheQuery()
+    {
+        string payload = System.Text.Json.JsonSerializer.Serialize(new SearchResponse(1, "search", "succeeded", "hybrid", false, []));
+        SearchViewModel viewModel = new(new SearchClient(new StubProcessRunner(ProcessRunResult.Completed(0, payload, string.Empty)), "cortex.exe", TimeSpan.FromSeconds(30)))
+        { Query = "backup", Section = "filtered", Source = SearchViewModel.Choices[1] };
+        Assert.IsFalse(viewModel.HasNoResults);
+        await ((AsyncRelayCommand)viewModel.SearchCommand).ExecuteAsync(null);
+        Assert.IsTrue(viewModel.HasNoResults);
+        await ((AsyncRelayCommand)viewModel.ClearFiltersCommand).ExecuteAsync(null);
+        Assert.AreEqual("backup", viewModel.Query);
+        Assert.AreEqual(string.Empty, viewModel.Section);
+        Assert.AreEqual(SearchViewModel.Choices[0], viewModel.Source);
+        Assert.IsFalse(viewModel.HasNoResults);
+    }
+
+    [TestMethod]
     public void SearchFollowsTheHandshakeAndHasNoFloorOfItsOwn()
     {
         // The accepted floor is the CLI this build ships with, and it carries the search

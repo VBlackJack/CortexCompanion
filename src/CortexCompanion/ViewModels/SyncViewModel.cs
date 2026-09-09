@@ -161,8 +161,11 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
     public string ActionRequired
     {
         get => _actionRequired;
-        private set => SetProperty(ref _actionRequired, value);
+        private set { if (SetProperty(ref _actionRequired, value)) { OnPropertyChanged(nameof(HasRecoveryAction)); } }
     }
+
+    /// <summary>Shows actionable recovery independently of advanced diagnostics.</summary>
+    public bool HasRecoveryAction => !string.IsNullOrWhiteSpace(ActionRequired) && ActionRequired != UiStrings.ValueNone;
 
     /// <summary>Gets the persisted seen count.</summary>
     public int Seen { get => _seen; private set => SetProperty(ref _seen, value); }

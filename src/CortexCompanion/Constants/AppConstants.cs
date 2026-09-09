@@ -32,7 +32,7 @@ public static class AppConstants
     /// longer answers the way this build expects, and the mismatch surfaced as an
     /// unexplained parse failure rather than as the version refusal it is.
     /// </remarks>
-    public const string MinSupportedCliVersion = "2026.0908.01";
+    public const string MinSupportedCliVersion = "2026.0909.00";
 
     /// <summary>Gets the only argument used by the startup handshake.</summary>
     public const string CliVersionArgument = "--version";
@@ -111,6 +111,9 @@ public static class AppConstants
 
     /// <summary>Gets the maximum retained characters for each process output stream.</summary>
     public const int MaxProcessOutputCharacters = 16_384;
+
+    /// <summary>Bounds complete source JSON, including 10,000 titles and ancestor chains.</summary>
+    public const int MaxSourceOutputCharacters = 32 * 1024 * 1024;
 
     /// <summary>Gets the maximum diagnostic exception text retained in a log entry.</summary>
     public const int MaxExceptionDiagnosticCharacters = 8_192;

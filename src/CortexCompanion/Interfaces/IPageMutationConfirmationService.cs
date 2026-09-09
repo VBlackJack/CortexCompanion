@@ -13,7 +13,7 @@ public interface IPageMutationConfirmationService
 
     /// <summary>Provides an optional remote catalogue loader without changing legacy confirmations.</summary>
     SourceSelectionEdit? EditSelectionWithCatalog(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages,
-        Func<Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog) => EditSelection(space, pages);
+        Func<CancellationToken, Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog, SourceSelectionEdit? draft = null) => EditSelection(space, pages);
 
     /// <summary>Confirms the measured effective document difference.</summary>
     bool ConfirmSelectionReview(SourceChangeReview review) => ConfirmSelection(review.Before, review.After);

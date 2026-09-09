@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+## [2026.0909.00] - 2026-09-09
+
+### Added
+
+- Unified local and Confluence source inventory with a guided document update action.
+- Readiness-based home guidance, a persistent source-selection summary, and a resizable search preview with empty-result recovery actions.
+- Progressive settings with a direct connection shortcut when Cortex is unavailable.
+
+### Fixed
+
+- Read large source catalogues with a dedicated bounded budget and reject truncated process output explicitly.
+- Confirm local-only indexing without requiring a Confluence generation, and bind readiness to the saved folder/configuration across restarts.
+- Keep selection-review preparation cancellable after the editor closes; cancellation preserves the draft without writing.
+- Virtualize the bounded source tree and expand matching branches when filtering.
+- Reconcile the paired English/French documentation labels.
+
+- Cancel page-tree reads without losing the editor selection, and stop reads when the editor closes.
+- Restore failed source-edit drafts on retry while the saved configuration is unchanged.
+- Show recovery guidance above local synchronization actions.
+- Save the document folder with Ctrl+S while its field has focus and mark unsaved folder changes.
+
 ## [2026.0908.01] - 2026-09-08
 
 ### Changed

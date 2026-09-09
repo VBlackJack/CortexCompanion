@@ -19,6 +19,7 @@ public sealed class SearchViewModel : ViewModelBase
     private readonly AsyncRelayCommand _open;
     private readonly AsyncRelayCommand _cancel;
     private readonly AsyncRelayCommand _copy;
+    private readonly AsyncRelayCommand _clearFilters;
     private readonly Action<string> _copyText;
     private SourceChoice _source = Choices[0];
     private long _criteriaRevision;
@@ -34,6 +35,7 @@ public sealed class SearchViewModel : ViewModelBase
     public SearchViewModel(SearchClient? client, Action<string>? copyText = null)
     {
         _client = client;
+        _clearFilters = new AsyncRelayCommand(() => { Section = string.Empty; Source = Choices[0]; return Task.CompletedTask; });
         _copyText = copyText ?? System.Windows.Clipboard.SetText;
         _copy = new AsyncRelayCommand(() =>
         {
@@ -82,7 +84,13 @@ public sealed class SearchViewModel : ViewModelBase
     }
 
     /// <summary>Gets the accessible operation status.</summary>
-    public string Status { get => _status; private set => SetProperty(ref _status, value); }
+    public string Status { get => _status; private set { if (SetProperty(ref _status, value)) { OnPropertyChanged(nameof(HasNoResults)); } } }
+
+    /// <summary>Distinguishes an empty successful search from an error or initial state.</summary>
+    public bool HasNoResults => _hasExecuted && Results.Count == 0 && Status == UiStrings.SearchEmpty;
+
+    /// <summary>Clears filters without submitting a new query automatically.</summary>
+    public ICommand ClearFiltersCommand => _clearFilters;
 
     /// <summary>Gets the query submission command.</summary>
     public ICommand SearchCommand => _search;

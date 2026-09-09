@@ -12,6 +12,7 @@ public sealed class SourceTreeNode : ViewModelBase
     private bool _isSelected;
     private bool _isVisible = true;
     private bool _isCovered;
+    private bool _isExpanded;
     /// <summary>Creates one page without inferring missing hierarchy.</summary>
     public SourceTreeNode(string pageId, string title, IReadOnlyList<string> ancestorIds, bool selected)
     { PageId = pageId; Title = title; AncestorIds = ancestorIds; _isSelected = selected; }
@@ -21,6 +22,8 @@ public sealed class SourceTreeNode : ViewModelBase
     public string Title { get; }
     /// <summary>Gets the verified ancestor chain in root-to-parent order.</summary>
     public IReadOnlyList<string> AncestorIds { get; }
+    /// <summary>Retains expansion when virtualized containers are recycled.</summary>
+    public bool IsExpanded { get => _isExpanded; set => SetProperty(ref _isExpanded, value); }
     /// <summary>Gets the observed child nodes; missing parents are not invented.</summary>
     public ObservableCollection<SourceTreeNode> Children { get; } = [];
     /// <summary>Indicates explicit root selection independently of inherited inclusion.</summary>
@@ -34,9 +37,10 @@ public sealed class SourceTreeNode : ViewModelBase
     public static IReadOnlyList<SourceTreeNode> Build(IReadOnlyList<CatalogPageContract> pages,
         IReadOnlyList<SourceTreeNode> existing)
     {
+        HashSet<string> selected = existing.Where(item => item.IsSelected).Select(item => item.PageId).ToHashSet(StringComparer.Ordinal);
         Dictionary<string, SourceTreeNode> nodes = pages.ToDictionary(page => page.PageId,
             page => new SourceTreeNode(page.PageId, page.Title, page.AncestorIds,
-                existing.Any(item => item.PageId == page.PageId && item.IsSelected)), StringComparer.Ordinal);
+                selected.Contains(page.PageId)), StringComparer.Ordinal);
         foreach (SourceTreeNode old in existing.Where(item => !nodes.ContainsKey(item.PageId)))
         { nodes.Add(old.PageId, new SourceTreeNode(old.PageId, old.Title, [], old.IsSelected)); }
         List<SourceTreeNode> roots = [];
@@ -79,6 +83,10 @@ public sealed class SourceTreeNode : ViewModelBase
             node.PageId.Contains(query, StringComparison.OrdinalIgnoreCase)).Select(node => node.PageId).ToHashSet(StringComparer.Ordinal);
         foreach (SourceTreeNode node in all.Where(node => matching.Contains(node.PageId)))
         { foreach (string ancestor in node.AncestorIds) { matching.Add(ancestor); } }
-        foreach (SourceTreeNode node in all) { node.IsVisible = matching.Contains(node.PageId); }
+        foreach (SourceTreeNode node in all)
+        {
+            node.IsVisible = matching.Contains(node.PageId);
+            if (!string.IsNullOrWhiteSpace(query)) { node.IsExpanded = node.Children.Any(child => matching.Contains(child.PageId)); }
+        }
     }
 }

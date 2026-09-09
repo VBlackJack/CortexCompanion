@@ -124,8 +124,11 @@ public sealed class SettingsViewModel : ViewModelBase
     public string KnowledgeBasePath
     {
         get => _knowledgeBasePath;
-        set => SetProperty(ref _knowledgeBasePath, value);
+        set { if (SetProperty(ref _knowledgeBasePath, value)) { OnPropertyChanged(nameof(HasUnsavedKnowledgeBase)); } }
     }
+
+    /// <summary>Distinguishes the current folder draft from the persisted configuration.</summary>
+    public bool HasUnsavedKnowledgeBase => KnowledgeBasePath != _knowledgeBaseBaseline;
 
     /// <summary>Gets the localized CLI path validation state.</summary>
     public string CliValidationMessage
@@ -474,9 +477,11 @@ public sealed class SettingsViewModel : ViewModelBase
             }
 
             _configSnapshot = snapshot;
+            OnPropertyChanged(nameof(SavedIndexContext));
             bool hasDraft = KnowledgeBasePath != _knowledgeBaseBaseline;
             _knowledgeBaseBaseline = snapshot.KnowledgeBasePath ?? string.Empty;
             if (!hasDraft) { KnowledgeBasePath = _knowledgeBaseBaseline; }
+            OnPropertyChanged(nameof(HasUnsavedKnowledgeBase));
             ConfigStateText = snapshot.IsValid
                 ? snapshot.Present
                     ? UiStrings.SettingsConfigLoaded
@@ -570,6 +575,7 @@ public sealed class SettingsViewModel : ViewModelBase
             if (result.Status is CortexConfigMutationStatus.Succeeded or CortexConfigMutationStatus.Unchanged)
             {
                 _knowledgeBaseBaseline = submittedPath;
+                OnPropertyChanged(nameof(HasUnsavedKnowledgeBase));
             }
             StatusMessage = result.Status switch
             {
@@ -632,6 +638,8 @@ public sealed class SettingsViewModel : ViewModelBase
     private void RaiseCommandStates()
     {
         OnPropertyChanged(nameof(HasSavedKnowledgeBase));
+        OnPropertyChanged(nameof(SavedKnowledgeBasePath));
+        OnPropertyChanged(nameof(NeedsCliSetup));
         _saveCliCommand.RaiseCanExecuteChanged();
         _browseCliCommand.RaiseCanExecuteChanged();
         _refreshCommand.RaiseCanExecuteChanged();
@@ -643,6 +651,15 @@ public sealed class SettingsViewModel : ViewModelBase
     /// <summary>Reports validated persisted configuration, never an unsaved path draft.</summary>
     public bool HasSavedKnowledgeBase => IsCliReady && _configSnapshot is { IsValid: true } &&
         !string.IsNullOrWhiteSpace(_configSnapshot.KnowledgeBasePath);
+
+    /// <summary>Gets the saved folder independently of unsaved edits.</summary>
+    public string SavedKnowledgeBasePath => _configSnapshot?.KnowledgeBasePath ?? string.Empty;
+
+    /// <summary>Gets the saved indexing scope independently of edits in progress.</summary>
+    public LocalIndexContext? SavedIndexContext => LocalIndexContext.Create(_activeSettings.CliPath, _configSnapshot);
+
+    /// <summary>Exposes technical recovery when Cortex is unavailable.</summary>
+    public bool NeedsCliSetup => !IsCliReady;
 
     private static string FormatPathValidation(CliPathValidationResult validation) => validation.Status switch
     {

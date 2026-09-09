@@ -116,7 +116,7 @@ Le formulaire accepte une page ou un espace. La connexion dans le même écran c
 
 Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel rend la fenêtre minimale et la confirmation à 100 %, 150 % et 200 % de résolution raster. Il ne remplace pas un essai avec un compte Confluence réel ni un changement natif de DPI.
 
-## Mes sources - recette du lot non publié
+## Mes sources - recette 2026.0909.00
 
 - Vérifier les cartes visibles, les liens navigateur et les titres longs.
 - Ouvrir la sélection pré-remplie ; annuler ne doit rien écrire.
@@ -134,7 +134,7 @@ Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel re
   dernière source et liste manquante. Le smoke WPF rend l'éditeur et les cartes.
   Les images à 100/150/200 % sont des rendus, pas une recette Narrator ou DPI natif.
 
-## Parcours Mes sources et récupération (non publié)
+## Parcours Mes sources et récupération (2026.0909.00)
 
 - Vérifier l'ordre liste puis formulaire, le filtre par titre et l'état sans résultat.
 - Charger une arborescence, rechercher une sous-page et vérifier que ses parents
@@ -149,3 +149,26 @@ Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel re
   Reconnexion : date valide requise, périmètre préservé, reprise sans doublon.
 - Tester clavier, lecteur d'écran et DPI natif en recette humaine. Les rendus
   automatiques 100/150/200 % couvrent la disposition, pas ces usages.
+
+## Régressions de récupération UX
+
+- Pendant une lecture différée du catalogue, Annuler et Échap interrompent la lecture sans fermer l'éditeur ni changer le brouillon ; fermer l'éditeur annule la requête du processus.
+- Soumettre un lien supplémentaire invalide, réessayer et vérifier la restauration de la portée, des racines et du lien. Corriger puis confirmer avant toute écriture. Une configuration modifiée ne doit pas restaurer un brouillon obsolète.
+- Charger un état en erreur avec action requise : la consigne apparaît au-dessus des actions de synchronisation sans ouvrir les options avancées. Un état sain suivant la retire.
+- Modifier le dossier documentaire et appuyer sur Ctrl+S dans son champ : la sauvegarde du dossier est appelée. L'indication de modification non enregistrée disparaît après réussite.
+
+## Parcours documentaire unifié
+
+- Mettre à jour une configuration locale seule : aucun worker Confluence ne doit démarrer.
+- Avec Confluence : collecter avant d'indexer ; échec d'authentification, erreur distante ou annulation doit empêcher l'indexation suivante.
+- Modifier le dossier sans enregistrer : Mes sources doit toujours afficher le chemin enregistré.
+- Une ancienne indexation réussie ne doit pas masquer une collecte échouée sur Accueil.
+- Comparer racines sélectionnées et pages incluses observées avant/après filtrage ; le résumé et les actions restent visibles pendant le défilement.
+- Redimensionner l'aperçu à la souris et au clavier ; les deux panneaux restent utilisables. Un résultat vide propose une récupération sans effacer la requête.
+- Le raccourci de connexion initial ouvre les options avancées et place le focus sur le chemin Cortex. Vérifier les réglages connectés avec ces options repliées.
+
+## Contrôles de régression de l’audit (2026.0909.00)
+
+La suite automatique couvre les réponses de 1 000/10 000 pages, le dépassement de sortie explicite, la disponibilité locale seule, le changement de dossier et la relecture de la preuve, l’annulation avant confirmation et le nombre borné de lignes d’arbre réalisées. Le traitement conserve la configuration uniquement si les observations avant/après indexation concordent. Un ancien traitement sans preuve nécessite une nouvelle mise à jour.
+
+Recette manuelle : changer de dossier enregistré, redémarrer, le mettre à jour et vérifier sa disponibilité ; annuler la préparation sans charger le catalogue au préalable ; parcourir et filtrer un grand arbre en vérifiant la conservation des sélections. DPI natif et Narrateur restent à vérifier manuellement.

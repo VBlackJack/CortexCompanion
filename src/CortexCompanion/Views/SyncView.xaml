@@ -12,9 +12,9 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <StackPanel Visibility="{Binding DataContext.Pages.SourceAdded, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="{StaticResource MarginSectionBottom}">
+            <StackPanel Margin="{StaticResource MarginSectionBottom}">
                 <TextBlock Text="{Binding DataContext.SourceProgress, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding DataContext.SourceProgress, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                <Button Content="{x:Static localization:UiStrings.FlowSearch}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowSearch}" Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.Search}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginSectionTop}"/>
+                <Button Visibility="{Binding DataContext.ShowSearchAfterUpdate, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}" Content="{x:Static localization:UiStrings.FlowSearch}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowSearch}" Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.Search}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="{StaticResource MarginSectionTop}"/>
             </StackPanel>
             <Grid Margin="{StaticResource MarginHeadingBottom}">
                 <Grid.ColumnDefinitions>
@@ -41,28 +41,30 @@
                            TextWrapping="Wrap" />
             </Border>
 
+            <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}"
+                    Visibility="{Binding HasRecoveryAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding HealthStatus}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding ActionRequired}" TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Assertive"
+                               accessibility:LiveRegionBehavior.Announcement="{Binding ActionRequired}" />
+                </StackPanel>
+            </Border>
             <Border Style="{StaticResource PageCardStyle}"
                     Margin="{StaticResource MarginSectionBottom}">
                 <StackPanel>
-                    <TextBlock Text="{Binding RunTitle}"
+                    <TextBlock Text="{x:Static localization:UiStrings.ExperienceUpdate}"
                                FontSize="{StaticResource FontSizeTitle}"
                                FontWeight="SemiBold"
                                Margin="{StaticResource MarginStackItem}" />
-                    <TextBlock Text="{x:Static localization:UiStrings.LocalSyncDescription}"
+                    <TextBlock Text="{x:Static localization:UiStrings.ExperienceUpdateHelp}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource MarginStackItem}" />
                     <WrapPanel Margin="{StaticResource MarginStackItem}">
-                        <Button Content="{x:Static localization:UiStrings.SyncNow}"
-                                AutomationProperties.Name="{x:Static localization:UiStrings.SyncNow}"
-                                Command="{Binding SyncCommand}"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                Margin="{StaticResource MarginInlineSm}" />
-                        <Button Content="{x:Static localization:UiStrings.ConfluenceSyncNow}"
-                                AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncNow}"
-                                Command="{Binding ConfluenceSyncCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Margin="{StaticResource MarginInlineSm}" />
+                        <Button Content="{x:Static localization:UiStrings.ExperienceUpdate}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceUpdate}"
+                                Command="{Binding DataContext.UpdateDocumentsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                Style="{StaticResource PrimaryButtonStyle}" Margin="{StaticResource MarginInlineSm}" />
                         <Button Content="{x:Static localization:UiStrings.SyncCancel}"
                                 AutomationProperties.Name="{x:Static localization:UiStrings.SyncCancel}"
                                 Command="{Binding CancelCommand}"
@@ -100,6 +102,20 @@
                 </StackPanel>
             </Border>
 
+            <Expander Header="{x:Static localization:UiStrings.ExperienceSeparate}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceSeparate}" IsExpanded="False" Margin="{StaticResource MarginSectionBottom}">
+                <WrapPanel>
+                        <Button Content="{x:Static localization:UiStrings.SyncNow}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.SyncNow}"
+                                Command="{Binding SyncCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Margin="{StaticResource MarginInlineSm}" />
+                        <Button Content="{x:Static localization:UiStrings.ConfluenceSyncNow}"
+                                AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncNow}"
+                                Command="{Binding ConfluenceSyncCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Margin="{StaticResource MarginInlineSm}" />
+                </WrapPanel>
+            </Expander>
             <Expander Header="{x:Static localization:UiStrings.ConfluenceSyncAdvancedTitle}"
                       AutomationProperties.Name="{x:Static localization:UiStrings.ConfluenceSyncAdvancedTitle}"
                       IsExpanded="False"

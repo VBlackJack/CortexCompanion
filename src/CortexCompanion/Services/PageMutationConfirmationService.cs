@@ -17,9 +17,9 @@ public sealed class PageMutationConfirmationService : IPageMutationConfirmationS
 
     /// <inheritdoc />
     public SourceSelectionEdit? EditSelectionWithCatalog(ConfluenceSpaceConfiguration space, IReadOnlyList<ConfiguredPageContract> pages,
-        Func<Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog)
+        Func<CancellationToken, Task<ConfluenceCliResult<SourceCatalogContract>>> loadCatalog, SourceSelectionEdit? draft = null)
     {
-        SourceSelectionDialog dialog = new(space, pages, loadCatalog) { Owner = Application.Current.MainWindow };
+        SourceSelectionDialog dialog = new(space, pages, loadCatalog, draft) { Owner = Application.Current.MainWindow };
         return ConfirmationDialog.IsConfirmed(dialog.ShowDialog()) ? dialog.SelectionEdit : null;
     }
 

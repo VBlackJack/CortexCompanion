@@ -104,6 +104,15 @@ public sealed class SyncViewModelTests
             !viewModel.IsBusy &&
             viewModel.RefreshCommand.CanExecute(null));
         Assert.AreEqual("remote_failure", viewModel.ErrorCode);
+        Assert.IsFalse(viewModel.HasRecoveryAction);
+        File.WriteAllText(healthPath, IngestionHealthReaderTests.ValidJson("error", "remote_failure").Replace(
+            "\"action_required\": null", "\"action_required\": \"Check connection\"", StringComparison.Ordinal));
+        await ((AsyncRelayCommand)viewModel.RefreshCommand).ExecuteAsync(null);
+        Assert.IsTrue(viewModel.HasRecoveryAction);
+        Assert.AreEqual("Check connection", viewModel.ActionRequired);
+        File.WriteAllText(healthPath, IngestionHealthReaderTests.ValidJson("ok", null));
+        await ((AsyncRelayCommand)viewModel.RefreshCommand).ExecuteAsync(null);
+        Assert.IsFalse(viewModel.HasRecoveryAction);
     }
 
     [TestMethod]

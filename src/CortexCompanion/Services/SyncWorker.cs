@@ -28,6 +28,9 @@ public static class SyncWorker
             arguments.RunDirectory,
             SyncRunPersistence.StandardOutputFileName);
         SyncWorkerResult terminal;
+        CortexConfigClient configClient = new(new ProcessRunner());
+        LocalIndexContext? localContext = arguments.RunKind == SyncRunKind.LocalDocuments
+            ? await LocalIndexContext.ReadAsync(arguments.CliPath, configClient) : null;
 
         ProcessStartInfo startInfo = new()
         {
@@ -83,6 +86,12 @@ public static class SyncWorker
                 LaunchError = exception.GetType().Name,
                 CompletedAt = DateTimeOffset.UtcNow,
             };
+        }
+
+        if (localContext is not null && terminal is { ExitCode: 0, LaunchError: null })
+        {
+            LocalIndexContext? after = await LocalIndexContext.ReadAsync(arguments.CliPath, configClient);
+            await LocalIndexContext.PersistIfUnchangedAsync(arguments.RunDirectory, localContext, after);
         }
 
         await SyncRunPersistence.WriteJsonAtomicAsync(

@@ -26,14 +26,41 @@ public sealed partial class PagesViewModel
     /// <summary>Gets the configured page browser command.</summary>
     public ICommand OpenPageCommand => _openPageCommand;
 
+    private CancellationTokenSource? _selectionPreparation;
+    private AsyncRelayCommand _cancelSelectionPreparation = null!;
+
+    /// <summary>Exposes cancellation while preparing the selection review.</summary>
+    public ICommand CancelSelectionPreparationCommand => _cancelSelectionPreparation;
+    /// <summary>Indicates an active selection workflow, including its remote preparation.</summary>
+    public bool IsPreparingSelection => _selectionPreparation is not null;
+
     private void InitializeManagementCommands()
     {
+        _cancelSelectionPreparation = new AsyncRelayCommand(() =>
+        { _selectionPreparation?.Cancel(); return Task.CompletedTask; }, () => IsPreparingSelection);
         _editSelectionCommand = new AsyncRelayCommand<ConfiguredSpaceViewModel>(async space =>
         {
             ErrorContext = space.SpaceKey;
-            await RunMutationAsync(() => _mutations!.EditSelectionAsync(space.SpaceKey, IsReadOnly, CancellationToken.None));
+            using CancellationTokenSource preparation = new();
+            _selectionPreparation = preparation;
+            OnPropertyChanged(nameof(IsPreparingSelection));
+            _cancelSelectionPreparation.RaiseCanExecuteChanged();
+            try
+            {
+                await RunMutationAsync(async () =>
+                {
+                    try { return await _mutations!.EditSelectionAsync(space.SpaceKey, IsReadOnly, preparation.Token); }
+                    catch (OperationCanceledException) when (preparation.IsCancellationRequested) { return false; }
+                });
+            }
+            finally
+            {
+                _selectionPreparation = null;
+                OnPropertyChanged(nameof(IsPreparingSelection));
+                _cancelSelectionPreparation.RaiseCanExecuteChanged();
+            }
             if (HasSourceError) { _retryAction = () => _editSelectionCommand.ExecuteAsync(space); }
-            await ApplySavedChangesAsync(!HasSourceError && _mutations!.LastSaveRequestsUpdate);
+            await ApplySavedChangesAsync(!preparation.IsCancellationRequested && !HasSourceError && _mutations!.LastSaveRequestsUpdate);
         }, _ => CanMutate && !HasOverrides);
         _removeSourceCommand = new AsyncRelayCommand<ConfiguredSpaceViewModel>(space =>
         {

@@ -16,7 +16,7 @@
   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
   <StackPanel>
    <TextBlock Text="{x:Static localization:UiStrings.SearchNavigation}" FontSize="{StaticResource FontSizeTitle}" Margin="{StaticResource MarginHeadingBottom}"/>
-   <TextBlock Text="{Binding DataContext.Sync.Freshness.Status, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
+   <TextBlock Text="{Binding DataContext.DocumentsStatus, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
    <TextBlock Text="{x:Static localization:UiStrings.SearchQuery}" Margin="{StaticResource MarginLabelBottom}"/>
    <TextBox Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" MaxLength="{x:Static services:SearchClient.QueryLimit}"
     AutomationProperties.Name="{x:Static localization:UiStrings.SearchQuery}" Margin="{StaticResource MarginStackItem}"/>
@@ -34,6 +34,7 @@
    </Expander>
    <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding Status}"/>
    <TextBlock Text="{Binding ExecutedCriteria}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"/>
+
    <TextBlock Text="{Binding OpenStatus}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding OpenStatus}"/>
    <WrapPanel Margin="{StaticResource MarginStackItem}">
     <Button Content="{x:Static localization:UiStrings.SearchGoToSync}" Style="{StaticResource SecondaryButtonStyle}"
@@ -52,7 +53,7 @@
    <Button Style="{StaticResource SecondaryButtonStyle}" Content="{x:Static localization:UiStrings.SearchCopy}" Command="{Binding CopyCommand}" AutomationProperties.Name="{x:Static localization:UiStrings.SearchCopy}" Margin="{StaticResource MarginInlineField}"/>
   </WrapPanel>
   <Grid Grid.Row="2">
-   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+   <Grid.ColumnDefinitions><ColumnDefinition Width="{StaticResource SearchResultsWidth}" MinWidth="{StaticResource SearchPaneMinWidth}"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="{StaticResource SearchPreviewWidth}" MinWidth="{StaticResource SearchPaneMinWidth}"/></Grid.ColumnDefinitions>
   <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding Selected}" HorizontalContentAlignment="Stretch"
    ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False"
    ScrollViewer.VerticalScrollBarVisibility="Auto" Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
@@ -66,7 +67,11 @@
     </StackPanel>
    </DataTemplate></ListBox.ItemTemplate>
   </ListBox>
-  <ScrollViewer Grid.Column="1" Margin="{StaticResource MarginInlineControl}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+  <GridSplitter Grid.Column="1" Width="{StaticResource SearchSplitterWidth}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" ShowsPreview="True" Focusable="True"
+                KeyboardIncrement="{StaticResource SearchSplitterIncrement}" Background="{DynamicResource BorderBrush}"
+                AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceResize}" />
+  <ScrollViewer Grid.Column="2" Margin="{StaticResource MarginInlineControl}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
    <StackPanel>
     <TextBlock Text="{x:Static localization:UiStrings.SearchPreview}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}"/>
     <TextBlock Text="{Binding Selected.Title}" TextWrapping="Wrap" FontWeight="SemiBold"/>
@@ -74,6 +79,19 @@
     <TextBlock Text="{Binding Selected.UpdatedAt}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"/>
     <TextBox Text="{Binding Selected.Excerpt, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True"
       AutomationProperties.Name="{x:Static localization:UiStrings.SearchPreview}" Margin="{StaticResource MarginSectionTop}"/>
+   </StackPanel>
+  </ScrollViewer>
+  <ScrollViewer Grid.ColumnSpan="3" Background="{DynamicResource BackgroundBrush}" VerticalScrollBarVisibility="Auto"
+                Visibility="{Binding HasNoResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+   <StackPanel>
+    <TextBlock Text="{x:Static localization:UiStrings.SearchEmpty}" TextWrapping="Wrap" Margin="{StaticResource MarginStackItem}" />
+   <WrapPanel>
+    <Button Content="{x:Static localization:UiStrings.ExperienceRemoveFilters}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceRemoveFilters}" Command="{Binding ClearFiltersCommand}" Style="{StaticResource SecondaryButtonStyle}" />
+    <Button Content="{x:Static localization:UiStrings.ExperienceSources}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceSources}" Style="{StaticResource SecondaryButtonStyle}"
+            Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{x:Static models:NavigationPage.ConfluencePages}" />
+    <Button Content="{x:Static localization:UiStrings.ExperienceUpdate}" AutomationProperties.Name="{x:Static localization:UiStrings.ExperienceUpdate}" Style="{StaticResource SecondaryButtonStyle}"
+            Command="{Binding DataContext.UpdateDocumentsCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+   </WrapPanel>
    </StackPanel>
   </ScrollViewer>
   </Grid>

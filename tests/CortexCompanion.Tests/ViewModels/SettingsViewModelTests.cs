@@ -41,8 +41,69 @@ public sealed class SettingsViewModelTests
             main.SourceProgress);
     }
 
+    [TestMethod]
+    [DataRow(false, 0, 0, 1)]
+    [DataRow(true, 0, 1, 1)]
+    [DataRow(true, 4, 1, 0)]
+    [DataRow(true, 5, 1, 0)]
+    public async Task UnifiedUpdateCollectsOnlyConfiguredSourcesAndStopsAfterFailure(bool confluence, int exit, int collections, int indexes)
+    {
+        using TemporaryDirectory temporary = new();
+        string cli = temporary.CreateFakeCli();
+        string config = Path.Combine(temporary.Path, "confluence.toml");
+        if (confluence) { File.WriteAllText(config, "schema_version = 1\nauth_expires_at = 2099-01-01T00:00:00Z\n"); }
+        GuidedRunCoordinator runs = new(temporary.Path, exit);
+        await using SyncViewModel sync = new(runs, cli, config, null, []);
+        await sync.InitializeAsync(false, CancellationToken.None);
+        TestContext context = await CreateInitializedContextAsync(temporary, cli, sync);
+        MainViewModel main = new(context.Coordinator, context.ViewModel);
+        Assert.IsTrue(main.UpdateDocumentsCommand.CanExecute(null));
+        string saved = main.LocalSourcePath;
+        context.ViewModel.KnowledgeBasePath = Path.Combine(temporary.Path, "unsaved");
+        Assert.AreEqual(saved, main.LocalSourcePath);
+        await ExecuteAsync(main.UpdateDocumentsCommand);
+        Assert.AreEqual(collections, runs.Collections);
+        Assert.AreEqual(indexes, runs.Indexes);
+        Assert.AreNotEqual(UiStrings.ExperienceReady, main.DocumentsStatus);
+        if (exit != 0) { Assert.AreEqual(UiStrings.ExperienceAttention, main.DocumentsStatus); }
+        Assert.IsTrue(main.UpdateDocumentsCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task LocalSuccessIsReadyAndSavingAnotherFolderInvalidatesItIncludingAfterRestart()
+    {
+        using TemporaryDirectory temporary = new();
+        string cli = temporary.CreateFakeCli();
+        string runRoot = Path.Combine(temporary.Path, "runs");
+        GuidedRunCoordinator runs = new(runRoot, 0);
+        await using SyncViewModel sync = new(runs, cli, Path.Combine(temporary.Path, "absent.toml"), null, [])
+        { FreshnessReader = new IndexFreshnessReader(runRoot, null) };
+        await sync.InitializeAsync(false, CancellationToken.None);
+        TestContext context = await CreateInitializedContextAsync(temporary, cli, sync);
+        runs.LocalContext = context.ViewModel.SavedIndexContext;
+        MainViewModel main = new(context.Coordinator, context.ViewModel);
+        await ExecuteAsync(main.UpdateDocumentsCommand);
+        Assert.AreEqual(UiStrings.ExperienceReady, main.DocumentsStatus);
+        Assert.IsTrue(main.ShowSearchAfterUpdate);
+        Assert.IsFalse(main.Pages.HasSourceError);
+        string replacement = Path.Combine(temporary.Path, "replacement"); Directory.CreateDirectory(replacement);
+        context.ViewModel.KnowledgeBasePath = replacement;
+        await ExecuteAsync(context.ViewModel.SaveKnowledgeBaseCommand);
+        Assert.AreEqual(replacement, main.LocalSourcePath);
+        Assert.AreEqual(UiStrings.ExperiencePending, main.DocumentsStatus);
+        Assert.IsFalse(main.ShowSearchAfterUpdate);
+        Assert.AreEqual(string.Empty, main.SourceProgress);
+        Assert.AreEqual(UiStrings.GuidePending, main.SetupIndexState);
+        IndexFreshness restarted = await new IndexFreshnessReader(runRoot, null).ReadAsync(CancellationToken.None);
+        Assert.IsFalse(restarted.MatchesLocalConfiguration(context.ViewModel.SavedIndexContext));
+        runs.LocalContext = context.ViewModel.SavedIndexContext;
+        await ExecuteAsync(main.UpdateDocumentsCommand);
+        Assert.AreEqual(UiStrings.ExperienceReady, main.DocumentsStatus);
+    }
+
     private sealed class GuidedRunCoordinator(string root, int collectionExit) : ISyncRunCoordinator
     {
+        public LocalIndexContext? LocalContext { get; set; }
         public int Collections { get; private set; }
         public int Indexes { get; private set; }
         public Task<SyncRunHandle> StartConfluenceAsync(string cliPath, string confluenceConfigPath, bool force, CancellationToken cancellationToken)
@@ -51,10 +112,21 @@ public sealed class SettingsViewModelTests
             Assert.IsTrue(force);
             return Task.FromResult(new SyncRunHandle("collect", root, Environment.ProcessId, DateTimeOffset.UtcNow, SyncRunKind.Confluence));
         }
-        public Task<SyncRunHandle> StartLocalDocumentsAsync(string cliPath, CancellationToken cancellationToken)
+        public async Task<SyncRunHandle> StartLocalDocumentsAsync(string cliPath, CancellationToken cancellationToken)
         {
             Indexes++;
-            return Task.FromResult(new SyncRunHandle("index", root, Environment.ProcessId, DateTimeOffset.UtcNow, SyncRunKind.LocalDocuments));
+            string directory = Path.Combine(root, "index");
+            if (LocalContext is not null)
+            {
+                Directory.CreateDirectory(directory);
+                await SyncRunPersistence.WriteJsonAtomicAsync(Path.Combine(directory, "worker.json"), new SyncWorkerState
+                { RunId = "index", WorkerProcessId = 1, WorkerStartedAt = DateTimeOffset.UtcNow, RunKind = SyncRunKind.LocalDocuments }, cancellationToken);
+                await SyncRunPersistence.WriteJsonAtomicAsync(Path.Combine(directory, "result.json"), new SyncWorkerResult
+                { ExitCode = 0, CompletedAt = DateTimeOffset.UtcNow }, cancellationToken);
+                await File.WriteAllTextAsync(Path.Combine(directory, "stdout.log"), """{"contract_version":1,"operation":"sync","status":"succeeded","scope":{"included_ingestion_documents":false}}""", cancellationToken);
+                await LocalIndexContext.PersistIfUnchangedAsync(directory, LocalContext, LocalContext);
+            }
+            return new SyncRunHandle("index", directory, Environment.ProcessId, DateTimeOffset.UtcNow, SyncRunKind.LocalDocuments);
         }
         public Task<SyncRunSnapshot?> GetLatestAsync(CancellationToken cancellationToken) => Task.FromResult<SyncRunSnapshot?>(null);
         public Task<SyncRunSnapshot> ObserveAsync(SyncRunHandle handle, CancellationToken cancellationToken) =>
@@ -70,7 +142,7 @@ public sealed class SettingsViewModelTests
         TestContext context = await CreateInitializedContextAsync(temporary, temporary.CreateFakeCli());
         MainViewModel main = new(context.Coordinator, context.ViewModel);
         Assert.AreEqual(UiStrings.GuideDone, main.SetupConfigurationState);
-        Assert.AreEqual(UiStrings.GuideSync, main.RecommendedAction);
+        Assert.AreEqual(UiStrings.ExperienceUpdate, main.RecommendedAction);
         await ExecuteAsync(main.ContinueSetupCommand);
         Assert.AreEqual(NavigationPage.LocalKnowledgeBase, main.CurrentPage);
         context.ConfigClient.GetException = new CortexCliContractException("Read failed.");
@@ -89,6 +161,7 @@ public sealed class SettingsViewModelTests
         TestContext context = await CreateInitializedContextAsync(temporary, temporary.CreateFakeCli());
         string draft = Path.Combine(temporary.Path, "draft");
         context.ViewModel.KnowledgeBasePath = draft;
+        Assert.IsTrue(context.ViewModel.HasUnsavedKnowledgeBase);
         await ExecuteAsync(context.ViewModel.RefreshCommand);
         Assert.AreEqual(draft, context.ViewModel.KnowledgeBasePath);
         context.ConfigClient.GetException = new CortexCliContractException("test");
@@ -357,6 +430,7 @@ public sealed class SettingsViewModelTests
 
     private sealed class TestConfigClient(string knowledgeBasePath) : ICortexConfigClient
     {
+        public string Folder { get; set; } = knowledgeBasePath;
         public CortexCliContractException? GetException { get; set; }
 
         public TimeSpan? LastTimeout { get; private set; }
@@ -372,7 +446,7 @@ public sealed class SettingsViewModelTests
                     true,
                     SnapshotHash,
                     true,
-                    knowledgeBasePath,
+                    Folder,
                     null))
                 : Task.FromException<CortexConfigSnapshot>(GetException);
         }
@@ -386,6 +460,7 @@ public sealed class SettingsViewModelTests
             CancellationToken cancellationToken = default)
         {
             LastTimeout = timeout;
+            Folder = knowledgeBasePathValue;
             return Task.FromResult(new CortexConfigMutationResult(
                 CortexConfigMutationStatus.Succeeded,
                 true,

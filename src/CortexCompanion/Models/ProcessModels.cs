@@ -29,6 +29,9 @@ public sealed record ProcessRunResult(
     bool OutcomeUnknown,
     string? LaunchError)
 {
+    /// <summary>Identifies an incomplete response rejected at the configured output boundary.</summary>
+    public bool OutputTruncated { get; init; }
+
     /// <summary>Creates a successful or nonzero process completion result.</summary>
     public static ProcessRunResult Completed(int exitCode, string standardOutput, string standardError) =>
         new(exitCode, standardOutput, standardError, false, false, null);
