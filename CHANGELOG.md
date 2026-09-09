@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2026.0909.02] - 2026-09-09
+
+### Changed
+- Align the desktop and CLI compatibility floor with the corrected paired GitHub publication.
+
 ## [2026.0909.01] - 2026-09-09
 
 ### Changed

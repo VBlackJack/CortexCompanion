@@ -6,7 +6,7 @@ Cortex Companion is the Windows desktop interface for Cortex. It is designed for
 people who should not need to edit TOML files or use a terminal for everyday setup,
 synchronization, or scheduling.
 
-Paired release 2026.0909.01 includes Cortex ingestion recovery fixes and multilingual vector search by default. After upgrading, use the document update action to collect sources and synchronize the index; the first successful collection regenerates older publication revisions.
+Paired release 2026.0909.02 includes Cortex ingestion recovery fixes and multilingual vector search by default. After upgrading, use the document update action to collect sources and synchronize the index; the first successful collection regenerates older publication revisions.
 
 ## Audit corrections (2026.0909.00)
 
