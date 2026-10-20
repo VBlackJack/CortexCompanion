@@ -6,13 +6,13 @@ Cortex Companion est l'interface Windows de Cortex. Elle s'adresse aux personnes
 qui ne devraient pas avoir à modifier un fichier TOML ni à ouvrir un terminal pour
 la configuration, la synchronisation ou la planification courantes.
 
-La version associée 2026.0909.02 inclut les corrections de reprise d’ingestion de Cortex et la recherche vectorielle multilingue par défaut. Après mise à jour, utilisez l’action de mise à jour des documents pour collecter les sources et synchroniser l’index ; la première collecte réussie régénère les anciennes révisions de publication.
+La version associée 2026.0909.02 inclut les corrections de reprise d'ingestion de Cortex et la recherche vectorielle multilingue par défaut. Après mise à jour, utilisez l'action de mise à jour des documents pour collecter les sources et synchroniser l'index ; la première collecte réussie régénère les anciennes révisions de publication.
 
-## Corrections de l’audit (2026.0909.00)
+## Corrections de l'audit (2026.0909.00)
 
-Les réponses volumineuses disposent d’une limite de transport dédiée ; toute sortie tronquée est refusée explicitement. L’arbre affiche uniquement les lignes visibles. Annuler ou Échap arrête aussi la préparation de la confirmation après fermeture de l’éditeur.
+Les réponses volumineuses disposent d'une limite de transport dédiée ; toute sortie tronquée est refusée explicitement. L'arbre affiche uniquement les lignes visibles. Annuler ou Échap arrête aussi la préparation de la confirmation après fermeture de l'éditeur.
 
-Une indexation locale réussie peut être prête sans Confluence. Les nouveaux traitements conservent le dossier local et l’identité de configuration observés ; leur modification impose une nouvelle indexation. Les anciens traitements sans cette preuve restent non confirmés jusqu’à une mise à jour réussie. La configuration est vérifiée avant et après indexation ; si elle est illisible ou a changé, aucune preuve de disponibilité n’est enregistrée.
+Une indexation locale réussie peut être prête sans Confluence. Les nouveaux traitements conservent le dossier local et l'identité de configuration observés ; leur modification impose une nouvelle indexation. Les anciens traitements sans cette preuve restent non confirmés jusqu'à une mise à jour réussie. La configuration est vérifiée avant et après indexation ; si elle est illisible ou a changé, aucune preuve de disponibilité n'est enregistrée.
 
 ## Parcours documentaire (2026.0909.00)
 

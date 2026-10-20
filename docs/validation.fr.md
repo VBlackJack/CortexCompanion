@@ -167,8 +167,8 @@ Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel re
 - Redimensionner l'aperçu à la souris et au clavier ; les deux panneaux restent utilisables. Un résultat vide propose une récupération sans effacer la requête.
 - Le raccourci de connexion initial ouvre les options avancées et place le focus sur le chemin Cortex. Vérifier les réglages connectés avec ces options repliées.
 
-## Contrôles de régression de l’audit (2026.0909.00)
+## Contrôles de régression de l'audit (2026.0909.00)
 
-La suite automatique couvre les réponses de 1 000/10 000 pages, le dépassement de sortie explicite, la disponibilité locale seule, le changement de dossier et la relecture de la preuve, l’annulation avant confirmation et le nombre borné de lignes d’arbre réalisées. Le traitement conserve la configuration uniquement si les observations avant/après indexation concordent. Un ancien traitement sans preuve nécessite une nouvelle mise à jour.
+La suite automatique couvre les réponses de 1 000/10 000 pages, le dépassement de sortie explicite, la disponibilité locale seule, le changement de dossier et la relecture de la preuve, l'annulation avant confirmation et le nombre borné de lignes d'arbre réalisées. Le traitement conserve la configuration uniquement si les observations avant/après indexation concordent. Un ancien traitement sans preuve nécessite une nouvelle mise à jour.
 
 Recette manuelle : changer de dossier enregistré, redémarrer, le mettre à jour et vérifier sa disponibilité ; annuler la préparation sans charger le catalogue au préalable ; parcourir et filtrer un grand arbre en vérifiant la conservation des sélections. DPI natif et Narrateur restent à vérifier manuellement.
