@@ -4,6 +4,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels"
  xmlns:localization="clr-namespace:CortexCompanion.Localization"
+ xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
  Width="{StaticResource ScopeDialogWidth}" Height="{StaticResource ScopeDialogMaxHeight}"
  ResizeMode="CanResize" WindowStartupLocation="CenterOwner"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
@@ -44,7 +45,7 @@
     </Grid>
     <StackPanel Grid.Row="2">
     <TextBlock Text="{x:Static localization:UiStrings.ManageConsequences}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionTop}"/>
-    <TextBlock x:Name="ValidationMessage" TextWrapping="Wrap" Foreground="{DynamicResource WarningBrush}" AutomationProperties.LiveSetting="Polite" Margin="{StaticResource MarginSectionTop}"/>
+    <TextBlock x:Name="ValidationMessage" TextWrapping="Wrap" Foreground="{DynamicResource WarningBrush}" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding Text, RelativeSource={RelativeSource Self}}" Margin="{StaticResource MarginSectionTop}"/>
    </StackPanel>
   </Grid>
   <StackPanel Grid.Row="1" Margin="{StaticResource MarginSectionTop}">

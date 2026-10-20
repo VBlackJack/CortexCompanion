@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Name the three scope choices of the add-source dialog after their visible headings, and give the dialog's Cancel button an explicit accessible name, so screen readers announce which scope is being confirmed.
+- Name the loading and synchronization progress bars after their adjacent text, and name the add-source form after its visible header when it switches to reconnecting.
+- Announce scheduling outcomes, the environment block and the missing-configuration banner through the live region, assertively when an operation fails, and announce source readiness and source-editor validation messages.
+
 ## [2026.0909.04] - 2026-09-09
 
 ### Changed

@@ -92,8 +92,10 @@
                 <StackPanel Orientation="Horizontal">
                     <ProgressBar Width="{StaticResource SettingsLabelWidth}"
                                  IsIndeterminate="True"
-                                 IsTabStop="False" />
-                    <TextBlock Text="{x:Static localization:UiStrings.SettingsLoading}"
+                                 IsTabStop="False"
+                                 AutomationProperties.LabeledBy="{Binding ElementName=InitializingLabel}" />
+                    <TextBlock x:Name="InitializingLabel"
+                               Text="{x:Static localization:UiStrings.SettingsLoading}"
                                Margin="{StaticResource MarginInlineControl}"
                                VerticalAlignment="Center" />
                 </StackPanel>

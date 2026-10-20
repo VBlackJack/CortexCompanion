@@ -56,25 +56,104 @@ public sealed partial class SettingsUxContractTests
     }
 
     [TestMethod]
-    public void SettingsInteractiveControlsHaveAccessibleNamesOrLabels()
+    public void InteractiveControlsInEveryViewHaveAccessibleNamesOrLabels()
     {
+        string sourceRoot = Path.Combine(FindRepositoryRoot(), "src", "CortexCompanion");
+        string[] paths = Directory.EnumerateFiles(Path.Combine(sourceRoot, "Views"), "*.xaml")
+            .Append(Path.Combine(sourceRoot, "MainWindow.xaml"))
+            .ToArray();
+        List<string> unnamed = [];
+        int choicesWithStructuredContent = 0;
+
+        foreach (string path in paths)
+        {
+            XDocument document = XDocument.Load(path, LoadOptions.SetLineInfo);
+            foreach (XElement control in document.Descendants())
+            {
+                bool guarded = control.Name.LocalName is "Button" or "TextBox" or "PasswordBox" or "ComboBox" or "DatePicker";
+                // WPF derives a name from text content only; a choice whose content is a
+                // layout panel is announced as an anonymous radio button or check box.
+                if (control.Name.LocalName is "RadioButton" or "CheckBox" &&
+                    control.Attribute("Content") is null &&
+                    control.Elements().Any(child => !child.Name.LocalName.Contains('.', StringComparison.Ordinal)))
+                {
+                    guarded = true;
+                    choicesWithStructuredContent++;
+                }
+
+                if (guarded &&
+                    control.Attribute("AutomationProperties.Name") is null &&
+                    control.Attribute("AutomationProperties.LabeledBy") is null)
+                {
+                    unnamed.Add($"{Path.GetFileName(path)}: {control.Name.LocalName} line {((System.Xml.IXmlLineInfo)control).LineNumber}");
+                }
+            }
+        }
+
+        // The three scope choices and the tree check box prove the structured-content branch runs.
+        Assert.IsGreaterThanOrEqualTo(4, choicesWithStructuredContent);
+        Assert.IsEmpty(unnamed, $"Missing an accessible name or label: {string.Join(", ", unnamed)}.");
+    }
+
+    [TestMethod]
+    public void ProgressBarsAndTheSourceFormAreNamedByTheirVisibleText()
+    {
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+        string sourceRoot = Path.Combine(FindRepositoryRoot(), "src", "CortexCompanion");
+        string[] paths = Directory.EnumerateFiles(Path.Combine(sourceRoot, "Views"), "*.xaml")
+            .Append(Path.Combine(sourceRoot, "MainWindow.xaml"))
+            .ToArray();
+        int progressBars = 0;
+
+        foreach (string path in paths)
+        {
+            XDocument document = XDocument.Load(path);
+            foreach (XElement progressBar in document.Descendants().Where(element => element.Name.LocalName == "ProgressBar"))
+            {
+                progressBars++;
+                Match label = LabeledByRegex().Match(progressBar.Attribute("AutomationProperties.LabeledBy")?.Value ?? string.Empty);
+                Assert.IsTrue(label.Success, $"{Path.GetFileName(path)}: a ProgressBar is not labeled by visible text.");
+                XElement target = document.Descendants()
+                    .Single(element => element.Attribute(xaml + "Name")?.Value == label.Groups["name"].Value);
+                Assert.AreEqual("TextBlock", target.Name.LocalName);
+            }
+        }
+
+        Assert.IsGreaterThanOrEqualTo(2, progressBars);
+
+        XElement sourceForm = XDocument.Load(Path.Combine(sourceRoot, "Views", "PagesView.xaml"))
+            .Descendants()
+            .Single(element => element.Attribute(xaml + "Name")?.Value == "AddSourcePanel");
+        Assert.AreEqual(sourceForm.Attribute("Header")?.Value, sourceForm.Attribute("AutomationProperties.Name")?.Value);
+    }
+
+    [TestMethod]
+    public void ScopeChoicesAreLabeledByTheirVisibleHeadings()
+    {
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
         XDocument document = XDocument.Load(Path.Combine(
             FindRepositoryRoot(),
             "src",
             "CortexCompanion",
             "Views",
-            "SettingsView.xaml"));
-        XElement[] controls = document
-            .Descendants()
-            .Where(element =>
-                element.Name.LocalName is "Button" or "TextBox" or "PasswordBox" or "ComboBox")
-            .ToArray();
-
-        foreach (XElement control in controls)
+            "ScopeSelectionDialog.xaml"));
+        Dictionary<string, string> expectedLabels = new(StringComparer.Ordinal)
         {
-            bool accessible = control.Attribute("AutomationProperties.Name") is not null ||
-                control.Attribute("AutomationProperties.LabeledBy") is not null;
-            Assert.IsTrue(accessible, $"{control.Name.LocalName} is missing an accessible name or label.");
+            ["PageOnlyOption"] = "PageOnlyHeading",
+            ["SubtreeOption"] = "SubtreeHeading",
+            ["WholeSpaceOption"] = "WholeSpaceLabel",
+        };
+
+        foreach (KeyValuePair<string, string> expected in expectedLabels)
+        {
+            XElement option = document.Descendants()
+                .Single(element => element.Attribute(xaml + "Name")?.Value == expected.Key);
+            Assert.AreEqual(
+                $"{{Binding ElementName={expected.Value}}}",
+                option.Attribute("AutomationProperties.LabeledBy")?.Value);
+            XElement heading = option.Descendants()
+                .Single(element => element.Attribute(xaml + "Name")?.Value == expected.Value);
+            Assert.AreEqual("TextBlock", heading.Name.LocalName);
         }
     }
 
@@ -367,6 +446,9 @@ public sealed partial class SettingsUxContractTests
 
     [GeneratedRegex(@"^\d{4}\.\d{4}\.\d{2}$", RegexOptions.CultureInvariant)]
     private static partial Regex CalVerRegex();
+
+    [GeneratedRegex(@"^\{Binding ElementName=(?<name>\w+)\}$", RegexOptions.CultureInvariant)]
+    private static partial Regex LabeledByRegex();
 
     [GeneratedRegex(
         @"\b(?:ajoutee|annulee|cle|confirmee|conserves|degrade|delai|demarrage|depasse|desactivees|detectee|derniere|demandee|echeance|echec|echoue|enregistree|etat|etait|etre|generation|numerique|operation|purgee|reference|refusee|repondu|resoudre|resolution|retiree|separement|succes|terminee|typee|validite|verification|verrouille|verrouilles)\b",

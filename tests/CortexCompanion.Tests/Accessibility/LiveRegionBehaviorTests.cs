@@ -3,6 +3,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml;
 using System.Xml.Linq;
 using CortexCompanion.Accessibility;
 
@@ -36,31 +37,64 @@ public sealed class LiveRegionBehaviorTests
     [TestMethod]
     public void EveryDeclaredLiveRegionBindsTheExplicitAnnouncementBehavior()
     {
-        string root = FindRepositoryRoot();
-        string[] relativePaths =
-        [
-            Path.Combine("src", "CortexCompanion", "MainWindow.xaml"),
-            Path.Combine("src", "CortexCompanion", "Views", "SettingsView.xaml"),
-            Path.Combine("src", "CortexCompanion", "Views", "SyncView.xaml"),
-        ];
+        string sourceRoot = Path.Combine(FindRepositoryRoot(), "src", "CortexCompanion");
+        string[] paths = Directory.EnumerateFiles(Path.Combine(sourceRoot, "Views"), "*.xaml")
+            .Append(Path.Combine(sourceRoot, "MainWindow.xaml"))
+            .ToArray();
+        HashSet<string> filesWithLiveRegions = new(StringComparer.Ordinal);
+        List<string> silent = [];
 
-        foreach (string relativePath in relativePaths)
+        foreach (string path in paths)
         {
-            XDocument document = XDocument.Load(Path.Combine(root, relativePath));
-            XElement[] liveRegions = document.Descendants()
-                .Where(element => element.Attributes().Any(attribute =>
-                    attribute.Name.LocalName.EndsWith("LiveSetting", StringComparison.Ordinal)))
-                .ToArray();
-
-            Assert.IsNotEmpty(liveRegions, relativePath);
-            foreach (XElement liveRegion in liveRegions)
+            string fileName = Path.GetFileName(path);
+            foreach (XElement liveRegion in FindLiveRegions(XDocument.Load(path, LoadOptions.SetLineInfo)))
             {
-                Assert.IsTrue(
-                    liveRegion.Attributes().Any(attribute =>
-                        attribute.Name.LocalName.EndsWith("Announcement", StringComparison.Ordinal)),
-                    $"{relativePath} contains a live region without an explicit UIA notification binding.");
+                filesWithLiveRegions.Add(fileName);
+                if (!liveRegion.Attributes().Any(attribute =>
+                        attribute.Name.LocalName.EndsWith("Announcement", StringComparison.Ordinal)))
+                {
+                    silent.Add($"{fileName}: {liveRegion.Name.LocalName} line {((IXmlLineInfo)liveRegion).LineNumber}");
+                }
             }
         }
+
+        // The scan must reach the views that own outcome messages, or an empty result proves nothing.
+        foreach (string expected in new[] { "MainWindow.xaml", "SettingsView.xaml", "SyncView.xaml", "SchedulingView.xaml", "PagesView.xaml", "SourceSelectionDialog.xaml" })
+        {
+            Assert.Contains(expected, filesWithLiveRegions, $"{expected} declares no live region.");
+        }
+
+        Assert.IsEmpty(
+            silent,
+            $"These live regions have no explicit UIA notification binding: {string.Join(", ", silent)}.");
+    }
+
+    private static HashSet<XElement> FindLiveRegions(XDocument document)
+    {
+        HashSet<XElement> regions = [];
+        foreach (XElement element in document.Descendants())
+        {
+            if (element.Attributes().Any(attribute =>
+                    attribute.Name.LocalName.EndsWith("LiveSetting", StringComparison.Ordinal)))
+            {
+                regions.Add(element);
+            }
+
+            // A politeness chosen by a style setter belongs to the element that owns the style.
+            if (element.Name.LocalName == "Setter" &&
+                ((string?)element.Attribute("Property"))?.EndsWith("LiveSetting", StringComparison.Ordinal) == true)
+            {
+                XElement? owner = element.Ancestors().FirstOrDefault(ancestor =>
+                    !ancestor.Name.LocalName.Contains('.', StringComparison.Ordinal) &&
+                    ancestor.Name.LocalName is not ("Style" or "Setter" or "Trigger" or "DataTrigger" or "MultiDataTrigger"));
+                if (owner is not null)
+                {
+                    regions.Add(owner);
+                }
+            }
+        }
+
+        return regions;
     }
 
     private static string FindRepositoryRoot()

@@ -92,6 +92,9 @@ public sealed class SchedulingViewModel : ViewModelBase
     /// <summary>Gets whether required mutation paths are unavailable.</summary>
     public bool IsNotConfigured => !IsConfigured;
 
+    /// <summary>Gets the missing-configuration banner text, empty when the paths are available.</summary>
+    public string NotConfiguredMessage => IsNotConfigured ? UiStrings.SchedulingNotConfigured : string.Empty;
+
     /// <summary>Gets the selected supported preset.</summary>
     public SchedulingPresetOption SelectedPreset
     {
@@ -432,7 +435,9 @@ public sealed class SchedulingViewModel : ViewModelBase
 
     private void SetOperationMessage(string message, bool isError)
     {
-        OperationMessage = message;
+        // The severity drives the live-region politeness, so it must be in place before the
+        // message change raises the announcement.
         IsOperationMessageError = isError;
+        OperationMessage = message;
     }
 }

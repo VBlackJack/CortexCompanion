@@ -58,7 +58,7 @@
                     <DataTemplate DataType="{x:Type viewModels:ConfiguredSpaceViewModel}">
                         <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginCardBottom}">
                             <StackPanel>
-                                <TextBlock Text="{Binding DataContext.SourceReadiness, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="SemiBold" Margin="{StaticResource MarginStackItem}" AutomationProperties.LiveSetting="Polite"/>
+                                <TextBlock Text="{Binding DataContext.SourceReadiness, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="SemiBold" Margin="{StaticResource MarginStackItem}" AutomationProperties.LiveSetting="Polite" accessibility:LiveRegionBehavior.Announcement="{Binding DataContext.SourceReadiness, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -158,7 +158,7 @@
             </ItemsControl>
 
     </StackPanel>
-   <Expander x:Name="AddSourcePanel" Header="{Binding SourceFormTitle}" AutomationProperties.Name="{x:Static localization:UiStrings.SourcesAdd}" IsExpanded="{Binding ShowAddSource, Mode=TwoWay}" Expanded="AddSourceExpanded" Margin="{StaticResource MarginSectionBottom}">
+   <Expander x:Name="AddSourcePanel" Header="{Binding SourceFormTitle}" AutomationProperties.Name="{Binding SourceFormTitle}" IsExpanded="{Binding ShowAddSource, Mode=TwoWay}" Expanded="AddSourceExpanded" Margin="{StaticResource MarginSectionBottom}">
     <StackPanel>
    <TextBlock Text="{Binding SourceFormHelp}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionBottom}"/>
    <Border Style="{StaticResource PageCardStyle}" Margin="{StaticResource MarginSectionBottom}">
