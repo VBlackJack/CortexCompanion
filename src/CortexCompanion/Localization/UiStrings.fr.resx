@@ -324,7 +324,7 @@
   <data name="SettingsSaveKnowledgeBase" xml:space="preserve"><value>Enregistrer le dossier</value></data>
   <data name="SettingsConfluenceCredentialTitle" xml:space="preserve"><value>Connexion Confluence</value></data>
   <data name="SettingsConfluenceCredentialDescription" xml:space="preserve"><value>Le PAT est enregistré dans le Gestionnaire d'identifiants Windows pour votre compte, protégé par DPAPI. Il n'est jamais écrit dans settings.json ni dans CONFLUENCE.toml.</value></data>
-  <data name="SettingsConfluenceCredentialPatLabel" xml:space="preserve"><value>Personal Access Token (PAT)</value></data>
+  <data name="SettingsConfluenceCredentialPatLabel" xml:space="preserve"><value>Jeton d'accès personnel (PAT)</value></data>
   <data name="SettingsConfluenceCredentialSave" xml:space="preserve"><value>Enregistrer le PAT</value></data>
   <data name="SettingsConfluenceCredentialUnavailable" xml:space="preserve"><value>Connectez d'abord Cortex pour charger la cible d'identifiant Confluence.</value></data>
   <data name="SettingsConfluenceCredentialConfigMissing" xml:space="preserve"><value>Ouvrez Pages Confluence et complétez Première configuration Confluence, puis revenez dans Réglages pour enregistrer le PAT.</value></data>
