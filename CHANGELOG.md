@@ -15,6 +15,7 @@
 - Apply the same personal access token length limit to the Confluence connection field as to the settings field.
 - Use the configured CLI timeout, instead of the 30-second default, when a local document update reads its configuration evidence and when the scheduled task checks the CLI version.
 - Keep the real result of a save, a synchronization record or a source change when its temporary file cannot be removed; the leftover file is now logged as a warning.
+- Translate the French "Tombstones" synchronization label, which was left in English.
 
 ## [2026.0909.04] - 2026-09-09
 

@@ -216,7 +216,7 @@
   <data name="SyncConvertedLabel" xml:space="preserve"><value>Documents convertis (dernière tentative)</value></data>
   <data name="SyncFailedLabel" xml:space="preserve"><value>Documents en échec</value></data>
   <data name="SyncCarryForwardLabel" xml:space="preserve"><value>Documents conservés</value></data>
-  <data name="SyncTombstonesLabel" xml:space="preserve"><value>Tombstones</value></data>
+  <data name="SyncTombstonesLabel" xml:space="preserve"><value>Documents supprimés</value></data>
   <data name="SyncNeverRun" xml:space="preserve"><value>Jamais synchronisé</value></data>
   <data name="SyncHealthUnreadable" xml:space="preserve"><value>État local illisible</value></data>
   <data name="SyncHealthLockedInformation" xml:space="preserve"><value>Information : un autre sync était en cours lors de la dernière tentative.</value></data>
