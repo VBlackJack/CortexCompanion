@@ -17,18 +17,31 @@ public sealed class UiStringsContractTests
     private static readonly Regex PlaceholderPattern =
         new(@"\{(\d+)(?::[^}]*)?\}", RegexOptions.CultureInvariant);
 
+    // Typographic substitutes for plain ASCII: dashes, curly and low quotes, guillemets,
+    // ellipsis, minus sign, non-ASCII spaces and joiners, byte order mark and the oe/ae
+    // ligatures. French accents are deliberately absent: they are letters, not substitutes.
     private static readonly char[] BannedPunctuation =
     [
         '\u00A0',
         '\u00AB',
         '\u00BB',
+        '\u00C6',
+        '\u00E6',
+        '\u0152',
+        '\u0153',
+        '\u200B',
+        '\u2011',
         '\u2013',
         '\u2014',
         '\u2018',
         '\u2019',
         '\u201C',
         '\u201D',
+        '\u201E',
         '\u2026',
+        '\u202F',
+        '\u2212',
+        '\uFEFF',
     ];
 
     /// <summary>Ensures UI resources retain plain punctuation while preserving legitimate accents.</summary>
