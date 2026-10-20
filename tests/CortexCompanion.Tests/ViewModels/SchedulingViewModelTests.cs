@@ -27,6 +27,7 @@ public sealed class SchedulingViewModelTests
         await ((CortexCompanion.Commands.AsyncRelayCommand)viewModel.RefreshCommand).ExecuteAsync(null);
         Assert.AreEqual("17:45", viewModel.StartTimeText);
         Assert.AreEqual(SchedulingPreset.Hourly, viewModel.SelectedPreset.Value);
+        Assert.AreEqual(string.Empty, viewModel.NotConfiguredMessage);
     }
 
     [TestMethod]
@@ -56,6 +57,7 @@ public sealed class SchedulingViewModelTests
 
         Assert.AreEqual(UiStrings.SchedulingStateActive, viewModel.StateText);
         Assert.IsFalse(viewModel.IsConfigured);
+        Assert.AreEqual(UiStrings.SchedulingNotConfigured, viewModel.NotConfiguredMessage);
         Assert.IsFalse(viewModel.CanCreateOrUpdate);
         Assert.IsFalse(viewModel.CanDelete);
         Assert.IsNull(scheduler.ReadContracts[0]);

@@ -172,6 +172,13 @@ public static class AppConstants
     public const string ScheduledTaskOwnershipToken =
         "cdcf4053-94d6-4a54-8b79-c5b744472971"; // gitleaks:allow - public ownership marker.
 
+    /// <summary>Gets the invariant RegistrationInfo.Description written on every registration.</summary>
+    /// <remarks>
+    /// Invariant on purpose: the task outlives the interface language, so a localized value
+    /// would differ between registrations made before and after a language switch.
+    /// </remarks>
+    public const string ScheduledTaskDescription = "Cortex Companion - ingestion scheduling - contract 1";
+
     /// <summary>Gets the process-only uninstall cleanup argument.</summary>
     public const string CompanionUninstallCleanupArgument = "--uninstall-cleanup";
 

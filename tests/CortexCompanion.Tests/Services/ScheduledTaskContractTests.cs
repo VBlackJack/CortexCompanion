@@ -1,6 +1,7 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Globalization;
 using CortexCompanion.Constants;
 using CortexCompanion.Localization;
 using CortexCompanion.Models;
@@ -97,6 +98,47 @@ public sealed class ScheduledTaskContractTests
     }
 
     [TestMethod]
+    public void DescriptionIsInvariantAndALanguageSwitchKeepsTheTaskConforming()
+    {
+        using TemporaryDirectory temporary = new();
+        ScheduledTaskContract contract = CreateContract(temporary);
+        CultureInfo previous = CultureInfo.CurrentUICulture;
+        try
+        {
+            List<string> legacyDescriptions = [];
+            foreach (string language in new[] { "fr", "en" })
+            {
+                CultureInfo.CurrentUICulture = new CultureInfo(language);
+                ScheduledTaskRegistration registration = ScheduledTaskDefinitionFactory.Create(
+                    contract,
+                    SchedulingPreset.Daily,
+                    new TimeOnly(2, 0),
+                    new DateOnly(2026, 8, 5));
+                Assert.AreEqual(AppConstants.ScheduledTaskDescription, registration.Description);
+                legacyDescriptions.Add(UiStrings.SchedulingTaskContractDescription);
+            }
+
+            // Tasks written by earlier releases carry the description of their interface language.
+            Assert.AreNotEqual(legacyDescriptions[0], legacyDescriptions[1]);
+            ScheduledTaskObservedDefinition observed = CreateObserved(ScheduledTaskDefinitionFactory.Create(
+                contract,
+                SchedulingPreset.Daily,
+                new TimeOnly(2, 0),
+                new DateOnly(2026, 8, 5)));
+            foreach (string legacyDescription in legacyDescriptions)
+            {
+                Assert.IsTrue(ScheduledTaskDefinitionFactory.IsConforming(
+                    observed with { Description = legacyDescription },
+                    contract));
+            }
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    [TestMethod]
     public void DivergentIngestionPathInThePersistedActionFailsConformity()
     {
         using TemporaryDirectory temporary = new();
@@ -174,7 +216,7 @@ public sealed class ScheduledTaskContractTests
     }
 
     private static ScheduledTaskObservedDefinition CreateObserved(ScheduledTaskRegistration registration) => new(
-        UiStrings.SchedulingTaskContractDescription,
+        registration.Description,
         registration.Contract.CompanionPath,
         registration.Action.Arguments,
         Path.GetDirectoryName(registration.Contract.CompanionPath)!,

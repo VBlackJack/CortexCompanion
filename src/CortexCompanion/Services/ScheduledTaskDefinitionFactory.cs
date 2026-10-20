@@ -3,7 +3,6 @@
 
 using System.Globalization;
 using CortexCompanion.Constants;
-using CortexCompanion.Localization;
 using CortexCompanion.Models;
 
 namespace CortexCompanion.Services;
@@ -31,7 +30,7 @@ public static class ScheduledTaskDefinitionFactory
             contract.SourceKind);
         return new ScheduledTaskRegistration(
             contract,
-            UiStrings.SchedulingTaskContractDescription,
+            AppConstants.ScheduledTaskDescription,
             new ScheduledTaskActionSpec(
                 AppConstants.ScheduledTaskActionExec,
                 contract.CompanionPath,
@@ -59,6 +58,11 @@ public static class ScheduledTaskDefinitionFactory
     }
 
     /// <summary>Checks every mutable definition field while excluding ownership from conformity.</summary>
+    /// <remarks>
+    /// The description is deliberately not compared: earlier releases wrote it in the
+    /// interface language, so a task registered in one language would read as needing
+    /// reconfiguration after a switch. Ownership is proven by the Source token instead.
+    /// </remarks>
     public static bool IsConforming(
         ScheduledTaskObservedDefinition observed,
         ScheduledTaskContract expected)
@@ -81,11 +85,7 @@ public static class ScheduledTaskDefinitionFactory
                                    observed.RepetitionDuration,
                                    AppConstants.ScheduledTaskHourlyDuration,
                                    StringComparison.Ordinal);
-        return string.Equals(
-                   observed.Description,
-                   UiStrings.SchedulingTaskContractDescription,
-                   StringComparison.Ordinal) &&
-               PathEquals(observed.ActionPath, expected.CompanionPath) &&
+        return PathEquals(observed.ActionPath, expected.CompanionPath) &&
                string.Equals(observed.ActionArguments, WindowsCommandLine.Join(workerArguments), StringComparison.Ordinal) &&
                PathEquals(observed.WorkingDirectory, Path.GetDirectoryName(expected.CompanionPath) ?? string.Empty) &&
                UserIdsMatch(observed.UserId, expected.UserId) &&

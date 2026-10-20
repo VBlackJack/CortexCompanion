@@ -10,6 +10,7 @@
 - Draw the theme focus ring on radio buttons, check boxes, expander headers, the search splitter, search results and source tree items instead of the near-invisible default dotted line.
 - Theme the selection and hover colours of search results and source tree items, which kept the light system selection under light text.
 - Theme the date picker field and its calendar popup, whose day numbers, day titles, month names and header rendered near-black on the dark surface and whose date text was light on a white field.
+- Keep a scheduled task conforming after the interface language changes; the task description is now written in invariant English and no longer decides conformity.
 
 ## [2026.0909.04] - 2026-09-09
 
