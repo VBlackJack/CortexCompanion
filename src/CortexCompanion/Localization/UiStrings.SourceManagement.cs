@@ -1,10 +1,35 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using System.Globalization;
+using System.Text;
+
 namespace CortexCompanion.Localization;
 
 public static partial class UiStrings
 {
+    private static readonly CompositeFormat PagesConfigUnknownKeysFormat =
+        CompositeFormat.Parse(GetString("PagesConfigUnknownKeys"));
+
+    /// <summary>Gets the message for a Confluence configuration file that fails validation.</summary>
+    public static string PagesConfigInvalid => GetString(nameof(PagesConfigInvalid));
+
+    /// <summary>Gets the message for a mutation lock held by another process.</summary>
+    public static string PagesConfigLocked => GetString(nameof(PagesConfigLocked));
+
+    /// <summary>Gets the message for a configuration save that did not complete.</summary>
+    public static string PagesConfigMutationFailed => GetString(nameof(PagesConfigMutationFailed));
+
+    /// <summary>Gets the message for a configuration file that cannot be read or written.</summary>
+    public static string PagesConfigFileAccessFailed => GetString(nameof(PagesConfigFileAccessFailed));
+
+    /// <summary>Gets the message for an unexpected source or configuration failure.</summary>
+    public static string PagesConfigUnexpectedFailure => GetString(nameof(PagesConfigUnexpectedFailure));
+
+    /// <summary>Names the unsupported settings found in the Confluence configuration file.</summary>
+    public static string FormatPagesConfigUnknownKeys(string keys) =>
+        string.Format(CultureInfo.CurrentCulture, PagesConfigUnknownKeysFormat, keys);
+
     /// <summary>Gets the warning for verified remaining coverage.</summary>
     public static string ManageStillCovered => GetString(nameof(ManageStillCovered));
 

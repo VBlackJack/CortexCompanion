@@ -11,6 +11,8 @@
 - Theme the selection and hover colours of search results and source tree items, which kept the light system selection under light text.
 - Theme the date picker field and its calendar popup, whose day numbers, day titles, month names and header rendered near-black on the dark surface and whose date text was light on a white field.
 - Keep a scheduled task conforming after the interface language changes; the task description is now written in invariant English and no longer decides conformity.
+- Show a localized sentence instead of the English configuration error, with the absolute profile path, when the Confluence configuration is invalid, locked, unsaved or unreadable; unsupported setting names are still listed, and the technical message goes to the log.
+- Apply the same personal access token length limit to the Confluence connection field as to the settings field.
 
 ## [2026.0909.04] - 2026-09-09
 

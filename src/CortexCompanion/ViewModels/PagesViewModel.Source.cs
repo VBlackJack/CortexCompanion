@@ -123,7 +123,7 @@ public sealed partial class PagesViewModel
         catch (Exception exception) when (exception is ConfluenceSetupValidationException or PageMutationRejectedException or
             ConfluenceConfigValidationException or ConfluenceConfigLockedException or ConfluenceConfigMutationException or IOException)
         {
-            SetSourceError(exception.Message);
+            SetSourceError(DescribeFailure(exception));
             if (exception.Message == UiStrings.PagesRejectWholeSpaceCovered ||
                 exception.Message == UiStrings.PagesRejectPageAlreadyConfigured)
             {

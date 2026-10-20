@@ -47,6 +47,38 @@ public sealed class PagesViewModelTests
     }
 
     [TestMethod]
+    public void ConfigurationFailuresAreLocalizedAndNeverShowTheProfilePath()
+    {
+        string profilePath = Path.Combine(Path.GetTempPath(), "Profile-Sentinel", "confluence.toml");
+        ConfluenceConfigValidationException unknownKey = Assert.ThrowsExactly<ConfluenceConfigValidationException>(() =>
+            ConfluenceConfigParser.Parse(
+                System.Text.Encoding.UTF8.GetBytes("schema_version = 1\nmystery_setting = true\n"),
+                profilePath));
+        Dictionary<Exception, string> expected = new()
+        {
+            [unknownKey] = UiStrings.FormatPagesConfigUnknownKeys("mystery_setting"),
+            [new ConfluenceConfigValidationException($"Invalid Confluence configuration at '{profilePath}': bad.")] = UiStrings.PagesConfigInvalid,
+            [new ConfluenceConfigLockedException($"Locked at '{profilePath}'.")] = UiStrings.PagesConfigLocked,
+            [new ConfluenceConfigMutationException($"Round-trip failed at '{profilePath}'.")] = UiStrings.PagesConfigMutationFailed,
+            [new ConfluenceConfigConflictException($"Changed at '{profilePath}'.")] = UiStrings.PagesCasConflict,
+            [new IOException($"Sharing violation on '{profilePath}'.")] = UiStrings.PagesConfigFileAccessFailed,
+            [new InvalidOperationException($"Unexpected at '{profilePath}'.")] = UiStrings.PagesConfigUnexpectedFailure,
+            [new PageMutationRejectedException(UiStrings.PagesRejectPageAlreadyConfigured)] = UiStrings.PagesRejectPageAlreadyConfigured,
+            [new ConfluenceSetupValidationException(UiStrings.ConfluenceSetupInvalidSpaceKey)] = UiStrings.ConfluenceSetupInvalidSpaceKey,
+        };
+
+        Assert.HasCount(1, unknownKey.UnknownKeys);
+        Assert.AreEqual("mystery_setting", unknownKey.UnknownKeys[0]);
+        foreach (KeyValuePair<Exception, string> pair in expected)
+        {
+            string shown = PagesViewModel.DescribeFailure(pair.Key);
+
+            Assert.AreEqual(pair.Value, shown, pair.Key.GetType().Name);
+            Assert.DoesNotContain("Profile-Sentinel", shown, StringComparison.Ordinal);
+        }
+    }
+
+    [TestMethod]
     public async Task RefreshEnablesPageMutationAfterConfigurationAppears()
     {
         using TemporaryDirectory temporary = new();

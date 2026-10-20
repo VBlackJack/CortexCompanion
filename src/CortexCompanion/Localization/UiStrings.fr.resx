@@ -630,4 +630,10 @@
   <data name="ExperienceFolderHelp" xml:space="preserve"><value>Choisissez le dossier contenant vos documents. Enregistrez-le, puis mettez à jour vos documents pour les retrouver dans la recherche.</value></data>
   <data name="SourcesResponseTooLarge" xml:space="preserve"><value>La réponse de la source dépasse la taille prise en charge. Aucune sélection partielle n'a été chargée.</value></data>
   <data name="SourcesPreparingReview" xml:space="preserve"><value>Préparation de la sélection à confirmer. Vous pouvez annuler cette lecture sans enregistrer vos modifications.</value></data>
+  <data name="PagesConfigInvalid" xml:space="preserve"><value>Le fichier de configuration Confluence est invalide. Corrigez-le ou recréez-le depuis cette page, puis réessayez.</value></data>
+  <data name="PagesConfigUnknownKeys" xml:space="preserve"><value>Le fichier de configuration Confluence contient des paramètres non pris en charge : {0}. Supprimez-les, puis réessayez.</value></data>
+  <data name="PagesConfigLocked" xml:space="preserve"><value>Un autre processus modifie la configuration Confluence. Patientez un instant, puis réessayez.</value></data>
+  <data name="PagesConfigMutationFailed" xml:space="preserve"><value>La configuration Confluence n'a pas pu être enregistrée. Le fichier précédent a été conservé ; réessayez.</value></data>
+  <data name="PagesConfigFileAccessFailed" xml:space="preserve"><value>Le fichier de configuration Confluence n'a pas pu être lu ou écrit. Vérifiez qu'aucun autre programme ne le bloque, puis réessayez.</value></data>
+  <data name="PagesConfigUnexpectedFailure" xml:space="preserve"><value>L'opération Confluence a échoué de façon inattendue. Les détails figurent dans le journal de l'application.</value></data>
 </root>

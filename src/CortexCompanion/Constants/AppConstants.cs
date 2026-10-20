@@ -127,6 +127,9 @@ public static class AppConstants
     /// <summary>Gets the design-v1 PAT warning boundary.</summary>
     public const int PatExpiryWarningDays = 30;
 
+    /// <summary>Gets the longest personal access token either PAT field accepts.</summary>
+    public const int MaximumPatLength = 1280;
+
     /// <summary>Gets the Windows credential target used by Cortex when Confluence TOML is absent.</summary>
     public const string DefaultConfluenceCredentialTarget = "cortex-spike";
 

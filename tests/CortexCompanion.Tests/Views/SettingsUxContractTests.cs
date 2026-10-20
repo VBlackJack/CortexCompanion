@@ -192,6 +192,24 @@ public sealed partial class SettingsUxContractTests
     }
 
     [TestMethod]
+    public void EveryPatFieldSharesTheNamedLengthLimit()
+    {
+        string viewsDirectory = Path.Combine(FindRepositoryRoot(), "src", "CortexCompanion", "Views");
+        XElement[] passwordBoxes = Directory.EnumerateFiles(viewsDirectory, "*.xaml")
+            .SelectMany(path => XDocument.Load(path).Descendants())
+            .Where(element => element.Name.LocalName == "PasswordBox")
+            .ToArray();
+
+        Assert.HasCount(2, passwordBoxes);
+        foreach (XElement passwordBox in passwordBoxes)
+        {
+            Assert.AreEqual(
+                "{x:Static constants:AppConstants.MaximumPatLength}",
+                passwordBox.Attribute("MaxLength")?.Value);
+        }
+    }
+
+    [TestMethod]
     public void PageReferenceAndReadOnlySyncOutputsHaveResolvedAccessibleLabels()
     {
         string viewsDirectory = Path.Combine(

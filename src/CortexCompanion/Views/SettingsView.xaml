@@ -4,7 +4,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
              xmlns:models="clr-namespace:CortexCompanion.Models"
-             xmlns:localization="clr-namespace:CortexCompanion.Localization">
+             xmlns:localization="clr-namespace:CortexCompanion.Localization"
+             xmlns:constants="clr-namespace:CortexCompanion.Constants">
     <UserControl.InputBindings>
         <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
         <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveCliCommand}" />
@@ -118,7 +119,7 @@
                     <PasswordBox x:Name="ConfluencePatInput"
                                  AutomationProperties.LabeledBy="{Binding ElementName=ConfluencePatLabel}"
                                  KeyDown="ConfluencePatKeyDown"
-                                 MaxLength="1280"
+                                 MaxLength="{x:Static constants:AppConstants.MaximumPatLength}"
                                  Width="{StaticResource SettingsInputWidth}"
                                  HorizontalAlignment="Left"
                                  Margin="{StaticResource MarginStackItem}" />

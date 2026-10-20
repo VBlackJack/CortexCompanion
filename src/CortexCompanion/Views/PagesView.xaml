@@ -5,7 +5,8 @@
  xmlns:localization="clr-namespace:CortexCompanion.Localization"
  xmlns:viewModels="clr-namespace:CortexCompanion.ViewModels"
  xmlns:models="clr-namespace:CortexCompanion.Models"
- xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility">
+ xmlns:accessibility="clr-namespace:CortexCompanion.Accessibility"
+ xmlns:constants="clr-namespace:CortexCompanion.Constants">
  <UserControl.InputBindings><KeyBinding Key="F5" Command="{Binding RefreshCommand}"/><KeyBinding Key="Escape" Command="{Binding CancelSelectionPreparationCommand}"/></UserControl.InputBindings>
  <Grid>
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
@@ -183,7 +184,7 @@
       <TextBlock Text="{x:Static localization:UiStrings.PagesSetupExpiryLabel}" Margin="{StaticResource MarginLabelBottom}"/>
       <DatePicker SelectedDate="{Binding SetupExpiryDate}" AutomationProperties.Name="{x:Static localization:UiStrings.PagesSetupExpiryLabel}" Margin="{StaticResource MarginStackItem}"/>
       <TextBlock Text="{x:Static localization:UiStrings.FlowToken}" Margin="{StaticResource MarginLabelBottom}"/>
-      <PasswordBox x:Name="SourcePatInput" AutomationProperties.Name="{x:Static localization:UiStrings.FlowToken}" KeyDown="SourcePatKeyDown" Margin="{StaticResource MarginStackItem}"/>
+      <PasswordBox x:Name="SourcePatInput" AutomationProperties.Name="{x:Static localization:UiStrings.FlowToken}" MaxLength="{x:Static constants:AppConstants.MaximumPatLength}" KeyDown="SourcePatKeyDown" Margin="{StaticResource MarginStackItem}"/>
       <Expander Header="{x:Static localization:UiStrings.FlowTokenHelp}" AutomationProperties.Name="{x:Static localization:UiStrings.FlowTokenHelp}" Margin="{StaticResource MarginStackItem}">
        <TextBlock Text="{x:Static localization:UiStrings.FlowTokenInstructions}" TextWrapping="Wrap" Margin="{StaticResource MarginSectionTop}"/>
       </Expander>

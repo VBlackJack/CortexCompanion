@@ -352,7 +352,9 @@ public sealed partial class ConfluenceConfigParser
         string[] unknown = table.Keys.Where(key => !allowed.Contains(key)).Order().ToArray();
         if (unknown.Length > 0)
         {
-            throw Invalid(sourcePath, $"Unknown {context} key(s): {string.Join(", ", unknown)}.");
+            throw new ConfluenceConfigValidationException(
+                $"Invalid Confluence configuration at '{sourcePath}': Unknown {context} key(s): {string.Join(", ", unknown)}.",
+                unknownKeys: unknown);
         }
     }
 
@@ -393,8 +395,15 @@ public sealed partial class ConfluenceConfigParser
 public sealed class ConfluenceConfigValidationException : Exception
 {
     /// <summary>Initializes a validation error.</summary>
-    public ConfluenceConfigValidationException(string message, Exception? innerException = null)
+    public ConfluenceConfigValidationException(
+        string message,
+        Exception? innerException = null,
+        IReadOnlyList<string>? unknownKeys = null)
         : base(message, innerException)
     {
+        UnknownKeys = unknownKeys ?? [];
     }
+
+    /// <summary>Gets the unsupported keys found in the file, empty for any other validation failure.</summary>
+    public IReadOnlyList<string> UnknownKeys { get; }
 }

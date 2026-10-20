@@ -630,4 +630,10 @@
   <data name="ExperienceFolderHelp" xml:space="preserve"><value>Choose the folder containing your documents. Save it, then update your documents to make them searchable.</value></data>
   <data name="SourcesResponseTooLarge" xml:space="preserve"><value>The source response exceeds the supported size. No partial selection has been loaded.</value></data>
   <data name="SourcesPreparingReview" xml:space="preserve"><value>Preparing the selection review. You can cancel this read without saving your changes.</value></data>
+  <data name="PagesConfigInvalid" xml:space="preserve"><value>The Confluence configuration file is invalid. Correct it or recreate it from this page, then try again.</value></data>
+  <data name="PagesConfigUnknownKeys" xml:space="preserve"><value>The Confluence configuration file contains unsupported settings: {0}. Remove them, then try again.</value></data>
+  <data name="PagesConfigLocked" xml:space="preserve"><value>Another process is changing the Confluence configuration. Wait a moment, then try again.</value></data>
+  <data name="PagesConfigMutationFailed" xml:space="preserve"><value>The Confluence configuration could not be saved. The previous file was kept; try again.</value></data>
+  <data name="PagesConfigFileAccessFailed" xml:space="preserve"><value>The Confluence configuration file could not be read or written. Check that no other program holds it, then try again.</value></data>
+  <data name="PagesConfigUnexpectedFailure" xml:space="preserve"><value>The Confluence operation failed unexpectedly. The details are in the application log.</value></data>
 </root>

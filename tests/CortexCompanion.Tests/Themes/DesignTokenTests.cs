@@ -65,7 +65,7 @@ public sealed partial class DesignTokenTests
 
     [GeneratedRegex(
         "(Margin|Padding|Width|Height|MinWidth|MinHeight|MaxWidth|MaxHeight|FontSize|" +
-        "BorderThickness|CornerRadius)=\"[0-9][^\"]*\"",
+        "BorderThickness|CornerRadius|MaxLength)=\"[0-9][^\"]*\"",
         RegexOptions.CultureInvariant)]
     private static partial Regex RawLayoutValuePattern();
 

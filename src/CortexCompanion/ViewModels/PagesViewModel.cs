@@ -7,6 +7,7 @@ using CortexCompanion.Commands;
 using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
+using CortexCompanion.Logging;
 using CortexCompanion.Models;
 using CortexCompanion.Services;
 
@@ -391,7 +392,7 @@ public sealed partial class PagesViewModel : ViewModelBase
         {
             _isConfluenceConfigurationReady = false;
             Spaces.Clear();
-            StateMessage = exception.Message;
+            StateMessage = DescribeFailure(exception);
             NotifyCommandAvailability();
             return;
         }
@@ -563,8 +564,8 @@ public sealed partial class PagesViewModel : ViewModelBase
                                           IOException)
         {
             terminalMessage = configurationCreated
-                ? $"{UiStrings.PagesSetupCreatedAddFailed} {exception.Message}"
-                : exception.Message;
+                ? $"{UiStrings.PagesSetupCreatedAddFailed} {DescribeFailure(exception)}"
+                : DescribeFailure(exception);
         }
         finally
         {
@@ -592,7 +593,7 @@ public sealed partial class PagesViewModel : ViewModelBase
         }
         catch (ConfluenceSetupValidationException exception)
         {
-            StateMessage = exception.Message;
+            StateMessage = DescribeFailure(exception);
         }
         finally
         {
@@ -673,7 +674,7 @@ public sealed partial class PagesViewModel : ViewModelBase
                                           IOException)
         {
             failed = true;
-            terminalMessage = exception.Message;
+            terminalMessage = DescribeFailure(exception);
         }
         finally
         {
@@ -744,6 +745,34 @@ public sealed partial class PagesViewModel : ViewModelBase
         };
         string sentence = CliStandardErrorPresenter.UserFacing(detail);
         return sentence.Length == 0 ? stable : $"{stable} {sentence}";
+    }
+
+    /// <summary>Maps a source or configuration failure to localized screen text.</summary>
+    /// <remarks>
+    /// Setup validation and mutation refusals already carry localized text. The configuration
+    /// store and parser speak English and name the absolute profile path, so their message goes
+    /// to the log only and the screen and live region receive a stable localized sentence.
+    /// </remarks>
+    internal static string DescribeFailure(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        if (exception is ConfluenceSetupValidationException or PageMutationRejectedException)
+        {
+            return exception.Message;
+        }
+
+        FileLogger.Error("Confluence configuration operation failed", exception);
+        return exception switch
+        {
+            ConfluenceConfigValidationException { UnknownKeys.Count: > 0 } validation =>
+                UiStrings.FormatPagesConfigUnknownKeys(string.Join(", ", validation.UnknownKeys)),
+            ConfluenceConfigValidationException => UiStrings.PagesConfigInvalid,
+            ConfluenceConfigLockedException => UiStrings.PagesConfigLocked,
+            ConfluenceConfigMutationException => UiStrings.PagesConfigMutationFailed,
+            ConfluenceConfigConflictException => UiStrings.PagesCasConflict,
+            IOException => UiStrings.PagesConfigFileAccessFailed,
+            _ => UiStrings.PagesConfigUnexpectedFailure,
+        };
     }
 
     private void NotifyCommandAvailability()
