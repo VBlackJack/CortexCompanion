@@ -1,7 +1,10 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
+using CortexCompanion.Constants;
+using CortexCompanion.Interfaces;
 using CortexCompanion.Localization;
+using CortexCompanion.Models;
 using CortexCompanion.Services;
 using CortexCompanion.Tests.TestSupport;
 
@@ -36,5 +39,40 @@ public sealed class LocalIndexContextTests
         { LatestLocalRunSucceeded = true, LocalContext = durable };
         Assert.AreEqual(expected, freshness.MatchesLocalConfiguration(after));
         Assert.IsFalse((freshness with { LatestLocalRunSucceeded = false }).MatchesLocalConfiguration(after));
+    }
+
+    [TestMethod]
+    public async Task EvidenceIsReadWithinTheConfiguredCliTimeout()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TimeSpan configured = new AppSettings(cliPath, AppConstants.MaximumCliTimeoutSeconds).EffectiveCliTimeout;
+        RecordingConfigClient client = new(new CortexConfigSnapshot(true, new string('a', 64), true, temporary.Path, null));
+
+        LocalIndexContext? context = await LocalIndexContext.ReadAsync(cliPath, client, configured);
+
+        Assert.IsNotNull(context);
+        Assert.AreEqual(configured, client.ObservedTimeout);
+        Assert.AreNotEqual(TimeSpan.FromSeconds(AppConstants.DefaultCliTimeoutSeconds), client.ObservedTimeout);
+    }
+
+    private sealed class RecordingConfigClient(CortexConfigSnapshot snapshot) : ICortexConfigClient
+    {
+        public TimeSpan? ObservedTimeout { get; private set; }
+
+        public Task<CortexConfigSnapshot> GetAsync(string cliPath, TimeSpan timeout, CancellationToken cancellationToken = default)
+        {
+            ObservedTimeout = timeout;
+            return Task.FromResult(snapshot);
+        }
+
+        public Task<CortexConfigMutationResult> SetKnowledgeBasePathAsync(
+            string cliPath,
+            string knowledgeBasePath,
+            string? expectedContentHash,
+            bool expectAbsent,
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default) =>
+            throw new InvalidOperationException("Mutations are outside this read test.");
     }
 }

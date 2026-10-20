@@ -188,7 +188,7 @@ public sealed partial class PagesMutationService
         }
         finally
         {
-            File.Delete(temporaryPath);
+            BestEffortFile.Delete(temporaryPath);
         }
     }
 

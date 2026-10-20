@@ -13,6 +13,8 @@
 - Keep a scheduled task conforming after the interface language changes; the task description is now written in invariant English and no longer decides conformity.
 - Show a localized sentence instead of the English configuration error, with the absolute profile path, when the Confluence configuration is invalid, locked, unsaved or unreadable; unsupported setting names are still listed, and the technical message goes to the log.
 - Apply the same personal access token length limit to the Confluence connection field as to the settings field.
+- Use the configured CLI timeout, instead of the 30-second default, when a local document update reads its configuration evidence and when the scheduled task checks the CLI version.
+- Keep the real result of a save, a synchronization record or a source change when its temporary file cannot be removed; the leftover file is now logged as a warning.
 
 ## [2026.0909.04] - 2026-09-09
 

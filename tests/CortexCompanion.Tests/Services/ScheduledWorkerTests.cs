@@ -78,14 +78,30 @@ public sealed class ScheduledWorkerTests
         Assert.AreEqual(3, await execution.WaitAsync(TimeSpan.FromSeconds(2)));
     }
 
+    [TestMethod]
+    public async Task HandshakeUsesTheSavedCliTimeout()
+    {
+        using TemporaryDirectory temporary = new();
+        QueueProcessRunner runner = new([ScheduledProcessResult.Completed(3)]);
+        StubHandshake handshake = CompatibleHandshake();
+        ScheduledWorker worker = CreateWorker(temporary, handshake, runner, AppConstants.MaximumCliTimeoutSeconds);
+
+        Assert.AreEqual(3, await worker.ExecuteAsync(CreateArguments(temporary)));
+
+        Assert.IsNotNull(handshake.ObservedSettings);
+        Assert.AreEqual(AppConstants.MaximumCliTimeoutSeconds, handshake.ObservedSettings.EffectiveCliTimeoutSeconds);
+    }
+
     private static ScheduledWorker CreateWorker(
         TemporaryDirectory temporary,
         ICliHandshakeService handshake,
-        IScheduledProcessRunner runner) =>
+        IScheduledProcessRunner runner,
+        int? cliTimeoutSeconds = null) =>
         new(
             handshake,
             runner,
-            new ScheduledRunPersistence(Path.Combine(temporary.Path, "scheduled-runs")));
+            new ScheduledRunPersistence(Path.Combine(temporary.Path, "scheduled-runs")),
+            cliTimeoutSeconds);
 
     private static StubHandshake CompatibleHandshake() => new(new CliHandshakeResult(
         CliHandshakeStatus.Compatible,
@@ -105,9 +121,15 @@ public sealed class ScheduledWorkerTests
 
     private sealed class StubHandshake(CliHandshakeResult result) : ICliHandshakeService
     {
+        public AppSettings? ObservedSettings { get; private set; }
+
         public Task<CliHandshakeResult> EvaluateAsync(
             AppSettings settings,
-            CancellationToken cancellationToken = default) => Task.FromResult(result);
+            CancellationToken cancellationToken = default)
+        {
+            ObservedSettings = settings;
+            return Task.FromResult(result);
+        }
     }
 
     private sealed class QueueProcessRunner(IEnumerable<ScheduledProcessResult> results) : IScheduledProcessRunner

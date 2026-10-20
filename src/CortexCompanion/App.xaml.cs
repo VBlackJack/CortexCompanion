@@ -125,7 +125,8 @@ public partial class App : Application, IDisposable
                 return true;
             }
 
-            int exitCode = await SyncWorker.ExecuteAsync(workerArguments);
+            SettingsLoadResult workerSettings = await new SettingsStore(paths.SettingsPath).LoadAsync();
+            int exitCode = await SyncWorker.ExecuteAsync(workerArguments, workerSettings.Settings.EffectiveCliTimeout);
             Shutdown(exitCode);
             return true;
         }
@@ -149,10 +150,12 @@ public partial class App : Application, IDisposable
             ICliHandshakeService handshake = new CliHandshakeService(
                 new CliVersionPolicy(),
                 processRunner);
+            SettingsLoadResult workerSettings = await new SettingsStore(paths.SettingsPath).LoadAsync();
             ScheduledWorker worker = new(
                 handshake,
                 new ScheduledProcessRunner(),
-                new ScheduledRunPersistence(paths.ScheduledRunsDirectory));
+                new ScheduledRunPersistence(paths.ScheduledRunsDirectory),
+                workerSettings.Settings.CliHandshakeTimeoutSeconds);
             int exitCode = await worker.ExecuteAsync(workerArguments);
             Shutdown(exitCode);
             return true;

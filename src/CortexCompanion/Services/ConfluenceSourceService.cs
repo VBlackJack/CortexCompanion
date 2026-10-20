@@ -111,7 +111,7 @@ public sealed class ConfluenceSourceService(
         }
         finally
         {
-            File.Delete(temporary);
+            BestEffortFile.Delete(temporary);
         }
     }
 

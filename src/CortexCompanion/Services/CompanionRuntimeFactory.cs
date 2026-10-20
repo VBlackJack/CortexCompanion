@@ -190,6 +190,7 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             return null;
         }
 
+        using WindowsIdentity identity = WindowsIdentity.GetCurrent();
         return new ScheduledTaskContract(
             Path.GetFullPath(Environment.ProcessPath),
             cliValidation.AbsolutePath,
@@ -197,6 +198,6 @@ public sealed class CompanionRuntimeFactory : ICompanionRuntimeFactory
             configPath.AbsolutePath,
             _paths.ScheduledRunsDirectory,
             AppConstants.IngestionSourceKind,
-            WindowsIdentity.GetCurrent().Name);
+            identity.Name);
     }
 }

@@ -16,7 +16,9 @@ public static class SyncWorker
     private static readonly UTF8Encoding Utf8WithoutBom = new(false);
 
     /// <summary>Executes one detached run and persists both streams plus its terminal result.</summary>
-    public static async Task<int> ExecuteAsync(SyncWorkerArguments arguments)
+    /// <param name="arguments">The parsed worker invocation.</param>
+    /// <param name="cliTimeout">The user's configured timeout for the bounded configuration reads.</param>
+    public static async Task<int> ExecuteAsync(SyncWorkerArguments arguments, TimeSpan cliTimeout)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         Directory.CreateDirectory(arguments.RunDirectory);
@@ -30,7 +32,7 @@ public static class SyncWorker
         SyncWorkerResult terminal;
         CortexConfigClient configClient = new(new ProcessRunner());
         LocalIndexContext? localContext = arguments.RunKind == SyncRunKind.LocalDocuments
-            ? await LocalIndexContext.ReadAsync(arguments.CliPath, configClient) : null;
+            ? await LocalIndexContext.ReadAsync(arguments.CliPath, configClient, cliTimeout) : null;
 
         ProcessStartInfo startInfo = new()
         {
@@ -90,7 +92,7 @@ public static class SyncWorker
 
         if (localContext is not null && terminal is { ExitCode: 0, LaunchError: null })
         {
-            LocalIndexContext? after = await LocalIndexContext.ReadAsync(arguments.CliPath, configClient);
+            LocalIndexContext? after = await LocalIndexContext.ReadAsync(arguments.CliPath, configClient, cliTimeout);
             await LocalIndexContext.PersistIfUnchangedAsync(arguments.RunDirectory, localContext, after);
         }
 

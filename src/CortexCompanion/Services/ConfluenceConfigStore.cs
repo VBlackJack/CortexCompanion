@@ -119,8 +119,8 @@ public sealed partial class ConfluenceConfigStore : IConfluenceConfigStore
         }
         finally
         {
-            DeleteIfPresent(configTemporary);
-            DeleteIfPresent(backupTemporary);
+            BestEffortFile.Delete(configTemporary);
+            BestEffortFile.Delete(backupTemporary);
         }
     }
 
@@ -150,23 +150,6 @@ public sealed partial class ConfluenceConfigStore : IConfluenceConfigStore
         await stream.FlushAsync(cancellationToken);
         stream.Flush(flushToDisk: true);
         return temporary;
-    }
-
-    private static void DeleteIfPresent(string? path)
-    {
-        if (path is null)
-        {
-            return;
-        }
-
-        try
-        {
-            File.Delete(path);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            // A failed best-effort cleanup must not mask the primary mutation result.
-        }
     }
 
     [GeneratedRegex("^[0-9a-f]{64}$", RegexOptions.CultureInvariant)]

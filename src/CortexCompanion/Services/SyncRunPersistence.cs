@@ -49,10 +49,7 @@ internal static class SyncRunPersistence
         }
         finally
         {
-            if (File.Exists(temporaryPath))
-            {
-                File.Delete(temporaryPath);
-            }
+            BestEffortFile.Delete(temporaryPath);
         }
     }
 

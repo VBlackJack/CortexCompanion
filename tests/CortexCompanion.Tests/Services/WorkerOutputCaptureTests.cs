@@ -44,7 +44,7 @@ public sealed class WorkerOutputCaptureTests
         string run = Path.Combine(temporary.Path, "run");
         Directory.CreateDirectory(Path.Combine(run, "stderr.log"));
         int exitCode = await SyncWorker.ExecuteAsync(new SyncWorkerArguments(
-            run, FindProbe(), SyncRunKind.LocalDocuments, null, false))
+            run, FindProbe(), SyncRunKind.LocalDocuments, null, false), AppSettings.Empty.EffectiveCliTimeout)
             .WaitAsync(TimeSpan.FromSeconds(15));
         Assert.AreEqual(1, exitCode);
         SyncWorkerResult? result = await SyncRunPersistence.ReadJsonAsync<SyncWorkerResult>(

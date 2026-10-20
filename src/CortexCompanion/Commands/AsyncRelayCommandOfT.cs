@@ -53,7 +53,7 @@ public sealed class AsyncRelayCommand<T> : ICommand
         }
         catch (Exception exception)
         {
-            FileLogger.Error($"Asynchronous UI command failed ({exception.GetType().Name})");
+            FileLogger.Error("Asynchronous UI command failed", exception);
             ExecutionFailed?.Invoke(this, EventArgs.Empty);
         }
         finally

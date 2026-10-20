@@ -173,10 +173,7 @@ public sealed class ScheduledRunPersistence
         }
         finally
         {
-            if (File.Exists(temporaryPath))
-            {
-                File.Delete(temporaryPath);
-            }
+            BestEffortFile.Delete(temporaryPath);
         }
     }
 }

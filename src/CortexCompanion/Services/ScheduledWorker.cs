@@ -16,16 +16,23 @@ public sealed class ScheduledWorker
     private readonly ICliHandshakeService _handshakeService;
     private readonly IScheduledProcessRunner _processRunner;
     private readonly ScheduledRunPersistence _persistence;
+    private readonly int? _cliTimeoutSeconds;
 
     /// <summary>Initializes the isolated scheduled worker with both process boundaries.</summary>
+    /// <param name="handshakeService">Evaluates CLI compatibility before any run.</param>
+    /// <param name="processRunner">Runs the guard and sync processes, which have no timeout.</param>
+    /// <param name="persistence">Owns the scheduled run directory and its result.</param>
+    /// <param name="cliTimeoutSeconds">The saved CLI timeout, normalized like the interface does.</param>
     public ScheduledWorker(
         ICliHandshakeService handshakeService,
         IScheduledProcessRunner processRunner,
-        ScheduledRunPersistence persistence)
+        ScheduledRunPersistence persistence,
+        int? cliTimeoutSeconds = null)
     {
         _handshakeService = handshakeService ?? throw new ArgumentNullException(nameof(handshakeService));
         _processRunner = processRunner ?? throw new ArgumentNullException(nameof(processRunner));
         _persistence = persistence ?? throw new ArgumentNullException(nameof(persistence));
+        _cliTimeoutSeconds = cliTimeoutSeconds;
     }
 
     /// <summary>Executes the complete scheduled sequence and emits only exit codes 0, 1, or 3.</summary>
@@ -72,7 +79,7 @@ public sealed class ScheduledWorker
         ScheduledRunHandle handle)
     {
         CliHandshakeResult handshake = await _handshakeService.EvaluateAsync(
-            new AppSettings(arguments.CliPath),
+            new AppSettings(arguments.CliPath, _cliTimeoutSeconds),
             CancellationToken.None);
         if (handshake.IsReadOnly)
         {

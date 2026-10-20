@@ -1,7 +1,6 @@
 // Copyright 2026 Julien Bombled
 // Licensed under the Apache License, Version 2.0.
 
-using CortexCompanion.Constants;
 using CortexCompanion.Interfaces;
 using CortexCompanion.Logging;
 using CortexCompanion.Models;
@@ -26,12 +25,12 @@ public sealed record LocalIndexContext(string CliPath, string KnowledgeBasePath,
         string.Equals(KnowledgeBasePath, current.KnowledgeBasePath, StringComparison.OrdinalIgnoreCase) &&
         string.Equals(ConfigurationHash, current.ConfigurationHash, StringComparison.Ordinal);
 
-    internal static async Task<LocalIndexContext?> ReadAsync(string cliPath, ICortexConfigClient client)
+    /// <summary>Reads the evidence through the CLI within the user's configured CLI timeout.</summary>
+    internal static async Task<LocalIndexContext?> ReadAsync(string cliPath, ICortexConfigClient client, TimeSpan timeout)
     {
         try
         {
-            return Create(cliPath, await client.GetAsync(cliPath,
-                TimeSpan.FromSeconds(AppConstants.DefaultCliTimeoutSeconds), CancellationToken.None));
+            return Create(cliPath, await client.GetAsync(cliPath, timeout, CancellationToken.None));
         }
         catch (Exception exception) when (exception is CortexCliContractException or IOException or UnauthorizedAccessException or ArgumentException)
         {

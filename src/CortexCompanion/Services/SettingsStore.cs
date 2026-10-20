@@ -113,10 +113,7 @@ public sealed class SettingsStore
         }
         finally
         {
-            if (File.Exists(temporaryPath))
-            {
-                File.Delete(temporaryPath);
-            }
+            BestEffortFile.Delete(temporaryPath);
         }
     }
 }
