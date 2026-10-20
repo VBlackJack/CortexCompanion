@@ -53,6 +53,61 @@ public sealed class IndexFreshnessReaderTests
     }
 
     [TestMethod]
+    public async Task SourceOnlyPartialRunConfirmsTheIndexAndCountsSkippedSources()
+    {
+        using TemporaryDirectory temporary = new();
+        IngestionPathResolution path = await PublishAsync(temporary.Path, "published");
+        await WriteRunAsync(Path.Combine(temporary.Path, "runs", "run"), 1, ExperienceTests.SourceOnlyPartialReport);
+        IndexFreshness result = await new IndexFreshnessReader(Path.Combine(temporary.Path, "runs"), path)
+            .ReadAsync(CancellationToken.None);
+        Assert.IsTrue(result.LatestLocalRunSucceeded);
+        Assert.AreEqual(1, result.SkippedSourceCount);
+        Assert.AreEqual("published", result.Indexed);
+        Assert.AreEqual(UiStrings.FreshnessCurrent, result.Status);
+    }
+
+    [TestMethod]
+    [DataRow("\"recommendation\":\"check_sources\"", "\"recommendation\":\"retry_sync\"")]
+    [DataRow("\"lexical\":\"ok\"", "\"lexical\":\"degraded\"")]
+    [DataRow("\"status\":\"partial\"", "\"status\":\"failed\"")]
+    public async Task OtherUnsuccessfulReportsStayNotReady(string original, string replacement)
+    {
+        using TemporaryDirectory temporary = new();
+        IngestionPathResolution path = await PublishAsync(temporary.Path, "published");
+        string report = ExperienceTests.SourceOnlyPartialReport.Replace(original, replacement, StringComparison.Ordinal);
+        Assert.AreNotEqual(ExperienceTests.SourceOnlyPartialReport, report);
+        await WriteRunAsync(Path.Combine(temporary.Path, "runs", "run"), 1, report);
+        IndexFreshness result = await new IndexFreshnessReader(Path.Combine(temporary.Path, "runs"), path)
+            .ReadAsync(CancellationToken.None);
+        Assert.IsFalse(result.LatestLocalRunSucceeded);
+        Assert.AreEqual(0, result.SkippedSourceCount);
+        Assert.AreEqual(UiStrings.ValueUnknown, result.Indexed);
+        Assert.AreEqual(UiStrings.FreshnessUnknown, result.Status);
+    }
+
+    private static async Task<IngestionPathResolution> PublishAsync(string root, string generation)
+    {
+        Directory.CreateDirectory(Path.Combine(root, "doc", "generations", generation, "documents"));
+        await File.WriteAllTextAsync(Path.Combine(root, "doc", "current.json"),
+            $$"""{"schema_version":1,"generation_id":"{{generation}}"}""");
+        return new("config", IngestionPathOrigin.Default, "default", root, IngestionPathOrigin.Default, "default", "health");
+    }
+
+    private static async Task WriteRunAsync(string run, int exitCode, string report)
+    {
+        await SyncRunPersistence.WriteJsonAtomicAsync(Path.Combine(run, "worker.json"), new SyncWorkerState
+        {
+            RunId = Path.GetFileName(run),
+            WorkerProcessId = 1,
+            WorkerStartedAt = DateTimeOffset.UtcNow,
+            RunKind = SyncRunKind.LocalDocuments,
+        }, CancellationToken.None);
+        await SyncRunPersistence.WriteJsonAtomicAsync(Path.Combine(run, "result.json"),
+            new SyncWorkerResult { ExitCode = exitCode, CompletedAt = DateTimeOffset.UtcNow }, CancellationToken.None);
+        await File.WriteAllTextAsync(Path.Combine(run, "stdout.log"), report);
+    }
+
+    [TestMethod]
     public async Task AbsentHistoryIsUnknown()
     {
         using TemporaryDirectory temporary = new();

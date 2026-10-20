@@ -595,8 +595,13 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
 
     private void ApplyRun(SyncRunSnapshot snapshot)
     {
-        LastRunSucceeded = snapshot.IsCompleted && !snapshot.IsRunning && !snapshot.IsUnknown &&
-            !snapshot.IsCancelled && snapshot.ExitCode == 0 && snapshot.LaunchError is null;
+        bool finished = snapshot.IsCompleted && !snapshot.IsRunning && !snapshot.IsUnknown &&
+            !snapshot.IsCancelled && snapshot.LaunchError is null;
+        int skippedSources = 0;
+        bool sourcesSkipped = finished && snapshot.Handle.RunKind == SyncRunKind.LocalDocuments &&
+            snapshot.ExitCode == AppConstants.CliExitError &&
+            SyncReportOutcome.TryReadUsable(snapshot.StandardOutput, snapshot.ExitCode, out skippedSources);
+        LastRunSucceeded = (finished && snapshot.ExitCode == AppConstants.CliExitSuccess) || sourcesSkipped;
         RunTitle = snapshot.Handle.RunKind == SyncRunKind.LocalDocuments
             ? UiStrings.LocalSyncRunTitle
             : UiStrings.ConfluenceSyncRunTitle;
@@ -611,10 +616,12 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
                 ? UiStrings.SyncRunUnknown
                 : snapshot.IsRunning
                     ? UiStrings.SyncRunning
-                    : FormatExitCode(
-                        snapshot.Handle.RunKind,
-                        snapshot.ExitCode,
-                        snapshot.LaunchError);
+                    : sourcesSkipped
+                        ? UiStrings.FormatExperienceSourcesSkipped(skippedSources)
+                        : FormatExitCode(
+                            snapshot.Handle.RunKind,
+                            snapshot.ExitCode,
+                            snapshot.LaunchError);
     }
 
     private void ApplyProgress(SyncRunSnapshot snapshot)

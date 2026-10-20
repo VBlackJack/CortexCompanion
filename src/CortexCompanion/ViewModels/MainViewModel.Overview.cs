@@ -77,6 +77,13 @@ public sealed partial class MainViewModel
     /// <summary>Gets the observed completion of indexing, without inferring success from a click.</summary>
     public string SetupIndexState => LocalIndexReady ? UiStrings.GuideDone : UiStrings.GuidePending;
 
+    /// <summary>Gets whether the confirmed index left some unreadable sources out.</summary>
+    public bool HasSkippedSources => LocalIndexReady && Sync.Freshness.SkippedSourceCount > 0;
+
+    /// <summary>Names how many sources the confirmed index could not read, or nothing when all were read.</summary>
+    public string SkippedSourcesNotice => HasSkippedSources
+        ? UiStrings.FormatExperienceSourcesSkipped(Sync.Freshness.SkippedSourceCount) : string.Empty;
+
     private void InitializeOverview()
     {
         _updateDocuments = new AsyncRelayCommand(UpdateDocumentsAsync, () => Settings.HasSavedKnowledgeBase &&
@@ -217,5 +224,7 @@ public sealed partial class MainViewModel
         _updateDocuments?.RaiseCanExecuteChanged();
         OnPropertyChanged(nameof(SetupConfigurationState));
         OnPropertyChanged(nameof(SetupIndexState));
+        OnPropertyChanged(nameof(HasSkippedSources));
+        OnPropertyChanged(nameof(SkippedSourcesNotice));
     }
 }

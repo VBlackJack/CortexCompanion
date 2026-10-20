@@ -90,7 +90,10 @@ public static class SyncWorker
             };
         }
 
-        if (localContext is not null && terminal is { ExitCode: 0, LaunchError: null })
+        // A source-only partial run leaves a usable index, so its provenance is kept as for a success.
+        if (localContext is not null && terminal.LaunchError is null &&
+            (terminal.ExitCode == AppConstants.CliExitSuccess || SyncReportOutcome.TryReadUsable(
+                await SyncRunPersistence.ReadTextAsync(standardOutputPath, CancellationToken.None), terminal.ExitCode, out _)))
         {
             LocalIndexContext? after = await LocalIndexContext.ReadAsync(arguments.CliPath, configClient, cliTimeout);
             await LocalIndexContext.PersistIfUnchangedAsync(arguments.RunDirectory, localContext, after);

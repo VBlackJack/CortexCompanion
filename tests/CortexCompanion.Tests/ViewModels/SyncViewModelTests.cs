@@ -200,6 +200,26 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
+    [DataRow("check_sources", true)]
+    [DataRow("retry_sync", false)]
+    public async Task LocalRunWithOnlyUnreadableSourcesCountsAsAnUpdate(string recommendation, bool usable)
+    {
+        using TemporaryDirectory temporary = new();
+        SyncRunHandle handle = new("run", temporary.Path, Environment.ProcessId, DateTimeOffset.UtcNow,
+            SyncRunKind.LocalDocuments);
+        string report = ExperienceTests.SourceOnlyPartialReport.Replace(
+            "\"check_sources\"", $"\"{recommendation}\"", StringComparison.Ordinal);
+        LatestRunCoordinator coordinator = new(new SyncRunSnapshot(
+            handle, string.Empty, report, false, true, false, 1, null));
+        await using SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(), CreateConfig(temporary),
+            Path.Combine(temporary.Path, "source-health.json"), coordinator);
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        Assert.AreEqual(usable, viewModel.LastRunSucceeded);
+        Assert.AreEqual(usable ? UiStrings.FormatExperienceSourcesSkipped(1) : UiStrings.SyncFailed, viewModel.RunResult);
+    }
+
+    [TestMethod]
     public async Task LockedResultDoesNotRetryAndNeverWritesConfluenceToml()
     {
         using TemporaryDirectory temporary = new();

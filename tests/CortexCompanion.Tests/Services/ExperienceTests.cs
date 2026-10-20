@@ -24,6 +24,35 @@ public sealed class ExperienceTests
         "errors_truncated":true,"recommendation":"retry_sync"}
         """;
 
+    /// <summary>A Cortex sync report where only an unreadable source failed and both indexes stayed healthy.</summary>
+    internal const string SourceOnlyPartialReport = """
+        {"contract_version":1,"operation":"sync","status":"partial","changed":false,
+        "scope":{"requested_section":null,"resolved_sections":["knowledge"],"index_whole_folder":false,"included_ingestion_documents":true},
+        "ingestion":{"source_kind":"local","indexed_generation_id":"published"},
+        "counters":{"published_files":0,"added_chunks":0,"deleted_chunks":0,"removed_files":0,"skipped_files":3,"empty_files":0,"errors":1},
+        "indexes":{"chroma":"ok","lexical":"ok"},
+        "errors":[{"code":"extraction_failed","phase":"extract","path":"knowledge/bad.pdf"}],
+        "errors_truncated":false,"restart_required":false,"recommendation":"check_sources"}
+        """;
+
+    [TestMethod]
+    public async Task HistoryAsksToCheckSourcesWhenOnlySourcesFailed()
+    {
+        using TemporaryDirectory temporary = new();
+        AppPaths paths = new(temporary.Path);
+        string directory = await WriteRunAsync(paths, "run-sources", new SyncWorkerResult
+        {
+            ExitCode = 1,
+            CompletedAt = DateTimeOffset.UtcNow,
+        });
+        await File.WriteAllTextAsync(Path.Combine(directory, "stdout.log"), SourceOnlyPartialReport);
+        IReadOnlyList<OperationHistoryEntry> entries = await new OperationHistoryReader(paths).ReadAsync(CancellationToken.None);
+        Assert.HasCount(1, entries);
+        Assert.AreEqual(UiStrings.HistoryPartial, entries[0].Status);
+        Assert.Contains("knowledge/bad.pdf", entries[0].Details, StringComparison.Ordinal);
+        Assert.AreEqual(UiStrings.HistoryCheckSources, entries[0].Action);
+    }
+
     [TestMethod]
     public async Task HistoryKeepsPartialCountersAndErrorsAttachedToTheirOwnRun()
     {

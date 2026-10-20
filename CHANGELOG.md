@@ -16,6 +16,7 @@
 - Use the configured CLI timeout, instead of the 30-second default, when a local document update reads its configuration evidence and when the scheduled task checks the CLI version.
 - Keep the real result of a save, a synchronization record or a source change when its temporary file cannot be removed; the leftover file is now logged as a warning.
 - Translate the French "Tombstones" synchronization label, which was left in English.
+- Treat a local update whose only errors are unreadable sources, reported by Cortex as partial with both indexes healthy and the `check_sources` recommendation, as a completed update: the overview counts the documents as ready and says how many sources could not be read, the run result says the same, and History asks to check the listed sources instead of retrying a synchronization that cannot succeed.
 
 ## [2026.0909.04] - 2026-09-09
 

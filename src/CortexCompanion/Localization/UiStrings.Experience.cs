@@ -129,6 +129,9 @@ public static partial class UiStrings
     /// <summary>Gets the localized HistoryRepair text.</summary>
     public static string HistoryRepair => GetString(nameof(HistoryRepair));
 
+    /// <summary>Gets the localized HistoryCheckSources text.</summary>
+    public static string HistoryCheckSources => GetString(nameof(HistoryCheckSources));
+
     /// <summary>Gets the localized HistoryErrorsTruncated text.</summary>
     public static string HistoryErrorsTruncated => GetString(nameof(HistoryErrorsTruncated));
 
@@ -215,4 +218,10 @@ public static partial class UiStrings
     /// <summary>Formats the exact counters from the versioned sync report.</summary>
     public static string FormatHistoryCounters(int published, int removed, int skipped, int empty, int errors) =>
         string.Format(CultureInfo.CurrentCulture, HistoryCountersFormat, published, removed, skipped, empty, errors);
+
+    private static readonly CompositeFormat ExperienceSourcesSkippedFormat = CompositeFormat.Parse(GetString("ExperienceSourcesSkipped"));
+
+    /// <summary>Formats the count of sources a usable update could not read.</summary>
+    public static string FormatExperienceSourcesSkipped(int count) =>
+        string.Format(CultureInfo.CurrentCulture, ExperienceSourcesSkippedFormat, count);
 }

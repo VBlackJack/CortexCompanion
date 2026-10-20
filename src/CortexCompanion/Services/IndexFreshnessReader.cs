@@ -21,6 +21,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
         string? indexed = null;
         DateTimeOffset? completed = null;
         bool latestSucceeded = false;
+        int skippedSources = 0;
         LocalIndexContext? localContext = null;
         bool first = true;
         try
@@ -49,21 +50,16 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
                 if (worker?.RunKind != SyncRunKind.LocalDocuments) { continue; }
                 SyncWorkerResult? result = await SyncRunPersistence.ReadJsonAsync<SyncWorkerResult>(
                     Path.Combine(directory, SyncRunPersistence.ResultFileName), cancellationToken);
-                bool success = result is { ExitCode: 0, LaunchError: null, Cancelled: false };
-                if (first) { latestSucceeded = success; first = false; }
+                bool completedRun = result is { LaunchError: null, Cancelled: false };
+                using JsonDocument? report = completedRun
+                    ? SyncReportOutcome.TryParse(await SyncRunPersistence.ReadTextAsync(
+                        Path.Combine(directory, SyncRunPersistence.StandardOutputFileName), cancellationToken))
+                    : null;
+                int skipped = 0;
+                bool success = report is not null && SyncReportOutcome.TryReadUsable(report.RootElement, result?.ExitCode, out skipped);
+                if (first) { latestSucceeded = success; skippedSources = success ? skipped : 0; first = false; }
                 if (!success) { continue; }
-                string output = await SyncRunPersistence.ReadTextAsync(
-                    Path.Combine(directory, SyncRunPersistence.StandardOutputFileName), cancellationToken);
-                using JsonDocument report = JsonDocument.Parse(output);
-                JsonElement root = report.RootElement;
-                if (root.GetProperty("contract_version").GetInt32() != 1 ||
-                    root.GetProperty("operation").GetString() != "sync" ||
-                    root.GetProperty("status").GetString() != "succeeded")
-                {
-                    latestSucceeded = false;
-                    continue;
-                }
-
+                JsonElement root = report!.RootElement;
                 indexed = root.GetProperty("scope").GetProperty("included_ingestion_documents").GetBoolean()
                     ? root.GetProperty("ingestion").GetProperty("indexed_generation_id").GetString() : null;
                 localContext = await SyncRunPersistence.ReadJsonAsync<LocalIndexContext>(
@@ -77,6 +73,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
         {
             FileLogger.Error("Index freshness evidence could not be read", exception);
             latestSucceeded = false;
+            skippedSources = 0;
         }
 
         string status = published is null || completed is null ? UiStrings.FreshnessUnknown :
@@ -85,6 +82,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
             completed?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? UiStrings.ValueUnknown, status)
         {
             LatestLocalRunSucceeded = latestSucceeded,
+            SkippedSourceCount = skippedSources,
             LocalContext = localContext,
         };
     }
@@ -95,6 +93,9 @@ public sealed record IndexFreshness(string Published, string Indexed, string Las
 {
     /// <summary>Gets whether the newest observed local run completed successfully.</summary>
     public bool LatestLocalRunSucceeded { get; init; }
+
+    /// <summary>Gets how many sources the newest successful run could not read; zero when all were read.</summary>
+    public int SkippedSourceCount { get; init; }
 
     /// <summary>Gets durable root/configuration provenance; absent on historical runs.</summary>
     public LocalIndexContext? LocalContext { get; init; }
