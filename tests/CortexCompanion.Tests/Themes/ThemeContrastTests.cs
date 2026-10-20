@@ -54,6 +54,16 @@ public sealed class ThemeContrastTests
         new("Warning text on a card", "WarningBrush", "SurfaceBrush"),
         new("Warning banner text", "BackgroundBrush", "WarningBrush"),
         new("Accent emphasis on a card", "AccentBrush", "SurfaceBrush"),
+        // List and tree selection keep the row text colours on the highlight surface.
+        new("List item selected", "TextPrimaryBrush", "HighlightBrush"),
+        new("List item selected secondary text", "TextSecondaryBrush", "HighlightBrush"),
+        new("Tree item selected", "TextPrimaryBrush", "HighlightBrush"),
+        // The calendar popup paints on the surface brush.
+        new("Calendar day rest", "TextPrimaryBrush", "SurfaceBrush"),
+        new("Calendar day inactive", "TextSecondaryBrush", "SurfaceBrush"),
+        new("Calendar day hover", "TextPrimaryBrush", "HighlightBrush"),
+        new("Calendar day selected", "BackgroundBrush", "AccentBrush"),
+        new("Date picker text", "TextPrimaryBrush", "SurfaceBrush"),
     ];
 
     // WCAG 1.4.11: borders and focus rings are non-text, so they answer to 3:1.
@@ -66,6 +76,9 @@ public sealed class ThemeContrastTests
         new("Focus ring on the page", "FocusIndicatorBrush", "BackgroundBrush"),
         new("Focus ring on a card", "FocusIndicatorBrush", "SurfaceBrush"),
         new("Focus ring on a secondary button", "FocusIndicatorBrush", "CardBrush"),
+        new("Focus ring on a highlighted row", "FocusIndicatorBrush", "HighlightBrush"),
+        new("Selection border on a highlighted row", "AccentBrush", "HighlightBrush"),
+        new("Today marker on the calendar", "AccentBrush", "SurfaceBrush"),
     ];
 
     /// <summary>Ensures every interactive text and background pair meets WCAG AA.</summary>
@@ -170,11 +183,58 @@ public sealed class ThemeContrastTests
             (string?)selectionPresenter.Attribute("ContentTemplateSelector"));
     }
 
+    /// <summary>Ensures focusable themed controls draw the app focus ring, not the 1 DIP default.</summary>
+    /// <remarks>
+    /// The WPF default focus visual is a black dotted line, imperceptible on the dark
+    /// background. RadioButton and CheckBox also need a style trigger: their built-in
+    /// templates replace FocusVisualStyle from a template trigger when they have content,
+    /// and a template trigger outranks a plain style setter. The rendered outcome is
+    /// measured in MainWindowSmokeTests through ThemeRenderProbe.
+    /// </remarks>
+    [TestMethod]
+    public void FocusableThemedControlsDeclareTheAppFocusVisual()
+    {
+        XDocument commonControls = XDocument.Load(GetCommonControlsPath());
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+        const string expected = "{StaticResource AppFocusVisualStyle}";
+
+        foreach (string targetType in new[] { "RadioButton", "CheckBox", "GridSplitter", "ListBoxItem", "Expander" })
+        {
+            AssertSetterValue(FindImplicitStyle(commonControls, presentation, targetType), presentation, "FocusVisualStyle", expected);
+        }
+
+        foreach (string key in new[] { "DisclosureToggleStyle", "SourceTreeItemStyle", "CalendarDayButtonThemeStyle", "CalendarButtonThemeStyle" })
+        {
+            AssertSetterValue(FindStyle(commonControls, presentation, xaml, key), presentation, "FocusVisualStyle", expected);
+        }
+
+        foreach (string targetType in new[] { "RadioButton", "CheckBox" })
+        {
+            AssertTriggerSetterValue(
+                FindImplicitStyle(commonControls, presentation, targetType),
+                presentation,
+                "HasContent",
+                "FocusVisualStyle",
+                expected);
+        }
+
+        XElement expanderHeader = FindImplicitStyle(commonControls, presentation, "Expander")
+            .Descendants(presentation + "ToggleButton")
+            .Single(element => string.Equals((string?)element.Attribute(xaml + "Name"), "HeaderSite", StringComparison.Ordinal));
+        Assert.AreEqual("{StaticResource DisclosureToggleStyle}", (string?)expanderHeader.Attribute("Style"));
+
+        XElement listItemStyle = FindImplicitStyle(commonControls, presentation, "ListBoxItem");
+        AssertTriggerBackground(listItemStyle, presentation, "IsSelected", "{DynamicResource HighlightBrush}");
+        AssertTriggerSetterValue(listItemStyle, presentation, "IsSelected", "Foreground", "{DynamicResource TextPrimaryBrush}");
+        XElement treeItemStyle = FindStyle(commonControls, presentation, xaml, "SourceTreeItemStyle");
+        AssertTriggerBackground(treeItemStyle, presentation, "IsSelected", "{DynamicResource HighlightBrush}");
+    }
+
     /// <summary>Ensures controls without an implicit theme style declare their own foreground.</summary>
     /// <remarks>
-    /// The theme carries implicit styles for TextBox, ComboBox and ComboBoxItem, but the
-    /// only RadioButton style is keyed and there is none at all for CheckBox. Either
-    /// control therefore falls through to the built-in WPF style, whose own Foreground
+    /// The implicit RadioButton and CheckBox styles only restate the focus visual. Either
+    /// control otherwise falls through to the built-in WPF style, whose own Foreground
     /// setter outranks the inherited window brush and paints its labels in the system
     /// control colour over the fixed dark background. The centralized-literal test cannot
     /// see this: a missing brush is not a hex literal, which is exactly how it shipped.

@@ -7,6 +7,9 @@
 - Name the three scope choices of the add-source dialog after their visible headings, and give the dialog's Cancel button an explicit accessible name, so screen readers announce which scope is being confirmed.
 - Name the loading and synchronization progress bars after their adjacent text, and name the add-source form after its visible header when it switches to reconnecting.
 - Announce scheduling outcomes, the environment block and the missing-configuration banner through the live region, assertively when an operation fails, and announce source readiness and source-editor validation messages.
+- Draw the theme focus ring on radio buttons, check boxes, expander headers, the search splitter, search results and source tree items instead of the near-invisible default dotted line.
+- Theme the selection and hover colours of search results and source tree items, which kept the light system selection under light text.
+- Theme the date picker field and its calendar popup, whose day numbers, day titles, month names and header rendered near-black on the dark surface and whose date text was light on a white field.
 
 ## [2026.0909.04] - 2026-09-09
 

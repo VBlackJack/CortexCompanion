@@ -60,6 +60,12 @@ public sealed class MainWindowSmokeTests
             window.Show();
 
             Assert.IsTrue(window.IsVisible);
+            IReadOnlyList<string> unreadableCalendarText = ThemeRenderProbe.FindUnreadableCalendarText(window);
+            Assert.IsEmpty(unreadableCalendarText, string.Join(Environment.NewLine, unreadableCalendarText));
+            IReadOnlyList<string> withoutFocusRing = ThemeRenderProbe.FindControlsWithoutAppFocusVisual(window);
+            Assert.IsEmpty(withoutFocusRing, "Default focus visual on: " + string.Join(", ", withoutFocusRing));
+            IReadOnlyList<string> unreadableSelection = ThemeRenderProbe.FindUnreadableSelectedListText(window);
+            Assert.IsEmpty(unreadableSelection, string.Join(Environment.NewLine, unreadableSelection));
             window.Width = window.MinWidth;
             window.Height = window.MinHeight;
             window.UpdateLayout();
