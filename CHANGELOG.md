@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2026.1021.01] - 2026-10-21
+
+### Changed
+- Align the desktop payload with the corrected paired Cortex publication. The 2026.1021.00 pair failed in the Cortex release build before anything was published.
+
 ## [2026.1021.00] - 2026-10-21
 
 ### Fixed
