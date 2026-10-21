@@ -46,11 +46,13 @@ public partial class App : Application, IDisposable
                 processRunner,
                 fileDialogs);
             ICompanionRuntimeCoordinator runtimeCoordinator = new CompanionRuntimeCoordinator(runtimeFactory);
+            CortexConfigClient configClient = new(processRunner);
             SettingsViewModel settings = new(
                 settingsStore,
                 new CliPathDiscovery(),
                 runtimeCoordinator,
-                new CortexConfigClient(processRunner),
+                configClient,
+                configClient,
                 fileDialogs,
                 new ConfluenceCredentialTargetProvider(),
                 new WindowsCredentialManagerStore());

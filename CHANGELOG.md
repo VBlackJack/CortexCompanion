@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Show a Sections card in Settings that lists every indexed section with the folder Cortex reads it from, read through `cortex config roots --json`, marks the sections mounted outside the document folder, and warns when a section folder does not exist, since that section is then no longer indexed. The overview names the sections whose folder is missing and announces it. The card refreshes with the rest of Settings and on F5.
+
 ## [2026.1021.02] - 2026-10-21
 
 ### Changed

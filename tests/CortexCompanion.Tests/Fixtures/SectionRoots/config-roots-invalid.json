@@ -1,0 +1,16 @@
+{
+  "contract_version": 1,
+  "operation": "config_roots",
+  "status": "succeeded",
+  "present": true,
+  "content_hash": "9a489bf04348edfbaa1339bb928fa0a4720f6a511586b7e23e4866c14b88bedd",
+  "valid": false,
+  "error": {
+    "code": "invalid_configuration",
+    "phase": "validate",
+    "path": null
+  },
+  "kb_path": null,
+  "index_whole_folder": null,
+  "sections": []
+}

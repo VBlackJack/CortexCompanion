@@ -327,10 +327,69 @@ public sealed class SettingsViewModelTests
         Assert.AreEqual(UiStrings.SettingsConfluenceCredentialEmpty, context.ViewModel.StatusMessage);
     }
 
+    [TestMethod]
+    public async Task MissingSectionFolderFromTheRealCliIsShownInSettingsAndOnTheOverview()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new() { Snapshot = await ReadRootsFixtureAsync("config-roots-missing.json") };
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath, sectionRoots: roots);
+        MainViewModel main = new(context.Coordinator, context.ViewModel);
+
+        Assert.HasCount(2, context.ViewModel.SectionRoots);
+        SectionRootItem memory = context.ViewModel.SectionRoots[0];
+        Assert.AreEqual("_memory", memory.Section);
+        Assert.IsTrue(memory.IsMounted);
+        Assert.IsTrue(memory.IsMissing);
+        Assert.IsFalse(context.ViewModel.SectionRoots[1].IsMissing);
+        Assert.AreEqual(UiStrings.FormatSettingsSectionsMissing(1), context.ViewModel.SectionRootsStateText);
+        Assert.IsTrue(main.HasMissingSectionRoots);
+        Assert.AreEqual(UiStrings.FormatExperienceSectionRootsMissing("_memory"), main.MissingSectionRootsNotice);
+
+        roots.Snapshot = roots.Snapshot with
+        {
+            Sections = [.. roots.Snapshot.Sections.Select(entry => entry with { Exists = true })],
+        };
+        await ExecuteAsync(context.ViewModel.RefreshCommand);
+
+        Assert.AreEqual(2, roots.GetCount);
+        Assert.AreEqual(UiStrings.SettingsSectionsLoaded, context.ViewModel.SectionRootsStateText);
+        Assert.IsFalse(main.HasMissingSectionRoots);
+        Assert.AreEqual(string.Empty, main.MissingSectionRootsNotice);
+    }
+
+    [TestMethod]
+    public async Task InvalidConfigurationFromTheRealCliListsNoSection()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new() { Snapshot = await ReadRootsFixtureAsync("config-roots-invalid.json") };
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath, sectionRoots: roots);
+
+        Assert.IsEmpty(context.ViewModel.SectionRoots);
+        Assert.AreEqual(UiStrings.SettingsSectionsInvalid, context.ViewModel.SectionRootsStateText);
+        Assert.IsFalse(context.ViewModel.HasMissingSectionRoots);
+    }
+
+    [TestMethod]
+    public async Task UnreadableSectionRootsKeepTheRestOfSettingsUsable()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new() { GetException = new CortexCliContractException("Simulated failure.") };
+        TestContext context = await CreateInitializedContextAsync(temporary, cliPath, sectionRoots: roots);
+
+        Assert.IsEmpty(context.ViewModel.SectionRoots);
+        Assert.AreEqual(UiStrings.SettingsSectionsReadFailed, context.ViewModel.SectionRootsStateText);
+        Assert.AreEqual(UiStrings.SettingsConfigLoaded, context.ViewModel.ConfigStateText);
+        Assert.IsTrue(context.ViewModel.HasSavedKnowledgeBase);
+    }
+
     private static async Task<TestContext> CreateInitializedContextAsync(
         TemporaryDirectory temporary,
         string cliPath,
-        SyncViewModel? sync = null)
+        SyncViewModel? sync = null,
+        TestSectionRootsClient? sectionRoots = null)
     {
         string settingsPath = Path.Combine(temporary.Path, "state", "settings.json");
         SettingsStore store = new(settingsPath);
@@ -340,6 +399,7 @@ public sealed class SettingsViewModelTests
         if (sync is not null) { runtime = runtime with { Sync = sync }; }
         TestRuntimeCoordinator coordinator = new(runtime);
         TestConfigClient configClient = new(temporary.Path);
+        TestSectionRootsClient sectionRootsClient = sectionRoots ?? new TestSectionRootsClient();
         TestCredentialTargetProvider credentialTargetProvider = new("cortex-confluence");
         TestCredentialStore credentialStore = new();
         SettingsViewModel viewModel = new(
@@ -347,6 +407,7 @@ public sealed class SettingsViewModelTests
             new CliPathDiscovery(Path.GetDirectoryName(cliPath), temporary.Path),
             coordinator,
             configClient,
+            sectionRootsClient,
             new NullFileDialogs(),
             credentialTargetProvider,
             credentialStore);
@@ -358,6 +419,13 @@ public sealed class SettingsViewModelTests
             coordinator,
             configClient,
             credentialStore);
+    }
+
+    private static async Task<SectionRootsSnapshot> ReadRootsFixtureAsync(string name)
+    {
+        CortexConfigClient client = new(new StubProcessRunner(
+            ProcessRunResult.Completed(0, CliFixtures.Read("SectionRoots", name), string.Empty)));
+        return await client.GetSectionRootsAsync(@"C:\Cortex\cortex.exe", TimeSpan.FromSeconds(30));
     }
 
     private static CompanionRuntime CreateCompatibleRuntime(string root, string cliPath)
@@ -469,6 +537,44 @@ public sealed class SettingsViewModelTests
                 true,
                 null));
         }
+    }
+
+    private sealed class TestSectionRootsClient : ISectionRootsClient
+    {
+        public SectionRootsSnapshot Snapshot { get; set; } =
+            new(true, SnapshotHash, true, null, false, [], null);
+
+        public CortexCliContractException? GetException { get; set; }
+
+        public int GetCount { get; private set; }
+
+        public Task<SectionRootsSnapshot> GetSectionRootsAsync(
+            string cliPath,
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default)
+        {
+            GetCount++;
+            return GetException is null
+                ? Task.FromResult(Snapshot)
+                : Task.FromException<SectionRootsSnapshot>(GetException);
+        }
+
+        public Task<SectionRootMutationResult> SetSectionRootAsync(
+            string cliPath,
+            string section,
+            string root,
+            string expectedContentHash,
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default) =>
+            throw new AssertFailedException("No section root may be written.");
+
+        public Task<SectionRootMutationResult> ClearSectionRootAsync(
+            string cliPath,
+            string section,
+            string expectedContentHash,
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default) =>
+            throw new AssertFailedException("No section root may be written.");
     }
 
     private sealed class NullFileDialogs : IFileDialogService

@@ -42,11 +42,13 @@ public sealed class MainWindowSmokeTests
                 processRunner,
                 fileDialogs);
             ICompanionRuntimeCoordinator runtimeCoordinator = new CompanionRuntimeCoordinator(runtimeFactory);
+            CortexConfigClient configClient = new(processRunner);
             SettingsViewModel settings = new(
                 new SettingsStore(paths.SettingsPath),
                 new CliPathDiscovery(),
                 runtimeCoordinator,
-                new CortexConfigClient(processRunner),
+                configClient,
+                configClient,
                 fileDialogs,
                 new ConfluenceCredentialTargetProvider(),
                 new WindowsCredentialManagerStore());

@@ -1,0 +1,25 @@
+{
+  "contract_version": 1,
+  "operation": "config_roots",
+  "status": "succeeded",
+  "present": true,
+  "content_hash": "ecd5293bc424c73d8468032241a778f2563ab289df4cd5b42e63094c04c46d73",
+  "valid": true,
+  "error": null,
+  "kb_path": "G:\\_Projects\\CortexCompanion\\local\\section-roots-fixture\\kb",
+  "index_whole_folder": false,
+  "sections": [
+    {
+      "section": "_memory",
+      "root": "G:\\_Projects\\CortexCompanion\\local\\section-roots-fixture\\moved\\_memory",
+      "mounted": true,
+      "exists": false
+    },
+    {
+      "section": "knowledge",
+      "root": "G:\\_Projects\\CortexCompanion\\local\\section-roots-fixture\\kb\\knowledge",
+      "mounted": false,
+      "exists": true
+    }
+  ]
+}

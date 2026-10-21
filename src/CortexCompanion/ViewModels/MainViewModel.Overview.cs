@@ -84,6 +84,12 @@ public sealed partial class MainViewModel
     public string SkippedSourcesNotice => HasSkippedSources
         ? UiStrings.FormatExperienceSourcesSkipped(Sync.Freshness.SkippedSourceCount) : string.Empty;
 
+    /// <summary>Gets whether a configured section resolves to a folder that no longer exists.</summary>
+    public bool HasMissingSectionRoots => Settings.IsCliReady && Settings.HasMissingSectionRoots;
+
+    /// <summary>Names the sections that are no longer indexed because their folder is missing.</summary>
+    public string MissingSectionRootsNotice => HasMissingSectionRoots ? Settings.MissingSectionRootsNotice : string.Empty;
+
     private void InitializeOverview()
     {
         _updateDocuments = new AsyncRelayCommand(UpdateDocumentsAsync, () => Settings.HasSavedKnowledgeBase &&
@@ -226,5 +232,7 @@ public sealed partial class MainViewModel
         OnPropertyChanged(nameof(SetupIndexState));
         OnPropertyChanged(nameof(HasSkippedSources));
         OnPropertyChanged(nameof(SkippedSourcesNotice));
+        OnPropertyChanged(nameof(HasMissingSectionRoots));
+        OnPropertyChanged(nameof(MissingSectionRootsNotice));
     }
 }

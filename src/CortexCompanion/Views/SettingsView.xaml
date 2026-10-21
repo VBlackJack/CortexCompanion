@@ -95,6 +95,49 @@
                     Margin="{StaticResource MarginSectionBottom}"
                     IsEnabled="{Binding IsCliReady}">
                 <StackPanel>
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsSectionsTitle}"
+                               FontSize="{StaticResource FontSizeTitle}"
+                               FontWeight="SemiBold"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{x:Static localization:UiStrings.SettingsSectionsDescription}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <TextBlock Text="{Binding SectionRootsStateText}"
+                               accessibility:LiveRegionBehavior.Announcement="{Binding SectionRootsStateText}"
+                               AutomationProperties.LiveSetting="Polite"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource MarginStackItem}" />
+                    <ItemsControl ItemsSource="{Binding SectionRoots}"
+                                  AutomationProperties.Name="{x:Static localization:UiStrings.SettingsSectionsTitle}"
+                                  Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="{StaticResource MarginStackItem}">
+                                    <TextBlock Text="{Binding Section}"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding RootText}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock Text="{x:Static localization:UiStrings.SettingsSectionMounted}"
+                                               Foreground="{DynamicResource InfoBrush}"
+                                               Visibility="{Binding IsMounted, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    <TextBlock Text="{x:Static localization:UiStrings.SettingsSectionFolderMissing}"
+                                               Foreground="{DynamicResource WarningBrush}"
+                                               FontWeight="SemiBold"
+                                               TextWrapping="Wrap"
+                                               Visibility="{Binding IsMissing, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource PageCardStyle}"
+                    Margin="{StaticResource MarginSectionBottom}"
+                    IsEnabled="{Binding IsCliReady}">
+                <StackPanel>
                     <TextBlock Text="{x:Static localization:UiStrings.SettingsConfluenceCredentialTitle}"
                                FontSize="{StaticResource FontSizeTitle}"
                                FontWeight="SemiBold"

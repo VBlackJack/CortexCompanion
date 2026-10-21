@@ -9,7 +9,7 @@ using CortexCompanion.Models;
 namespace CortexCompanion.Services;
 
 /// <summary>Implements the Cortex configuration JSON contract without reading TOML files.</summary>
-public sealed class CortexConfigClient : ICortexConfigClient
+public sealed partial class CortexConfigClient : ICortexConfigClient, ISectionRootsClient
 {
     private readonly IProcessRunner _processRunner;
 
@@ -442,15 +442,18 @@ public sealed class CortexConfigClient : ICortexConfigClient
     private static string ReadRequiredIdentifier(JsonElement element, string name)
     {
         string value = ReadRequiredString(element, name);
-        if (value.Length is < 1 or > 64 ||
-            value[0] is not (>= 'a' and <= 'z') ||
-            value.Any(character => character is not (>= 'a' and <= 'z' or >= '0' and <= '9' or '_')))
+        if (!IsSafeIdentifier(value))
         {
             throw new CortexCliContractException($"Cortex JSON field '{name}' was not a safe identifier.");
         }
 
         return value;
     }
+
+    private static bool IsSafeIdentifier(string value) =>
+        value.Length is >= 1 and <= 64 &&
+        value[0] is >= 'a' and <= 'z' &&
+        value.All(character => character is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
 
     private static string? ReadNullableString(JsonElement element, string name)
     {

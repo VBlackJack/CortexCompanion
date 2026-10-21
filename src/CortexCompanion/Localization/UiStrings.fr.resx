@@ -638,4 +638,17 @@
   <data name="PagesConfigMutationFailed" xml:space="preserve"><value>La configuration Confluence n'a pas pu être enregistrée. Le fichier précédent a été conservé ; réessayez.</value></data>
   <data name="PagesConfigFileAccessFailed" xml:space="preserve"><value>Le fichier de configuration Confluence n'a pas pu être lu ou écrit. Vérifiez qu'aucun autre programme ne le bloque, puis réessayez.</value></data>
   <data name="PagesConfigUnexpectedFailure" xml:space="preserve"><value>L'opération Confluence a échoué de façon inattendue. Les détails figurent dans le journal de l'application.</value></data>
+  <data name="SettingsSectionsTitle" xml:space="preserve"><value>Sections</value></data>
+  <data name="SettingsSectionsDescription" xml:space="preserve"><value>Chaque section est un dossier indexé par Cortex. Une section se trouve normalement dans le dossier documentaire ; elle peut aussi être montée sur un dossier situé ailleurs.</value></data>
+  <data name="SettingsSectionsUnavailable" xml:space="preserve"><value>Les dossiers des sections apparaissent une fois Cortex connecté.</value></data>
+  <data name="SettingsSectionsLoaded" xml:space="preserve"><value>Tous les dossiers des sections ont été trouvés.</value></data>
+  <data name="SettingsSectionsEmpty" xml:space="preserve"><value>Aucune section n'est configurée.</value></data>
+  <data name="SettingsSectionsInvalid" xml:space="preserve"><value>Les sections ne peuvent pas être listées tant que la configuration Cortex est invalide.</value></data>
+  <data name="SettingsSectionsReadFailed" xml:space="preserve"><value>Les dossiers des sections n'ont pas pu être lus. Actualisez pour réessayer ; les détails figurent dans le journal de l'application.</value></data>
+  <data name="SettingsSectionsMissing" xml:space="preserve"><value>{0} dossier(s) de section introuvable(s). Ces sections ne sont pas indexées tant que leur dossier n'est pas revenu ou qu'elles ne sont pas montées ailleurs.</value></data>
+  <data name="SettingsSectionMounted" xml:space="preserve"><value>Montée hors du dossier documentaire</value></data>
+  <data name="SettingsSectionFolderMissing" xml:space="preserve"><value>Dossier introuvable : cette section n'est pas indexée. Son contenu indexé est conservé jusqu'au retour du dossier ou au montage de la section ailleurs.</value></data>
+  <data name="SettingsSectionRootUnknown" xml:space="preserve"><value>Pas encore de dossier : choisissez d'abord le dossier documentaire.</value></data>
+  <data name="ListSeparator" xml:space="preserve"><value>, </value></data>
+  <data name="ExperienceSectionRootsMissing" xml:space="preserve"><value>Dossier de section introuvable : {0}. Ce contenu n'est plus indexé ; voir Réglages, Sections.</value></data>
 </root>

@@ -14,7 +14,7 @@ using CortexCompanion.Services;
 namespace CortexCompanion.ViewModels;
 
 /// <summary>Owns novice-safe CLI setup and Cortex configuration workflows.</summary>
-public sealed class SettingsViewModel : ViewModelBase
+public sealed partial class SettingsViewModel : ViewModelBase
 {
     private readonly SettingsStore _settingsStore;
     private readonly CliPathDiscovery _cliPathDiscovery;
@@ -51,6 +51,7 @@ public sealed class SettingsViewModel : ViewModelBase
         CliPathDiscovery cliPathDiscovery,
         ICompanionRuntimeCoordinator runtimeCoordinator,
         ICortexConfigClient configClient,
+        ISectionRootsClient sectionRootsClient,
         IFileDialogService fileDialogs,
         IConfluenceCredentialTargetProvider credentialTargetProvider,
         IConfluenceCredentialStore credentialStore)
@@ -59,6 +60,7 @@ public sealed class SettingsViewModel : ViewModelBase
         _cliPathDiscovery = cliPathDiscovery ?? throw new ArgumentNullException(nameof(cliPathDiscovery));
         _runtimeCoordinator = runtimeCoordinator ?? throw new ArgumentNullException(nameof(runtimeCoordinator));
         _configClient = configClient ?? throw new ArgumentNullException(nameof(configClient));
+        _sectionRootsClient = sectionRootsClient ?? throw new ArgumentNullException(nameof(sectionRootsClient));
         _fileDialogs = fileDialogs ?? throw new ArgumentNullException(nameof(fileDialogs));
         _credentialTargetProvider = credentialTargetProvider ??
             throw new ArgumentNullException(nameof(credentialTargetProvider));
@@ -501,6 +503,7 @@ public sealed class SettingsViewModel : ViewModelBase
             configRefreshed = false;
         }
 
+        await RefreshSectionRootsCoreAsync(cliPath, cancellationToken);
         await RefreshConfluenceCredentialTargetAsync(cliPath, cancellationToken);
         return configRefreshed;
     }
@@ -633,6 +636,7 @@ public sealed class SettingsViewModel : ViewModelBase
         ConfigStateText = UiStrings.SettingsConfigUnavailable;
         ConfluenceCredentialTarget = string.Empty;
         ConfluenceCredentialStateText = UiStrings.SettingsConfluenceCredentialUnavailable;
+        ApplySectionRoots(null, null);
     }
 
     private void RaiseCommandStates()
