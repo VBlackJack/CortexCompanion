@@ -85,6 +85,26 @@ _EXPECTED: dict[str, Expectation] = {
             "expect_absent": True,
         },
     ),
+    "config.roots": Expectation("config", {"operation": "roots", "json": True}),
+    "config.set_root": Expectation(
+        "config",
+        {
+            "operation": "set-root",
+            "json": True,
+            "section": FromInput("section"),
+            "root": FromInput("root"),
+            "expected_hash": FromInput("expected_hash"),
+        },
+    ),
+    "config.clear_root": Expectation(
+        "config",
+        {
+            "operation": "clear-root",
+            "json": True,
+            "section": FromInput("section"),
+            "expected_hash": FromInput("expected_hash"),
+        },
+    ),
     "confluence.catalog": Expectation(
         "confluence",
         {

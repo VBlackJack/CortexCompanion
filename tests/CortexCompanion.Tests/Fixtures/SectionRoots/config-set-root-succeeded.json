@@ -1,0 +1,13 @@
+{
+  "contract_version": 1,
+  "operation": "config_set_root",
+  "status": "succeeded",
+  "section": "_memory",
+  "root": "G:\\_Projects\\CortexCompanion\\local\\section-roots-fixture\\moved\\_memory",
+  "changed": true,
+  "previous_content_hash": "db54b46fe6e74c2dae62c9ad3ee204233c9e3a52db73784c8ac2c6a766dd44d2",
+  "content_hash": "ecd5293bc424c73d8468032241a778f2563ab289df4cd5b42e63094c04c46d73",
+  "backup_written": true,
+  "restart_required": true,
+  "error": null
+}

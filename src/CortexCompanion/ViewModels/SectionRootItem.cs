@@ -20,4 +20,16 @@ public sealed record SectionRootItem(SectionRoot Entry, bool IndexWholeFolder)
 
     /// <summary>Gets whether Cortex resolved a folder that does not exist, so the section is not indexed.</summary>
     public bool IsMissing => Entry.Root is not null && !Entry.Exists;
+
+    /// <summary>Gets whether the section can be mounted elsewhere; whole-folder indexing has no sections to move.</summary>
+    public bool CanMountElsewhere => !IndexWholeFolder;
+
+    /// <summary>Gets whether the section can return to its folder in the document folder.</summary>
+    public bool CanUseDefaultLocation => Entry.Mounted;
+
+    /// <summary>Gets the accessible name of the action that mounts this section elsewhere.</summary>
+    public string MountElsewhereAccessibleName => UiStrings.FormatSettingsSectionMountAccessibleName(Section);
+
+    /// <summary>Gets the accessible name of the action that returns this section to its default folder.</summary>
+    public string UseDefaultLocationAccessibleName => UiStrings.FormatSettingsSectionUseDefaultAccessibleName(Section);
 }

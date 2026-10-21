@@ -651,4 +651,25 @@
   <data name="SettingsSectionRootUnknown" xml:space="preserve"><value>No folder yet: choose the document folder first.</value></data>
   <data name="ListSeparator" xml:space="preserve"><value>, </value></data>
   <data name="ExperienceSectionRootsMissing" xml:space="preserve"><value>Section folder not found: {0}. This content is no longer indexed; see Settings, Sections.</value></data>
+  <data name="SettingsSectionMountElsewhere" xml:space="preserve"><value>Mount elsewhere</value></data>
+  <data name="SettingsSectionUseDefault" xml:space="preserve"><value>Use the default location</value></data>
+  <data name="SettingsSectionMountAccessibleName" xml:space="preserve"><value>Mount the section {0} elsewhere</value></data>
+  <data name="SettingsSectionUseDefaultAccessibleName" xml:space="preserve"><value>Use the default location for the section {0}</value></data>
+  <data name="SectionRootFolderDialogTitle" xml:space="preserve"><value>Choose the folder that holds the section {0}</value></data>
+  <data name="SettingsSectionConfirmTitle" xml:space="preserve"><value>Change where a section is read from</value></data>
+  <data name="SettingsSectionConfirmMount" xml:space="preserve"><value>Cortex will read the section {0} from {1}. This changes what the next update indexes for this section; the content already indexed under the same names is kept.</value></data>
+  <data name="SettingsSectionConfirmDefault" xml:space="preserve"><value>Cortex will read the section {0} from its folder in the document folder again: {1}. This changes what the next update indexes for this section.</value></data>
+  <data name="SettingsSectionSaving" xml:space="preserve"><value>Cortex is saving the section location...</value></data>
+  <data name="SettingsSectionMountSaved" xml:space="preserve"><value>The section {0} is now read from {1}.</value></data>
+  <data name="SettingsSectionMountSavedRestart" xml:space="preserve"><value>The section {0} is now read from {1}. Restart the applications that use Cortex so they read the new location, then update your documents.</value></data>
+  <data name="SettingsSectionDefaultSaved" xml:space="preserve"><value>The section {0} is read from the document folder again.</value></data>
+  <data name="SettingsSectionDefaultSavedRestart" xml:space="preserve"><value>The section {0} is read from the document folder again. Restart the applications that use Cortex so they read the new location, then update your documents.</value></data>
+  <data name="SettingsSectionMountUnchanged" xml:space="preserve"><value>The section {0} was already read from this folder.</value></data>
+  <data name="SettingsSectionDefaultUnchanged" xml:space="preserve"><value>The section {0} already used its default location.</value></data>
+  <data name="SettingsSectionConflict" xml:space="preserve"><value>The configuration changed since it was displayed. The sections have been reloaded; check them, then choose the action again.</value></data>
+  <data name="SettingsSectionRejected" xml:space="preserve"><value>Cortex refused this location for the section {0}. Choose an existing folder with an absolute path; a section cannot be mounted while the whole folder is indexed.</value></data>
+  <data name="SettingsSectionSaveFailed" xml:space="preserve"><value>The location of the section {0} could not be saved. Refresh, then try again; the details are in the application log.</value></data>
+  <data name="SettingsSectionsRefreshRequired" xml:space="preserve"><value>Reload the sections before changing where one is read from.</value></data>
+  <data name="SettingsSectionChangeCancelled" xml:space="preserve"><value>The section location was not changed.</value></data>
+  <data name="SettingsSectionFolderInvalid" xml:space="preserve"><value>Choose an existing folder with an absolute path.</value></data>
 </root>

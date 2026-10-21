@@ -39,6 +39,21 @@ public sealed class FileDialogService : IFileDialogService
     }
 
     /// <inheritdoc />
+    public string? SelectSectionRootDirectory(string section, string? currentPath)
+    {
+        // A missing section folder is the usual reason to open this picker, so its parent is
+        // the most useful place to start when it still exists.
+        string? parent = string.IsNullOrWhiteSpace(currentPath) ? null : Path.GetDirectoryName(currentPath);
+        OpenFolderDialog dialog = new()
+        {
+            InitialDirectory = Directory.Exists(currentPath) ? currentPath : Directory.Exists(parent) ? parent : null,
+            Multiselect = false,
+            Title = UiStrings.FormatSectionRootFolderDialogTitle(section),
+        };
+        return dialog.ShowDialog() == true ? Path.GetFullPath(dialog.FolderName) : null;
+    }
+
+    /// <inheritdoc />
     public string? SelectConfluenceConverterExecutable(string? currentPath)
     {
         OpenFileDialog dialog = new()

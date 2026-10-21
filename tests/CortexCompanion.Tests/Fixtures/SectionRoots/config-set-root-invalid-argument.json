@@ -1,0 +1,17 @@
+{
+  "contract_version": 1,
+  "operation": "config_set_root",
+  "status": "failed",
+  "section": "unknown",
+  "root": null,
+  "changed": false,
+  "previous_content_hash": null,
+  "content_hash": null,
+  "backup_written": false,
+  "restart_required": false,
+  "error": {
+    "code": "invalid_argument",
+    "phase": "validate",
+    "path": null
+  }
+}

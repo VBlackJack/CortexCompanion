@@ -196,6 +196,7 @@ internal static class Program
             string confluenceConfig = Path.Combine(root, "confluence.toml");
             string ingestionConfig = Path.Combine(root, "ingestion.toml");
             string knowledgeBase = Path.Combine(root, "knowledge");
+            string sectionRoot = Path.Combine(root, "mounted", CliSurfaceSection);
             List<CapturedLine> lines =
             [
                 await CaptureAsync(
@@ -227,6 +228,20 @@ internal static class Program
                     Inputs(("kb_path", knowledgeBase)),
                     runner => new CortexConfigClient(runner).SetKnowledgeBasePathAsync(
                         cliPath, knowledgeBase, null, true, CliSurfaceTimeout)),
+                await CaptureAsync(
+                    "config.roots",
+                    Inputs(),
+                    runner => new CortexConfigClient(runner).GetSectionRootsAsync(cliPath, CliSurfaceTimeout)),
+                await CaptureAsync(
+                    "config.set_root",
+                    Inputs(("section", CliSurfaceSection), ("root", sectionRoot), ("expected_hash", CliSurfaceExpectedHash)),
+                    runner => new CortexConfigClient(runner).SetSectionRootAsync(
+                        cliPath, CliSurfaceSection, sectionRoot, CliSurfaceExpectedHash, CliSurfaceTimeout)),
+                await CaptureAsync(
+                    "config.clear_root",
+                    Inputs(("section", CliSurfaceSection), ("expected_hash", CliSurfaceExpectedHash)),
+                    runner => new CortexConfigClient(runner).ClearSectionRootAsync(
+                        cliPath, CliSurfaceSection, CliSurfaceExpectedHash, CliSurfaceTimeout)),
                 await CaptureAsync(
                     "confluence.catalog",
                     Inputs(("config_path", confluenceConfig), ("space_key", CliSurfaceSpaceKey)),

@@ -1,0 +1,17 @@
+{
+  "contract_version": 1,
+  "operation": "config_set_root",
+  "status": "conflict",
+  "section": "_memory",
+  "root": null,
+  "changed": false,
+  "previous_content_hash": "db54b46fe6e74c2dae62c9ad3ee204233c9e3a52db73784c8ac2c6a766dd44d2",
+  "content_hash": "db54b46fe6e74c2dae62c9ad3ee204233c9e3a52db73784c8ac2c6a766dd44d2",
+  "backup_written": false,
+  "restart_required": false,
+  "error": {
+    "code": "hash_mismatch",
+    "phase": "compare",
+    "path": null
+  }
+}

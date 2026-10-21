@@ -12,6 +12,9 @@ public interface IFileDialogService
     /// <summary>Selects an existing knowledge-base directory.</summary>
     string? SelectKnowledgeBaseDirectory(string? currentPath);
 
+    /// <summary>Selects the existing directory that holds one section.</summary>
+    string? SelectSectionRootDirectory(string section, string? currentPath);
+
     /// <summary>Selects the optional Confluence converter executable.</summary>
     string? SelectConfluenceConverterExecutable(string? currentPath);
 }

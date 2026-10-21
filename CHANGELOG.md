@@ -5,6 +5,7 @@
 ### Added
 
 - Show a Sections card in Settings that lists every indexed section with the folder Cortex reads it from, read through `cortex config roots --json`, marks the sections mounted outside the document folder, and warns when a section folder does not exist, since that section is then no longer indexed. The overview names the sections whose folder is missing and announces it. The card refreshes with the rest of Settings and on F5.
+- Let each section be mounted on another folder ("Mount elsewhere", with a folder picker) or returned to its folder in the document folder ("Use the default location"). Both actions ask for confirmation, since they change what the next update indexes, and write through `cortex config set-root` and `cortex config clear-root` with the hash of the last listing: a configuration changed in the meantime reloads the sections and asks to choose again, and a saved change says that the applications using Cortex must restart. The interoperability proof now parses these three command lines with the real Cortex parser.
 
 ## [2026.1021.02] - 2026-10-21
 

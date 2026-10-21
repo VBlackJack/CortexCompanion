@@ -385,11 +385,135 @@ public sealed class SettingsViewModelTests
         Assert.IsTrue(context.ViewModel.HasSavedKnowledgeBase);
     }
 
+    [TestMethod]
+    public async Task ConfirmedMountWritesWithTheListedHashReportsTheRestartAndReloads()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        string target = Directory.CreateDirectory(Path.Combine(temporary.Path, "moved", "_memory")).FullName;
+        SectionRootMutationResult saved = await ReadMutationFixtureAsync("config-set-root-succeeded.json", 0, "_memory");
+        TestSectionRootsClient roots = new()
+        {
+            Snapshot = await ReadRootsFixtureAsync("config-roots-missing.json"),
+            MutationResult = saved,
+        };
+        TestSectionRootConfirmations confirmations = new(true);
+        TestContext context = await CreateInitializedContextAsync(
+            temporary, cliPath, sectionRoots: roots,
+            fileDialogs: new NullFileDialogs { SectionRoot = target }, sectionRootConfirmations: confirmations);
+        SectionRootItem memory = context.ViewModel.SectionRoots[0];
+        string listedHash = roots.Snapshot.ContentHash!;
+
+        Assert.IsTrue(context.ViewModel.MountSectionElsewhereCommand.CanExecute(memory));
+        await ExecuteItemAsync(context.ViewModel.MountSectionElsewhereCommand, memory);
+
+        Assert.AreEqual(1, confirmations.Count);
+        Assert.AreEqual(target, confirmations.LastRoot);
+        Assert.AreEqual(1, roots.WriteCount);
+        Assert.IsFalse(roots.LastWasClear);
+        Assert.AreEqual("_memory", roots.LastSection);
+        Assert.AreEqual(target, roots.LastRoot);
+        Assert.AreEqual(listedHash, roots.LastExpectedHash);
+        Assert.AreEqual(2, roots.GetCount);
+        Assert.AreEqual(
+            UiStrings.FormatSettingsSectionMountSavedRestart("_memory", saved.Root!),
+            context.ViewModel.StatusMessage);
+    }
+
+    [TestMethod]
+    public async Task DeclinedMountWritesNothing()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new() { Snapshot = await ReadRootsFixtureAsync("config-roots-missing.json") };
+        TestContext context = await CreateInitializedContextAsync(
+            temporary, cliPath, sectionRoots: roots,
+            fileDialogs: new NullFileDialogs { SectionRoot = temporary.Path },
+            sectionRootConfirmations: new TestSectionRootConfirmations(false));
+
+        await ExecuteItemAsync(context.ViewModel.MountSectionElsewhereCommand, context.ViewModel.SectionRoots[0]);
+
+        Assert.AreEqual(0, roots.WriteCount);
+        Assert.AreEqual(UiStrings.SettingsSectionChangeCancelled, context.ViewModel.StatusMessage);
+    }
+
+    [TestMethod]
+    public async Task StaleHashReloadsTheSectionsAndAsksToChooseAgain()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new()
+        {
+            Snapshot = await ReadRootsFixtureAsync("config-roots-missing.json"),
+            MutationResult = await ReadMutationFixtureAsync("config-set-root-conflict.json", 9, "_memory"),
+        };
+        TestContext context = await CreateInitializedContextAsync(
+            temporary, cliPath, sectionRoots: roots,
+            fileDialogs: new NullFileDialogs { SectionRoot = temporary.Path },
+            sectionRootConfirmations: new TestSectionRootConfirmations(true));
+
+        await ExecuteItemAsync(context.ViewModel.MountSectionElsewhereCommand, context.ViewModel.SectionRoots[0]);
+
+        Assert.AreEqual(1, roots.WriteCount);
+        Assert.AreEqual(2, roots.GetCount);
+        Assert.AreEqual(UiStrings.SettingsSectionConflict, context.ViewModel.StatusMessage);
+        Assert.IsFalse(context.ViewModel.IsBusy);
+    }
+
+    [TestMethod]
+    public async Task UseDefaultLocationConfirmsTheFolderUnderTheDocumentFolderAndClearsTheMount()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new()
+        {
+            Snapshot = await ReadRootsFixtureAsync("config-roots-missing.json"),
+            MutationResult = await ReadMutationFixtureAsync("config-clear-root-succeeded.json", 0, "_memory", clear: true),
+        };
+        TestSectionRootConfirmations confirmations = new(true);
+        TestContext context = await CreateInitializedContextAsync(
+            temporary, cliPath, sectionRoots: roots, sectionRootConfirmations: confirmations);
+        SectionRootItem memory = context.ViewModel.SectionRoots[0];
+        SectionRootItem knowledge = context.ViewModel.SectionRoots[1];
+
+        Assert.IsFalse(context.ViewModel.UseDefaultSectionLocationCommand.CanExecute(knowledge));
+        await ExecuteItemAsync(context.ViewModel.UseDefaultSectionLocationCommand, memory);
+
+        Assert.AreEqual(Path.Combine(roots.Snapshot.KnowledgeBasePath!, "_memory"), confirmations.LastRoot);
+        Assert.IsTrue(roots.LastWasClear);
+        Assert.AreEqual(UiStrings.FormatSettingsSectionDefaultSavedRestart("_memory"), context.ViewModel.StatusMessage);
+    }
+
+    [TestMethod]
+    public async Task RefusedFolderNamesTheSectionWithoutClaimingAWrite()
+    {
+        using TemporaryDirectory temporary = new();
+        string cliPath = temporary.CreateFakeCli();
+        TestSectionRootsClient roots = new()
+        {
+            Snapshot = await ReadRootsFixtureAsync("config-roots-missing.json"),
+            MutationResult = await ReadMutationFixtureAsync("config-set-root-invalid-argument.json", 6, "unknown"),
+        };
+        TestContext context = await CreateInitializedContextAsync(
+            temporary, cliPath, sectionRoots: roots,
+            fileDialogs: new NullFileDialogs { SectionRoot = temporary.Path },
+            sectionRootConfirmations: new TestSectionRootConfirmations(true));
+
+        await ExecuteItemAsync(context.ViewModel.MountSectionElsewhereCommand, context.ViewModel.SectionRoots[0]);
+
+        Assert.AreEqual(UiStrings.FormatSettingsSectionRejected("_memory"), context.ViewModel.StatusMessage);
+    }
+
+    private static Task ExecuteItemAsync(System.Windows.Input.ICommand command, SectionRootItem item) =>
+        ((AsyncRelayCommand<SectionRootItem>)command).ExecuteAsync(item);
+
     private static async Task<TestContext> CreateInitializedContextAsync(
         TemporaryDirectory temporary,
         string cliPath,
         SyncViewModel? sync = null,
-        TestSectionRootsClient? sectionRoots = null)
+        TestSectionRootsClient? sectionRoots = null,
+        NullFileDialogs? fileDialogs = null,
+        TestSectionRootConfirmations? sectionRootConfirmations = null)
     {
         string settingsPath = Path.Combine(temporary.Path, "state", "settings.json");
         SettingsStore store = new(settingsPath);
@@ -408,9 +532,10 @@ public sealed class SettingsViewModelTests
             coordinator,
             configClient,
             sectionRootsClient,
-            new NullFileDialogs(),
+            fileDialogs ?? new NullFileDialogs(),
             credentialTargetProvider,
-            credentialStore);
+            credentialStore,
+            sectionRootConfirmations ?? new TestSectionRootConfirmations(false));
         await viewModel.InitializeAsync(new SettingsLoadResult(settings, SettingsLoadState.Loaded));
         return new TestContext(
             viewModel,
@@ -426,6 +551,20 @@ public sealed class SettingsViewModelTests
         CortexConfigClient client = new(new StubProcessRunner(
             ProcessRunResult.Completed(0, CliFixtures.Read("SectionRoots", name), string.Empty)));
         return await client.GetSectionRootsAsync(@"C:\Cortex\cortex.exe", TimeSpan.FromSeconds(30));
+    }
+
+    private static async Task<SectionRootMutationResult> ReadMutationFixtureAsync(
+        string name,
+        int exitCode,
+        string section,
+        bool clear = false)
+    {
+        CortexConfigClient client = new(new StubProcessRunner(
+            ProcessRunResult.Completed(exitCode, CliFixtures.Read("SectionRoots", name), string.Empty)));
+        return clear
+            ? await client.ClearSectionRootAsync(@"C:\Cortex\cortex.exe", section, SnapshotHash, TimeSpan.FromSeconds(30))
+            : await client.SetSectionRootAsync(
+                @"C:\Cortex\cortex.exe", section, @"D:\Moved", SnapshotHash, TimeSpan.FromSeconds(30));
     }
 
     private static CompanionRuntime CreateCompatibleRuntime(string root, string cliPath)
@@ -559,6 +698,18 @@ public sealed class SettingsViewModelTests
                 : Task.FromException<SectionRootsSnapshot>(GetException);
         }
 
+        public SectionRootMutationResult? MutationResult { get; set; }
+
+        public int WriteCount { get; private set; }
+
+        public string? LastSection { get; private set; }
+
+        public string? LastRoot { get; private set; }
+
+        public string? LastExpectedHash { get; private set; }
+
+        public bool LastWasClear { get; private set; }
+
         public Task<SectionRootMutationResult> SetSectionRootAsync(
             string cliPath,
             string section,
@@ -566,7 +717,7 @@ public sealed class SettingsViewModelTests
             string expectedContentHash,
             TimeSpan timeout,
             CancellationToken cancellationToken = default) =>
-            throw new AssertFailedException("No section root may be written.");
+            Record(section, root, expectedContentHash, false);
 
         public Task<SectionRootMutationResult> ClearSectionRootAsync(
             string cliPath,
@@ -574,14 +725,49 @@ public sealed class SettingsViewModelTests
             string expectedContentHash,
             TimeSpan timeout,
             CancellationToken cancellationToken = default) =>
-            throw new AssertFailedException("No section root may be written.");
+            Record(section, null, expectedContentHash, true);
+
+        private Task<SectionRootMutationResult> Record(string section, string? root, string expectedContentHash, bool clear)
+        {
+            WriteCount++;
+            LastSection = section;
+            LastRoot = root;
+            LastExpectedHash = expectedContentHash;
+            LastWasClear = clear;
+            return Task.FromResult(MutationResult ?? throw new AssertFailedException("No section root may be written."));
+        }
+    }
+
+    private sealed class TestSectionRootConfirmations(bool accept) : ISectionRootConfirmationService
+    {
+        public int Count { get; private set; }
+
+        public string? LastRoot { get; private set; }
+
+        public bool ConfirmMount(string section, string root)
+        {
+            Count++;
+            LastRoot = root;
+            return accept;
+        }
+
+        public bool ConfirmUseDefault(string section, string defaultRoot)
+        {
+            Count++;
+            LastRoot = defaultRoot;
+            return accept;
+        }
     }
 
     private sealed class NullFileDialogs : IFileDialogService
     {
+        public string? SectionRoot { get; init; }
+
         public string? SelectCliExecutable(string? currentPath) => null;
 
         public string? SelectKnowledgeBaseDirectory(string? currentPath) => null;
+
+        public string? SelectSectionRootDirectory(string section, string? currentPath) => SectionRoot;
 
         public string? SelectConfluenceConverterExecutable(string? currentPath) => null;
     }

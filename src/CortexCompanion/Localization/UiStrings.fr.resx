@@ -651,4 +651,25 @@
   <data name="SettingsSectionRootUnknown" xml:space="preserve"><value>Pas encore de dossier : choisissez d'abord le dossier documentaire.</value></data>
   <data name="ListSeparator" xml:space="preserve"><value>, </value></data>
   <data name="ExperienceSectionRootsMissing" xml:space="preserve"><value>Dossier de section introuvable : {0}. Ce contenu n'est plus indexé ; voir Réglages, Sections.</value></data>
+  <data name="SettingsSectionMountElsewhere" xml:space="preserve"><value>Monter ailleurs</value></data>
+  <data name="SettingsSectionUseDefault" xml:space="preserve"><value>Utiliser l'emplacement par défaut</value></data>
+  <data name="SettingsSectionMountAccessibleName" xml:space="preserve"><value>Monter ailleurs la section {0}</value></data>
+  <data name="SettingsSectionUseDefaultAccessibleName" xml:space="preserve"><value>Utiliser l'emplacement par défaut pour la section {0}</value></data>
+  <data name="SectionRootFolderDialogTitle" xml:space="preserve"><value>Choisir le dossier qui contient la section {0}</value></data>
+  <data name="SettingsSectionConfirmTitle" xml:space="preserve"><value>Modifier l'emplacement d'une section</value></data>
+  <data name="SettingsSectionConfirmMount" xml:space="preserve"><value>Cortex lira la section {0} depuis {1}. Cela modifie ce que la prochaine mise à jour indexe pour cette section ; le contenu déjà indexé sous les mêmes noms est conservé.</value></data>
+  <data name="SettingsSectionConfirmDefault" xml:space="preserve"><value>Cortex lira de nouveau la section {0} depuis son dossier dans le dossier documentaire : {1}. Cela modifie ce que la prochaine mise à jour indexe pour cette section.</value></data>
+  <data name="SettingsSectionSaving" xml:space="preserve"><value>Cortex enregistre l'emplacement de la section...</value></data>
+  <data name="SettingsSectionMountSaved" xml:space="preserve"><value>La section {0} est désormais lue depuis {1}.</value></data>
+  <data name="SettingsSectionMountSavedRestart" xml:space="preserve"><value>La section {0} est désormais lue depuis {1}. Redémarrez les applications qui utilisent Cortex pour qu'elles lisent le nouvel emplacement, puis mettez à jour vos documents.</value></data>
+  <data name="SettingsSectionDefaultSaved" xml:space="preserve"><value>La section {0} est de nouveau lue depuis le dossier documentaire.</value></data>
+  <data name="SettingsSectionDefaultSavedRestart" xml:space="preserve"><value>La section {0} est de nouveau lue depuis le dossier documentaire. Redémarrez les applications qui utilisent Cortex pour qu'elles lisent le nouvel emplacement, puis mettez à jour vos documents.</value></data>
+  <data name="SettingsSectionMountUnchanged" xml:space="preserve"><value>La section {0} était déjà lue depuis ce dossier.</value></data>
+  <data name="SettingsSectionDefaultUnchanged" xml:space="preserve"><value>La section {0} utilisait déjà son emplacement par défaut.</value></data>
+  <data name="SettingsSectionConflict" xml:space="preserve"><value>La configuration a changé depuis son affichage. Les sections ont été rechargées ; vérifiez-les, puis choisissez de nouveau l'action.</value></data>
+  <data name="SettingsSectionRejected" xml:space="preserve"><value>Cortex a refusé cet emplacement pour la section {0}. Choisissez un dossier existant avec un chemin absolu ; une section ne peut pas être montée quand tout le dossier est indexé.</value></data>
+  <data name="SettingsSectionSaveFailed" xml:space="preserve"><value>L'emplacement de la section {0} n'a pas pu être enregistré. Actualisez, puis réessayez ; les détails figurent dans le journal de l'application.</value></data>
+  <data name="SettingsSectionsRefreshRequired" xml:space="preserve"><value>Rechargez les sections avant de modifier l'emplacement de l'une d'elles.</value></data>
+  <data name="SettingsSectionChangeCancelled" xml:space="preserve"><value>L'emplacement de la section n'a pas été modifié.</value></data>
+  <data name="SettingsSectionFolderInvalid" xml:space="preserve"><value>Choisissez un dossier existant avec un chemin absolu.</value></data>
 </root>

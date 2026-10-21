@@ -55,7 +55,8 @@ public partial class App : Application, IDisposable
                 configClient,
                 fileDialogs,
                 new ConfluenceCredentialTargetProvider(),
-                new WindowsCredentialManagerStore());
+                new WindowsCredentialManagerStore(),
+                new SectionRootConfirmationService());
             MainViewModel viewModel = new(runtimeCoordinator, settings,
                 new HistoryViewModel(new OperationHistoryReader(paths)));
             MainWindow window = new(viewModel, new RunInterruptionConfirmationService());

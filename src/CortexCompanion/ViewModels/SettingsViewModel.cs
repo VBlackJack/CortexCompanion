@@ -54,7 +54,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
         ISectionRootsClient sectionRootsClient,
         IFileDialogService fileDialogs,
         IConfluenceCredentialTargetProvider credentialTargetProvider,
-        IConfluenceCredentialStore credentialStore)
+        IConfluenceCredentialStore credentialStore,
+        ISectionRootConfirmationService sectionRootConfirmations)
     {
         _settingsStore = settingsStore ?? throw new ArgumentNullException(nameof(settingsStore));
         _cliPathDiscovery = cliPathDiscovery ?? throw new ArgumentNullException(nameof(cliPathDiscovery));
@@ -65,6 +66,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
         _credentialTargetProvider = credentialTargetProvider ??
             throw new ArgumentNullException(nameof(credentialTargetProvider));
         _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
+        _sectionRootConfirmations = sectionRootConfirmations ??
+            throw new ArgumentNullException(nameof(sectionRootConfirmations));
         _cliTimeoutOptions = AppConstants.CliTimeoutOptions;
 
         _browseCliCommand = new AsyncRelayCommand(BrowseCliAsync, () => !IsBusy);
@@ -81,6 +84,12 @@ public sealed partial class SettingsViewModel : ViewModelBase
             SaveKnowledgeBaseAsync,
             () => !IsBusy && IsCliReady);
         SaveKnowledgeBaseCommand = _saveKnowledgeBaseCommand;
+        _mountSectionElsewhereCommand = new AsyncRelayCommand<SectionRootItem>(
+            MountSectionElsewhereAsync,
+            item => !IsBusy && IsCliReady && item.CanMountElsewhere);
+        _useDefaultSectionLocationCommand = new AsyncRelayCommand<SectionRootItem>(
+            UseDefaultSectionLocationAsync,
+            item => !IsBusy && IsCliReady && item.CanUseDefaultLocation);
     }
 
     /// <summary>Gets or sets the Cortex executable selected by the user.</summary>
@@ -649,6 +658,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
         _refreshCommand.RaiseCanExecuteChanged();
         _browseKnowledgeBaseCommand.RaiseCanExecuteChanged();
         _saveKnowledgeBaseCommand.RaiseCanExecuteChanged();
+        _mountSectionElsewhereCommand.RaiseCanExecuteChanged();
+        _useDefaultSectionLocationCommand.RaiseCanExecuteChanged();
         OnPropertyChanged(nameof(CanStoreConfluenceCredential));
     }
 

@@ -51,7 +51,8 @@ public sealed class MainWindowSmokeTests
                 configClient,
                 fileDialogs,
                 new ConfluenceCredentialTargetProvider(),
-                new WindowsCredentialManagerStore());
+                new WindowsCredentialManagerStore(),
+                new SectionRootConfirmationService());
             MainViewModel viewModel = new(runtimeCoordinator, settings, new HistoryViewModel(new OperationHistoryReader(paths)));
             window = new MainWindow(viewModel, new RunInterruptionConfirmationService())
             {

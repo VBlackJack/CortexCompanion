@@ -127,6 +127,22 @@
                                                FontWeight="SemiBold"
                                                TextWrapping="Wrap"
                                                Visibility="{Binding IsMissing, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="{StaticResource MarginBlockAbove}">
+                                        <Button Content="{x:Static localization:UiStrings.SettingsSectionMountElsewhere}"
+                                                AutomationProperties.Name="{Binding MountElsewhereAccessibleName}"
+                                                Command="{Binding DataContext.MountSectionElsewhereCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding CanMountElsewhere, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                Margin="{StaticResource MarginInlineSm}" />
+                                        <Button Content="{x:Static localization:UiStrings.SettingsSectionUseDefault}"
+                                                AutomationProperties.Name="{Binding UseDefaultLocationAccessibleName}"
+                                                Command="{Binding DataContext.UseDefaultSectionLocationCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding CanUseDefaultLocation, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Style="{StaticResource SecondaryButtonStyle}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
