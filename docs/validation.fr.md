@@ -172,3 +172,9 @@ Les liens d'espace exigent Cortex 2026.0906.01 ou ultérieur. Le smoke visuel re
 La suite automatique couvre les réponses de 1 000/10 000 pages, le dépassement de sortie explicite, la disponibilité locale seule, le changement de dossier et la relecture de la preuve, l'annulation avant confirmation et le nombre borné de lignes d'arbre réalisées. Le traitement conserve la configuration uniquement si les observations avant/après indexation concordent. Un ancien traitement sans preuve nécessite une nouvelle mise à jour.
 
 Recette manuelle : changer de dossier enregistré, redémarrer, le mettre à jour et vérifier sa disponibilité ; annuler la préparation sans charger le catalogue au préalable ; parcourir et filtrer un grand arbre en vérifiant la conservation des sélections. DPI natif et Narrateur restent à vérifier manuellement.
+
+## Sections montées
+
+| Zone | Scénario | Résultat attendu |
+|---|---|---|
+| Réglages et accueil | Monter une section sur un autre dossier avec `cortex config set-root`, renommer ce dossier, puis ouvrir Réglages et appuyer sur F5 | La carte Sections affiche la section comme montée avec l'avertissement "Dossier introuvable", l'accueil la nomme et l'annonce ; choisir "Monter ailleurs" sur le dossier renommé et confirmer rétablit la liste, affiche l'invite de redémarrage, et l'Historique libelle "Corriger les dossiers de section configurés" une mise à jour partielle faite pendant l'absence du dossier |

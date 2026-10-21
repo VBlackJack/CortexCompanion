@@ -241,6 +241,16 @@ Companion stores its `cortex.exe` path and bounded shared CLI timeout in
 changed exclusively through the versioned `cortex config get/set --json`
 compare-and-swap contract.
 
+The Sections card lists every indexed section with the folder Cortex reads it from,
+through `cortex config roots --json`, and marks the sections mounted outside the
+document folder. A section whose folder does not exist is no longer indexed, so the
+card warns about it and the overview names it. "Mount elsewhere" picks another
+folder for a section and "Use the default location" returns it to the document
+folder; both are confirmed first, written through `cortex config set-root` and
+`cortex config clear-root` with the hash of the last listing, and reload the
+sections when the configuration changed in the meantime. Restart the applications
+that use Cortex after a change, then update the documents.
+
 The confirmed source selection creates `%APPDATA%\Cortex\confluence.toml` through the same
 locked, validated, atomic writer used by later page mutations. It refuses to overwrite a
 file that appeared concurrently. The file contains the inferred base URL, declared PAT

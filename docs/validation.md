@@ -154,3 +154,9 @@ Space links require Cortex 2026.0906.01 or newer. Visual smoke renders the minim
 The automated suite covers 1,000/10,000-page process responses, explicit output overflow, local-only readiness, folder changes and reloaded provenance, cancellation before the final review, and bounded realized tree containers. The real worker records configuration only when its pre/post indexing snapshots agree. Historical runs without provenance require a new update.
 
 Manual acceptance: change the saved folder, restart, update it, and verify readiness; cancel review preparation without loading the catalogue first; scroll/filter a large source tree and verify selections remain intact. Native DPI and Narrator checks remain manual.
+
+## Section mounts
+
+| Area | Scenario | Expected behavior |
+|---|---|---|
+| Settings and overview | Mount a section on another folder with `cortex config set-root`, rename that folder, then open Settings and press F5 | The Sections card shows the section as mounted with a "Folder not found" warning, the overview names it and announces it; choosing "Mount elsewhere" on the renamed folder and confirming restores the listing, shows the restart hint, and History labels a partial update made while the folder was missing "Fix the configured section roots" |

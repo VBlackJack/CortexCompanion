@@ -259,6 +259,17 @@ Companion stocke le chemin de son `cortex.exe` et le délai CLI partagé borné 
 connaissances est lu et modifié exclusivement par le contrat versionné
 `cortex config get/set --json` en compare-and-swap.
 
+La carte Sections liste chaque section indexée avec le dossier depuis lequel Cortex
+la lit, par `cortex config roots --json`, et signale les sections montées hors du
+dossier documentaire. Une section dont le dossier n'existe pas n'est plus indexée :
+la carte l'indique et l'accueil la nomme. "Monter ailleurs" choisit un autre dossier
+pour une section et "Utiliser l'emplacement par défaut" la ramène dans le dossier
+documentaire ; les deux demandent une confirmation, écrivent par
+`cortex config set-root` et `cortex config clear-root` avec l'empreinte de la
+dernière lecture, et rechargent les sections si la configuration a changé
+entre-temps. Après un changement, redémarrer les applications qui utilisent Cortex,
+puis mettre à jour les documents.
+
 Le choix de source confirmé crée `%APPDATA%\Cortex\confluence.toml` par le
 même écrivain verrouillé, validé et atomique que les mutations de pages ultérieures.
 Elle refuse d'écraser un fichier apparu entre-temps. Le fichier contient l'URL de
