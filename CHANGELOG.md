@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2026.1021.00] - 2026-10-21
+
 ### Fixed
 
 - Name the three scope choices of the add-source dialog after their visible headings, and give the dialog's Cancel button an explicit accessible name, so screen readers announce which scope is being confirmed.
