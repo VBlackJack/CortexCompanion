@@ -466,6 +466,8 @@
   <data name="HistoryRepair" xml:space="preserve"><value>The lexical index must be repaired. Check the diagnostics in Local database; an ordinary synchronization does not guarantee this repair.</value></data>
   <data name="HistoryCheckSources" xml:space="preserve"><value>Check the listed sources</value></data>
   <data name="ExperienceSourcesSkipped" xml:space="preserve"><value>{0} source(s) could not be read; see History.</value></data>
+  <data name="HistoryFixConfiguration" xml:space="preserve"><value>Fix the configured section roots</value></data>
+  <data name="ExperienceSectionsUnavailable" xml:space="preserve"><value>{0} configured section(s) could not be reached; their indexed content was kept. See Settings, Sections.</value></data>
   <data name="HistoryErrorsTruncated" xml:space="preserve"><value>The error list is partial.</value></data>
   <data name="HistoryCounters" xml:space="preserve"><value>Published files (added or changed): {0} - deleted: {1} - skipped: {2} - empty: {3} - errors: {4}</value></data>
   <data name="HistoryReadFailed" xml:space="preserve"><value>The history could not be read. Refresh to try again.</value></data>

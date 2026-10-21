@@ -54,6 +54,25 @@ public sealed class ExperienceTests
     }
 
     [TestMethod]
+    public async Task HistoryAsksToFixTheSectionRootsWhenAConfiguredSectionIsMissing()
+    {
+        using TemporaryDirectory temporary = new();
+        AppPaths paths = new(temporary.Path);
+        string directory = await WriteRunAsync(paths, "run-section", new SyncWorkerResult
+        {
+            ExitCode = 1,
+            CompletedAt = DateTimeOffset.UtcNow,
+        });
+        await File.WriteAllTextAsync(
+            Path.Combine(directory, "stdout.log"),
+            CliFixtures.Read("Sync", "sync-partial-fix-configuration.json"));
+        IReadOnlyList<OperationHistoryEntry> entries = await new OperationHistoryReader(paths).ReadAsync(CancellationToken.None);
+        Assert.HasCount(1, entries);
+        Assert.AreEqual(UiStrings.HistoryPartial, entries[0].Status);
+        Assert.AreEqual(UiStrings.HistoryFixConfiguration, entries[0].Action);
+    }
+
+    [TestMethod]
     public async Task HistoryKeepsPartialCountersAndErrorsAttachedToTheirOwnRun()
     {
         using TemporaryDirectory temporary = new();

@@ -1,0 +1,7 @@
+{"contract_version":1,"operation":"sync","status":"partial","changed":true,
+"scope":{"requested_section":null,"resolved_sections":["_memory","knowledge"],"index_whole_folder":false,"included_ingestion_documents":true},
+"ingestion":{"source_kind":"local","indexed_generation_id":"published"},
+"counters":{"published_files":2,"added_chunks":6,"deleted_chunks":0,"removed_files":0,"skipped_files":3,"empty_files":0,"errors":1},
+"indexes":{"chroma":"ok","lexical":"ok"},
+"errors":[{"code":"section_unavailable","phase":"validate","path":"G:\\_DATACRON\\_memory"}],
+"errors_truncated":false,"restart_required":false,"recommendation":"fix_configuration"}

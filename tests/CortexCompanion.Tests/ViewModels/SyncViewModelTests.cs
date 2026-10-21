@@ -220,6 +220,23 @@ public sealed class SyncViewModelTests
     }
 
     [TestMethod]
+    public async Task LocalRunWithAMissingSectionRootCountsAsAnUpdateWithASectionNotice()
+    {
+        using TemporaryDirectory temporary = new();
+        SyncRunHandle handle = new("run", temporary.Path, Environment.ProcessId, DateTimeOffset.UtcNow,
+            SyncRunKind.LocalDocuments);
+        string report = CliFixtures.Read("Sync", "sync-partial-fix-configuration.json");
+        LatestRunCoordinator coordinator = new(new SyncRunSnapshot(
+            handle, string.Empty, report, false, true, false, 1, null));
+        await using SyncViewModel viewModel = CreateViewModel(
+            temporary.CreateFakeCli(), CreateConfig(temporary),
+            Path.Combine(temporary.Path, "source-health.json"), coordinator);
+        await viewModel.InitializeAsync(isReadOnly: false, CancellationToken.None);
+        Assert.IsTrue(viewModel.LastRunSucceeded);
+        Assert.AreEqual(UiStrings.FormatExperienceSectionsUnavailable(1), viewModel.RunResult);
+    }
+
+    [TestMethod]
     public async Task LockedResultDoesNotRetryAndNeverWritesConfluenceToml()
     {
         using TemporaryDirectory temporary = new();

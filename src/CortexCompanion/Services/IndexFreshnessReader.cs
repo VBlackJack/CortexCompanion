@@ -22,6 +22,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
         DateTimeOffset? completed = null;
         bool latestSucceeded = false;
         int skippedSources = 0;
+        int unavailableSections = 0;
         LocalIndexContext? localContext = null;
         bool first = true;
         try
@@ -56,8 +57,16 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
                         Path.Combine(directory, SyncRunPersistence.StandardOutputFileName), cancellationToken))
                     : null;
                 int skipped = 0;
-                bool success = report is not null && SyncReportOutcome.TryReadUsable(report.RootElement, result?.ExitCode, out skipped);
-                if (first) { latestSucceeded = success; skippedSources = success ? skipped : 0; first = false; }
+                int unavailable = 0;
+                bool success = report is not null &&
+                    SyncReportOutcome.TryReadUsable(report.RootElement, result?.ExitCode, out skipped, out unavailable);
+                if (first)
+                {
+                    latestSucceeded = success;
+                    skippedSources = success ? skipped : 0;
+                    unavailableSections = success ? unavailable : 0;
+                    first = false;
+                }
                 if (!success) { continue; }
                 JsonElement root = report!.RootElement;
                 indexed = root.GetProperty("scope").GetProperty("included_ingestion_documents").GetBoolean()
@@ -74,6 +83,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
             FileLogger.Error("Index freshness evidence could not be read", exception);
             latestSucceeded = false;
             skippedSources = 0;
+            unavailableSections = 0;
         }
 
         string status = published is null || completed is null ? UiStrings.FreshnessUnknown :
@@ -83,6 +93,7 @@ public sealed class IndexFreshnessReader(string runsDirectory, IngestionPathReso
         {
             LatestLocalRunSucceeded = latestSucceeded,
             SkippedSourceCount = skippedSources,
+            UnavailableSectionCount = unavailableSections,
             LocalContext = localContext,
         };
     }
@@ -96,6 +107,9 @@ public sealed record IndexFreshness(string Published, string Indexed, string Las
 
     /// <summary>Gets how many sources the newest successful run could not read; zero when all were read.</summary>
     public int SkippedSourceCount { get; init; }
+
+    /// <summary>Gets how many configured sections the newest successful run could not reach; zero when all were.</summary>
+    public int UnavailableSectionCount { get; init; }
 
     /// <summary>Gets durable root/configuration provenance; absent on historical runs.</summary>
     public LocalIndexContext? LocalContext { get; init; }

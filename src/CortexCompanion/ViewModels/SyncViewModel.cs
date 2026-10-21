@@ -598,9 +598,11 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
         bool finished = snapshot.IsCompleted && !snapshot.IsRunning && !snapshot.IsUnknown &&
             !snapshot.IsCancelled && snapshot.LaunchError is null;
         int skippedSources = 0;
+        int unavailableSections = 0;
         bool sourcesSkipped = finished && snapshot.Handle.RunKind == SyncRunKind.LocalDocuments &&
             snapshot.ExitCode == AppConstants.CliExitError &&
-            SyncReportOutcome.TryReadUsable(snapshot.StandardOutput, snapshot.ExitCode, out skippedSources);
+            SyncReportOutcome.TryReadUsable(
+                snapshot.StandardOutput, snapshot.ExitCode, out skippedSources, out unavailableSections);
         LastRunSucceeded = (finished && snapshot.ExitCode == AppConstants.CliExitSuccess) || sourcesSkipped;
         RunTitle = snapshot.Handle.RunKind == SyncRunKind.LocalDocuments
             ? UiStrings.LocalSyncRunTitle
@@ -617,7 +619,9 @@ public sealed class SyncViewModel : ViewModelBase, IAsyncDisposable
                 : snapshot.IsRunning
                     ? UiStrings.SyncRunning
                     : sourcesSkipped
-                        ? UiStrings.FormatExperienceSourcesSkipped(skippedSources)
+                        ? unavailableSections > 0
+                            ? UiStrings.FormatExperienceSectionsUnavailable(unavailableSections)
+                            : UiStrings.FormatExperienceSourcesSkipped(skippedSources)
                         : FormatExitCode(
                             snapshot.Handle.RunKind,
                             snapshot.ExitCode,

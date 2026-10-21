@@ -132,6 +132,9 @@ public static partial class UiStrings
     /// <summary>Gets the localized HistoryCheckSources text.</summary>
     public static string HistoryCheckSources => GetString(nameof(HistoryCheckSources));
 
+    /// <summary>Gets the localized HistoryFixConfiguration text.</summary>
+    public static string HistoryFixConfiguration => GetString(nameof(HistoryFixConfiguration));
+
     /// <summary>Gets the localized HistoryErrorsTruncated text.</summary>
     public static string HistoryErrorsTruncated => GetString(nameof(HistoryErrorsTruncated));
 
@@ -224,4 +227,10 @@ public static partial class UiStrings
     /// <summary>Formats the count of sources a usable update could not read.</summary>
     public static string FormatExperienceSourcesSkipped(int count) =>
         string.Format(CultureInfo.CurrentCulture, ExperienceSourcesSkippedFormat, count);
+
+    private static readonly CompositeFormat ExperienceSectionsUnavailableFormat = CompositeFormat.Parse(GetString("ExperienceSectionsUnavailable"));
+
+    /// <summary>Formats the count of configured sections a usable update could not reach.</summary>
+    public static string FormatExperienceSectionsUnavailable(int count) =>
+        string.Format(CultureInfo.CurrentCulture, ExperienceSectionsUnavailableFormat, count);
 }

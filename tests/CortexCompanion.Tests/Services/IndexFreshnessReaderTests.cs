@@ -85,6 +85,38 @@ public sealed class IndexFreshnessReaderTests
         Assert.AreEqual(UiStrings.FreshnessUnknown, result.Status);
     }
 
+    [TestMethod]
+    public async Task MissingSectionRootPartialRunIsUsableAndCountsTheUnavailableSection()
+    {
+        using TemporaryDirectory temporary = new();
+        IngestionPathResolution path = await PublishAsync(temporary.Path, "published");
+        await WriteRunAsync(Path.Combine(temporary.Path, "runs", "run"), 1, FixConfigurationReport);
+        IndexFreshness result = await new IndexFreshnessReader(Path.Combine(temporary.Path, "runs"), path)
+            .ReadAsync(CancellationToken.None);
+        Assert.IsTrue(result.LatestLocalRunSucceeded);
+        Assert.AreEqual(1, result.UnavailableSectionCount);
+        Assert.AreEqual(0, result.SkippedSourceCount);
+        Assert.AreEqual(UiStrings.FreshnessCurrent, result.Status);
+    }
+
+    [TestMethod]
+    [DataRow("\"lexical\":\"ok\"", "\"lexical\":\"degraded\"")]
+    [DataRow("\"status\":\"partial\"", "\"status\":\"failed\"")]
+    public async Task MissingSectionRootRunWithAnotherFailureStaysNotReady(string original, string replacement)
+    {
+        using TemporaryDirectory temporary = new();
+        IngestionPathResolution path = await PublishAsync(temporary.Path, "published");
+        string report = FixConfigurationReport.Replace(original, replacement, StringComparison.Ordinal);
+        Assert.AreNotEqual(FixConfigurationReport, report);
+        await WriteRunAsync(Path.Combine(temporary.Path, "runs", "run"), 1, report);
+        IndexFreshness result = await new IndexFreshnessReader(Path.Combine(temporary.Path, "runs"), path)
+            .ReadAsync(CancellationToken.None);
+        Assert.IsFalse(result.LatestLocalRunSucceeded);
+        Assert.AreEqual(0, result.UnavailableSectionCount);
+    }
+
+    private static string FixConfigurationReport => CliFixtures.Read("Sync", "sync-partial-fix-configuration.json");
+
     private static async Task<IngestionPathResolution> PublishAsync(string root, string generation)
     {
         Directory.CreateDirectory(Path.Combine(root, "doc", "generations", generation, "documents"));

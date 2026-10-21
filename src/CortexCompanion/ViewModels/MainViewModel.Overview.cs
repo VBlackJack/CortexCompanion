@@ -90,6 +90,16 @@ public sealed partial class MainViewModel
     /// <summary>Names the sections that are no longer indexed because their folder is missing.</summary>
     public string MissingSectionRootsNotice => HasMissingSectionRoots ? Settings.MissingSectionRootsNotice : string.Empty;
 
+    /// <summary>
+    /// Gets whether the confirmed index could not reach a configured section. The live Settings
+    /// listing names the section more precisely, so this run evidence only shows without it.
+    /// </summary>
+    public bool HasUnavailableSections => LocalIndexReady && Sync.Freshness.UnavailableSectionCount > 0 && !HasMissingSectionRoots;
+
+    /// <summary>Names how many configured sections the confirmed index could not reach.</summary>
+    public string UnavailableSectionsNotice => HasUnavailableSections
+        ? UiStrings.FormatExperienceSectionsUnavailable(Sync.Freshness.UnavailableSectionCount) : string.Empty;
+
     private void InitializeOverview()
     {
         _updateDocuments = new AsyncRelayCommand(UpdateDocumentsAsync, () => Settings.HasSavedKnowledgeBase &&
@@ -234,5 +244,7 @@ public sealed partial class MainViewModel
         OnPropertyChanged(nameof(SkippedSourcesNotice));
         OnPropertyChanged(nameof(HasMissingSectionRoots));
         OnPropertyChanged(nameof(MissingSectionRootsNotice));
+        OnPropertyChanged(nameof(HasUnavailableSections));
+        OnPropertyChanged(nameof(UnavailableSectionsNotice));
     }
 }

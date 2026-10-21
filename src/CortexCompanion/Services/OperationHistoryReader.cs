@@ -122,6 +122,7 @@ public sealed class OperationHistoryReader(AppPaths paths)
                     "retry_sync" => UiStrings.HistoryRetry,
                     "repair_lexical" => UiStrings.HistoryRepair,
                     SyncReportOutcome.CheckSourcesRecommendation => UiStrings.HistoryCheckSources,
+                    SyncReportOutcome.FixConfigurationRecommendation => UiStrings.HistoryFixConfiguration,
                     _ => status == UiStrings.HistorySucceeded ? UiStrings.HistoryNoAction : UiStrings.HistoryInspect,
                 };
             }
